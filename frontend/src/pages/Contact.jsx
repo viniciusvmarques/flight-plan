@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BrandMark from "../components/BrandMark";
+import BrandMark from "../components/Brandmark";
 import { api } from "../services/apiClient";
 import { contactSubjects, siteProfile } from "../content/siteProfile";
 
@@ -10,6 +10,7 @@ export default function Contact() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const hasOperationalBase = Boolean(siteProfile.cityCountry);
 
     const canSubmit = useMemo(() => {
         return form.name.trim().length >= 2 && form.email.trim().length >= 5 && form.subject.trim().length >= 3 && form.message.trim().length >= 20;
@@ -121,9 +122,11 @@ export default function Contact() {
                             <div>
                                 <strong>Horário:</strong> {siteProfile.supportHours}
                             </div>
-                            <div>
-                                <strong>Base operacional:</strong> {siteProfile.cityCountry}
-                            </div>
+                            {hasOperationalBase ? (
+                                <div>
+                                    <strong>Base operacional:</strong> {siteProfile.cityCountry}
+                                </div>
+                            ) : null}
                         </div>
 
                         <div className="auth-info">

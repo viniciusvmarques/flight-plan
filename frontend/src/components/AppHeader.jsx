@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import BrandMark from "./BrandMark";
+import BrandMark from "./Brandmark";
 import { useAuth } from "../auth/AuthContext";
 
 export default function AppHeader({ kicker = "Marquisa", title = "Centro de operações", subtitle = "" }) {

@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import BrandMark from "../components/BrandMark";
+import BrandMark from "../components/Brandmark";
 import { api } from "../services/apiClient";
 
 export default function ResetPassword() {

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import BrandMark from "../components/BrandMark";
+import BrandMark from "../components/Brandmark";
 
 export default function Login() {
   const nav = useNavigate();

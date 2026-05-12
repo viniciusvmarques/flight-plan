@@ -54,7 +54,7 @@ export default function CancellationPolicy() {
                 </p>
 
                 <div className="auth-info legal-note">
-                    Os dados institucionais finais desta política devem ser revisados com os dados reais da operação antes da publicação definitiva em produção.
+                    Cancelamentos, dúvidas comerciais e tratativas relacionadas à assinatura são centralizados pelo canal oficial de suporte.
                 </div>
             </div>
         </div>

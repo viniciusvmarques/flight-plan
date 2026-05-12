@@ -8,18 +8,18 @@ export const LEGAL_DOC_VERSIONS = {
 
 export const SITE_PROFILE = {
     brandName: BRAND_NAME,
-    legalName: process.env.LEGAL_COMPANY_NAME || "[preencher razão social / nome legal]",
+    legalName: process.env.LEGAL_COMPANY_NAME || "",
     tradeName: process.env.LEGAL_TRADE_NAME || BRAND_NAME,
     supportEmail: process.env.SUPPORT_EMAIL || "contato@marquisa.com.br",
     privacyEmail: process.env.PRIVACY_EMAIL || process.env.SUPPORT_EMAIL || "contato@marquisa.com.br",
     contactReceiverEmail:
         process.env.CONTACT_RECEIVER_EMAIL || process.env.SUPPORT_EMAIL || "contato@marquisa.com.br",
-    cityCountry: process.env.LEGAL_CITY_COUNTRY || "[preencher cidade/UF - Brasil]",
-    documentId: process.env.LEGAL_DOCUMENT_ID || "[preencher CNPJ ou identificação aplicável]",
+    cityCountry: process.env.LEGAL_CITY_COUNTRY || "",
+    documentId: process.env.LEGAL_DOCUMENT_ID || "",
     supportHours: process.env.SUPPORT_HOURS || "Segunda a sexta, em horário comercial.",
     refundSummary:
         process.env.LEGAL_REFUND_SUMMARY ||
-        "A política comercial final deve ser revisada com os dados reais da operação antes da publicação definitiva.",
+        "Pedidos de cancelamento, análise comercial e eventuais tratativas de reembolso são avaliados pelos canais oficiais de suporte, observadas as regras do provedor de pagamento e a legislação aplicável.",
 };
 
 export function getClientIp(req) {

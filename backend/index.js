@@ -18,15 +18,42 @@ import { AIRCRAFT_PRESETS, getAircraftPresetByKey, serializeAircraftPreset } fro
 import { LEGAL_DOC_VERSIONS, SITE_PROFILE, getClientIp, getUserAgent } from "./lib/site-config.js";
 
 const app = express();
-const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
-app.use(cors({ origin: CORS_ORIGIN, credentials: true }));
+const DEFAULT_FRONTEND_ORIGIN = "http://localhost:5173";
+const NODE_ENV = String(process.env.NODE_ENV || "development").toLowerCase();
+const IS_PRODUCTION = NODE_ENV === "production";
+const APP_URL = process.env.APP_URL || DEFAULT_FRONTEND_ORIGIN;
+const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_change_me";
+const TOKEN_EXPIRES = "7d";
+
+function parseAllowedOrigins(value) {
+  return String(value || DEFAULT_FRONTEND_ORIGIN)
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function isLocalUrl(value) {
+  return /localhost|127\.0\.0\.1/i.test(String(value || ""));
+}
+
+const allowedOrigins = parseAllowedOrigins(process.env.CORS_ORIGIN);
+
+app.set("trust proxy", 1);
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+      return callback(null, allowedOrigins.includes(origin));
+    },
+    credentials: true,
+  })
+);
 
 // ===== Stripe (opcional) =====
 // Observação: webhook precisa do body RAW antes do express.json().
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || "";
 const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || "";
-const APP_URL = process.env.APP_URL || "http://localhost:5173";
 
 const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
 
@@ -226,8 +253,6 @@ app.use(express.json());
 // ===== Auth/DB =====
 const prisma = new PrismaClient();
 const emailService = createEmailService(prisma);
-const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_change_me";
-const TOKEN_EXPIRES = "7d";
 
 const RESET_TOKEN_BYTES = 32;
 const RESET_EXPIRY_MS =
@@ -235,6 +260,18 @@ const RESET_EXPIRY_MS =
 const EMAIL_VERIFICATION_TOKEN_BYTES = 32;
 const EMAIL_VERIFICATION_EXPIRY_MS =
   (Number(process.env.EMAIL_VERIFICATION_EXPIRY_HOURS) || 48) * 60 * 60 * 1000;
+
+if (IS_PRODUCTION && JWT_SECRET === "dev_secret_change_me") {
+  throw new Error("JWT_SECRET precisa ser definido com um valor forte em produção.");
+}
+
+if (IS_PRODUCTION && isLocalUrl(APP_URL)) {
+  console.warn("APP_URL ainda aponta para localhost em produção. Ajuste para o domínio público do frontend.");
+}
+
+if (IS_PRODUCTION && allowedOrigins.some(isLocalUrl)) {
+  console.warn("CORS_ORIGIN ainda contém localhost em produção. Ajuste para o domínio público do frontend.");
+}
 
 function normalizeBillingStatus(value) {
   return String(value || "").trim().toLowerCase() || null;

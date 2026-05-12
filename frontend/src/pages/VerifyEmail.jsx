@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import BrandMark from "../components/BrandMark";
+import BrandMark from "../components/Brandmark";
 import { api } from "../services/apiClient";
 
 export default function VerifyEmail() {

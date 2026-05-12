@@ -3,6 +3,7 @@ import { legalVersions, siteProfile } from "../content/siteProfile";
 
 export default function Terms() {
     const nav = useNavigate();
+    const hasLegalIdentity = Boolean(siteProfile.legalName && siteProfile.documentId && siteProfile.cityCountry);
 
     return (
         <div className="auth-wrap">
@@ -44,9 +45,15 @@ export default function Terms() {
                     Interface, identidade visual, textos, fluxos e organização do produto pertencem à operação da {siteProfile.brandName}, ressalvados dados de terceiros e fontes públicas licenciadas.
                 </p>
                 <h2>Contato e identificação</h2>
-                <p>
-                    Operação identificada como <strong>{siteProfile.legalName}</strong>, documento <strong>{siteProfile.documentId}</strong>, base em <strong>{siteProfile.cityCountry}</strong>. Contato principal: <strong>{siteProfile.supportEmail}</strong>.
-                </p>
+                {hasLegalIdentity ? (
+                    <p>
+                        Operação identificada como <strong>{siteProfile.legalName}</strong>, documento <strong>{siteProfile.documentId}</strong>, base em <strong>{siteProfile.cityCountry}</strong>. Contato principal: <strong>{siteProfile.supportEmail}</strong>.
+                    </p>
+                ) : (
+                    <p>
+                        Contato principal para suporte, assuntos comerciais e dúvidas institucionais: <strong>{siteProfile.supportEmail}</strong>.
+                    </p>
+                )}
                 <h2>Alterações</h2>
                 <p>Podemos atualizar estes termos; o uso continuado após mudanças constitui aceitação.</p>
             </div>

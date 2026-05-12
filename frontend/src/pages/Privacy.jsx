@@ -3,6 +3,7 @@ import { legalVersions, siteProfile } from "../content/siteProfile";
 
 export default function Privacy() {
     const nav = useNavigate();
+    const hasLegalIdentity = Boolean(siteProfile.legalName && siteProfile.documentId && siteProfile.cityCountry);
 
     return (
         <div className="auth-wrap">
@@ -48,9 +49,15 @@ export default function Privacy() {
                 <h2>Seus direitos</h2>
                 <p>Você pode solicitar informações, correção ou exclusão de dados da conta, conforme a LGPD, entrando em contato por {siteProfile.privacyEmail}.</p>
                 <h2>Controlador e contato</h2>
-                <p>
-                    Controlador identificado como <strong>{siteProfile.legalName}</strong>, documento <strong>{siteProfile.documentId}</strong>, base em <strong>{siteProfile.cityCountry}</strong>.
-                </p>
+                {hasLegalIdentity ? (
+                    <p>
+                        Controlador identificado como <strong>{siteProfile.legalName}</strong>, documento <strong>{siteProfile.documentId}</strong>, base em <strong>{siteProfile.cityCountry}</strong>.
+                    </p>
+                ) : (
+                    <p>
+                        Solicitações relacionadas à privacidade, LGPD e dados pessoais devem ser encaminhadas para <strong>{siteProfile.privacyEmail}</strong>.
+                    </p>
+                )}
                 <div className="auth-info legal-note">{siteProfile.companyNotice}</div>
             </div>
         </div>
