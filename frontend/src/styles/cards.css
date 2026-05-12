@@ -1,0 +1,102 @@
+.card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 14px 14px 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.card-title {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: rgba(229,231,235,0.7);
+}
+
+.card-body {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.04);
+}
+
+.chip.ok { }
+.chip.warn { }
+.chip.bad { }
+.chip.muted { opacity: 0.75; }
+
+.card-title-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.18);
+}
+
+.status-dot.vfr { background: rgba(34,197,94,0.95); }
+.status-dot.mvfr { background: rgba(234,179,8,0.95); }
+.status-dot.ifr { background: rgba(239,68,68,0.95); }
+.status-dot.nodata { background: rgba(148,163,184,0.9); }
+
+.label {
+    display: block;
+    font-size: 12px;
+    opacity: 0.75;
+    margin-bottom: 6px;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.04);
+    color: #e5e7eb;
+    outline: none;
+}
+
+.input:focus {
+    border-color: rgba(59,130,246,0.45);
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+}
+
+.divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+}
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.06);
+}
+
+.chip.ok { border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.12); }
+.chip.warn { border-color: rgba(234,179,8,0.35); background: rgba(234,179,8,0.12); }
+.chip.bad { border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.12); }

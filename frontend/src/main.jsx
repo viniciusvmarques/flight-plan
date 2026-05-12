@@ -1,0 +1,26 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import "leaflet/dist/leaflet.css";
+import App from "./App";
+import "./styles/global.css";
+import "./styles/typography.css";
+import "./styles/mq-wordmark.css";
+import "./styles/app-layout.css";
+import "./styles/auth-pages.css";
+import "./styles/ux-polish.css";
+import "./ui/notify.css";
+import { AuthProvider } from "./auth/AuthContext";
+import { NotifyProvider } from "./ui/NotifyContext.jsx";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
+        <BrowserRouter>
+            <NotifyProvider>
+                <AuthProvider>
+                    <App />
+                </AuthProvider>
+            </NotifyProvider>
+        </BrowserRouter>
+    </React.StrictMode>
+);

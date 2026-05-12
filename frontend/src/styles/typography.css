@@ -1,0 +1,93 @@
+/**
+ * Tipografia — direção mais corporativa, clara e consistente.
+ */
+
+:root {
+    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --font-display: "Montserrat", "Plus Jakarta Sans", ui-sans-serif, sans-serif;
+    --font-size-base: 15px;
+    --leading-normal: 1.6;
+    --tracking-tight: -0.02em;
+}
+
+html {
+    font-size: var(--font-size-base);
+}
+
+body {
+    font-family: var(--font-sans);
+    line-height: var(--leading-normal);
+    letter-spacing: -0.012em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "kern" 1, "liga" 1;
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--font-display);
+    letter-spacing: var(--tracking-tight);
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+p,
+li,
+input,
+select,
+textarea,
+button {
+    font-size: 0.95rem;
+}
+
+.card-title,
+.fp-sidebar-title,
+.fp-sidebar-eyebrow,
+.fp-topbar-kicker,
+.page-eyebrow,
+.auth-kicker,
+.plan-total-label {
+    font-family: var(--font-display);
+    letter-spacing: 0.14em !important;
+    font-weight: 700 !important;
+    font-size: 0.72rem !important;
+    text-transform: uppercase;
+    opacity: 0.94;
+}
+
+.fp-topbar-title,
+.page-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.fp-topbar-sub,
+.page-caption,
+.site-footer-note,
+.auth-hint,
+.muted {
+    letter-spacing: 0.01em;
+}
+
+button.primary,
+.btn-primary,
+button.secondary,
+.fp-link-btn,
+.fp-nav-link {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.label,
+.field label {
+    font-size: 0.73rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.fp-brand--wordmark {
+    user-select: none;
+}

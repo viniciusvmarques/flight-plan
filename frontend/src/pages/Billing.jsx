@@ -1,0 +1,261 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import Card from "../components/Card";
+import AppFooter from "../components/AppFooter";
+import AppHeader from "../components/AppHeader";
+import { useAuth } from "../auth/AuthContext";
+import { apiGet, apiPost } from "../services/apiClient";
+import { siteProfile } from "../content/siteProfile";
+
+export default function Billing() {
+    const nav = useNavigate();
+    const { user, token, refreshMe } = useAuth();
+    const [searchParams] = useSearchParams();
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [status, setStatus] = useState(null);
+    const [creating, setCreating] = useState(false);
+
+    const email = useMemo(() => user?.email || "", [user]);
+
+    async function refresh() {
+        setError("");
+        setLoading(true);
+        try {
+            const res = await apiGet("/me", token);
+            const u = res?.user;
+            const plan = String(u?.plan || "FREE").toUpperCase();
+            const planStatus = String(u?.planStatus || "").toLowerCase();
+            setStatus({
+                plan,
+                planStatus,
+                active: plan === "PRO" && ["active", "trialing", "demo"].includes(planStatus || "active"),
+                trialing: planStatus === "trialing" || planStatus === "demo",
+                renews: !!u?.currentPeriodEnd,
+                currentPeriodEnd: u?.currentPeriodEnd || null,
+                trialEndsAt: u?.trialEndsAt || null,
+                cancelAtPeriodEnd: !!u?.cancelAtPeriodEnd,
+                canceledAt: u?.canceledAt || null,
+            });
+            await refreshMe();
+        } catch (e) {
+            setError(e?.message || "Erro ao carregar status");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        refresh();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    async function startCheckout() {
+        setError("");
+        setCreating(true);
+        try {
+            const res = await apiPost("/api/stripe/checkout", {}, token);
+            if (res?.demo) {
+                setError("O servidor atual está em modo local sem Stripe ativo. No ambiente configurado, o checkout abrirá normalmente.");
+                return;
+            }
+            if (res?.url) window.location.href = res.url;
+            else throw new Error("URL do checkout não retornada");
+        } catch (e) {
+            setError(e?.message || "Falha ao iniciar checkout");
+        } finally {
+            setCreating(false);
+        }
+    }
+
+    async function openPortal() {
+        setError("");
+        try {
+            const res = await apiPost("/api/stripe/portal", {}, token);
+            if (res?.url) window.location.href = res.url;
+            else throw new Error("Portal não configurado");
+        } catch (e) {
+            setError(e?.message || "Falha ao abrir portal");
+        }
+    }
+
+    const checkoutState = searchParams.get("checkout");
+    const checkoutBanner =
+        checkoutState === "success"
+            ? "Checkout concluído. Assim que o webhook confirmar o ciclo comercial, o status da sua assinatura será atualizado."
+            : checkoutState === "cancel"
+              ? "Seu checkout foi interrompido antes da confirmação. Você pode tentar novamente quando quiser."
+              : "";
+
+    function formatDate(value) {
+        if (!value) return "—";
+        try {
+            return new Date(value).toLocaleDateString("pt-BR");
+        } catch {
+            return "—";
+        }
+    }
+
+    function humanStatusLabel() {
+        const current = String(status?.planStatus || "").toLowerCase();
+        if (current === "active") return "Assinatura ativa";
+        if (current === "trialing" || current === "demo") return "Período de teste";
+        if (current === "past_due") return "Pagamento pendente";
+        if (current === "canceled") return "Assinatura cancelada";
+        return status?.plan === "PRO" ? "Plano Pro" : "Plano Free";
+    }
+
+    return (
+        <div className="main-shell">
+            <AppHeader
+                kicker="Assinatura"
+                title="Plano Marquisa Pro"
+                subtitle="Checkout, renovação e gestão de acesso premium em uma única experiência."
+            />
+
+            <div className="main-scroll">
+                <div className="page-shell">
+                    <section className="page-hero">
+                        <div className="page-hero-head">
+                            <div className="page-hero-copy">
+                                <span className="page-eyebrow">Gestão comercial</span>
+                                <h1 className="page-title">Ative o Pro e mantenha sua operação no mesmo fluxo</h1>
+                                <p className="page-caption">
+                                    Acompanhe seu estado comercial, libere recursos premium e acesse o portal do assinante sem sair do painel.
+                                </p>
+                            </div>
+
+                            <div className="page-actions">
+                                <button className="secondary" type="button" onClick={() => nav("/perfil")}>
+                                    Minha conta
+                                </button>
+                                <button className="secondary" type="button" onClick={() => nav("/")}>
+                                    Dashboard
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="page-chip-row">
+                            <span className="chip">{email || "Conta não identificada"}</span>
+                            <span className={`chip ${status?.active ? "ok" : ""}`}>Plano: {status?.plan || "FREE"}</span>
+                            <span className="chip">{humanStatusLabel()}</span>
+                            <span className="chip">
+                                {status?.cancelAtPeriodEnd ? "Cancelamento programado" : status?.renews ? "Renovação habilitada" : "Sem renovação ativa"}
+                            </span>
+                        </div>
+                    </section>
+
+                    {checkoutBanner ? (
+                        <Card title="Atualização do checkout">
+                            <div className="empty-note">{checkoutBanner}</div>
+                        </Card>
+                    ) : null}
+
+                    {error ? (
+                        <Card title="Aviso">
+                            <div className="empty-note">{error}</div>
+                        </Card>
+                    ) : null}
+
+                    <div className="page-grid">
+                        <div className="page-stack">
+                            <Card title="Status atual">
+                                {loading ? (
+                                    <div className="empty-note">Carregando status da conta...</div>
+                                ) : (
+                                    <div className="info-stack">
+                                        <div className="page-chip-row">
+                                            <span className={`chip ${status?.active ? "ok" : ""}`}>Status: {humanStatusLabel()}</span>
+                                            <span className="chip">Trial: {status?.trialing ? "Sim" : "Não"}</span>
+                                            <span className="chip">Próximo ciclo: {formatDate(status?.currentPeriodEnd)}</span>
+                                        </div>
+                                        <div className="page-chip-row">
+                                            <span className="chip">Fim do trial: {formatDate(status?.trialEndsAt)}</span>
+                                            <span className="chip">Cancelamento: {status?.cancelAtPeriodEnd ? "Agendado" : "Não"}</span>
+                                            <span className="chip">Encerrada em: {formatDate(status?.canceledAt)}</span>
+                                        </div>
+                                        <p className="page-caption">
+                                            {status?.active
+                                                ? "Sua assinatura está operacional. Use o portal para atualizar pagamento, acompanhar cobrança e gerenciar cancelamento."
+                                                : status?.planStatus === "past_due"
+                                                  ? "Existe uma pendência de pagamento na sua assinatura. Enquanto ela não for regularizada, o acesso premium pode ficar restrito."
+                                                  : "Você ainda está no plano FREE. O Pro libera continuidade operacional, salvamento em nuvem e favoritos sincronizados."}
+                                        </p>
+                                        <div className="page-actions">
+                                            <button className="secondary" type="button" onClick={refresh} disabled={loading}>
+                                                Atualizar status
+                                            </button>
+                                            <button className="secondary" type="button" onClick={openPortal} disabled={loading}>
+                                                Gerenciar assinatura
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </Card>
+
+                            <Card title="O que o Pro libera">
+                                <div className="feature-list">
+                                    <div className="feature-item">Salvar briefings ilimitados e reabrir rotas rapidamente.</div>
+                                    <div className="feature-item">Sincronizar favoritos e preferências entre sessões.</div>
+                                    <div className="feature-item">Centralizar histórico e continuidade do planejamento.</div>
+                                    <div className="feature-item">Preparar a conta para exportações, suporte comercial e recursos premium futuros.</div>
+                                </div>
+                            </Card>
+                        </div>
+
+                        <div className="page-stack">
+                            <Card title="Comparação de planos">
+                                <div className="pricing-grid">
+                                    <section className="pricing-card">
+                                        <div className="pricing-head">
+                                            <div>
+                                                <div className="pricing-name">Free</div>
+                                                <div className="pricing-price">R$ 0</div>
+                                            </div>
+                                            <span className="chip">Atual</span>
+                                        </div>
+                                        <div className="feature-list">
+                                            <div className="feature-item">Briefing METAR / TAF</div>
+                                            <div className="feature-item">Planejamento manual de combustível e tempo</div>
+                                            <div className="feature-item">Persistência local no navegador</div>
+                                        </div>
+                                        <button className="secondary" type="button" disabled>
+                                            Plano atual
+                                        </button>
+                                    </section>
+
+                                    <section className="pricing-card pricing-card--pro">
+                                        <div className="pricing-head">
+                                            <div>
+                                                <div className="pricing-name">Pro</div>
+                                                <div className="pricing-price">{siteProfile.monthlyPrice}</div>
+                                            </div>
+                                            <span className="chip ok">{siteProfile.trialLabel}</span>
+                                        </div>
+                                        <div className="feature-list">
+                                            <div className="feature-item">Briefings e favoritos sincronizados</div>
+                                            <div className="feature-item">Reabertura rápida do planejamento salvo</div>
+                                            <div className="feature-item">Gestão de cobrança e cancelamento via Stripe</div>
+                                            <div className="feature-item">Expansão de recursos premium futuros</div>
+                                        </div>
+                                        <button className="btn-primary" type="button" onClick={startCheckout} disabled={creating}>
+                                            {creating ? "Abrindo..." : "Assinar Pro"}
+                                        </button>
+                                    </section>
+                                </div>
+
+                                <p className="page-caption">
+                                    O checkout e o portal do assinante usam Stripe. Em caso de dúvida comercial, use <strong>{siteProfile.supportEmail}</strong> ou consulte a{" "}
+                                    <Link to="/cancellation-policy">política de cancelamento</Link>.
+                                </p>
+                            </Card>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <AppFooter />
+        </div>
+    );
+}

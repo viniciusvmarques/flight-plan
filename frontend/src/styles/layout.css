@@ -1,0 +1,125 @@
+.app {
+    display: flex;
+    height: 100vh;
+    background: #071423;
+    color: #e5e7eb;
+}
+
+.sidebar {
+    width: 340px;
+    padding: 18px;
+    background: radial-gradient(1200px 600px at 20% 0%, #0d2a47 0%, #071423 55%);
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.brand {
+    padding: 10px 10px 14px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.brand-title {
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    font-size: 13px;
+}
+
+.brand-sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgba(229,231,235,0.7);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 14px 0;
+}
+
+.field label {
+    font-size: 12px;
+    color: rgba(229,231,235,0.8);
+}
+
+.field input {
+    padding: 12px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(2,6,23,0.55);
+    color: #e5e7eb;
+    outline: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.field input:focus {
+    border-color: rgba(59,130,246,0.7);
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+}
+
+.primary {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(59,130,246,0.6);
+    background: linear-gradient(180deg, rgba(59,130,246,0.95), rgba(37,99,235,0.9));
+    color: white;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.primary:hover { filter: brightness(1.05); }
+
+.hint {
+    margin-top: 12px;
+    font-size: 12px;
+    color: rgba(229,231,235,0.65);
+}
+
+.main {
+    flex: 1;
+    padding: 22px;
+    overflow: auto;
+}
+
+.topline {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.topline h2 { font-size: 18px; }
+
+.status {
+    font-size: 12px;
+    color: rgba(229,231,235,0.65);
+}
+.secondary {
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: #e5e7eb;
+    cursor: pointer;
+}
+
+.secondary:hover { background: rgba(255,255,255,0.09); }
+.secondary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+
+button.secondary {
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    color: #e5e7eb;
+    cursor: pointer;
+}
+
+button.secondary:hover {
+    background: rgba(255,255,255,0.10);
+}

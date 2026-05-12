@@ -1,0 +1,350 @@
+/* Páginas de autenticação e textos legais — fundo já vem do global.css */
+
+.auth-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 16px;
+}
+
+.auth-card {
+    width: min(680px, 100%);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+}
+
+.auth-card--wide {
+    width: min(1040px, 100%);
+}
+
+.auth-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.auth-back {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+    border-radius: 12px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.auth-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    cursor: pointer;
+}
+
+.auth-spacer {
+    width: 92px;
+}
+
+.auth-body {
+    padding: 18px 22px 20px;
+}
+
+.auth-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+    gap: 16px;
+}
+
+.auth-pane {
+    display: grid;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.auth-pane--soft {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.auth-body h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.auth-body p {
+    margin: 0 0 14px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 14px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.auth-form label span {
+    display: block;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0 0 6px;
+}
+
+.auth-form input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 12px 14px;
+    outline: none;
+}
+
+.auth-form input:focus {
+    border-color: rgba(128, 176, 255, 0.45);
+    box-shadow: 0 0 0 4px rgba(74, 138, 255, 0.12);
+}
+
+.auth-select,
+.auth-textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 12px 14px;
+    outline: none;
+}
+
+.auth-textarea {
+    resize: vertical;
+    min-height: 150px;
+    font: inherit;
+}
+
+.auth-select:focus,
+.auth-textarea:focus {
+    border-color: rgba(128, 176, 255, 0.45);
+    box-shadow: 0 0 0 4px rgba(74, 138, 255, 0.12);
+}
+
+.auth-error {
+    background: rgba(255, 70, 70, 0.1);
+    border: 1px solid rgba(255, 70, 70, 0.25);
+    color: rgba(255, 255, 255, 0.92);
+    border-radius: 14px;
+    padding: 10px 12px;
+}
+
+.auth-success {
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.28);
+    color: rgba(255, 255, 255, 0.92);
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.auth-banner {
+    margin-bottom: 14px;
+}
+
+.btn-primary {
+    margin-top: 2px;
+    background: linear-gradient(180deg, rgba(66, 137, 255, 0.55), rgba(40, 90, 190, 0.55));
+    border: 1px solid rgba(120, 180, 255, 0.35);
+    border-radius: 14px;
+    color: #fff;
+    padding: 12px 14px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+}
+
+.btn-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.auth-check {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 13px;
+}
+
+.auth-check input {
+    width: auto;
+    margin-top: 3px;
+}
+
+.auth-check a {
+    color: rgba(180, 210, 255, 0.95);
+    text-decoration: none;
+}
+
+.auth-check a:hover {
+    text-decoration: underline;
+}
+
+.auth-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 0;
+    color: rgba(255, 255, 255, 0.78);
+    cursor: pointer;
+    padding: 0;
+}
+
+.auth-links a {
+    color: rgba(180, 210, 255, 0.95);
+    text-decoration: none;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+.auth-hint {
+    margin-top: 12px;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 12px;
+}
+
+.auth-links--start {
+    justify-content: flex-start;
+    gap: 18px;
+}
+
+.auth-links--compact {
+    margin-top: 14px;
+}
+
+.auth-copy-list {
+    margin: 0;
+    padding-left: 18px;
+    color: rgba(229, 231, 235, 0.84);
+}
+
+.auth-copy-list li {
+    margin: 7px 0;
+}
+
+.auth-chip-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.auth-info {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(229, 231, 235, 0.85);
+}
+
+.auth-info--inline {
+    margin-top: 14px;
+    margin-bottom: 0;
+}
+
+.site-footer-inner a {
+    color: rgba(180, 210, 255, 0.95);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.site-footer-inner a:hover {
+    color: #fff;
+}
+
+/* Legal */
+.legal-card {
+    width: min(720px, 100%);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 22px 24px 28px;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(16px);
+}
+
+.legal-card--wide {
+    width: min(900px, 100%);
+}
+
+.legal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.legal-meta-list {
+    display: grid;
+    gap: 10px;
+    color: rgba(229, 231, 235, 0.88);
+    line-height: 1.55;
+}
+
+.legal-card h1 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.legal-card h2 {
+    margin: 18px 0 8px;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+}
+
+.legal-card p,
+.legal-card li {
+    margin: 0 0 10px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(229, 231, 235, 0.88);
+}
+
+.legal-card ul {
+    margin: 0 0 12px;
+    padding-left: 20px;
+}
+
+.legal-back {
+    margin-bottom: 16px;
+}
+
+.legal-note {
+    margin-top: 18px;
+}
+
+@media (max-width: 880px) {
+    .auth-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,12 @@
+/verify-email   /index.html   200
+/reset-password /index.html   200
+/login          /index.html   200
+/register       /index.html   200
+/forgot         /index.html   200
+/perfil         /index.html   200
+/assinatura     /index.html   200
+/contact        /index.html   200
+/terms          /index.html   200
+/privacy        /index.html   200
+/cancellation-policy /index.html 200
+/*              /index.html   200

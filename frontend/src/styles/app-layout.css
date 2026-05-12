@@ -1,0 +1,464 @@
+/**
+ * Layout definitivo — carrega depois de global.css e corrige conflitos
+ * (header duplicado, sidebar vazio, alinhamentos estranhos).
+ */
+
+/* ----- Shell principal ----- */
+.app {
+    display: flex;
+    align-items: stretch;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* ----- Sidebar (briefing) ----- */
+.fp-sidebar {
+    flex: 0 0 min(300px, 100%);
+    width: min(300px, 100%);
+    max-width: 100%;
+    min-height: 100vh;
+    padding: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(6, 10, 18, 0.72);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: 100vh;
+    overflow-y: auto;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+}
+
+.fp-sidebar-inner {
+    flex: 1;
+    padding: 18px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-height: 0;
+}
+
+.fp-sidebar-head {
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fp-sidebar-eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(241, 245, 249, 0.92);
+}
+
+.fp-sidebar-caption {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: rgba(226, 232, 240, 0.62);
+}
+
+.fp-sidebar-title {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(241, 245, 249, 0.92);
+}
+
+.fp-sidebar-lead {
+    margin: 0 0 12px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: rgba(226, 232, 240, 0.68);
+}
+
+.fp-brief-form .field {
+    margin-top: 10px;
+}
+
+.fp-brief-form .field:first-of-type {
+    margin-top: 0;
+}
+
+.fp-sidebar-account {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fp-account-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.fp-account-email {
+    font-size: 12px;
+    color: rgba(226, 232, 240, 0.85);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.fp-plan-pill {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    text-transform: uppercase;
+}
+
+.fp-plan-pill--pro {
+    border-color: rgba(59, 130, 246, 0.45);
+    background: rgba(59, 130, 246, 0.15);
+    color: #e0f2fe;
+}
+
+.fp-plan-pill--free {
+    color: rgba(226, 232, 240, 0.8);
+}
+
+.fp-account-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.fp-link-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: #e5e7eb;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.fp-link-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.fp-link-btn--primary {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.22);
+}
+
+.fp-link-btn--ghost {
+    background: transparent;
+}
+
+/* ----- Área principal (conteúdo rola com a página; ver ux-polish.css) ----- */
+.main-shell {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: rgba(8, 12, 22, 0.25);
+}
+
+/* ----- Topbar (substitui .app-header antigo) ----- */
+.fp-topbar,
+.app-header {
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 120;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(8, 12, 20, 0.88);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    isolation: isolate;
+}
+
+.fp-topbar-inner,
+.app-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 12px 20px;
+    width: 100%;
+}
+
+.fp-topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    color: inherit;
+    text-align: left;
+}
+
+.fp-topbar-titles {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    min-width: 0;
+}
+
+.fp-topbar-kicker {
+    font-size: 10px;
+    color: rgba(191, 219, 254, 0.88);
+}
+
+.fp-topbar-title {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: #f8fafc;
+}
+
+.fp-topbar-sub {
+    font-size: 12px;
+    color: rgba(226, 232, 240, 0.7);
+    line-height: 1.35;
+    max-width: 58ch;
+}
+
+.fp-topbar-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.fp-nav-link {
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(226, 232, 240, 0.88);
+    border: 1px solid transparent;
+    text-decoration: none;
+}
+
+.fp-nav-link:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.fp-nav-link--accent {
+    border-color: rgba(59, 130, 246, 0.45);
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.page-shell {
+    display: grid;
+    gap: 18px;
+}
+
+.page-hero {
+    display: grid;
+    gap: 14px;
+    padding: 22px 24px;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+        linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(15, 23, 42, 0.12)),
+        rgba(255, 255, 255, 0.04);
+}
+
+.page-hero-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.page-hero-copy {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.page-title {
+    margin: 0;
+    font-size: clamp(1.45rem, 2vw, 1.9rem);
+}
+
+.page-caption {
+    margin: 0;
+    color: rgba(226, 232, 240, 0.72);
+    max-width: 66ch;
+}
+
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.page-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.page-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.page-stack {
+    display: grid;
+    gap: 16px;
+}
+
+.page-grid--equal {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dashboard-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.detail-back {
+    width: fit-content;
+}
+
+.empty-note {
+    color: rgba(226, 232, 240, 0.72);
+    line-height: 1.6;
+}
+
+/* Compat: títulos antigos do AppHeader */
+.header-title {
+    align-items: flex-start !important;
+    text-align: left !important;
+}
+
+.header-kicker {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #f1f5f9;
+}
+
+.header-subtitle {
+    font-size: 12px;
+    color: rgba(226, 232, 240, 0.65);
+}
+
+/* ----- Grid briefing + plano ----- */
+.layout-2col {
+    display: grid;
+    grid-template-columns: minmax(300px, 1fr) minmax(320px, 1.05fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.left-rail,
+.right-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.wx-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* METAR/TAF: leitura confortável com rolagem interna */
+.wx-text {
+    max-height: 12rem !important;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+}
+
+.square-card {
+    height: auto !important;
+    min-height: 0;
+}
+
+.square-card .card-body {
+    overflow: visible !important;
+}
+
+/* Rodapé: estilo principal em ux-polish.css (fluxo natural no documento) */
+
+/* ----- Responsivo ----- */
+@media (max-width: 1024px) {
+    .layout-2col {
+        grid-template-columns: 1fr;
+    }
+
+    .page-grid,
+    .page-grid--equal {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .app {
+        flex-direction: column;
+    }
+
+    .fp-sidebar {
+        position: relative;
+        width: 100%;
+        max-width: none;
+        min-height: 0;
+        max-height: none;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .fp-sidebar-inner {
+        padding-bottom: 18px;
+    }
+
+    .fp-sidebar-account {
+        margin-top: 8px;
+    }
+}
+
+@media (max-width: 520px) {
+    .fp-topbar-inner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .fp-topbar-nav {
+        justify-content: flex-start;
+    }
+
+    .page-hero {
+        padding: 18px;
+    }
+}

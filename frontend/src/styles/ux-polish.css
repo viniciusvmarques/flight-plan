@@ -1,0 +1,1121 @@
+/**
+ * Refino de UX: cartões, botões, foco e fluxo de página.
+ * Carrega por último para sobrepor global.css herdado.
+ */
+
+/* ----- Rolagem da página (rodapé no fim do conteúdo, não “preso” à viewport) ----- */
+.main-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-scroll {
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px 22px 36px;
+    overflow: visible !important;
+    min-height: 0;
+}
+
+.site-footer,
+.app-footer {
+    position: static !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    flex-shrink: 0;
+    margin-top: 0 !important;
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    background: linear-gradient(180deg, rgba(6, 10, 18, 0.55), rgba(4, 8, 14, 0.85));
+}
+
+.site-footer-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 18px 22px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+@media (min-width: 640px) {
+    .site-footer-inner {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px 24px;
+    }
+}
+
+/* ----- Cartões ----- */
+.fp-card,
+.card {
+    position: relative;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(165deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.28);
+    transition:
+        box-shadow 0.22s ease,
+        border-color 0.2s ease;
+}
+
+.fp-card:hover,
+.card:hover {
+    border-color: rgba(147, 197, 253, 0.22);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.38);
+}
+
+.fp-card:focus-within,
+.card:focus-within {
+    border-color: rgba(96, 165, 250, 0.45);
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.25), 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 2px;
+}
+
+.card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+
+.card-actions {
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-title {
+    letter-spacing: 0.1em;
+}
+
+.card-body {
+    padding-top: 4px;
+}
+
+/* Grid de briefing: ritmo visual */
+.layout-2col {
+    gap: 22px;
+}
+
+.left-rail,
+.right-rail {
+    gap: 18px;
+}
+
+.wx-stack {
+    gap: 14px;
+}
+
+.summary-card-shell {
+    display: grid;
+    gap: 12px;
+}
+
+.summary-card-copy {
+    margin: 0;
+    color: rgba(226, 232, 240, 0.72);
+    line-height: 1.5;
+}
+
+/* ----- Botões (feedback tátil + acessível) ----- */
+button.primary,
+.btn-primary,
+button.secondary,
+.fp-nav-link,
+.fp-link-btn {
+    transition:
+        transform 0.15s ease,
+        background 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+button.primary:active:not(:disabled),
+.btn-primary:active:not(:disabled),
+button.secondary:active:not(:disabled),
+.fp-nav-link:active {
+    transform: scale(0.98);
+}
+
+.fp-nav-link:focus-visible,
+.fp-link-btn:focus-visible,
+button:focus-visible {
+    outline: 2px solid rgba(147, 197, 253, 0.85);
+    outline-offset: 2px;
+}
+
+/* Ícone-only / compact */
+.fp-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(241, 245, 249, 0.92);
+    font-size: 14px;
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        background 0.18s ease,
+        border-color 0.18s ease;
+}
+
+.fp-btn-icon:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.11);
+    border-color: rgba(147, 197, 253, 0.35);
+}
+
+.fp-btn-icon:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.fp-btn-icon--active {
+    background: rgba(234, 179, 8, 0.15);
+    border-color: rgba(234, 179, 8, 0.4);
+}
+
+/* ----- Lista de estações (clicável) ----- */
+.fp-station-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(0, 0, 0, 0.12);
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.fp-station-row:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(147, 197, 253, 0.28);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+}
+
+.fp-station-row--active {
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(96, 165, 250, 0.42);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.15);
+}
+
+.fp-station-row:focus-visible {
+    outline: 2px solid rgba(147, 197, 253, 0.9);
+    outline-offset: 2px;
+}
+
+.fp-station-chevron {
+    font-size: 13px;
+    opacity: 0.55;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.fp-station-row:hover .fp-station-chevron {
+    opacity: 0.95;
+}
+
+/* ----- Chips do resumo ----- */
+.fp-chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.fp-chip-grid .chip {
+    transition: transform 0.15s ease;
+}
+
+.fp-chip-grid .chip:hover {
+    transform: translateY(-1px);
+}
+
+.fp-summary-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ----- METAR/TAF: blocos mais legíveis ----- */
+.wx-section {
+    padding: 4px 0;
+}
+
+.wx-label {
+    margin-bottom: 8px !important;
+}
+
+.wx-meta-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.wx-text {
+    border-radius: 14px !important;
+    line-height: 1.5 !important;
+}
+
+/* ----- Resumo / estados ----- */
+.summary-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    gap: 10px;
+    align-items: stretch;
+}
+
+.summary-stat {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.2);
+    height: 100%;
+}
+
+.summary-stat-label,
+.plan-metric-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(226, 232, 240, 0.68);
+}
+
+.summary-stat-value,
+.plan-metric-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+.summary-stat--ok {
+    border-color: rgba(34, 197, 94, 0.22);
+}
+
+.summary-stat--warn {
+    border-color: rgba(245, 158, 11, 0.25);
+}
+
+.summary-stat--bad {
+    border-color: rgba(248, 113, 113, 0.25);
+}
+
+.stations-list,
+.list-stack,
+.info-stack,
+.feature-list,
+.plan-stack,
+.plan-phase-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.fp-station-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.fp-station-code {
+    letter-spacing: 0.08em;
+}
+
+.fp-station-meta,
+.list-card-meta {
+    font-size: 12px;
+    color: rgba(226, 232, 240, 0.7);
+}
+
+.fp-station-submeta {
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgba(191, 219, 254, 0.76);
+    line-height: 1.4;
+}
+
+.detail-section {
+    display: grid;
+    gap: 8px;
+}
+
+.detail-heading {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(241, 245, 249, 0.9);
+}
+
+.detail-grid {
+    display: grid;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.detail-line {
+    display: grid;
+    gap: 4px;
+}
+
+.detail-line--block {
+    padding-top: 4px;
+}
+
+.detail-label {
+    color: rgba(226, 232, 240, 0.66);
+}
+
+.detail-copy {
+    color: rgba(241, 245, 249, 0.92);
+}
+
+.detail-error {
+    color: rgba(254, 226, 226, 0.92);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.2);
+    border-radius: 14px;
+    padding: 10px 12px;
+}
+
+.list-card-button {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.2);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.list-card-button:hover {
+    border-color: rgba(147, 197, 253, 0.28);
+    background: rgba(15, 23, 42, 0.28);
+}
+
+.feature-item {
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    line-height: 1.55;
+    color: rgba(241, 245, 249, 0.9);
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.pricing-card {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.2);
+}
+
+.pricing-card--pro {
+    border-color: rgba(96, 165, 250, 0.28);
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.12), rgba(15, 23, 42, 0.22));
+}
+
+.pricing-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.pricing-name {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(226, 232, 240, 0.74);
+}
+
+.pricing-price {
+    margin-top: 6px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+/* ----- Mapa de rota ----- */
+.route-map-card {
+    display: grid;
+    gap: 12px;
+}
+
+.dashboard-route-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.dashboard-route-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.18);
+}
+
+.dashboard-route-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.16);
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.dashboard-route-meta {
+    display: grid;
+    gap: 3px;
+}
+
+.dashboard-route-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(191, 219, 254, 0.82);
+}
+
+.dashboard-route-value {
+    font-size: 0.98rem;
+    color: #f8fafc;
+}
+
+.dashboard-meta-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.route-map-meta,
+.route-map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.route-map-frame {
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+        rgba(2, 6, 23, 0.32);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.route-map-surface {
+    height: 320px;
+    width: 100%;
+    background: rgba(2, 6, 23, 0.22);
+    z-index: 0;
+}
+
+.route-map-frame .leaflet-control-zoom a,
+.route-map-frame .leaflet-control-scale-line {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(8, 12, 20, 0.86);
+    color: #f8fafc;
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.28);
+}
+
+.route-map-frame .leaflet-control-zoom a:hover {
+    background: rgba(15, 23, 42, 0.94);
+}
+
+.route-map-frame .leaflet-control-scale-line {
+    border-radius: 10px;
+    padding: 2px 8px;
+}
+
+.fp-map-marker-wrap {
+    background: transparent;
+    border: 0;
+}
+
+.fp-map-marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #f8fafc;
+    border: 2px solid rgba(248, 250, 252, 0.95);
+    box-shadow: 0 6px 14px rgba(2, 6, 23, 0.28);
+}
+
+.fp-map-marker--origin {
+    background: #1d4ed8;
+}
+
+.fp-map-marker--dest {
+    background: #0f766e;
+}
+
+.fp-map-marker--alternate {
+    background: #a16207;
+}
+
+.fp-map-marker--selected {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 3px rgba(191, 219, 254, 0.3), 0 6px 14px rgba(2, 6, 23, 0.28);
+}
+
+/* ----- Planejamento ----- */
+.plan-panel {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.plan-panel--dark {
+    background: rgba(2, 6, 23, 0.22);
+}
+
+.plan-panel--accent {
+    border-color: rgba(96, 165, 250, 0.28);
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.12), rgba(15, 23, 42, 0.16));
+}
+
+.plan-section-head {
+    display: grid;
+    gap: 6px;
+}
+
+.plan-section-copy {
+    margin: 0;
+    color: rgba(226, 232, 240, 0.7);
+}
+
+.plan-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.plan-grid {
+    display: grid;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.plan-grid--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.plan-grid--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.plan-grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.plan-field {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+}
+
+.plan-field-hint {
+    font-size: 12px;
+    color: rgba(191, 219, 254, 0.82);
+}
+
+.plan-field .input,
+.plan-field select {
+    margin-top: 0;
+}
+
+.plan-metric {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.18);
+    height: 100%;
+}
+
+.plan-metric--ok {
+    border-color: rgba(34, 197, 94, 0.22);
+}
+
+.plan-metric--warn {
+    border-color: rgba(245, 158, 11, 0.22);
+}
+
+.plan-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.plan-summary-grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.plan-context-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.plan-context-card {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.18);
+}
+
+.plan-context-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.plan-context-copy {
+    display: grid;
+    gap: 4px;
+    color: rgba(226, 232, 240, 0.78);
+    line-height: 1.5;
+    font-size: 13px;
+}
+
+.plan-leg-list,
+.plan-warning-list {
+    display: grid;
+    gap: 10px;
+}
+
+.plan-leg-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) repeat(3, auto);
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.18);
+}
+
+.plan-leg-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    padding: 6px 8px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.14);
+    border: 1px solid rgba(96, 165, 250, 0.22);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.plan-total {
+    display: grid;
+    gap: 8px;
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(2, 6, 23, 0.28);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.plan-total-value {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: #f8fafc;
+}
+
+.plan-total-value span {
+    font-size: 0.46em;
+    letter-spacing: 0;
+}
+
+.plan-total-sub {
+    color: rgba(226, 232, 240, 0.72);
+    line-height: 1.55;
+}
+
+.page-hero--dashboard {
+    gap: 12px;
+    padding: 18px 20px;
+}
+
+.dashboard-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.dashboard-overview-card {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02));
+}
+
+.dashboard-overview-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(191, 219, 254, 0.82);
+}
+
+.dashboard-overview-value {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #f8fafc;
+}
+
+.dashboard-overview-copy {
+    font-size: 13px;
+    color: rgba(226, 232, 240, 0.72);
+    line-height: 1.5;
+}
+
+.dashboard-section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.dashboard-section-kicker {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(191, 219, 254, 0.82);
+}
+
+.dashboard-section-title {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.35;
+    color: #f8fafc;
+}
+
+.dashboard-detail-shell {
+    display: grid;
+    gap: 10px;
+    scroll-margin-top: 104px;
+}
+
+.dashboard-planner-shell {
+    display: grid;
+}
+
+.dashboard-support-grid {
+    display: grid;
+    gap: 18px;
+}
+
+.dashboard-side-stack {
+    display: grid;
+    gap: 16px;
+}
+
+.dashboard-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: stretch;
+}
+
+.dashboard-weather-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    align-items: stretch;
+}
+
+.dashboard-summary-grid > .fp-card,
+.dashboard-weather-grid > .wx-card-wrap > .fp-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-summary-grid > .fp-card .card-body,
+.dashboard-weather-grid > .wx-card-wrap > .fp-card .card-body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.dashboard-summary-grid .summary-card-shell,
+.dashboard-summary-grid .stations-list,
+.dashboard-weather-grid > .wx-card-wrap,
+.dashboard-weather-grid .wx-body {
+    width: 100%;
+    height: 100%;
+}
+
+.dashboard-weather-grid > .wx-card-wrap {
+    display: flex;
+}
+
+.dashboard-summary-grid .stations-list {
+    align-content: start;
+}
+
+.aircraft-manager-shell {
+    gap: 16px;
+}
+
+.aircraft-manager-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.aircraft-manager-column {
+    display: grid;
+    gap: 14px;
+    min-width: 0;
+}
+
+.aircraft-manager-column--list {
+    padding-right: 8px;
+}
+
+.aircraft-manager-column--form {
+    padding-left: 24px;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.aircraft-manager-column--form .plan-grid {
+    align-items: start;
+}
+
+.aircraft-manager-column--form .plan-field {
+    grid-template-rows: minmax(30px, auto) 44px;
+}
+
+.aircraft-manager-column--form .plan-field .label {
+    display: flex;
+    align-items: flex-end;
+    min-height: 30px;
+    margin-bottom: 0;
+    line-height: 1.3;
+}
+
+.aircraft-manager-column--form .plan-field .input,
+.aircraft-manager-column--form .plan-field select {
+    min-height: 44px;
+    height: 44px;
+}
+
+.aircraft-manager-section-head {
+    display: grid;
+    gap: 4px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.aircraft-manager-section-kicker {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(191, 219, 254, 0.82);
+}
+
+.aircraft-manager-section-title {
+    font-size: 0.98rem;
+    line-height: 1.4;
+    color: #f8fafc;
+}
+
+.aircraft-profile-list {
+    align-content: start;
+}
+
+.aircraft-profile-card {
+    align-content: start;
+}
+
+.aircraft-profile-card .page-chip-row {
+    align-items: flex-start;
+}
+
+.aircraft-profile-card .page-actions {
+    justify-content: flex-start;
+}
+
+.profile-primary-action,
+.page-actions .primary,
+.page-actions .secondary,
+.pricing-card .btn-primary,
+.pricing-card .secondary,
+.card-actions .secondary {
+    width: auto;
+    margin-top: 0;
+}
+
+/* ----- Sidebar links ----- */
+.fp-link-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+@media (max-width: 900px) {
+    .dashboard-route-strip,
+    .dashboard-overview-grid,
+    .dashboard-summary-grid,
+    .aircraft-manager-grid,
+    .pricing-grid,
+    .plan-grid--3,
+    .plan-grid--4,
+    .plan-context-grid,
+    .plan-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .aircraft-manager-column--list {
+        padding-right: 0;
+    }
+
+    .aircraft-manager-column--form {
+        padding-left: 0;
+        padding-top: 18px;
+        border-left: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}
+
+@media (max-width: 720px) {
+    .plan-grid--2,
+    .plan-leg-card {
+        grid-template-columns: 1fr;
+    }
+
+    .route-map-surface {
+        height: 280px;
+    }
+
+    .dashboard-weather-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ----- Reduz movimento ----- */
+@media (prefers-reduced-motion: reduce) {
+    .fp-card,
+    .card,
+    .fp-station-row,
+    button,
+    .fp-nav-link,
+    .fp-link-btn {
+        transition: none !important;
+    }
+
+    .fp-card:hover,
+    .card:hover {
+        transform: none !important;
+    }
+
+    .fp-station-row:hover {
+        transform: none !important;
+    }
+}
+
+/* ----- Overrides: global.css ainda traz shell antigo (100vh + scroll interno + footer sticky) ----- */
+.main-shell {
+    height: auto !important;
+    min-height: 100vh !important;
+}
+
+.main-scroll {
+    overflow: visible !important;
+    flex: 1 1 auto !important;
+}
+
+.site-footer {
+    position: static !important;
+    bottom: auto !important;
+    top: auto !important;
+    z-index: auto !important;
+}
+
+.fp-btn-icon--text {
+    min-width: auto;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+@media (max-width: 520px) {
+    .fp-summary-actions {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .fp-summary-actions .secondary {
+        width: 100%;
+    }
+}

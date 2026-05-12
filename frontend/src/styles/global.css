@@ -1,0 +1,1284 @@
+:root{
+    --bg: #0b1220;
+    --panel: rgba(255,255,255,0.06);
+    --panel2: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.10);
+    --text: #e5e7eb;
+    --muted: rgba(229,231,235,0.70);
+    --primary: #3b82f6;
+    --primary2: rgba(59,130,246,0.18);
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+    margin: 0;
+    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text);
+
+    /* Fundo sem imagem, só camadas de cor e profundidade */
+    background:
+            linear-gradient(180deg, rgba(8,12,22,0.92) 0%, rgba(11,18,32,0.94) 40%, rgba(11,18,32,0.94) 60%, rgba(8,12,22,0.92) 100%),
+            radial-gradient(1200px 800px at 20% 10%, rgba(59,130,246,0.12), rgba(0,0,0,0));
+    background-attachment: fixed;
+}
+
+a{ color: inherit; text-decoration: none; }
+
+.app{
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width: 320px;
+    padding: 18px;
+    border-right: 1px solid var(--border);
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(10px);
+
+    /* ✅ Sidebar congelado */
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: auto;
+}
+.sidebar::-webkit-scrollbar { width: 10px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 999px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+
+
+.brand{
+    padding: 14px 12px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    margin-bottom: 14px;
+    cursor: pointer;
+}
+
+.brand-title{
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.brand-sub{
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.field{ margin-top: 12px; }
+.field label{
+    display:block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+.field input, .field select{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.22);
+    color: var(--text);
+    outline: none;
+}
+
+.field input:focus, .field select:focus{
+    border-color: rgba(59,130,246,0.55);
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.14);
+}
+
+/* melhora contraste do SELECT (você reclamou do branco ruim) */
+select.input, .field select{
+    appearance: none;
+    background-image:
+            linear-gradient(45deg, transparent 50%, rgba(229,231,235,0.9) 50%),
+            linear-gradient(135deg, rgba(229,231,235,0.9) 50%, transparent 50%);
+    background-position:
+            calc(100% - 18px) 50%,
+            calc(100% - 12px) 50%;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 34px;
+}
+select option{
+    background: #0b1220;
+    color: #e5e7eb;
+}
+
+.hint{
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+.main{
+    flex:1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.main-inner{
+    flex: 1;
+    padding: 22px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.topline{
+    display:flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.topline h2{
+    margin:0;
+    font-size: 22px;
+}
+
+.status{
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.card{
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.06);
+    border-radius: 18px;
+    padding: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+}
+
+.card-title{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    font-size: 12px;
+    margin-bottom: 10px;
+    color: rgba(229,231,235,0.92);
+    text-transform: uppercase;
+}
+
+.card-body{
+    font-size: 14px;
+    color: rgba(229,231,235,0.92);
+}
+
+button.primary{
+    width: 100%;
+    margin-top: 14px;
+    padding: 11px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(59,130,246,0.55);
+    background: linear-gradient(180deg, rgba(59,130,246,0.38), rgba(59,130,246,0.16));
+    color: var(--text);
+    font-weight: 800;
+    cursor:pointer;
+}
+
+button.primary:hover{
+    background: linear-gradient(180deg, rgba(59,130,246,0.45), rgba(59,130,246,0.22));
+}
+
+button.secondary{
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    cursor:pointer;
+}
+
+button.secondary:hover{
+    background: rgba(255,255,255,0.10);
+}
+
+.label{
+    display:block;
+    font-size:12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.input{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.22);
+    color: var(--text);
+    outline:none;
+}
+
+.input:focus{
+    border-color: rgba(59,130,246,0.55);
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.14);
+}
+
+.divider{ height:1px; background: rgba(255,255,255,0.10); }
+
+pre{
+    margin:0;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(0,0,0,0.22);
+    overflow:auto;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.chip{
+    display:inline-flex;
+    align-items:center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.06);
+}
+
+.chip.ok{ border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.12); }
+.chip.warn{ border-color: rgba(234,179,8,0.35); background: rgba(234,179,8,0.12); }
+.chip.bad{ border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.12); }
+
+/* ===== StatusDot (bolinhas) ===== */
+.status-dot{
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    display: inline-block;
+    position: relative;
+}
+.status-dot::after{
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    opacity: 0.5;
+    filter: blur(0.5px);
+    animation: statusPulse 1.6s ease-in-out infinite;
+}
+@keyframes statusPulse{
+    0%   { transform: scale(0.85); opacity: 0.45; }
+    55%  { transform: scale(1.05); opacity: 0.20; }
+    100% { transform: scale(0.85); opacity: 0.45; }
+}
+.status-dot.vfr{ background: rgba(34,197,94,0.95); box-shadow: 0 0 0 1px rgba(34,197,94,0.35); }
+.status-dot.vfr::after{ background: rgba(34,197,94,0.25); }
+.status-dot.mvfr{ background: rgba(234,179,8,0.95); box-shadow: 0 0 0 1px rgba(234,179,8,0.35); }
+.status-dot.mvfr::after{ background: rgba(234,179,8,0.22); }
+.status-dot.ifr{ background: rgba(239,68,68,0.95); box-shadow: 0 0 0 1px rgba(239,68,68,0.35); }
+.status-dot.ifr::after{ background: rgba(239,68,68,0.22); }
+.status-dot.nodata{ background: rgba(148,163,184,0.85); box-shadow: 0 0 0 1px rgba(148,163,184,0.30); }
+.status-dot.nodata::after{ background: rgba(148,163,184,0.16); }
+
+/* ===== Layout Dashboard ===== */
+.layout-2col{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    align-items: start;
+}
+.left-rail, .right-rail{ display: grid; gap: 14px; }
+.wx-stack{ display: grid; gap: 10px; }
+
+.square-card{ height: 280px; display:flex; flex-direction:column; }
+.square-card .card-body{ flex:1; min-height:0; display:flex; flex-direction:column; }
+.square-card pre{ flex:1; min-height:0; }
+
+/* Responsivo */
+@media (max-width: 1100px){
+    .layout-2col{ grid-template-columns: 1fr; }
+}
+@media (max-width: 900px){
+    .app{ flex-direction: column; }
+    .sidebar{ width:100%; border-right:none; border-bottom:1px solid var(--border); }
+    body{ background-attachment: scroll; }
+}
+/* ===== WX Cards: hierarquia METAR / TAF ===== */
+
+/* rótulos METAR / TAF */
+.wx-label{
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.65;
+    margin-bottom: 6px;
+}
+
+/* texto METAR / TAF */
+.wx-text{
+    font-size: 12.5px;
+    line-height: 1.45;
+    opacity: 0.92;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+/* ===== WX Cards (Origem / Destino / Alternativa) ===== */
+
+.wx-body{
+    display: grid;
+    gap: 10px;
+    height: 100%;
+}
+
+.wx-section{
+    display: grid;
+    gap: 6px;
+}
+
+/* "METAR" / "TAF" (rótulo) — menor e mais apagado */
+.wx-label{
+    font-size: 11px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0.85;
+}
+
+/* Texto do METAR/TAF — mais legível, diferente do rótulo */
+.wx-text{
+    font-size: 12.5px;
+    line-height: 1.45;
+
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(0,0,0,0.22);
+
+    /* ✅ quebra linha e não corta */
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    /* estado compacto */
+    max-height: 72px;
+    overflow: hidden;
+}
+
+/* Expandido: mostra tudo com scroll se ficar enorme */
+.wx-text.expanded{
+    max-height: 220px;
+    overflow: auto;
+}
+
+/* Erro (para não parecer igual ao texto normal) */
+.wx-error{
+    font-size: 12.5px;
+    line-height: 1.45;
+    padding: 10px 12px;
+    border-radius: 14px;
+
+    border: 1px solid rgba(239,68,68,0.25);
+    background: rgba(239,68,68,0.10);
+    color: rgba(229,231,235,0.92);
+}
+/* Quando o WX estiver expandido, o card pode crescer */
+.square-card.expanded{
+    height: auto;
+}
+.wx-text.expanded{
+    max-height: 420px; /* antes era 220 */
+    overflow: auto;
+}
+/* ===== FIX: Expandir sem "comer" o TAF ===== */
+
+/* wrapper do card wx */
+.wx-card-wrap{
+    /* comportamento padrão = como já está */
+}
+
+/* quando expandido: deixa o container crescer */
+.wx-card-wrap.expanded{
+    height: auto !important;
+}
+
+/* se você ainda tiver alguma regra antiga travando altura em .square-card,
+   isso aqui garante que o conteúdo não fica preso */
+.wx-card-wrap.expanded .card{
+    height: auto !important;
+}
+
+/* o texto expandido NÃO deve ter limite */
+.wx-card-wrap .wx-text.expanded{
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* opcional: se você preferir scroll dentro do texto (em vez de crescer infinito), use isso:
+.wx-card-wrap .wx-text.expanded{
+  max-height: 420px !important;
+  overflow: auto !important;
+}
+*/
+/* Texto do METAR/TAF — compacto sem "comer" */
+.wx-text{
+    box-sizing: border-box;
+
+    font-size: 12.5px;
+    line-height: 1.45;
+
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(0,0,0,0.22);
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    /* ✅ compacto: mostra ~5 linhas e corta BONITO */
+    max-height: calc(1.45em * 5 + 20px); /* 5 linhas + padding */
+    overflow: hidden;
+    position: relative;
+}
+
+/* Fade no fim pra indicar que tem mais (em vez de cortar "duro") */
+.wx-text::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 22px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.22));
+    pointer-events: none;
+}
+
+/* Expandido: mostra tudo */
+.wx-text.expanded{
+    max-height: none;
+    overflow: visible;
+}
+
+.wx-text.expanded::after{
+    display: none;
+}
+/* ======================================================
+   FIX DEFINITIVO — WX CARDS SEM CORTE DE METAR / TAF
+   Opção 1: Card cresce conforme o conteúdo (briefing real)
+   ====================================================== */
+
+/* Remove QUALQUER altura fixa herdada */
+.square-card{
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+/* Corpo do Card NÃO pode cortar conteúdo */
+.square-card .card-body{
+    overflow: visible !important;
+}
+
+/* Estrutura interna também não corta */
+.wx-body,
+.wx-section{
+    overflow: visible !important;
+}
+
+/* Texto do METAR / TAF SEM limite */
+.wx-text{
+    max-height: none !important;
+    overflow: visible !important;
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+/* ===== Header fixo do dashboard ===== */
+.app-header{
+    position: sticky;
+    top: 0;
+    z-index: 50;
+
+    background: linear-gradient(180deg, rgba(8,12,22,0.95), rgba(11,18,32,0.88));
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 22px;
+}
+
+.app-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 20px;
+}
+
+.app-header-title{
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.app-header-sub{
+    font-size: 12px;
+    color: var(--muted);
+}
+/* ===== Header fixo do dashboard ===== */
+.app-header{
+    position: sticky;
+    top: 0;
+    z-index: 50;
+
+    background:
+            linear-gradient(180deg, rgba(8,12,22,0.95), rgba(11,18,32,0.88));
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 22px;
+
+    /* garante que o header não “grude” no card de cima */
+    margin-bottom: 14px;
+}
+
+.app-header-inner{
+    max-width: 1200px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.app-header-title{
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+}
+
+.app-header-sub{
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+.app-header-title{
+    font-family: "Plus Jakarta Sans", ui-sans-serif, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(229,231,235,0.92);
+}
+/* ===== Sidebar Brand / Logo ===== */
+.sidebar-brand{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    margin-bottom: 18px;
+
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+}
+
+.logo-plane{
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    background: linear-gradient(
+            180deg,
+            rgba(59,130,246,0.35),
+            rgba(59,130,246,0.15)
+    );
+    box-shadow: 0 0 0 1px rgba(59,130,246,0.35);
+}
+
+.brand-text{
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.brand-name{
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.22em;
+    opacity: 0.95;
+}
+
+.brand-sub{
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--muted);
+}
+/* ===== Sidebar Account ===== */
+.account-box{
+    margin-top: 22px;
+    padding: 14px;
+
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+}
+
+.account-title{
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    margin-bottom: 6px;
+}
+
+.account-desc{
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.45;
+    margin-bottom: 12px;
+}
+
+button.small{
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 13px;
+    border-radius: 12px;
+}
+
+.account-box button + button{
+    margin-top: 8px;
+}
+/* ===== Sidebar Footer ===== */
+.sidebar-footer{
+    margin-top: 24px;
+    padding: 12px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    opacity: 0.85;
+}
+
+.footer-version{
+    margin-top: 6px;
+    font-size: 10px;
+    opacity: 0.6;
+}
+/* ===== Sidebar Brand compacto (sem repetir MARQUISA) ===== */
+.sidebar-brand.compact{
+    padding: 12px;
+    margin-bottom: 16px;
+}
+
+.sidebar-brand.compact .brand-sub{
+    margin-top: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(229,231,235,0.92);
+}
+
+.brand-mini{
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.25;
+}
+/* ===== Sidebar fixo enquanto rola ===== */
+.sidebar{
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding-bottom: 18px;
+}
+
+/* Scrollbar discreta (opcional, fica lindo) */
+.sidebar::-webkit-scrollbar{
+    width: 10px;
+}
+.sidebar::-webkit-scrollbar-thumb{
+    background: rgba(255,255,255,0.10);
+    border-radius: 999px;
+}
+.sidebar::-webkit-scrollbar-track{
+    background: transparent;
+}
+.account-title{
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+/* ===== Sidebar Brand: somente ícone ===== */
+.sidebar-brand.icon-only{
+    display: flex;
+    justify-content: center;
+    padding: 14px;
+    margin-bottom: 18px;
+}
+
+.logo-plane{
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    background: linear-gradient(
+            180deg,
+            rgba(59,130,246,0.40),
+            rgba(59,130,246,0.18)
+    );
+    box-shadow: 0 0 0 1px rgba(59,130,246,0.45);
+}
+/* ===== Rodapé legal ===== */
+.app-footer{
+    margin-top: 32px;
+    padding: 18px 22px;
+
+    border-top: 1px solid var(--border);
+    background: rgba(0,0,0,0.18);
+}
+
+.footer-inner{
+    max-width: 1200px;
+    margin: 0 auto;
+
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.footer-left{
+    font-size: 11px;
+    color: rgba(229,231,235,0.85);
+}
+
+.footer-right{
+    font-size: 11px;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.4;
+}
+/* ===== Plano de voo: TOTAL destacado ===== */
+.plan-total{
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(59,130,246,0.35);
+    background: linear-gradient(180deg, rgba(59,130,246,0.16), rgba(0,0,0,0.12));
+    box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+}
+
+.plan-total-label{
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.plan-total-value{
+    margin-top: 8px;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+}
+
+.plan-total-value span{
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--muted);
+    margin-left: 6px;
+}
+
+.plan-total-sub{
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.35;
+}
+/* ===== Conta premium no Sidebar ===== */
+.account-box.premium{
+    margin-top: 22px;
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+}
+
+.account-top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.account-title{
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.account-pill{
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(59,130,246,0.35);
+    background: rgba(59,130,246,0.12);
+    color: rgba(229,231,235,0.92);
+}
+
+.account-desc{
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.45;
+    margin-bottom: 12px;
+}
+
+.account-actions{
+    display: grid;
+    gap: 8px;
+}
+
+.account-mini{
+    margin-top: 10px;
+    font-size: 11px;
+    color: rgba(229,231,235,0.55);
+    line-height: 1.35;
+}
+.site-footer {
+    margin-top: auto;
+    padding: 14px 22px;
+    font-size: 11.5px;
+    color: rgba(229,231,235,0.55);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.25);
+    text-align: center;
+    line-height: 1.4;
+}
+
+
+.header-home-btn{
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(0,0,0,0.22);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    margin-right: 12px;
+}
+.header-home-btn:hover{
+    background: rgba(255,255,255,0.06);
+}
+
+/* =========================
+   NEW SHELL (header + scroll + footer)
+   Keeps the header/footer fixed and only the center scrolls.
+   ========================= */
+
+.main-shell{
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-scroll{
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 22px;
+}
+
+/* Header (overrides older duplicated rules above) */
+.app-header{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(10, 14, 22, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.app-header-inner{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+}
+
+.brandmark{
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(180deg, rgba(59,130,246,0.25), rgba(0,0,0,0.18));
+  cursor: pointer;
+  padding: 0;
+}
+
+.brandmark img{
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  display: block;
+}
+
+.header-title{
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  min-width: 0;
+}
+
+.header-title-main{
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 18px;
+}
+
+.header-title-sub{
+  opacity: 0.8;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.app-header-right{
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.site-footer{
+  position: sticky;
+  bottom: 0;
+  z-index: 40;
+}
+
+.site-footer-inner {
+    padding: 6px 14px;
+    font-size: 11px;
+    opacity: 0.7;
+}
+.site-footer-note {
+    margin-top: 2px;
+    font-size: 10px;
+    opacity: 0.6;
+}
+
+.site-footer-sub{
+  opacity: 0.75;
+  font-size: 12px;
+}
+
+@media (max-width: 680px){
+  .main-scroll{ padding: 16px; }
+  .header-title-main{ font-size: 16px; }
+}
+
+/* Billing page (plan selector) */
+.plans{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.plan-option{
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 14px;
+  background: rgba(255,255,255,0.03);
+}
+
+.plan-option h3{
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 820px){
+  .plans{ grid-template-columns: 1fr; }
+}
+/* ===== Header / Footer sticky ===== */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(10px);
+    background: rgba(10, 14, 22, 0.75);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.app-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.brand-logo {
+    height: 60px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 6px 18px rgba(0,0,0,0.35));
+}
+
+.header-title h1 {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+}
+
+.header-title span {
+    display: inline-block;
+    margin-top: 2px;
+    opacity: 0.75;
+    font-size: 13px;
+}
+
+/* Footer */
+.site-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
+    backdrop-filter: blur(10px);
+    background: rgba(10, 14, 22, 0.75);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.site-footer-inner {
+    padding: 12px 18px;
+    font-size: 13px;
+    opacity: 0.85;
+}
+
+.site-footer-note {
+    margin-top: 6px;
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+/* Mobile polish */
+@media (max-width: 640px) {
+    .brand-logo { height: 32px; }
+    .header-title h1 { font-size: 18px; }
+}
+
+/* =========================
+   OVERRIDES (2026-03)
+   - Rodapé NÃO fixo
+   - Header mais "ForeFlight" e logo maior
+   ========================= */
+
+/* Header */
+.app-header{
+  border-radius: 22px;
+  margin-bottom: 14px;
+  background: linear-gradient(180deg, rgba(10,14,22,0.86) 0%, rgba(10,14,22,0.58) 100%);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+}
+
+.brand-logo{
+  height: 56px;
+  width: auto;
+}
+
+.header-title h1{
+  font-size: 26px;
+  letter-spacing: 0.2px;
+}
+
+/* Fundo "SaaS" suave */
+.main{ position: relative; }
+.main::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 420px at 18% 10%, rgba(53,112,255,0.18), transparent 70%),
+    radial-gradient(760px 420px at 80% 6%, rgba(0,205,255,0.12), transparent 65%),
+    radial-gradient(860px 520px at 58% 62%, rgba(120,54,255,0.08), transparent 70%);
+  opacity: 0.95;
+}
+
+/* Rodapé (não sticky) */
+.site-footer{
+  position: static !important;
+  bottom: auto !important;
+  border-radius: 18px;
+  margin-top: 18px;
+}
+
+.site-footer-inner{
+  padding: 10px 16px;
+  font-size: 12px;
+}
+
+.site-footer-note{
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+@media (max-width: 640px){
+  .brand-logo{ height: 44px; }
+  .header-title h1{ font-size: 20px; }
+}
+
+/* ===== Brand layout overrides (v3) ===== */
+/* Objetivo: header compacto, logo legível, footer NÃO fixo e menor */
+
+.site-footer{
+  position: static !important;
+  bottom: auto !important;
+  z-index: 1 !important;
+  padding: 10px 16px !important;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+  margin-top: 18px !important;
+}
+.site-footer span{ margin-top: 6px !important; }
+
+.app-header{
+  position: sticky !important;
+  top: 0;
+  z-index: 20;
+  padding: 10px 14px !important;
+  border-radius: 18px !important;
+  background: rgba(10,14,22,.55) !important;
+  backdrop-filter: blur(10px);
+}
+.app-header-inner{
+  min-height: 54px !important;
+  gap: 14px !important;
+}
+.brandmark{
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 16px !important;
+  background: rgba(255,255,255,.05) !important;
+}
+.brandmark img{
+  width: 46px !important;
+  height: 46px !important;
+}
+.header-title h1{
+  font-size: 30px !important;
+  letter-spacing: .2px !important;
+}
+.header-title span{
+  font-size: 13px !important;
+}
+
+/* evita “faixa” muito alta acima do conteúdo */
+.main-scroll{
+  padding-top: 16px !important;
+}
+
+/* Auth screens */
+.auth-top{
+  padding: 20px 0 14px !important;
+}
+.auth-top img{
+  width: 140px !important;
+  height: auto !important;
+  opacity: 1 !important;
+}
+
+/* Sidebar brand maior */
+.sidebar .brand{
+  width: 56px !important;
+  height: 56px !important;
+}
+.sidebar .brand img{
+  width: 40px !important;
+  height: 40px !important;
+}
+
+/* subscription page */
+.sub-logo{ width: 160px !important; height:auto !important; }
+
+/* header brand (component usa .brand/.brand-logo) */
+.app-header .brand{
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 16px !important;
+  background: rgba(255,255,255,.05) !important;
+}
+.app-header .brand .brand-logo{
+  width: 46px !important;
+  height: 46px !important;
+}
+
+/* sidebar logo (component usa .sidebar-brand/.sidebar-logo) */
+.sidebar-brand{ width:56px !important; height:56px !important; border-radius:16px !important; }
+.sidebar-logo{ width:40px !important; height:40px !important; }
+
+/* ===== Layout fixes (v4) ===== */
+
+/* Brand mark */
+.brandmark{display:flex;align-items:center;gap:12px;user-select:none}
+.brandmark-text{display:flex;flex-direction:column;line-height:1}
+.brandmark-title{font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.92);font-size:14px}
+.brandmark-sub{margin-top:4px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.65)}
+
+/* Header: reduce height and remove oversized banner feel */
+.app-header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.12));backdrop-filter: blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+.app-header-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px}
+.app-header .brand{background:transparent;border:0;padding:0;cursor:pointer;display:flex;align-items:center}
+.header-title{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.header-kicker{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.90)}
+.header-subtitle{font-size:12px;color:rgba(255,255,255,.65)}
+
+/* Footer: not fixed, compact */
+.site-footer{position:static !important;bottom:auto !important;left:auto !important;right:auto !important;height:auto !important;padding:10px 16px !important;border-top:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.22)}
+.site-footer .footer-inner{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:4px}
+.site-footer small{font-size:12px;line-height:1.35;color:rgba(255,255,255,.55)}
+
+/* Sidebar header text: avoid weird wrapping */
+.sidebar h2,.sidebar .sidebar-title{white-space:normal;letter-spacing:.06em;line-height:1.15}
+
+/* Subscription spacing */
+.subscription-grid{gap:12px !important;margin-bottom:12px !important}
+.plans-grid{gap:12px !important}
+
