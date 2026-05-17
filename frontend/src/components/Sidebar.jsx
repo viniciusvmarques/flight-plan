@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
+function RouteFieldLabel({ code, children, required = false }) {
+    return (
+        <span className="route-field-label">
+            <span className="route-field-code">{code}</span>
+            <span>{children}</span>
+            {required ? <span className="route-field-required">*</span> : null}
+        </span>
+    );
+}
+
 export default function Sidebar({ onBrief, children }) {
     const { user, logout } = useAuth();
     const nav = useNavigate();
@@ -44,7 +54,11 @@ export default function Sidebar({ onBrief, children }) {
                     <p className="fp-sidebar-lead">Informe ICAO de 4 letras e gere o briefing operacional.</p>
 
                     <div className="field">
-                        <label htmlFor="fp-origin">A · Origem *</label>
+                        <label htmlFor="fp-origin">
+                            <RouteFieldLabel code="A" required>
+                                Origem
+                            </RouteFieldLabel>
+                        </label>
                         <input
                             id="fp-origin"
                             className="input"
@@ -57,7 +71,9 @@ export default function Sidebar({ onBrief, children }) {
                         />
                     </div>
                     <div className="field">
-                        <label htmlFor="fp-dest">B · Destino</label>
+                        <label htmlFor="fp-dest">
+                            <RouteFieldLabel code="B">Destino</RouteFieldLabel>
+                        </label>
                         <input
                             id="fp-dest"
                             className="input"
@@ -70,7 +86,9 @@ export default function Sidebar({ onBrief, children }) {
                         />
                     </div>
                     <div className="field">
-                        <label htmlFor="fp-alt">C · Alternativa</label>
+                        <label htmlFor="fp-alt">
+                            <RouteFieldLabel code="C">Alternativa</RouteFieldLabel>
+                        </label>
                         <input
                             id="fp-alt"
                             className="input"

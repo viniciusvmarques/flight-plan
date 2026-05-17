@@ -84,6 +84,39 @@
     margin-top: 0;
 }
 
+.route-field-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.route-field-code,
+.inline-route-token strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    border: 1px solid rgba(147, 197, 253, 0.28);
+    background: rgba(59, 130, 246, 0.12);
+    color: #bfdbfe;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.route-field-required {
+    color: #fca5a5;
+}
+
+.inline-route-token {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
 .fp-sidebar-account {
     margin-top: auto;
     padding-top: 16px;

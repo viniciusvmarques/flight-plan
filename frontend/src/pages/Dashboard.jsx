@@ -523,7 +523,9 @@ export default function Dashboard() {
                         {!base && !loading && !error && (
                             <Card title="Comece por aqui">
                                 <div className="empty-note">
-                                    Preencha <strong>A origem</strong> e gere o briefing. B destino e C alternativa continuam opcionais.
+                                    Preencha <span className="inline-route-token"><strong>A</strong> Origem</span> e gere o briefing.{" "}
+                                    <span className="inline-route-token"><strong>B</strong> Destino</span> e{" "}
+                                    <span className="inline-route-token"><strong>C</strong> Alternativa</span> continuam opcionais.
                                 </div>
                             </Card>
                         )}
