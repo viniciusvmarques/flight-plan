@@ -53,6 +53,17 @@ function hasCoordinates(airport) {
     return Number.isFinite(airport?.latitude) && Number.isFinite(airport?.longitude);
 }
 
+function friendlyWeatherError(kind, value) {
+    const fallback = `${kind} não disponível para este aeródromo no momento.`;
+    const text = String(value || "").trim();
+    const lower = text.toLowerCase();
+
+    if (!text) return fallback;
+    if (lower.includes("body is disturbed") || lower.includes("body is unusable") || lower.includes("locked")) return fallback;
+    if (lower.includes("no data") || lower.includes("not found") || lower.includes("não encontrado") || lower.includes("nao encontrado")) return fallback;
+    return text;
+}
+
 export default function Dashboard() {
     const { user } = useAuth();
     const nav = useNavigate();
@@ -258,8 +269,8 @@ export default function Dashboard() {
             icao: code,
             metar: metarRes.status === "fulfilled" ? metarRes.value : null,
             taf: tafRes.status === "fulfilled" ? tafRes.value : null,
-            metarError: metarRes.status === "rejected" ? metarRes.reason?.message || "Falha no METAR" : null,
-            tafError: tafRes.status === "rejected" ? tafRes.reason?.message || "Falha no TAF" : null,
+            metarError: metarRes.status === "rejected" ? friendlyWeatherError("METAR", metarRes.reason?.message) : null,
+            tafError: tafRes.status === "rejected" ? friendlyWeatherError("TAF", tafRes.reason?.message) : null,
             airport: airportRes.status === "fulfilled" ? airportRes.value : null,
             airportError: airportRes.status === "rejected" ? airportRes.reason?.message || "Falha ao buscar aeródromo" : null,
         };

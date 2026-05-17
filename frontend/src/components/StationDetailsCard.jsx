@@ -56,8 +56,14 @@ function labelPt(category) {
 }
 
 function weatherMessage(kind, error) {
-    if (error) return error;
-    return `${kind} não disponível para este aeródromo no momento.`;
+    const fallback = `${kind} não disponível para este aeródromo no momento.`;
+    const text = String(error || "").trim();
+    const lower = text.toLowerCase();
+
+    if (!text) return fallback;
+    if (lower.includes("body is disturbed") || lower.includes("body is unusable") || lower.includes("locked")) return fallback;
+    if (lower.includes("no data") || lower.includes("not found") || lower.includes("não encontrado") || lower.includes("nao encontrado")) return fallback;
+    return text;
 }
 
 export default function StationDetailsCard({ station, airportInfo }) {

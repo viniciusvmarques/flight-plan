@@ -3,6 +3,17 @@ import Card from "./Card";
 import StatusDot from "./StatusDot";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
 
+function friendlyWeatherError(kind, value) {
+    const fallback = `${kind} não disponível para este aeródromo no momento.`;
+    const text = String(value || "").trim();
+    const lower = text.toLowerCase();
+
+    if (!text) return fallback;
+    if (lower.includes("body is disturbed") || lower.includes("body is unusable") || lower.includes("locked")) return fallback;
+    if (lower.includes("no data") || lower.includes("not found") || lower.includes("não encontrado") || lower.includes("nao encontrado")) return fallback;
+    return text;
+}
+
 export default function WxSquareCard({ label, station, showFav, isFav, onToggleFav }) {
     const [expanded, setExpanded] = useState(false);
 
@@ -12,8 +23,8 @@ export default function WxSquareCard({ label, station, showFav, isFav, onToggleF
     const metarText = station?.metar || "Sem METAR disponível";
     const tafText = station?.taf || "Sem TAF disponível";
 
-    const metarError = station?.metarError;
-    const tafError = station?.tafError;
+    const metarError = friendlyWeatherError("METAR", station?.metarError);
+    const tafError = friendlyWeatherError("TAF", station?.tafError);
     const noMetarMessage = "METAR não disponível para este aeródromo no momento.";
     const noTafMessage = "TAF não disponível para este aeródromo no momento.";
 
@@ -64,7 +75,7 @@ export default function WxSquareCard({ label, station, showFav, isFav, onToggleF
                     <section className="wx-section">
                         <div className="wx-label">METAR</div>
 
-                        {metarError ? (
+                        {station?.metarError ? (
                             <div className="wx-empty-state">{metarError || noMetarMessage}</div>
                         ) : (
                             <div className={`wx-text ${expanded ? "expanded" : ""}`}>{metarText}</div>
@@ -74,7 +85,7 @@ export default function WxSquareCard({ label, station, showFav, isFav, onToggleF
                     <section className="wx-section">
                         <div className="wx-label">TAF</div>
 
-                        {tafError ? (
+                        {station?.tafError ? (
                             <div className="wx-empty-state">{tafError || noTafMessage}</div>
                         ) : (
                             <div className={`wx-text ${expanded ? "expanded" : ""}`}>{tafText}</div>

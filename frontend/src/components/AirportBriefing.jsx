@@ -9,6 +9,17 @@ function labelPt(category) {
     return "Sem dados";
 }
 
+function weatherMessage(kind, error) {
+    const fallback = `${kind} não disponível para este aeródromo no momento.`;
+    const text = String(error || "").trim();
+    const lower = text.toLowerCase();
+
+    if (!text) return fallback;
+    if (lower.includes("body is disturbed") || lower.includes("body is unusable") || lower.includes("locked")) return fallback;
+    if (lower.includes("no data") || lower.includes("not found") || lower.includes("não encontrado") || lower.includes("nao encontrado")) return fallback;
+    return text;
+}
+
 export default function AirportBriefing({ label, icao, metar, taf, metarError, tafError }) {
     const category = classifyFromMetar(metar);
     const noMetar = !metar;
@@ -22,14 +33,14 @@ export default function AirportBriefing({ label, icao, metar, taf, metarError, t
             <div style={{ marginBottom: "12px" }}>
                 <strong>METAR</strong>
                 <pre style={{ marginTop: "6px" }}>
-          {noMetar ? (metarError || "Sem METAR disponível") : metar}
+          {noMetar ? weatherMessage("METAR", metarError) : metar}
         </pre>
             </div>
 
             <div>
                 <strong>TAF</strong>
                 <pre style={{ marginTop: "6px" }}>
-          {noTaf ? (tafError || "Sem TAF disponível") : taf}
+          {noTaf ? weatherMessage("TAF", tafError) : taf}
         </pre>
             </div>
 
