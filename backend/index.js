@@ -506,7 +506,6 @@ app.post("/auth/resend-verification", async (req, res) => {
   try {
     const email = String(req.body?.email || "").trim().toLowerCase();
     const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
-    const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
     const generic = { ok: true, message: RESEND_VERIFICATION_MSG };
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.json(generic);
