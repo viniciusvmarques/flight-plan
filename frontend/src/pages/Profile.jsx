@@ -7,6 +7,7 @@ import AircraftProfilesManager from "../components/AircraftProfilesManager";
 import { useAuth } from "../auth/AuthContext";
 import { api } from "../services/apiClient";
 import { useNotify } from "../ui/NotifyContext.jsx";
+import { siteProfile } from "../content/siteProfile";
 
 function loadJSON(key, fallback) {
     try {
@@ -119,7 +120,7 @@ export default function Profile() {
         const ok = await confirm({
             title: "Excluir conta",
             message:
-                "Esta ação apaga sua conta, briefings salvos, favoritos e perfis de aeronave. Se existir assinatura ativa, cancele primeiro na área de assinatura para evitar novas cobranças. Deseja continuar?",
+                `Esta ação apaga sua conta, briefings salvos, favoritos e perfis de aeronave. ${siteProfile.subscriptionDeletionNotice} Deseja continuar?`,
             confirmLabel: "Continuar",
             cancelLabel: "Cancelar",
             danger: true,
@@ -337,7 +338,10 @@ export default function Profile() {
                                         A exclusão remove sua conta, briefings salvos, favoritos e perfis de aeronave. Dados de contato e logs técnicos podem ser mantidos sem vínculo direto à conta quando necessário para segurança, suporte ou obrigações legais.
                                     </p>
                                     <p className="page-caption">
-                                        Se você tiver assinatura Pro ativa, cancele primeiro em Assinatura para evitar novas cobranças.
+                                        {siteProfile.subscriptionDeletionNotice}
+                                    </p>
+                                    <p className="page-caption">
+                                        {siteProfile.dataRetentionNotice}
                                     </p>
                                     <button className="secondary danger-action" type="button" onClick={deleteAccount}>
                                         Excluir minha conta

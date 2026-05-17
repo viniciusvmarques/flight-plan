@@ -35,10 +35,14 @@ export default function CancellationPolicy() {
 
                 <h2>Cancelamento</h2>
                 <ul>
+                    <li>O cancelamento deve ser feito pelo usuário na área de assinatura/portal de cobrança ou solicitado pelo canal oficial de suporte.</li>
                     <li>Quando o cancelamento é programado, o acesso premium permanece ativo até o fim do ciclo já pago ou do período de teste em vigor.</li>
                     <li>Após o encerramento do ciclo, a conta retorna ao plano FREE, com limitação aos recursos gratuitos disponíveis.</li>
                     <li>O histórico comercial e mensagens transacionais podem ser mantidos para fins de suporte, segurança e cumprimento de obrigações legais.</li>
                 </ul>
+
+                <h2>Exclusão de conta e assinatura ativa</h2>
+                <p>{siteProfile.subscriptionDeletionNotice}</p>
 
                 <h2>Falhas de pagamento</h2>
                 <p>
@@ -47,6 +51,12 @@ export default function CancellationPolicy() {
 
                 <h2>Reembolso e arrependimento</h2>
                 <p>{siteProfile.refundSummary}</p>
+                <p>{siteProfile.refundWindowNotice}</p>
+                <ul>
+                    <li>Cancelamento interrompe renovações futuras; ele não significa automaticamente reembolso de ciclo já iniciado.</li>
+                    <li>Cobrança duplicada, erro operacional, falha técnica relevante ou cobrança após cancelamento devem ser enviados ao suporte com e-mail da conta e comprovante.</li>
+                    <li>Quando aprovado, o reembolso é processado pelo provedor de pagamento e pode depender dos prazos bancários/cartão.</li>
+                </ul>
 
                 <h2>Contato comercial</h2>
                 <p>

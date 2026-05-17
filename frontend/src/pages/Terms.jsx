@@ -32,10 +32,16 @@ export default function Terms() {
                 <p>
                     Você deve manter suas credenciais em sigilo. Podemos suspender contas em caso de uso indevido ou fraude.
                 </p>
+                <p>
+                    A exclusão da conta pode ser solicitada pelo Perfil. Essa exclusão remove dados diretamente vinculados à conta, observadas as exceções de retenção descritas na Política de Privacidade.
+                </p>
                 <h2>Assinaturas e recursos pagos</h2>
                 <p>
                     Recursos premium podem depender de cobrança recorrente via plataforma terceirizada. Condições comerciais, cancelamento e renovação são tratadas também na política comercial específica da área de assinatura.
                 </p>
+                <p>{siteProfile.subscriptionDeletionNotice}</p>
+                <p>{siteProfile.refundSummary}</p>
+                <p>{siteProfile.refundWindowNotice}</p>
                 <h2>Comprovante e nota fiscal</h2>
                 <p>{siteProfile.invoiceNotice}</p>
                 <p>

@@ -288,6 +288,22 @@ export default function Billing() {
                                     </span>
                                 </div>
                             </Card>
+
+                            <Card title="Cancelamento, reembolso e arrependimento">
+                                <div className="feature-list">
+                                    <div className="feature-item">{siteProfile.refundWindowNotice}</div>
+                                    <div className="feature-item">
+                                        Cancelar a assinatura interrompe renovações futuras, mas não gera automaticamente reembolso de ciclo já iniciado.
+                                    </div>
+                                    <div className="feature-item">
+                                        Cobrança duplicada, cobrança indevida ou falha técnica relevante devem ser enviadas ao suporte com o e-mail da conta e comprovante.
+                                    </div>
+                                    <div className="feature-item">{siteProfile.subscriptionDeletionNotice}</div>
+                                </div>
+                                <p className="page-caption">
+                                    Consulte a <Link to="/cancellation-policy">política de cancelamento</Link> antes de contratar ou excluir a conta.
+                                </p>
+                            </Card>
                         </div>
                     </div>
                 </div>

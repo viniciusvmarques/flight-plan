@@ -42,6 +42,7 @@ export default function Privacy() {
                     Informações ficam em servidores protegidos (ex.: banco PostgreSQL). Senhas são armazenadas com hash; não
                     armazenamos senha em texto puro.
                 </p>
+                <p>{siteProfile.dataRetentionNotice}</p>
                 <h2>Compartilhamento</h2>
                 <p>
                     Alguns dados podem ser compartilhados com operadores essenciais ao funcionamento da plataforma, como infraestrutura de hospedagem, e-mail transacional e processamento de pagamentos.
@@ -49,6 +50,9 @@ export default function Privacy() {
                 <h2>Seus direitos</h2>
                 <p>
                     Você pode solicitar informações, correção ou exclusão de dados da conta, conforme a LGPD, entrando em contato por {siteProfile.privacyEmail}. Usuários logados também podem iniciar a exclusão da própria conta pela página Perfil.
+                </p>
+                <p>
+                    Quando uma solicitação envolver dados necessários para cobrança, prevenção a fraude, suporte, defesa de direitos ou cumprimento de obrigação legal, poderemos manter registros mínimos pelo prazo necessário, sempre limitados à finalidade aplicável.
                 </p>
                 <h2>Controlador e contato</h2>
                 {hasLegalIdentity ? (
