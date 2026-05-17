@@ -106,6 +106,22 @@ export default function Billing() {
         return status?.plan === "PRO" ? "Plano Pro" : "Plano Free";
     }
 
+    const isProActive = !!status?.active;
+    const planLead = loading
+        ? "Carregando os dados da sua assinatura..."
+        : isProActive
+          ? status?.trialing
+              ? `Seu Pro está em teste gratuito${status?.trialEndsAt ? ` até ${formatDate(status.trialEndsAt)}` : ""}.`
+              : "Seu Pro está ativo e liberado para uso."
+          : status?.planStatus === "past_due"
+            ? "Existe uma pendência de pagamento para regularizar."
+            : "Você está no plano Free.";
+    const renewalLead = status?.cancelAtPeriodEnd
+        ? `Cancelamento agendado${status?.currentPeriodEnd ? ` para ${formatDate(status.currentPeriodEnd)}` : ""}.`
+        : status?.currentPeriodEnd
+          ? `Próximo ciclo em ${formatDate(status.currentPeriodEnd)}.`
+          : "Sem ciclo de cobrança ativo.";
+
     return (
         <div className="main-shell">
             <AppHeader
@@ -138,11 +154,9 @@ export default function Billing() {
 
                         <div className="page-chip-row">
                             <span className="chip">{email || "Conta não identificada"}</span>
-                            <span className={`chip ${status?.active ? "ok" : ""}`}>Plano: {status?.plan || "FREE"}</span>
+                            <span className={`chip ${isProActive ? "ok" : ""}`}>Plano: {status?.plan || "FREE"}</span>
                             <span className="chip">{humanStatusLabel()}</span>
-                            <span className="chip">
-                                {status?.cancelAtPeriodEnd ? "Cancelamento programado" : status?.renews ? "Renovação habilitada" : "Sem renovação ativa"}
-                            </span>
+                            <span className="chip">{status?.cancelAtPeriodEnd ? "Cancelamento programado" : isProActive ? "Acesso liberado" : "Sem assinatura ativa"}</span>
                         </div>
                     </section>
 
@@ -164,20 +178,24 @@ export default function Billing() {
                                 {loading ? (
                                     <div className="empty-note">Carregando status da conta...</div>
                                 ) : (
-                                    <div className="info-stack">
-                                        <div className="page-chip-row">
-                                            <span className={`chip ${status?.active ? "ok" : ""}`}>Status: {humanStatusLabel()}</span>
-                                            <span className="chip">Trial: {status?.trialing ? "Sim" : "Não"}</span>
-                                            <span className="chip">Próximo ciclo: {formatDate(status?.currentPeriodEnd)}</span>
-                                        </div>
-                                        <div className="page-chip-row">
-                                            <span className="chip">Fim do trial: {formatDate(status?.trialEndsAt)}</span>
-                                            <span className="chip">Cancelamento: {status?.cancelAtPeriodEnd ? "Agendado" : "Não"}</span>
-                                            <span className="chip">Encerrada em: {formatDate(status?.canceledAt)}</span>
+                                    <div className="info-stack billing-status-panel">
+                                        <div className="billing-status-grid">
+                                            <div className={`billing-status-item ${isProActive ? "billing-status-item--ok" : ""}`}>
+                                                <span>Status</span>
+                                                <strong>{humanStatusLabel()}</strong>
+                                            </div>
+                                            <div className="billing-status-item">
+                                                <span>Plano</span>
+                                                <strong>{status?.plan || "FREE"}</strong>
+                                            </div>
+                                            <div className="billing-status-item">
+                                                <span>Cobrança</span>
+                                                <strong>{renewalLead}</strong>
+                                            </div>
                                         </div>
                                         <p className="page-caption">
-                                            {status?.active
-                                                ? "Sua assinatura está operacional. Use o portal para atualizar pagamento, acompanhar cobrança e gerenciar cancelamento."
+                                            {isProActive
+                                                ? `${planLead} Use o portal para atualizar cartão, acompanhar cobrança ou cancelar quando precisar.`
                                                 : status?.planStatus === "past_due"
                                                   ? "Existe uma pendência de pagamento na sua assinatura. Enquanto ela não for regularizada, o acesso premium pode ficar restrito."
                                                   : "Você ainda está no plano FREE. O Pro libera continuidade operacional, salvamento em nuvem e favoritos sincronizados."}
@@ -207,13 +225,13 @@ export default function Billing() {
                         <div className="page-stack">
                             <Card title="Comparação de planos">
                                 <div className="pricing-grid">
-                                    <section className="pricing-card">
+                                    <section className={`pricing-card ${!isProActive ? "pricing-card--current" : ""}`}>
                                         <div className="pricing-head">
                                             <div>
                                                 <div className="pricing-name">Free</div>
                                                 <div className="pricing-price">R$ 0</div>
                                             </div>
-                                            <span className="chip">Atual</span>
+                                            <span className="chip">{isProActive ? "Base" : "Atual"}</span>
                                         </div>
                                         <div className="feature-list">
                                             <div className="feature-item">Briefing METAR / TAF</div>
@@ -221,17 +239,17 @@ export default function Billing() {
                                             <div className="feature-item">Persistência local no navegador</div>
                                         </div>
                                         <button className="secondary" type="button" disabled>
-                                            Plano atual
+                                            {isProActive ? "Incluso" : "Plano atual"}
                                         </button>
                                     </section>
 
-                                    <section className="pricing-card pricing-card--pro">
+                                    <section className={`pricing-card pricing-card--pro ${isProActive ? "pricing-card--active" : ""}`}>
                                         <div className="pricing-head">
                                             <div>
                                                 <div className="pricing-name">Pro</div>
                                                 <div className="pricing-price">{siteProfile.monthlyPrice}</div>
                                             </div>
-                                            <span className="chip ok">{siteProfile.trialLabel}</span>
+                                            <span className="chip ok">{isProActive ? "Ativo" : siteProfile.trialLabel}</span>
                                         </div>
                                         <div className="feature-list">
                                             <div className="feature-item">Briefings e favoritos sincronizados</div>
@@ -239,9 +257,19 @@ export default function Billing() {
                                             <div className="feature-item">Gestão de cobrança e cancelamento via Stripe</div>
                                             <div className="feature-item">Expansão de recursos premium futuros</div>
                                         </div>
-                                        <button className="btn-primary" type="button" onClick={startCheckout} disabled={creating}>
-                                            {creating ? "Abrindo..." : "Assinar Pro"}
-                                        </button>
+                                        {isProActive ? (
+                                            <div className="billing-active-note">
+                                                <strong>Seu plano Pro já está liberado.</strong>
+                                                <span>{planLead}</span>
+                                                <button className="secondary" type="button" onClick={openPortal} disabled={loading}>
+                                                    Gerenciar assinatura
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button className="btn-primary" type="button" onClick={startCheckout} disabled={creating}>
+                                                {creating ? "Abrindo..." : "Assinar Pro"}
+                                            </button>
+                                        )}
                                     </section>
                                 </div>
 
