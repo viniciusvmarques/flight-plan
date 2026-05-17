@@ -197,41 +197,74 @@ export function createEmailService(prisma) {
 
         async sendWelcomeEmail({ email, userId = null }) {
             const subject = `${BRAND_NAME} — bem-vindo a bordo`;
+            const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
             const text =
                 `Olá,\n\n` +
+                `Bem-vindo ao ${BRAND_NAME}.\n\n` +
                 `Seu e-mail foi confirmado e sua conta está pronta para uso.\n` +
-                `Agora você já pode gerar briefings, acompanhar METAR/TAF e evoluir seu planejamento de rota.\n\n` +
+                `Você já pode consultar METAR/TAF, montar briefings e usar o planejador de voo VFR/IFR.\n\n` +
+                `Acesse: ${appUrl}\n\n` +
+                `Lembrete importante: o ${BRAND_NAME} é uma ferramenta de apoio e estudo. Sempre valide informações operacionais em fontes oficiais, cartas, NOTAM, ROTAER/AIS/MET e documentação aplicável.\n\n` +
                 `Suporte: ${SITE_PROFILE.supportEmail}\n`;
             const html = buildEmailShell({
-                title: "Conta confirmada com sucesso",
-                intro: "Seu acesso está liberado.",
+                title: "Bem-vindo a bordo",
+                intro: "Seu e-mail foi confirmado e sua conta Marquisa está pronta para uso.",
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">Agora você pode:</p>` +
+                    `<p style="margin:0 0 16px;">A partir de agora você pode usar o painel para:</p>` +
                     `<ul style="margin:0 0 16px;padding-left:20px;">` +
-                    `<li>gerar briefings meteorológicos;</li>` +
-                    `<li>acompanhar rotas e planejamento de combustível;</li>` +
-                    `<li>usar a área comercial para evoluir para o plano Pro quando desejar.</li>` +
+                    `<li>consultar METAR e TAF de aeródromos;</li>` +
+                    `<li>organizar briefing meteorológico e operacional;</li>` +
+                    `<li>montar planejamento de voo VFR/IFR com rota, nível, combustível e alternado;</li>` +
+                    `<li>salvar briefings e favoritos ao evoluir para recursos Pro.</li>` +
                     `</ul>` +
+                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">Abrir Marquisa</a></p>` +
+                    `<p style="margin:0 0 12px;padding:12px 14px;border-radius:12px;background:rgba(59,130,246,0.12);border:1px solid rgba(147,197,253,0.22);">` +
+                    `<strong>Importante:</strong> o ${escapeHtml(BRAND_NAME)} é uma ferramenta de apoio e estudo. Ele não substitui fontes oficiais, cartas, NOTAM, ROTAER/AIS/MET, documentação aplicável ou julgamento do piloto em comando.` +
+                    `</p>` +
                     `<p style="margin:0;">Se precisar de suporte, fale com ${escapeHtml(SITE_PROFILE.supportEmail)}.</p>`,
             });
 
-            return sendEmail({ kind: "welcome", to: email, subject, text, html, userId });
+            return sendEmail({ kind: "welcome", to: email, subject, text, html, userId, metadata: { appUrl } });
         },
 
         async sendSubscriptionActivatedEmail({ email, currentPeriodEnd, userId = null, providerEventId = null }) {
+            const recent = await prisma.emailLog.findFirst({
+                where: {
+                    kind: "purchase_success",
+                    toEmail: email,
+                    status: { in: ["sent", "console"] },
+                    createdAt: { gt: new Date(Date.now() - 30 * 60 * 1000) },
+                },
+                select: { id: true },
+            }).catch(() => null);
+            if (recent) return;
+
             const endLabel = currentPeriodEnd ? new Date(currentPeriodEnd).toLocaleDateString("pt-BR") : "o próximo ciclo da assinatura";
-            const subject = `${BRAND_NAME} — assinatura ativada`;
+            const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
+            const subject = `${BRAND_NAME} — plano Pro ativado`;
             const text =
                 `Olá,\n\n` +
-                `Seu plano Pro foi ativado com sucesso.\n` +
+                `Obrigado por assinar o ${BRAND_NAME} Pro.\n\n` +
+                `Seu acesso premium foi ativado com sucesso.\n` +
                 `Próximo marco comercial: ${endLabel}.\n\n` +
+                `Você pode gerenciar ou cancelar sua assinatura pela área Assinatura do site.\n` +
+                `Acesse: ${appUrl}\n\n` +
                 `Suporte: ${SITE_PROFILE.supportEmail}\n`;
             const html = buildEmailShell({
-                title: "Assinatura ativada",
-                intro: "Seu acesso premium já está disponível.",
+                title: "Plano Pro ativado",
+                intro: "Obrigado por assinar. Seu acesso premium já está disponível.",
                 bodyHtml:
                     `<p style="margin:0 0 16px;">Seu plano <strong>Pro</strong> foi ativado com sucesso.</p>` +
-                    `<p style="margin:0;">Próximo marco comercial: <strong>${escapeHtml(endLabel)}</strong>.</p>`,
+                    `<ul style="margin:0 0 16px;padding-left:20px;">` +
+                    `<li>briefings e favoritos sincronizados;</li>` +
+                    `<li>reabertura rápida de planejamentos salvos;</li>` +
+                    `<li>gestão de cobrança e cancelamento pela área de assinatura.</li>` +
+                    `</ul>` +
+                    `<p style="margin:0 0 12px;">Próximo marco comercial: <strong>${escapeHtml(endLabel)}</strong>.</p>` +
+                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">Gerenciar assinatura</a></p>` +
+                    `<p style="margin:0;padding:12px 14px;border-radius:12px;background:rgba(59,130,246,0.12);border:1px solid rgba(147,197,253,0.22);">` +
+                    `Cancelamento, reembolso, arrependimento e comprovantes seguem as políticas publicadas no site. Em caso de dúvida, fale com ${escapeHtml(SITE_PROFILE.supportEmail)}.` +
+                    `</p>`,
             });
 
             return sendEmail({
@@ -242,7 +275,7 @@ export function createEmailService(prisma) {
                 html,
                 userId,
                 providerEventId,
-                metadata: { currentPeriodEnd: endLabel },
+                metadata: { currentPeriodEnd: endLabel, appUrl },
             });
         },
 

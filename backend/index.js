@@ -163,7 +163,16 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
           await setUserPlanById(u.id, patch);
 
           const billingReason = String(invoice.billing_reason || "").toLowerCase();
-          if (billingReason !== "subscription_create") {
+          if (billingReason === "subscription_create") {
+            await emailService
+              .sendSubscriptionActivatedEmail({
+                email: u.email,
+                currentPeriodEnd: patch.currentPeriodEnd,
+                userId: u.id,
+                providerEventId: event.id,
+              })
+              .catch((err) => console.error("sendSubscriptionActivatedEmail invoice:", err?.message || err));
+          } else {
             await emailService
               .sendSubscriptionRenewedEmail({
                 email: u.email,
