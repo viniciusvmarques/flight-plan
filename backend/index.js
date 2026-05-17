@@ -667,6 +667,44 @@ app.get("/me", requireAuth, async (req,res)=>{
   return res.json({ user });
 });
 
+app.delete("/me", requireAuth, async (req, res) => {
+  const id = req.auth?.sub;
+  if (!id) return res.status(401).json({ error: "Token inválido." });
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        plan: true,
+        planStatus: true,
+        stripeSubscriptionId: true,
+        cancelAtPeriodEnd: true,
+      },
+    });
+
+    if (!user) return res.status(404).json({ error: "Conta não encontrada." });
+
+    const confirmEmail = String(req.body?.email || "").trim().toLowerCase();
+    if (confirmEmail !== user.email.toLowerCase()) {
+      return res.status(400).json({ error: "Confirme o e-mail da conta para excluir." });
+    }
+
+    if (canAccessProPlan(user.plan, user.planStatus) && user.stripeSubscriptionId && !user.cancelAtPeriodEnd) {
+      return res.status(409).json({
+        error: "Cancele a assinatura antes de excluir a conta para evitar novas cobranças.",
+        code: "ACTIVE_SUBSCRIPTION",
+      });
+    }
+
+    await prisma.user.delete({ where: { id: user.id } });
+    return res.json({ ok: true });
+  } catch (e) {
+    return res.status(500).json({ error: e?.message || "Falha ao excluir conta." });
+  }
+});
+
 app.get("/api/aircraft/presets", (req, res) => {
   return res.json({
     items: AIRCRAFT_PRESETS.map((item) => serializeAircraftPreset(item)),

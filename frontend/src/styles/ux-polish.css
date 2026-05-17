@@ -932,6 +932,24 @@ button:focus-visible {
     background: rgba(59, 130, 246, 0.08);
 }
 
+.account-danger-zone {
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(248, 113, 113, 0.22);
+    background: rgba(127, 29, 29, 0.1);
+}
+
+button.danger-action {
+    border-color: rgba(248, 113, 113, 0.36);
+    color: #fecaca;
+    background: rgba(127, 29, 29, 0.18);
+}
+
+button.danger-action:hover:not(:disabled) {
+    border-color: rgba(248, 113, 113, 0.58);
+    background: rgba(127, 29, 29, 0.28);
+}
+
 .plan-context-card {
     display: grid;
     gap: 10px;

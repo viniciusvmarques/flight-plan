@@ -30,7 +30,7 @@ function fmtDate(iso) {
 export default function Profile() {
     const nav = useNavigate();
     const { toast, confirm } = useNotify();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
 
     useEffect(() => {
         if (!user) nav("/login");
@@ -112,6 +112,40 @@ export default function Profile() {
             .catch((e) =>
                 toast(e?.message || "Não foi possível apagar os favoritos.", { variant: "error", title: "Erro" })
             );
+    }
+
+    async function deleteAccount() {
+        if (!user) return;
+        const ok = await confirm({
+            title: "Excluir conta",
+            message:
+                "Esta ação apaga sua conta, briefings salvos, favoritos e perfis de aeronave. Se existir assinatura ativa, cancele primeiro na área de assinatura para evitar novas cobranças. Deseja continuar?",
+            confirmLabel: "Continuar",
+            cancelLabel: "Cancelar",
+            danger: true,
+        });
+        if (!ok) return;
+
+        const typed = window.prompt(`Para confirmar a exclusão definitiva, digite seu e-mail: ${user.email}`);
+        if (String(typed || "").trim().toLowerCase() !== String(user.email || "").toLowerCase()) {
+            toast("Exclusão cancelada. O e-mail digitado não confere.", { variant: "warning", title: "Confirmação inválida" });
+            return;
+        }
+
+        try {
+            await api("/me", { method: "DELETE", body: { email: user.email } });
+            localStorage.removeItem("fp_last_briefing");
+            localStorage.removeItem("fp_planner_seed");
+            if (prefKey) localStorage.removeItem(prefKey);
+            logout();
+            toast("Sua conta foi excluída.", { variant: "success", title: "Conta excluída" });
+            nav("/login");
+        } catch (e) {
+            const message =
+                e?.message ||
+                "Não foi possível excluir a conta agora. Se houver assinatura ativa, cancele primeiro na área de assinatura.";
+            toast(message, { variant: "error", title: "Erro ao excluir conta" });
+        }
     }
 
     function openBriefing(b) {
@@ -293,6 +327,20 @@ export default function Profile() {
                                     </p>
                                     <button className="secondary" type="button" onClick={() => nav("/forgot")}>
                                         Redefinir senha por e-mail
+                                    </button>
+                                </div>
+                            </Card>
+
+                            <Card title="Excluir conta">
+                                <div className="info-stack account-danger-zone">
+                                    <p className="page-caption">
+                                        A exclusão remove sua conta, briefings salvos, favoritos e perfis de aeronave. Dados de contato e logs técnicos podem ser mantidos sem vínculo direto à conta quando necessário para segurança, suporte ou obrigações legais.
+                                    </p>
+                                    <p className="page-caption">
+                                        Se você tiver assinatura Pro ativa, cancele primeiro em Assinatura para evitar novas cobranças.
+                                    </p>
+                                    <button className="secondary danger-action" type="button" onClick={deleteAccount}>
+                                        Excluir minha conta
                                     </button>
                                 </div>
                             </Card>

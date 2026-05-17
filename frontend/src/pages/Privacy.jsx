@@ -47,7 +47,9 @@ export default function Privacy() {
                     Alguns dados podem ser compartilhados com operadores essenciais ao funcionamento da plataforma, como infraestrutura de hospedagem, e-mail transacional e processamento de pagamentos.
                 </p>
                 <h2>Seus direitos</h2>
-                <p>Você pode solicitar informações, correção ou exclusão de dados da conta, conforme a LGPD, entrando em contato por {siteProfile.privacyEmail}.</p>
+                <p>
+                    Você pode solicitar informações, correção ou exclusão de dados da conta, conforme a LGPD, entrando em contato por {siteProfile.privacyEmail}. Usuários logados também podem iniciar a exclusão da própria conta pela página Perfil.
+                </p>
                 <h2>Controlador e contato</h2>
                 {hasLegalIdentity ? (
                     <p>
