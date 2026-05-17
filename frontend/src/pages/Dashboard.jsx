@@ -522,10 +522,22 @@ export default function Dashboard() {
 
                         {!base && !loading && !error && (
                             <Card title="Comece por aqui">
-                                <div className="empty-note">
-                                    Preencha <span className="inline-route-token"><strong>A</strong> Origem</span> e gere o briefing.{" "}
-                                    <span className="inline-route-token"><strong>B</strong> Destino</span> e{" "}
-                                    <span className="inline-route-token"><strong>C</strong> Alternativa</span> continuam opcionais.
+                                <div className="empty-note route-start-note">
+                                    <span>Preencha a origem e gere o briefing.</span>
+                                    <div className="route-start-list" aria-label="Campos da rota">
+                                        <span className="route-start-item">
+                                            <strong>A</strong>
+                                            <span>Origem obrigatória</span>
+                                        </span>
+                                        <span className="route-start-item">
+                                            <strong>B</strong>
+                                            <span>Destino opcional</span>
+                                        </span>
+                                        <span className="route-start-item">
+                                            <strong>C</strong>
+                                            <span>Alternativa opcional</span>
+                                        </span>
+                                    </div>
                                 </div>
                             </Card>
                         )}

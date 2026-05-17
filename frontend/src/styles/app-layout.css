@@ -117,6 +117,43 @@
     white-space: nowrap;
 }
 
+.route-start-note {
+    display: grid;
+    gap: 12px;
+}
+
+.route-start-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.route-start-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(147, 197, 253, 0.18);
+    background: rgba(15, 23, 42, 0.28);
+    color: rgba(226, 232, 240, 0.82);
+    font-size: 13px;
+    line-height: 1;
+}
+
+.route-start-item strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.16);
+    color: #bfdbfe;
+    font-size: 11px;
+    font-weight: 800;
+}
+
 .fp-sidebar-account {
     margin-top: auto;
     padding-top: 16px;
