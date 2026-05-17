@@ -278,6 +278,16 @@ export default function Billing() {
                                     <Link to="/cancellation-policy">política de cancelamento</Link>.
                                 </p>
                             </Card>
+
+                            <Card title="Comprovante e nota fiscal">
+                                <div className="billing-active-note">
+                                    <strong>Informação fiscal importante</strong>
+                                    <span>{siteProfile.invoiceNotice}</span>
+                                    <span>
+                                        Se você precisa obrigatoriamente de nota fiscal para contratar, fale antes com <strong>{siteProfile.supportEmail}</strong>.
+                                    </span>
+                                </div>
+                            </Card>
                         </div>
                     </div>
                 </div>

@@ -36,6 +36,11 @@ export default function Terms() {
                 <p>
                     Recursos premium podem depender de cobrança recorrente via plataforma terceirizada. Condições comerciais, cancelamento e renovação são tratadas também na política comercial específica da área de assinatura.
                 </p>
+                <h2>Comprovante e nota fiscal</h2>
+                <p>{siteProfile.invoiceNotice}</p>
+                <p>
+                    Caso você precise obrigatoriamente de nota fiscal para contratar, entre em contato antes da assinatura pelo canal <strong>{siteProfile.supportEmail}</strong>.
+                </p>
                 <h2>Limitação de responsabilidade</h2>
                 <p>
                     A responsabilidade final por planejamento, despacho, performance, documentação e decisão operacional permanece com o usuário e, quando aplicável, com o operador responsável. A plataforma não garante disponibilidade contínua nem adequação a uma operação específica.
