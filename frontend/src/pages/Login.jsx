@@ -2,11 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import BrandMark from "../components/Brandmark";
+import LanguageSwitcher from "../components/LanguageSwitcher";
+import { useI18n } from "../i18n/I18nContext.jsx";
 
 export default function Login() {
   const nav = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,30 +45,30 @@ export default function Login() {
 
   return (
     <div className="auth-wrap">
-      <div className="auth-card" role="region" aria-label="Entrar">
+      <div className="auth-card" role="region" aria-label={t("auth.loginTitle")}>
         <div className="auth-head">
           <button type="button" className="auth-back" onClick={() => nav(-1)}>
-            ← Voltar
+            ← {t("auth.back")}
           </button>
           <div className="auth-brand" onClick={() => nav("/")} role="button" tabIndex={0}>
             <BrandMark size={46} />
           </div>
-          <div className="auth-spacer" />
+          <LanguageSwitcher compact />
         </div>
 
         <div className="auth-body">
-          <h1>Entrar</h1>
-          <p>Acesse sua conta para salvar briefings, favoritos e planejamento.</p>
+          <h1>{t("auth.loginTitle")}</h1>
+          <p>{t("auth.loginCaption")}</p>
 
           {resetBanner && (
             <div className="auth-success auth-banner">
-              Senha redefinida com sucesso. Entre com a nova senha.
+              {t("auth.resetSuccess")}
             </div>
           )}
 
           <form onSubmit={onSubmit} className="auth-form">
             <label>
-              <span>E-mail</span>
+              <span>{t("auth.email")}</span>
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -77,7 +80,7 @@ export default function Login() {
             </label>
 
             <label>
-              <span>Senha</span>
+              <span>{t("auth.password")}</span>
               <input
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -92,23 +95,23 @@ export default function Login() {
 
             {unverifiedEmail ? (
               <div className="auth-info">
-                Sua conta ainda está pendente de confirmação.{" "}
+                {t("auth.verifyCaption")}{" "}
                 <Link to="/verify-email" state={{ email: unverifiedEmail }}>
-                  Reenviar link de ativação
+                  {t("auth.resendVerification")}
                 </Link>
               </div>
             ) : null}
 
             <button className="btn-primary" disabled={loading || !canSubmit}>
-              {loading ? "Entrando..." : "Entrar"}
+              {loading ? t("auth.loggingIn") : t("auth.loginButton")}
             </button>
 
             <div className="auth-links">
               <button type="button" className="btn-ghost" onClick={() => nav("/forgot")}
                 title="Recuperar senha">
-                Esqueci minha senha
+                {t("auth.forgotPassword")}
               </button>
-              <Link to="/register">Criar conta</Link>
+              <Link to="/register">{t("auth.createAccount")}</Link>
             </div>
           </form>
 

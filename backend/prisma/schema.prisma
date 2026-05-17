@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -16,6 +17,7 @@ model User {
   emailVerificationExpires DateTime?
   plan       String   @default("FREE")
   planStatus String? // active | trialing | past_due | canceled | demo
+  preferredLocale String @default("pt-BR")
   currentPeriodEnd DateTime?
   trialEndsAt      DateTime?
   cancelAtPeriodEnd Boolean @default(false)

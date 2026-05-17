@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import BrandMark from "../components/Brandmark";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 import { api } from "../services/apiClient";
+import { getStoredLocale, useI18n } from "../i18n/I18nContext.jsx";
 
 export default function VerifyEmail() {
     const nav = useNavigate();
+    const { t } = useI18n();
     const location = useLocation();
     const [params] = useSearchParams();
     const token = params.get("token") || "";
@@ -28,7 +31,7 @@ export default function VerifyEmail() {
                 setError("");
                 const response = await api("/auth/verify-email", {
                     method: "POST",
-                    body: { token },
+                    body: { token, locale: getStoredLocale() },
                     auth: false,
                 });
                 if (cancelled) return;
@@ -55,7 +58,7 @@ export default function VerifyEmail() {
             setError("");
             const response = await api("/auth/resend-verification", {
                 method: "POST",
-                body: { email: email.trim() },
+                body: { email: email.trim(), locale: getStoredLocale() },
                 auth: false,
             });
             setSuccess(response?.message || "Se existir uma conta pendente, enviaremos um novo link.");
@@ -68,31 +71,29 @@ export default function VerifyEmail() {
 
     return (
         <div className="auth-wrap">
-            <div className="auth-card" role="region" aria-label="Confirmação de e-mail">
+            <div className="auth-card" role="region" aria-label={t("auth.verifyTitle")}>
                 <div className="auth-head">
                     <button type="button" className="auth-back" onClick={() => nav("/login")}>
-                        ← Voltar
+                        ← {t("auth.back")}
                     </button>
                     <div className="auth-brand" onClick={() => nav("/")} role="button" tabIndex={0}>
                         <BrandMark size={46} />
                     </div>
-                    <div className="auth-spacer" />
+                    <LanguageSwitcher compact />
                 </div>
 
                 <div className="auth-body">
-                    <h1>Confirmar e-mail</h1>
-                    <p>
-                        Ative sua conta antes do primeiro login. Se o link expirou, você pode pedir um novo envio abaixo.
-                    </p>
+                    <h1>{t("auth.verifyTitle")}</h1>
+                    <p>{t("auth.verifyCaption")}</p>
 
-                    {loading ? <div className="auth-info">Validando seu link de confirmação...</div> : null}
+                    {loading ? <div className="auth-info">{t("auth.verifyCaption")}</div> : null}
                     {success ? <div className="auth-success auth-banner">{success}</div> : null}
                     {error ? <div className="auth-error">⚠ {error}</div> : null}
 
                     {!token || error ? (
                         <form className="auth-form" onSubmit={handleResend}>
                             <label>
-                                <span>E-mail</span>
+                                <span>{t("auth.email")}</span>
                                 <input
                                     value={email}
                                     onChange={(event) => setEmail(event.target.value)}
@@ -104,14 +105,14 @@ export default function VerifyEmail() {
                             </label>
 
                             <button className="btn-primary" type="submit" disabled={resending || !canResend}>
-                                {resending ? "Reenviando..." : "Reenviar confirmação"}
+                                {resending ? t("auth.sending") : t("auth.resendVerification")}
                             </button>
                         </form>
                     ) : null}
 
                     <div className="auth-links auth-links--compact">
-                        <Link to="/login">Ir para login</Link>
-                        <Link to="/register">Criar outra conta</Link>
+                        <Link to="/login">{t("auth.goLogin")}</Link>
+                        <Link to="/register">{t("auth.createAccount")}</Link>
                     </div>
 
                     <div className="auth-hint">

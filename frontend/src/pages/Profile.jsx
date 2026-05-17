@@ -7,7 +7,7 @@ import AircraftProfilesManager from "../components/AircraftProfilesManager";
 import { useAuth } from "../auth/AuthContext";
 import { api } from "../services/apiClient";
 import { useNotify } from "../ui/NotifyContext.jsx";
-import { siteProfile } from "../content/siteProfile";
+import { useI18n } from "../i18n/I18nContext.jsx";
 
 function loadJSON(key, fallback) {
     try {
@@ -32,6 +32,7 @@ export default function Profile() {
     const nav = useNavigate();
     const { toast, confirm } = useNotify();
     const { user, logout } = useAuth();
+    const { t } = useI18n();
 
     useEffect(() => {
         if (!user) nav("/login");
@@ -120,7 +121,7 @@ export default function Profile() {
         const ok = await confirm({
             title: "Excluir conta",
             message:
-                `Esta ação apaga sua conta, briefings salvos, favoritos e perfis de aeronave. ${siteProfile.subscriptionDeletionNotice} Deseja continuar?`,
+                `Esta ação apaga sua conta, briefings salvos, favoritos e perfis de aeronave. ${t("common.subscriptionDeletionNotice")} Deseja continuar?`,
             confirmLabel: "Continuar",
             cancelLabel: "Cancelar",
             danger: true,
@@ -168,9 +169,9 @@ export default function Profile() {
     return (
         <div className="main-shell">
             <AppHeader
-                kicker="Conta"
-                title="Conta e preferências"
-                subtitle="Perfil do piloto, histórico salvo, favoritos e atalhos de segurança."
+                kicker={t("profile.kicker")}
+                title={t("profile.title")}
+                subtitle={t("profile.subtitle")}
             />
 
             <div className="main-scroll">
@@ -178,19 +179,19 @@ export default function Profile() {
                     <section className="page-hero">
                         <div className="page-hero-head">
                             <div className="page-hero-copy">
-                                <span className="page-eyebrow">Área do piloto</span>
-                                <h1 className="page-title">Preferências, histórico e plano da conta em um só lugar</h1>
+                                <span className="page-eyebrow">{t("profile.eyebrow")}</span>
+                                <h1 className="page-title">{t("profile.heroTitle")}</h1>
                                 <p className="page-caption">
-                                    Ajuste seus dados locais, acompanhe os briefings sincronizados e acesse rapidamente a gestão de assinatura.
+                                    {t("profile.heroCaption")}
                                 </p>
                             </div>
 
                             <div className="page-actions">
                                 <button className="secondary" type="button" onClick={() => nav("/")}>
-                                    Dashboard
+                                    {t("common.dashboard")}
                                 </button>
                                 <button className="secondary" type="button" onClick={() => nav("/assinatura")}>
-                                    Assinatura
+                                    {t("common.billing")}
                                 </button>
                             </div>
                         </div>
@@ -205,16 +206,16 @@ export default function Profile() {
 
                     <div className="page-grid">
                         <div className="page-stack">
-                            <Card title="Perfil do piloto">
+                            <Card title={t("profile.pilotProfile")}>
                                 <div className="info-stack">
                                     <div className="plan-grid plan-grid--2">
                                         <label className="plan-field">
-                                            <span className="label">Nome (preferência)</span>
+                                            <span className="label">{t("profile.namePreference")}</span>
                                             <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Seu nome" />
                                         </label>
 
                                         <label className="plan-field">
-                                            <span className="label">Trilha (preferência)</span>
+                                            <span className="label">{t("profile.trackPreference")}</span>
                                             <select className="input" value={track} onChange={(e) => setTrack(e.target.value)}>
                                                 <option value="PP">PP</option>
                                                 <option value="PC">PC</option>
@@ -232,26 +233,25 @@ export default function Profile() {
 
                                     <div className="page-actions">
                                         <button className="primary profile-primary-action" type="button" onClick={savePrefs}>
-                                            Salvar preferências
+                                            {t("profile.savePreferences")}
                                         </button>
                                         <button className="secondary" type="button" onClick={() => nav("/assinatura")}>
-                                            Ver assinatura
+                                            {t("profile.viewBilling")}
                                         </button>
                                     </div>
 
                                     <p className="page-caption">
-                                        Nome e trilha ficam salvos localmente neste navegador. Com conta PRO, seus briefings e favoritos também
-                                        podem ser sincronizados no servidor.
+                                        {t("profile.localPreferenceNote")}
                                     </p>
                                 </div>
                             </Card>
 
                             <AircraftProfilesManager />
 
-                            <Card title={`Briefings salvos (${briefings.length})`}>
+                            <Card title={t("profile.savedBriefings", { count: briefings.length })}>
                                 {briefings.length === 0 ? (
                                     <div className="empty-note">
-                                        Nenhum briefing salvo ainda. No dashboard, gere um briefing e use a ação de salvar para manter a rota na conta.
+                                        {t("profile.noBriefings")}
                                     </div>
                                 ) : (
                                     <div className="list-stack">
@@ -270,7 +270,7 @@ export default function Profile() {
                                                     </span>
                                                     {b.data?.alt ? <span className="chip warn">ALT {b.data.alt}</span> : <span className="chip">Sem ALT</span>}
                                                     {b.data?.aircraft?.label ? <span className="chip ok">{b.data.aircraft.label}</span> : null}
-                                                    <span className="chip ok">Abrir no dashboard</span>
+                                                    <span className="chip ok">{t("profile.openDashboard")}</span>
                                                 </div>
                                                 <div className="list-card-meta">{fmtDate(b.data?.at || b.createdAt)}</div>
                                             </button>
@@ -278,7 +278,7 @@ export default function Profile() {
 
                                         <div className="page-actions">
                                             <button className="secondary" type="button" onClick={clearBriefings}>
-                                                Apagar histórico
+                                                {t("profile.deleteHistory")}
                                             </button>
                                         </div>
                                     </div>
@@ -287,24 +287,24 @@ export default function Profile() {
                         </div>
 
                         <div className="page-stack">
-                            <Card title="Assinatura">
+                            <Card title={t("profile.billingTitle")}>
                                 <div className="info-stack">
                                     <div className="page-chip-row">
                                         <span className={`chip ${plan === "PRO" ? "ok" : ""}`}>Plano: {plan}</span>
                                     </div>
                                     <p className="page-caption">
-                                        O painel de assinatura foi unificado. Use a área dedicada para checkout, gestão e futuras renovações.
+                                        {t("profile.billingText")}
                                     </p>
                                     <button className="secondary" type="button" onClick={() => nav("/assinatura")}>
-                                        Gerenciar assinatura
+                                        {t("billing.manageSubscription")}
                                     </button>
                                 </div>
                             </Card>
 
-                            <Card title={`Favoritos (${favs.length})`}>
+                            <Card title={t("profile.favorites", { count: favs.length })}>
                                 <div className="info-stack">
                                     {favs.length === 0 ? (
-                                        <div className="empty-note">Você ainda não favoritou nenhum aeródromo.</div>
+                                        <div className="empty-note">{t("profile.noFavorites")}</div>
                                     ) : (
                                         <div className="page-chip-row">
                                             {favs.slice(0, 40).map((f) => (
@@ -316,35 +316,35 @@ export default function Profile() {
                                     )}
 
                                     <button className="secondary" type="button" onClick={clearFavs}>
-                                        Apagar favoritos
+                                        {t("profile.deleteFavorites")}
                                     </button>
                                 </div>
                             </Card>
 
-                            <Card title="Segurança">
+                            <Card title={t("profile.security")}>
                                 <div className="info-stack">
                                     <p className="page-caption">
-                                        Redefina sua senha pelo e-mail cadastrado. Em ambiente local, o link também pode ser exibido no terminal do backend.
+                                        {t("profile.securityText")}
                                     </p>
                                     <button className="secondary" type="button" onClick={() => nav("/forgot")}>
-                                        Redefinir senha por e-mail
+                                        {t("profile.resetByEmail")}
                                     </button>
                                 </div>
                             </Card>
 
-                            <Card title="Excluir conta">
+                            <Card title={t("profile.deleteAccountTitle")}>
                                 <div className="info-stack account-danger-zone">
                                     <p className="page-caption">
-                                        A exclusão remove sua conta, briefings salvos, favoritos e perfis de aeronave. Dados de contato e logs técnicos podem ser mantidos sem vínculo direto à conta quando necessário para segurança, suporte ou obrigações legais.
+                                        {t("profile.deleteAccountText")}
                                     </p>
                                     <p className="page-caption">
-                                        {siteProfile.subscriptionDeletionNotice}
+                                        {t("common.subscriptionDeletionNotice")}
                                     </p>
                                     <p className="page-caption">
-                                        {siteProfile.dataRetentionNotice}
+                                        {t("common.dataRetentionNotice")}
                                     </p>
                                     <button className="secondary danger-action" type="button" onClick={deleteAccount}>
-                                        Excluir minha conta
+                                        {t("profile.deleteMyAccount")}
                                     </button>
                                 </div>
                             </Card>

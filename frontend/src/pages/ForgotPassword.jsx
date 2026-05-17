@@ -1,10 +1,13 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BrandMark from "../components/Brandmark";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 import { api } from "../services/apiClient";
+import { getStoredLocale, useI18n } from "../i18n/I18nContext.jsx";
 
 export default function ForgotPassword() {
     const nav = useNavigate();
+    const { t } = useI18n();
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -20,7 +23,7 @@ export default function ForgotPassword() {
             setLoading(true);
             await api("/auth/forgot-password", {
                 method: "POST",
-                body: { email: email.trim() },
+                body: { email: email.trim(), locale: getStoredLocale() },
                 auth: false,
             });
             setDone(true);
@@ -33,22 +36,20 @@ export default function ForgotPassword() {
 
     return (
         <div className="auth-wrap">
-            <div className="auth-card" role="region" aria-label="Recuperar senha">
+            <div className="auth-card" role="region" aria-label={t("auth.forgotTitle")}>
                 <div className="auth-head">
                     <button type="button" className="auth-back" onClick={() => nav("/login")}>
-                        ← Voltar
+                        ← {t("auth.back")}
                     </button>
                     <div className="auth-brand" onClick={() => nav("/")} role="button" tabIndex={0}>
                         <BrandMark size={46} />
                     </div>
-                    <div className="auth-spacer" />
+                    <LanguageSwitcher compact />
                 </div>
 
                 <div className="auth-body">
-                    <h1>Esqueci minha senha</h1>
-                    <p>
-                        Informe o e-mail da sua conta. Se ele existir, enviamos um link para você criar uma nova senha.
-                    </p>
+                    <h1>{t("auth.forgotTitle")}</h1>
+                    <p>{t("auth.forgotCaption")}</p>
 
                     {done ? (
                         <div className="auth-success">
@@ -63,7 +64,7 @@ export default function ForgotPassword() {
                     ) : (
                         <form className="auth-form" onSubmit={onSubmit}>
                             <label>
-                                <span>E-mail</span>
+                                <span>{t("auth.email")}</span>
                                 <input
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -77,14 +78,14 @@ export default function ForgotPassword() {
                             {error && <div className="auth-error">⚠ {error}</div>}
 
                             <button className="btn-primary" type="submit" disabled={loading || !canSubmit}>
-                                {loading ? "Enviando..." : "Enviar link"}
+                                {loading ? t("auth.sending") : t("auth.sendReset")}
                             </button>
                         </form>
                     )}
 
                     <div className="auth-links auth-links--compact">
-                        <Link to="/login">Voltar ao login</Link>
-                        <Link to="/register">Criar conta</Link>
+                        <Link to="/login">{t("auth.loginButton")}</Link>
+                        <Link to="/register">{t("auth.createAccount")}</Link>
                     </div>
 
                     <div className="auth-hint">Por segurança, não informamos se o e-mail está cadastrado.</div>

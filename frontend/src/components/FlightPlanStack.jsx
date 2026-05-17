@@ -1,5 +1,6 @@
 import Card from "./Card";
 import { calculatePlanner, fmtDeg, fmtMinutes } from "../utils/plannerEngine";
+import { useI18n } from "../i18n/I18nContext.jsx";
 
 function Field({ label, children, hint }) {
     return (
@@ -104,6 +105,7 @@ function RouteChip({ base }) {
 
 export default function FlightPlanStack({ base, plan, onPlanChange }) {
     const p = plan || {};
+    const { t } = useI18n();
     const calc = calculatePlanner(p, {
         originAirport: base?.origin?.airport || null,
         destAirport: base?.dest?.airport || null,
@@ -130,11 +132,11 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
     }
 
     return (
-        <Card title="Planejador ANAC">
+        <Card title={t("planner.title")}>
             <div className="plan-stack plan-stack--anac">
                 <section className="plan-panel plan-panel--dark">
-                    <SectionHead step="1" title="Missão">
-                        Defina regra de voo, identificação e nível planejado. Esta é a base da ficha de navegação.
+                    <SectionHead step="1" title={t("planner.mission")}>
+                        {t("planner.missionCopy")}
                     </SectionHead>
 
                     <div className="plan-chip-row">
@@ -155,7 +157,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
 
                     <div className="plan-grid plan-grid--4">
                         <SelectField
-                            label="Regra de voo"
+                            label={t("billing.plan")}
                             value={p.flightRule || "VFR"}
                             onChange={(value) => setField("flightRule", value)}
                             options={[
@@ -177,7 +179,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         <Field label="Callsign / identificação">
                             <input className="input" value={p.callsign ?? ""} onChange={(e) => setField("callsign", e.target.value.toUpperCase())} placeholder="PP-ABC / MARQUISA 01" />
                         </Field>
-                        <Field label="Matrícula">
+                        <Field label="Registration">
                             <input className="input" value={p.registration ?? ""} onChange={(e) => setField("registration", e.target.value.toUpperCase())} placeholder="PT-ABC" />
                         </Field>
                     </div>
@@ -199,8 +201,8 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                 </section>
 
                 <section className="plan-panel">
-                    <SectionHead step="2" title="Navegação estimada">
-                        Traduza a carta em números: distância, rumo, declinação, vento, proa e velocidade no solo.
+                    <SectionHead step="2" title={t("planner.navigation")}>
+                        {t("planner.navigationCopy")}
                     </SectionHead>
 
                     <div className="plan-grid plan-grid--4">
@@ -248,8 +250,8 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                 </section>
 
                 <section className="plan-panel">
-                    <SectionHead step="3" title="Combustível e autonomia">
-                        Separe o combustível por blocos. O resultado mostra requerido, autonomia, pouso estimado e margem.
+                    <SectionHead step="3" title={t("planner.fuel")}>
+                        {t("planner.fuelCopy")}
                     </SectionHead>
 
                     <div className="plan-grid plan-grid--4">
@@ -340,8 +342,8 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                 </section>
 
                 <section className="plan-panel">
-                    <SectionHead step="4" title="Alternado e observações IFR/VFR">
-                        Para IFR, registre alternado e procedimento pretendido. Para VFR, use como checklist de decisão.
+                    <SectionHead step="4" title={t("planner.alternate")}>
+                        {t("planner.alternateCopy")}
                     </SectionHead>
 
                     <div className="plan-grid plan-grid--4">
@@ -370,8 +372,8 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                 </section>
 
                 <section className="plan-panel plan-panel--accent">
-                    <SectionHead step="5" title="Resumo para briefing">
-                        Saída didática: rota, regra, velocidade, nível, EET, autonomia, alternado, combustível e pendências.
+                    <SectionHead step="5" title={t("planner.summary")}>
+                        {t("planner.summaryCopy")}
                     </SectionHead>
 
                     <div className="plan-brief-grid">

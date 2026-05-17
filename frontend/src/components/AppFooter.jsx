@@ -1,22 +1,23 @@
 import { Link } from "react-router-dom";
-import { siteProfile } from "../content/siteProfile";
+import { useI18n } from "../i18n/I18nContext.jsx";
 
 export default function AppFooter() {
+    const { t } = useI18n();
     return (
         <footer className="site-footer" role="contentinfo">
             <div className="site-footer-inner">
                 <div>
                     © {new Date().getFullYear()} Marquisa •{" "}
-                    <Link to="/terms">Termos</Link>
+                    <Link to="/terms">{t("footer.terms")}</Link>
                     {" · "}
-                    <Link to="/privacy">Privacidade</Link>
+                    <Link to="/privacy">{t("footer.privacy")}</Link>
                     {" · "}
-                    <Link to="/cancellation-policy">Cancelamento</Link>
+                    <Link to="/cancellation-policy">{t("footer.cancellation")}</Link>
                     {" · "}
-                    <Link to="/contact">Contato</Link>
+                    <Link to="/contact">{t("footer.contact")}</Link>
                 </div>
                 <div className="site-footer-note">
-                    {siteProfile.operationalDisclaimer}
+                    {t("common.operationalDisclaimer")}
                 </div>
             </div>
         </footer>

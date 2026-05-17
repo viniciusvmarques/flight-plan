@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { legalVersions } from "../content/siteProfile";
+import { getStoredLocale } from "../i18n/I18nContext.jsx";
 
 const AuthContext = createContext(null);
 
@@ -37,13 +38,14 @@ export function AuthProvider({ children }) {
     useEffect(() => saveJSON(LS_USER, user), [user]);
     useEffect(() => saveJSON(LS_TOKEN, token), [token]);
 
-    async function register({ email, password, accepted, consentVersions }) {
+    async function register({ email, password, accepted, consentVersions, locale }) {
         const r = await fetch(`${API}/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 email,
                 password,
+                locale,
                 consent: { accepted: !!accepted },
                 consentVersions: consentVersions || legalVersions,
             }),
@@ -66,7 +68,7 @@ export function AuthProvider({ children }) {
         const r = await fetch(`${API}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ email, password, locale: getStoredLocale() }),
         });
 
         const json = await r.json().catch(() => ({}));

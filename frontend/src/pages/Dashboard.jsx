@@ -27,6 +27,7 @@ import { useAuth } from "../auth/AuthContext";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
 import { useNotify } from "../ui/NotifyContext.jsx";
+import { useI18n } from "../i18n/I18nContext.jsx";
 
 function isValidIcao(x) {
     return (x || "").toUpperCase().trim().length === 4;
@@ -68,6 +69,7 @@ export default function Dashboard() {
     const { user } = useAuth();
     const nav = useNavigate();
     const { toast } = useNotify();
+    const { t } = useI18n();
     const detailRef = useRef(null);
 
     const [lastData, setLastData] = useState(() => {
@@ -173,23 +175,23 @@ export default function Dashboard() {
 
     function saveBriefing() {
         if (!base?.origin?.icao) {
-            toast("Defina o ICAO de origem na coluna à esquerda e gere o briefing antes de salvar.", {
+            toast(t("dashboard.saveOriginRequired"), {
                 variant: "warning",
-                title: "Origem obrigatória",
+                title: t("dashboard.saveOriginRequiredTitle"),
             });
             return;
         }
         if (!user) {
-            toast("Entre na sua conta para guardar briefings na nuvem.", { variant: "info", title: "Login necessário" });
+            toast(t("dashboard.loginRequired"), { variant: "info", title: t("dashboard.loginRequiredTitle") });
             nav("/login");
             return;
         }
 
         const plan = String(user?.plan || "FREE").toUpperCase();
         if (plan !== "PRO") {
-            toast("Briefings salvos e favoritos ilimitados fazem parte do plano PRO.", {
+            toast(t("dashboard.proRequired"), {
                 variant: "warning",
-                title: "Plano PRO",
+                title: t("dashboard.proRequiredTitle"),
             });
             nav("/assinatura");
             return;
@@ -224,15 +226,15 @@ export default function Dashboard() {
 
         api("/api/briefings", { method: "POST", body: { data: entry } })
             .then(() =>
-                toast("Seu briefing e os dados do plano de voo foram salvos.", {
+                toast(t("dashboard.saved"), {
                     variant: "success",
-                    title: "Salvo",
+                    title: t("dashboard.savedTitle"),
                 })
             )
             .catch((e) =>
-                toast(e?.message || "Não foi possível salvar. Tente novamente.", {
+                toast(e?.message || t("dashboard.saveError"), {
                     variant: "error",
-                    title: "Erro ao salvar",
+                    title: t("dashboard.saveErrorTitle"),
                 })
             );
     }
@@ -330,9 +332,9 @@ export default function Dashboard() {
             setLastData(out);
             setPlannerSeed(basePlan);
             localStorage.setItem("fp_last_briefing", JSON.stringify(out));
-            toast(d ? `Briefing ${o} → ${d} gerado com sucesso.` : `Briefing ${o} gerado com sucesso.`, {
+            toast(d ? t("dashboard.briefingGeneratedRoute", { origin: o, dest: d }) : t("dashboard.briefingGeneratedSingle", { origin: o }), {
                 variant: "success",
-                title: "Briefing gerado",
+                title: t("dashboard.briefingGeneratedTitle"),
             });
         } catch (e) {
             setError(e?.message || "Erro ao gerar briefing");
@@ -421,23 +423,23 @@ export default function Dashboard() {
             <Sidebar onBrief={handleBrief} />
 
             <div className="main-shell">
-                <AppHeader kicker="Operações" title="Briefing operacional" subtitle={headerSubtitle} />
+                <AppHeader kicker={t("dashboard.headerKicker")} title={t("dashboard.headerTitle")} subtitle={t("dashboard.headerSubtitle")} />
 
                 <div className="main-scroll">
                     <div className="page-shell">
                         <section className="page-hero page-hero--dashboard">
                             <div className="page-hero-head">
                                 <div className="page-hero-copy">
-                                    <span className="page-eyebrow">Painel operacional</span>
-                                    <h1 className="page-title">Meteorologia e planejamento do voo</h1>
+                                    <span className="page-eyebrow">{t("dashboard.eyebrow")}</span>
+                                    <h1 className="page-title">{t("dashboard.title")}</h1>
                                     <p className="page-caption">
-                                        Consulte as estações monitoradas, leia os boletins e ajuste o plano do voo com uma estrutura mais objetiva.
+                                        {t("dashboard.caption")}
                                     </p>
                                 </div>
                                 {user ? (
                                     <div className="page-actions">
                                         <button className="secondary" type="button" onClick={saveBriefing}>
-                                            Salvar briefing
+                                            {t("dashboard.saveBriefing")}
                                         </button>
                                     </div>
                                 ) : null}
@@ -446,57 +448,57 @@ export default function Dashboard() {
                                 <div className="dashboard-route-pill">
                                     <span className="dashboard-route-code">A</span>
                                     <div className="dashboard-route-meta">
-                                        <span className="dashboard-route-label">Origem</span>
+                                        <span className="dashboard-route-label">{t("common.origin")}</span>
                                         <strong className="dashboard-route-value">{base?.origin?.icao || "Pendente"}</strong>
                                     </div>
                                 </div>
                                 <div className="dashboard-route-pill">
                                     <span className="dashboard-route-code">B</span>
                                     <div className="dashboard-route-meta">
-                                        <span className="dashboard-route-label">Destino</span>
+                                        <span className="dashboard-route-label">{t("common.destination")}</span>
                                         <strong className="dashboard-route-value">{base?.dest?.icao || "Opcional"}</strong>
                                     </div>
                                 </div>
                                 <div className="dashboard-route-pill">
                                     <span className="dashboard-route-code">C</span>
                                     <div className="dashboard-route-meta">
-                                        <span className="dashboard-route-label">Alternativa</span>
+                                        <span className="dashboard-route-label">{t("common.alternate")}</span>
                                         <strong className="dashboard-route-value">{base?.alternate?.icao || "Opcional"}</strong>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="dashboard-meta-strip">
-                                <span className="chip ok">{user ? `Conta ${String(user.plan || "FREE").toUpperCase()}` : "Modo visitante"}</span>
+                                <span className="chip ok">{user ? t("dashboard.accountPlan", { plan: String(user.plan || "FREE").toUpperCase() }) : t("dashboard.visitorMode")}</span>
                             </div>
                         </section>
 
                         {base ? (
                             <section className="dashboard-overview-grid">
                                 <article className="dashboard-overview-card">
-                                    <span className="dashboard-overview-label">Rota ativa</span>
+                                    <span className="dashboard-overview-label">{t("dashboard.routeActive")}</span>
                                     <strong className="dashboard-overview-value">{routeHeadline}</strong>
                                     <span className="dashboard-overview-copy">
-                                        {base?.alternate?.icao ? `Alternativa prevista: ${base.alternate.icao}` : "Sem alternativa definida"}
+                                        {base?.alternate?.icao ? `${t("common.alternate")}: ${base.alternate.icao}` : t("dashboard.noAlternate")}
                                     </span>
                                 </article>
 
                                 <article className="dashboard-overview-card">
-                                    <span className="dashboard-overview-label">Planejamento</span>
+                                    <span className="dashboard-overview-label">{t("dashboard.planning")}</span>
                                     <strong className="dashboard-overview-value">
                                         {base?.plan?.cruiseAltFt || base?.plan?.defaultCruiseAltFt
                                             ? `Cruzeiro ${base.plan?.cruiseAltFt || base.plan?.defaultCruiseAltFt} ft`
-                                            : "Parâmetros livres"}
+                                            : t("dashboard.paramsFree")}
                                     </strong>
                                     <span className="dashboard-overview-copy">
                                         {base?.plan?.reserveRule
                                             ? `Reserva ${base.plan.reserveRule}`
-                                            : "Ajuste reserva, callsign e combustível livremente no planner"}
+                                            : t("dashboard.adjustReserve")}
                                     </span>
                                 </article>
 
                                 <article className="dashboard-overview-card">
-                                    <span className="dashboard-overview-label">Combustível</span>
+                                    <span className="dashboard-overview-label">{t("dashboard.fuel")}</span>
                                     <strong className="dashboard-overview-value">
                                         {plannerSummary ? `${plannerSummary.totalFuelL.toFixed(1)} L` : "—"}
                                     </strong>
@@ -508,34 +510,34 @@ export default function Dashboard() {
                                 </article>
 
                                 <article className="dashboard-overview-card">
-                                    <span className="dashboard-overview-label">Foco atual</span>
+                                    <span className="dashboard-overview-label">{t("dashboard.focus")}</span>
                                     <strong className="dashboard-overview-value">{activeFocusLabel}</strong>
                                     <span className="dashboard-overview-copy">
-                                        {selectedStation ? "Detalhes do aeródromo abertos ao lado da meteorologia." : "Use a lista de estações para abrir o painel do aeródromo."}
+                                        {selectedStation ? t("dashboard.detailsOpen") : t("dashboard.useStations")}
                                     </span>
                                 </article>
                             </section>
                         ) : null}
 
-                        {loading && <Card title="Carregando">Buscando METAR, TAF e dados operacionais...</Card>}
-                        {error && <Card title="Erro">{error}</Card>}
+                        {loading && <Card title={t("common.loading")}>{t("dashboard.loadingBrief")}</Card>}
+                        {error && <Card title={t("common.error")}>{error}</Card>}
 
                         {!base && !loading && !error && (
-                            <Card title="Comece por aqui">
+                            <Card title={t("dashboard.startTitle")}>
                                 <div className="empty-note route-start-note">
-                                    <span>Preencha a origem e gere o briefing.</span>
+                                    <span>{t("dashboard.startSentence")}</span>
                                     <div className="route-start-list" aria-label="Campos da rota">
                                         <span className="route-start-item">
                                             <strong>A</strong>
-                                            <span>Origem obrigatória</span>
+                                            <span>{t("dashboard.originRequired")}</span>
                                         </span>
                                         <span className="route-start-item">
                                             <strong>B</strong>
-                                            <span>Destino opcional</span>
+                                            <span>{t("dashboard.destinationOptional")}</span>
                                         </span>
                                         <span className="route-start-item">
                                             <strong>C</strong>
-                                            <span>Alternativa opcional</span>
+                                            <span>{t("dashboard.alternateOptional")}</span>
                                         </span>
                                     </div>
                                 </div>
@@ -546,8 +548,8 @@ export default function Dashboard() {
                             <>
                                 <div className="dashboard-section-head">
                                     <div>
-                                        <span className="dashboard-section-kicker">Meteorologia e estações</span>
-                                        <h2 className="dashboard-section-title">Resumo rápido, sequência monitorada e leitura dos boletins</h2>
+                                        <span className="dashboard-section-kicker">{t("dashboard.wxKicker")}</span>
+                                        <h2 className="dashboard-section-title">{t("dashboard.wxTitle")}</h2>
                                     </div>
                                 </div>
 

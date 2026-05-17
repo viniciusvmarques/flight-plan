@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { useI18n } from "../i18n/I18nContext.jsx";
 
 function RouteFieldLabel({ code, children, required = false }) {
     return (
@@ -15,6 +16,7 @@ function RouteFieldLabel({ code, children, required = false }) {
 export default function Sidebar({ onBrief, children }) {
     const { user, logout } = useAuth();
     const nav = useNavigate();
+    const { t } = useI18n();
 
     const [origin, setOrigin] = useState("");
     const [dest, setDest] = useState("");
@@ -42,21 +44,21 @@ export default function Sidebar({ onBrief, children }) {
     const plan = user?.plan ? String(user.plan).toUpperCase() : "FREE";
 
     return (
-        <aside className="fp-sidebar" aria-label="Briefing e rota">
+        <aside className="fp-sidebar" aria-label={t("sidebar.aria")}>
             <div className="fp-sidebar-inner">
                 <div className="fp-sidebar-head">
-                    <div className="fp-sidebar-eyebrow">Painel Operacional</div>
-                    <div className="fp-sidebar-caption">Monte a rota, gere o briefing e acompanhe o planejamento do voo.</div>
+                    <div className="fp-sidebar-eyebrow">{t("sidebar.eyebrow")}</div>
+                    <div className="fp-sidebar-caption">{t("sidebar.caption")}</div>
                 </div>
 
                 <form className="fp-brief-form" onSubmit={onSubmit}>
-                    <h2 className="fp-sidebar-title">Nova rota</h2>
-                    <p className="fp-sidebar-lead">Informe ICAO de 4 letras e gere o briefing operacional.</p>
+                    <h2 className="fp-sidebar-title">{t("sidebar.title")}</h2>
+                    <p className="fp-sidebar-lead">{t("sidebar.lead")}</p>
 
                     <div className="field">
                         <label htmlFor="fp-origin">
                             <RouteFieldLabel code="A" required>
-                                Origem
+                                {t("sidebar.originLabel")}
                             </RouteFieldLabel>
                         </label>
                         <input
@@ -72,7 +74,7 @@ export default function Sidebar({ onBrief, children }) {
                     </div>
                     <div className="field">
                         <label htmlFor="fp-dest">
-                            <RouteFieldLabel code="B">Destino</RouteFieldLabel>
+                            <RouteFieldLabel code="B">{t("sidebar.destLabel")}</RouteFieldLabel>
                         </label>
                         <input
                             id="fp-dest"
@@ -87,7 +89,7 @@ export default function Sidebar({ onBrief, children }) {
                     </div>
                     <div className="field">
                         <label htmlFor="fp-alt">
-                            <RouteFieldLabel code="C">Alternativa</RouteFieldLabel>
+                            <RouteFieldLabel code="C">{t("sidebar.alternateLabel")}</RouteFieldLabel>
                         </label>
                         <input
                             id="fp-alt"
@@ -102,7 +104,7 @@ export default function Sidebar({ onBrief, children }) {
                     </div>
 
                     <button type="submit" className="primary">
-                        Gerar briefing operacional
+                        {t("sidebar.submit")}
                     </button>
                 </form>
 
@@ -119,10 +121,10 @@ export default function Sidebar({ onBrief, children }) {
                             </div>
                             <div className="fp-account-actions">
                                 <Link className="fp-link-btn" to="/perfil">
-                                    Perfil
+                                    {t("sidebar.profile")}
                                 </Link>
                                 <Link className="fp-link-btn" to="/assinatura">
-                                    Plano
+                                    {t("sidebar.billing")}
                                 </Link>
                                 <button
                                     type="button"
@@ -132,19 +134,19 @@ export default function Sidebar({ onBrief, children }) {
                                         nav("/");
                                     }}
                                 >
-                                    Sair
+                                    {t("sidebar.logout")}
                                 </button>
                             </div>
                         </>
                     ) : (
                         <>
-                            <p className="fp-sidebar-lead">Entre para salvar briefings, sincronizar favoritos e continuar o planejamento.</p>
+                            <p className="fp-sidebar-lead">{t("dashboard.loginRequired")}</p>
                             <div className="fp-account-actions">
                                 <Link className="fp-link-btn fp-link-btn--primary" to="/login">
-                                    Entrar
+                                    {t("sidebar.login")}
                                 </Link>
                                 <Link className="fp-link-btn" to="/register">
-                                    Criar conta
+                                    {t("auth.createAccount")}
                                 </Link>
                             </div>
                         </>

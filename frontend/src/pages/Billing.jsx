@@ -6,11 +6,13 @@ import AppHeader from "../components/AppHeader";
 import { useAuth } from "../auth/AuthContext";
 import { apiGet, apiPost } from "../services/apiClient";
 import { siteProfile } from "../content/siteProfile";
+import { getStoredLocale, useI18n } from "../i18n/I18nContext.jsx";
 
 export default function Billing() {
     const nav = useNavigate();
     const { user, token, refreshMe } = useAuth();
     const [searchParams] = useSearchParams();
+    const { t, localizedPrice } = useI18n();
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -55,12 +57,12 @@ export default function Billing() {
     async function startCheckout() {
         setError("");
         if (!acceptedCommercialTerms) {
-            setError("Confirme que você leu e concorda com os termos comerciais antes de assinar.");
+            setError(t("billing.acceptError"));
             return;
         }
         setCreating(true);
         try {
-            const res = await apiPost("/api/stripe/checkout", {}, token);
+            const res = await apiPost("/api/stripe/checkout", { locale: getStoredLocale() }, token);
             if (res?.demo) {
                 setError("O servidor atual está em modo local sem Stripe ativo. No ambiente configurado, o checkout abrirá normalmente.");
                 return;
@@ -104,11 +106,11 @@ export default function Billing() {
 
     function humanStatusLabel() {
         const current = String(status?.planStatus || "").toLowerCase();
-        if (current === "active") return "Assinatura ativa";
-        if (current === "trialing" || current === "demo") return "Período de teste";
-        if (current === "past_due") return "Pagamento pendente";
-        if (current === "canceled") return "Assinatura cancelada";
-        return status?.plan === "PRO" ? "Plano Pro" : "Plano Free";
+        if (current === "active") return t("billing.activeStatus");
+        if (current === "trialing" || current === "demo") return t("billing.trialStatus");
+        if (current === "past_due") return t("billing.pastDueStatus");
+        if (current === "canceled") return t("billing.canceledStatus");
+        return status?.plan === "PRO" ? t("billing.proStatus") : t("billing.freeStatus");
     }
 
     const isProActive = !!status?.active;
@@ -130,9 +132,9 @@ export default function Billing() {
     return (
         <div className="main-shell">
             <AppHeader
-                kicker="Assinatura"
-                title="Plano Marquisa Pro"
-                subtitle="Checkout, renovação e gestão de acesso premium em uma única experiência."
+                kicker={t("billing.kicker")}
+                title={t("billing.title")}
+                subtitle={t("billing.subtitle")}
             />
 
             <div className="main-scroll">
@@ -140,16 +142,16 @@ export default function Billing() {
                     <section className="page-hero">
                         <div className="page-hero-head">
                             <div className="page-hero-copy">
-                                <span className="page-eyebrow">Gestão comercial</span>
-                                <h1 className="page-title">Ative o Pro e mantenha sua operação no mesmo fluxo</h1>
+                                <span className="page-eyebrow">{t("billing.heroEyebrow")}</span>
+                                <h1 className="page-title">{t("billing.heroTitle")}</h1>
                                 <p className="page-caption">
-                                    Acompanhe seu estado comercial, libere recursos premium e acesse o portal do assinante sem sair do painel.
+                                    {t("billing.heroCaption")}
                                 </p>
                             </div>
 
                             <div className="page-actions">
                                 <button className="secondary" type="button" onClick={() => nav("/perfil")}>
-                                    Minha conta
+                                    {t("billing.myAccount")}
                                 </button>
                                 <button className="secondary" type="button" onClick={() => nav("/")}>
                                     Dashboard
@@ -158,10 +160,10 @@ export default function Billing() {
                         </div>
 
                         <div className="page-chip-row">
-                            <span className="chip">{email || "Conta não identificada"}</span>
+                            <span className="chip">{email || t("billing.noAccount")}</span>
                             <span className={`chip ${isProActive ? "ok" : ""}`}>Plano: {status?.plan || "FREE"}</span>
                             <span className="chip">{humanStatusLabel()}</span>
-                            <span className="chip">{status?.cancelAtPeriodEnd ? "Cancelamento programado" : isProActive ? "Acesso liberado" : "Sem assinatura ativa"}</span>
+                            <span className="chip">{status?.cancelAtPeriodEnd ? t("billing.cancelScheduled") : isProActive ? t("billing.accessGranted") : t("billing.noActiveSubscription")}</span>
                         </div>
                     </section>
 
@@ -179,22 +181,22 @@ export default function Billing() {
 
                     <div className="page-grid">
                         <div className="page-stack">
-                            <Card title="Status atual">
+                            <Card title={t("billing.statusTitle")}>
                                 {loading ? (
-                                    <div className="empty-note">Carregando status da conta...</div>
+                                    <div className="empty-note">{t("billing.loadingStatus")}</div>
                                 ) : (
                                     <div className="info-stack billing-status-panel">
                                         <div className="billing-status-grid">
                                             <div className={`billing-status-item ${isProActive ? "billing-status-item--ok" : ""}`}>
-                                                <span>Status</span>
+                                                <span>{t("billing.status")}</span>
                                                 <strong>{humanStatusLabel()}</strong>
                                             </div>
                                             <div className="billing-status-item">
-                                                <span>Plano</span>
+                                                <span>{t("billing.plan")}</span>
                                                 <strong>{status?.plan || "FREE"}</strong>
                                             </div>
                                             <div className="billing-status-item">
-                                                <span>Cobrança</span>
+                                                <span>{t("billing.charge")}</span>
                                                 <strong>{renewalLead}</strong>
                                             </div>
                                         </div>
@@ -207,28 +209,28 @@ export default function Billing() {
                                         </p>
                                         <div className="page-actions">
                                             <button className="secondary" type="button" onClick={refresh} disabled={loading}>
-                                                Atualizar status
+                                                {t("billing.updateStatus")}
                                             </button>
                                             <button className="secondary" type="button" onClick={openPortal} disabled={loading}>
-                                                Gerenciar assinatura
+                                                {t("billing.manageSubscription")}
                                             </button>
                                         </div>
                                     </div>
                                 )}
                             </Card>
 
-                            <Card title="O que o Pro libera">
+                            <Card title={t("billing.featuresTitle")}>
                                 <div className="feature-list">
-                                    <div className="feature-item">Salvar briefings ilimitados e reabrir rotas rapidamente.</div>
-                                    <div className="feature-item">Sincronizar favoritos e preferências entre sessões.</div>
-                                    <div className="feature-item">Centralizar histórico e continuidade do planejamento.</div>
-                                    <div className="feature-item">Preparar a conta para exportações, suporte comercial e recursos premium futuros.</div>
+                                    <div className="feature-item">{t("billing.featureBriefings")}</div>
+                                    <div className="feature-item">{t("billing.featureFavorites")}</div>
+                                    <div className="feature-item">{t("billing.featureHistory")}</div>
+                                    <div className="feature-item">{t("billing.featureFuture")}</div>
                                 </div>
                             </Card>
                         </div>
 
                         <div className="page-stack">
-                            <Card title="Comparação de planos">
+                            <Card title={t("billing.comparisonTitle")}>
                                 <div className="pricing-grid">
                                     <section className={`pricing-card ${!isProActive ? "pricing-card--current" : ""}`}>
                                         <div className="pricing-head">
@@ -252,22 +254,23 @@ export default function Billing() {
                                         <div className="pricing-head">
                                             <div>
                                                 <div className="pricing-name">Pro</div>
-                                                <div className="pricing-price">{siteProfile.monthlyPrice}</div>
+                                                <div className="pricing-price">{localizedPrice.label}</div>
+                                                <div className="pricing-note">{t("billing.localizedPriceNote")}</div>
                                             </div>
                                             <span className="chip ok">{isProActive ? "Ativo" : siteProfile.trialLabel}</span>
                                         </div>
                                         <div className="feature-list">
-                                            <div className="feature-item">Briefings e favoritos sincronizados</div>
-                                            <div className="feature-item">Reabertura rápida do planejamento salvo</div>
-                                            <div className="feature-item">Gestão de cobrança e cancelamento via Stripe</div>
-                                            <div className="feature-item">Expansão de recursos premium futuros</div>
+                                            <div className="feature-item">{t("billing.proFeatureSync")}</div>
+                                            <div className="feature-item">{t("billing.proFeatureReopen")}</div>
+                                            <div className="feature-item">{t("billing.proFeatureStripe")}</div>
+                                            <div className="feature-item">{t("billing.proFeatureFuture")}</div>
                                         </div>
                                         {isProActive ? (
                                             <div className="billing-active-note">
-                                                <strong>Seu plano Pro já está liberado.</strong>
+                                                <strong>{t("billing.proActiveTitle")}</strong>
                                                 <span>{planLead}</span>
                                                 <button className="secondary" type="button" onClick={openPortal} disabled={loading}>
-                                                    Gerenciar assinatura
+                                                    {t("billing.manageSubscription")}
                                                 </button>
                                             </div>
                                         ) : (
@@ -279,13 +282,13 @@ export default function Billing() {
                                                         onChange={(event) => setAcceptedCommercialTerms(event.target.checked)}
                                                     />
                                                     <span>
-                                                        Li e concordo com os <Link to="/terms">Termos de Uso</Link>, a{" "}
-                                                        <Link to="/privacy">Política de Privacidade</Link> e a{" "}
-                                                        <Link to="/cancellation-policy">Política de Cancelamento</Link>, incluindo cobrança recorrente, regras de cancelamento, reembolso, arrependimento e ausência momentânea de emissão de nota fiscal.
+                                                        {t("billing.acceptance")}{" "}
+                                                        <Link to="/terms">{t("common.terms")}</Link> · <Link to="/privacy">{t("common.privacy")}</Link> ·{" "}
+                                                        <Link to="/cancellation-policy">{t("common.cancellationPolicy")}</Link>
                                                     </span>
                                                 </label>
                                                 <button className="btn-primary" type="button" onClick={startCheckout} disabled={creating || !acceptedCommercialTerms}>
-                                                    {creating ? "Abrindo..." : "Assinar Pro"}
+                                                    {creating ? t("billing.opening") : t("billing.signPro")}
                                                 </button>
                                             </div>
                                         )}
@@ -293,34 +296,34 @@ export default function Billing() {
                                 </div>
 
                                 <p className="page-caption">
-                                    O checkout e o portal do assinante usam Stripe. Em caso de dúvida comercial, use <strong>{siteProfile.supportEmail}</strong> ou consulte a{" "}
-                                    <Link to="/cancellation-policy">política de cancelamento</Link>.
+                                    {t("billing.checkoutAndPortal", { email: siteProfile.supportEmail })}{" "}
+                                    <Link to="/cancellation-policy">{t("common.cancellationPolicy")}</Link>.
                                 </p>
                             </Card>
 
-                            <Card title="Comprovante e nota fiscal">
+                            <Card title={t("billing.invoiceTitle")}>
                                 <div className="billing-active-note">
-                                    <strong>Informação fiscal importante</strong>
+                                    <strong>{t("billing.fiscalInfo")}</strong>
                                     <span>{siteProfile.invoiceNotice}</span>
                                     <span>
-                                        Se você precisa obrigatoriamente de nota fiscal para contratar, fale antes com <strong>{siteProfile.supportEmail}</strong>.
+                                        {t("billing.invoiceNeed", { email: siteProfile.supportEmail })}
                                     </span>
                                 </div>
                             </Card>
 
-                            <Card title="Cancelamento, reembolso e arrependimento">
+                            <Card title={t("billing.refundTitle")}>
                                 <div className="feature-list">
-                                    <div className="feature-item">{siteProfile.refundWindowNotice}</div>
+                                    <div className="feature-item">{t("common.refundWindowNotice")}</div>
                                     <div className="feature-item">
-                                        Cancelar a assinatura interrompe renovações futuras, mas não gera automaticamente reembolso de ciclo já iniciado.
+                                        {t("billing.cancelNoAutoRefund")}
                                     </div>
                                     <div className="feature-item">
-                                        Cobrança duplicada, cobrança indevida ou falha técnica relevante devem ser enviadas ao suporte com o e-mail da conta e comprovante.
+                                        {t("billing.billingIssues")}
                                     </div>
-                                    <div className="feature-item">{siteProfile.subscriptionDeletionNotice}</div>
+                                    <div className="feature-item">{t("common.subscriptionDeletionNotice")}</div>
                                 </div>
                                 <p className="page-caption">
-                                    Consulte a <Link to="/cancellation-policy">política de cancelamento</Link> antes de contratar ou excluir a conta.
+                                    {t("billing.consultPolicy")}
                                 </p>
                             </Card>
                         </div>

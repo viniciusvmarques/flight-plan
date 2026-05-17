@@ -1,8 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { legalVersions, siteProfile } from "../content/siteProfile";
+import { useI18n } from "../i18n/I18nContext.jsx";
+import { getLegalContent } from "../i18n/legalContent";
 
 export default function Terms() {
     const nav = useNavigate();
+    const { locale, t } = useI18n();
+    const copy = getLegalContent(locale);
     const hasLegalIdentity = Boolean(siteProfile.legalName && siteProfile.documentId && siteProfile.cityCountry);
 
     return (
@@ -14,59 +18,44 @@ export default function Terms() {
                     </button>
                 </div>
                 <div className="legal-meta">
-                    <span className="chip">Termos de uso</span>
-                    <span className="chip">Versão {legalVersions.terms}</span>
+                    <span className="chip">{t("legal.termsTitle")}</span>
+                    <span className="chip">{t("legal.version", { version: legalVersions.terms })}</span>
                 </div>
-                <h1>Termos de uso</h1>
-                <p>
-                    A {siteProfile.brandName} é uma ferramenta de apoio à decisão para pilotos e operadores, com foco em briefing meteorológico, acompanhamento de rota e planejamento didático. Ao utilizar o serviço, você concorda em fazê-lo por sua conta e risco, respeitando estes termos.
-                </p>
-                <div className="auth-info legal-note">{siteProfile.operationalDisclaimer}</div>
-                <h2>Uso</h2>
+                <h1>{t("legal.termsTitle")}</h1>
+                <p>{copy.termsIntro}</p>
+                <div className="auth-info legal-note">{t("common.operationalDisclaimer")}</div>
+                <h2>{t("legal.use")}</h2>
                 <ul>
-                    <li>O conteúdo é informativo e educacional; não substitui briefing oficial, NOTAM, cartas ou despacho.</li>
-                    <li>Você é responsável por validar dados operacionais junto às fontes oficiais (ANAC, DECEA, AIS/MET).</li>
-                    <li>É proibido usar o serviço para fins ilegais ou para sobrecarregar os sistemas (scraping abusivo).</li>
+                    {copy.use.map((item) => <li key={item}>{item}</li>)}
                 </ul>
-                <h2>Conta</h2>
-                <p>
-                    Você deve manter suas credenciais em sigilo. Podemos suspender contas em caso de uso indevido ou fraude.
-                </p>
-                <p>
-                    A exclusão da conta pode ser solicitada pelo Perfil. Essa exclusão remove dados diretamente vinculados à conta, observadas as exceções de retenção descritas na Política de Privacidade.
-                </p>
-                <h2>Assinaturas e recursos pagos</h2>
-                <p>
-                    Recursos premium podem depender de cobrança recorrente via plataforma terceirizada. Condições comerciais, cancelamento e renovação são tratadas também na política comercial específica da área de assinatura.
-                </p>
-                <p>{siteProfile.subscriptionDeletionNotice}</p>
-                <p>{siteProfile.refundSummary}</p>
-                <p>{siteProfile.refundWindowNotice}</p>
-                <h2>Comprovante e nota fiscal</h2>
+                <h2>{t("legal.account")}</h2>
+                <p>{copy.account}</p>
+                <h2>{t("legal.paid")}</h2>
+                <p>{copy.paid}</p>
+                <p>{t("common.subscriptionDeletionNotice")}</p>
+                <p>{t("common.refundSummary")}</p>
+                <p>{t("common.refundWindowNotice")}</p>
+                <h2>{t("legal.invoice")}</h2>
                 <p>{siteProfile.invoiceNotice}</p>
                 <p>
-                    Caso você precise obrigatoriamente de nota fiscal para contratar, entre em contato antes da assinatura pelo canal <strong>{siteProfile.supportEmail}</strong>.
+                    {t("billing.invoiceNeed", { email: siteProfile.supportEmail })}
                 </p>
-                <h2>Limitação de responsabilidade</h2>
-                <p>
-                    A responsabilidade final por planejamento, despacho, performance, documentação e decisão operacional permanece com o usuário e, quando aplicável, com o operador responsável. A plataforma não garante disponibilidade contínua nem adequação a uma operação específica.
-                </p>
-                <h2>Propriedade intelectual</h2>
-                <p>
-                    Interface, identidade visual, textos, fluxos e organização do produto pertencem à operação da {siteProfile.brandName}, ressalvados dados de terceiros e fontes públicas licenciadas.
-                </p>
-                <h2>Contato e identificação</h2>
+                <h2>{t("legal.liability")}</h2>
+                <p>{copy.liability}</p>
+                <h2>{t("legal.intellectual")}</h2>
+                <p>{copy.intellectual}</p>
+                <h2>{t("legal.contactIdentity")}</h2>
                 {hasLegalIdentity ? (
                     <p>
                         Operação identificada como <strong>{siteProfile.legalName}</strong>, documento <strong>{siteProfile.documentId}</strong>, base em <strong>{siteProfile.cityCountry}</strong>. Contato principal: <strong>{siteProfile.supportEmail}</strong>.
                     </p>
                 ) : (
                     <p>
-                        Contato principal para suporte, assuntos comerciais e dúvidas institucionais: <strong>{siteProfile.supportEmail}</strong>.
+                        {t("common.support")}: <strong>{siteProfile.supportEmail}</strong>.
                     </p>
                 )}
-                <h2>Alterações</h2>
-                <p>Podemos atualizar estes termos; o uso continuado após mudanças constitui aceitação.</p>
+                <h2>{t("legal.changes")}</h2>
+                <p>{locale === "en" ? "We may update these terms; continued use after changes means acceptance." : locale === "es" ? "Podemos actualizar estos términos; el uso continuado después de cambios constituye aceptación." : "Podemos atualizar estes termos; o uso continuado após mudanças constitui aceitação."}</p>
             </div>
         </div>
     );

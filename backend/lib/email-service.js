@@ -50,6 +50,74 @@ function buildTransporter() {
     });
 }
 
+function normalizeLocale(value) {
+    const raw = String(value || "").toLowerCase();
+    if (raw.startsWith("en")) return "en";
+    if (raw.startsWith("es")) return "es";
+    return "pt-BR";
+}
+
+function emailCopy(locale) {
+    const lang = normalizeLocale(locale);
+    const all = {
+        "pt-BR": {
+            passwordResetSubject: `${BRAND_NAME} — redefinição de senha`,
+            passwordResetTitle: "Redefinição de senha",
+            passwordResetIntro: "Recebemos um pedido para redefinir a senha da sua conta.",
+            passwordResetButton: "Redefinir senha",
+            verifySubject: `${BRAND_NAME} — confirme seu e-mail`,
+            verifyTitle: "Confirme seu e-mail",
+            verifyIntro: "Recebemos um pedido de criação de conta e precisamos validar seu endereço de e-mail.",
+            verifyButton: "Confirmar e-mail",
+            welcomeSubject: `${BRAND_NAME} — bem-vindo a bordo`,
+            welcomeTitle: "Bem-vindo a bordo",
+            welcomeIntro: "Seu e-mail foi confirmado e sua conta Marquisa está pronta para uso.",
+            openApp: "Abrir Marquisa",
+            proSubject: `${BRAND_NAME} — plano Pro ativado`,
+            proTitle: "Plano Pro ativado",
+            proIntro: "Obrigado por assinar. Seu acesso premium já está disponível.",
+            manageSubscription: "Gerenciar assinatura",
+        },
+        en: {
+            passwordResetSubject: `${BRAND_NAME} — password reset`,
+            passwordResetTitle: "Password reset",
+            passwordResetIntro: "We received a request to reset your account password.",
+            passwordResetButton: "Reset password",
+            verifySubject: `${BRAND_NAME} — confirm your email`,
+            verifyTitle: "Confirm your email",
+            verifyIntro: "We received an account creation request and need to validate your email address.",
+            verifyButton: "Confirm email",
+            welcomeSubject: `${BRAND_NAME} — welcome aboard`,
+            welcomeTitle: "Welcome aboard",
+            welcomeIntro: "Your email has been confirmed and your Marquisa account is ready to use.",
+            openApp: "Open Marquisa",
+            proSubject: `${BRAND_NAME} — Pro plan activated`,
+            proTitle: "Pro plan activated",
+            proIntro: "Thank you for subscribing. Your premium access is now available.",
+            manageSubscription: "Manage subscription",
+        },
+        es: {
+            passwordResetSubject: `${BRAND_NAME} — redefinir contraseña`,
+            passwordResetTitle: "Redefinir contraseña",
+            passwordResetIntro: "Recibimos una solicitud para redefinir la contraseña de tu cuenta.",
+            passwordResetButton: "Redefinir contraseña",
+            verifySubject: `${BRAND_NAME} — confirma tu email`,
+            verifyTitle: "Confirma tu email",
+            verifyIntro: "Recibimos una solicitud de creación de cuenta y necesitamos validar tu dirección de email.",
+            verifyButton: "Confirmar email",
+            welcomeSubject: `${BRAND_NAME} — bienvenido a bordo`,
+            welcomeTitle: "Bienvenido a bordo",
+            welcomeIntro: "Tu email fue confirmado y tu cuenta Marquisa está lista para usar.",
+            openApp: "Abrir Marquisa",
+            proSubject: `${BRAND_NAME} — plan Pro activado`,
+            proTitle: "Plan Pro activado",
+            proIntro: "Gracias por suscribirte. Tu acceso premium ya está disponible.",
+            manageSubscription: "Gestionar suscripción",
+        },
+    };
+    return all[lang] || all["pt-BR"];
+}
+
 export function createEmailService(prisma) {
     const transporter = buildTransporter();
     const from = process.env.MAIL_FROM || `${BRAND_NAME} <contato@marquisa.com.br>`;
@@ -141,18 +209,19 @@ export function createEmailService(prisma) {
     }
 
     return {
-        async sendPasswordResetEmail({ email, resetUrl, userId = null }) {
-            const subject = `${BRAND_NAME} — redefinição de senha`;
+        async sendPasswordResetEmail({ email, resetUrl, userId = null, locale = "pt-BR" }) {
+            const copy = emailCopy(locale);
+            const subject = copy.passwordResetSubject;
             const text =
                 `Olá,\n\n` +
                 `Para criar uma nova senha, acesse o link abaixo (válido por tempo limitado):\n${resetUrl}\n\n` +
                 `Se você não pediu isso, ignore este e-mail.\n`;
             const html = buildEmailShell({
-                title: "Redefinição de senha",
-                intro: "Recebemos um pedido para redefinir a senha da sua conta.",
+                title: copy.passwordResetTitle,
+                intro: copy.passwordResetIntro,
                 bodyHtml:
                     `<p style="margin:0 0 16px;">Use o link abaixo para escolher uma nova senha:</p>` +
-                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(resetUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">Redefinir senha</a></p>` +
+                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(resetUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.passwordResetButton)}</a></p>` +
                     `<p style="margin:0 0 8px;">Se preferir, copie e cole este endereço no navegador:</p>` +
                     `<p style="margin:0;word-break:break-all;color:#bfdbfe;">${escapeHtml(resetUrl)}</p>`,
             });
@@ -168,18 +237,19 @@ export function createEmailService(prisma) {
             });
         },
 
-        async sendEmailVerificationEmail({ email, verifyUrl, userId = null }) {
-            const subject = `${BRAND_NAME} — confirme seu e-mail`;
+        async sendEmailVerificationEmail({ email, verifyUrl, userId = null, locale = "pt-BR" }) {
+            const copy = emailCopy(locale);
+            const subject = copy.verifySubject;
             const text =
                 `Olá,\n\n` +
                 `Para ativar sua conta, confirme seu e-mail no link abaixo:\n${verifyUrl}\n\n` +
                 `Se você não pediu esse cadastro, ignore esta mensagem.\n`;
             const html = buildEmailShell({
-                title: "Confirme seu e-mail",
-                intro: "Recebemos um pedido de criação de conta e precisamos validar seu endereço de e-mail.",
+                title: copy.verifyTitle,
+                intro: copy.verifyIntro,
                 bodyHtml:
                     `<p style="margin:0 0 16px;">Clique no botão abaixo para ativar sua conta:</p>` +
-                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(verifyUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">Confirmar e-mail</a></p>` +
+                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(verifyUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.verifyButton)}</a></p>` +
                     `<p style="margin:0 0 8px;">Se preferir, copie e cole este endereço no navegador:</p>` +
                     `<p style="margin:0;word-break:break-all;color:#bfdbfe;">${escapeHtml(verifyUrl)}</p>`,
             });
@@ -195,8 +265,9 @@ export function createEmailService(prisma) {
             });
         },
 
-        async sendWelcomeEmail({ email, userId = null }) {
-            const subject = `${BRAND_NAME} — bem-vindo a bordo`;
+        async sendWelcomeEmail({ email, userId = null, locale = "pt-BR" }) {
+            const copy = emailCopy(locale);
+            const subject = copy.welcomeSubject;
             const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
             const text =
                 `Olá,\n\n` +
@@ -207,8 +278,8 @@ export function createEmailService(prisma) {
                 `Lembrete importante: o ${BRAND_NAME} é uma ferramenta de apoio e estudo. Sempre valide informações operacionais em fontes oficiais, cartas, NOTAM, ROTAER/AIS/MET e documentação aplicável.\n\n` +
                 `Suporte: ${SITE_PROFILE.supportEmail}\n`;
             const html = buildEmailShell({
-                title: "Bem-vindo a bordo",
-                intro: "Seu e-mail foi confirmado e sua conta Marquisa está pronta para uso.",
+                title: copy.welcomeTitle,
+                intro: copy.welcomeIntro,
                 bodyHtml:
                     `<p style="margin:0 0 16px;">A partir de agora você pode usar o painel para:</p>` +
                     `<ul style="margin:0 0 16px;padding-left:20px;">` +
@@ -217,7 +288,7 @@ export function createEmailService(prisma) {
                     `<li>montar planejamento de voo VFR/IFR com rota, nível, combustível e alternado;</li>` +
                     `<li>salvar briefings e favoritos ao evoluir para recursos Pro.</li>` +
                     `</ul>` +
-                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">Abrir Marquisa</a></p>` +
+                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.openApp)}</a></p>` +
                     `<p style="margin:0 0 12px;padding:12px 14px;border-radius:12px;background:rgba(59,130,246,0.12);border:1px solid rgba(147,197,253,0.22);">` +
                     `<strong>Importante:</strong> o ${escapeHtml(BRAND_NAME)} é uma ferramenta de apoio e estudo. Ele não substitui fontes oficiais, cartas, NOTAM, ROTAER/AIS/MET, documentação aplicável ou julgamento do piloto em comando.` +
                     `</p>` +
@@ -227,7 +298,8 @@ export function createEmailService(prisma) {
             return sendEmail({ kind: "welcome", to: email, subject, text, html, userId, metadata: { appUrl } });
         },
 
-        async sendSubscriptionActivatedEmail({ email, currentPeriodEnd, userId = null, providerEventId = null }) {
+        async sendSubscriptionActivatedEmail({ email, currentPeriodEnd, userId = null, providerEventId = null, locale = "pt-BR" }) {
+            const copy = emailCopy(locale);
             const recent = await prisma.emailLog.findFirst({
                 where: {
                     kind: "purchase_success",
@@ -241,7 +313,7 @@ export function createEmailService(prisma) {
 
             const endLabel = currentPeriodEnd ? new Date(currentPeriodEnd).toLocaleDateString("pt-BR") : "o próximo ciclo da assinatura";
             const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
-            const subject = `${BRAND_NAME} — plano Pro ativado`;
+            const subject = copy.proSubject;
             const text =
                 `Olá,\n\n` +
                 `Obrigado por assinar o ${BRAND_NAME} Pro.\n\n` +
@@ -251,8 +323,8 @@ export function createEmailService(prisma) {
                 `Acesse: ${appUrl}\n\n` +
                 `Suporte: ${SITE_PROFILE.supportEmail}\n`;
             const html = buildEmailShell({
-                title: "Plano Pro ativado",
-                intro: "Obrigado por assinar. Seu acesso premium já está disponível.",
+                title: copy.proTitle,
+                intro: copy.proIntro,
                 bodyHtml:
                     `<p style="margin:0 0 16px;">Seu plano <strong>Pro</strong> foi ativado com sucesso.</p>` +
                     `<ul style="margin:0 0 16px;padding-left:20px;">` +
@@ -261,7 +333,7 @@ export function createEmailService(prisma) {
                     `<li>gestão de cobrança e cancelamento pela área de assinatura.</li>` +
                     `</ul>` +
                     `<p style="margin:0 0 12px;">Próximo marco comercial: <strong>${escapeHtml(endLabel)}</strong>.</p>` +
-                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">Gerenciar assinatura</a></p>` +
+                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.manageSubscription)}</a></p>` +
                     `<p style="margin:0;padding:12px 14px;border-radius:12px;background:rgba(59,130,246,0.12);border:1px solid rgba(147,197,253,0.22);">` +
                     `Cancelamento, reembolso, arrependimento e comprovantes seguem as políticas publicadas no site. Em caso de dúvida, fale com ${escapeHtml(SITE_PROFILE.supportEmail)}.` +
                     `</p>`,

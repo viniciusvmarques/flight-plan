@@ -89,7 +89,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
       if (!customerId) return null;
       return prisma.user.findFirst({
         where: { stripeCustomerId: customerId },
-        select: { id: true, email: true, plan: true, planStatus: true, currentPeriodEnd: true },
+        select: { id: true, email: true, plan: true, planStatus: true, preferredLocale: true, currentPeriodEnd: true },
       });
     }
 
@@ -97,7 +97,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
       if (userId) {
         const byId = await prisma.user.findUnique({
           where: { id: userId },
-          select: { id: true, email: true },
+          select: { id: true, email: true, preferredLocale: true },
         }).catch(() => null);
         if (byId) return byId;
       }
@@ -106,7 +106,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
       if (!cleanEmail) return null;
       return prisma.user.findUnique({
         where: { email: cleanEmail },
-        select: { id: true, email: true },
+        select: { id: true, email: true, preferredLocale: true },
       }).catch(() => null);
     }
 
@@ -141,6 +141,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
           currentPeriodEnd: patch.currentPeriodEnd,
           userId: targetUser?.id || null,
           providerEventId: event.id,
+          locale: targetUser?.preferredLocale || session.metadata?.locale,
         })
         .catch((err) => console.error("sendSubscriptionActivatedEmail:", err?.message || err));
     }
@@ -170,6 +171,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
                 currentPeriodEnd: patch.currentPeriodEnd,
                 userId: u.id,
                 providerEventId: event.id,
+                locale: u.preferredLocale,
               })
               .catch((err) => console.error("sendSubscriptionActivatedEmail invoice:", err?.message || err));
           } else {
@@ -179,6 +181,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
                 currentPeriodEnd: patch.currentPeriodEnd,
                 userId: u.id,
                 providerEventId: event.id,
+                locale: u.preferredLocale,
               })
               .catch((err) => console.error("sendSubscriptionRenewedEmail:", err?.message || err));
           }
@@ -199,6 +202,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
               hostedInvoiceUrl: invoice.hosted_invoice_url || null,
               userId: u.id,
               providerEventId: event.id,
+              locale: u.preferredLocale,
             })
             .catch((err) => console.error("sendPaymentFailedEmail:", err?.message || err));
         }
@@ -222,6 +226,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
                 currentPeriodEnd: patch.currentPeriodEnd,
                 userId: u.id,
                 providerEventId: event.id,
+                locale: u.preferredLocale,
               })
               .catch((err) => console.error("sendSubscriptionCancellationScheduledEmail:", err?.message || err));
           }
@@ -245,7 +250,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
             canceledAt: sub?.canceled_at ? new Date(sub.canceled_at * 1000) : new Date(),
           });
           await emailService
-            .sendSubscriptionCanceledEmail({ email: u.email, userId: u.id, providerEventId: event.id })
+            .sendSubscriptionCanceledEmail({ email: u.email, userId: u.id, providerEventId: event.id, locale: u.preferredLocale })
             .catch((err) => console.error("sendSubscriptionCanceledEmail:", err?.message || err));
         }
       }
@@ -324,9 +329,17 @@ function buildPublicUser(user) {
     email: user.email,
     plan: user.plan,
     planStatus: user.planStatus ?? null,
+    preferredLocale: user.preferredLocale || "pt-BR",
     emailVerifiedAt: user.emailVerifiedAt ?? null,
     createdAt: user.createdAt,
   };
+}
+
+function normalizeLocale(value) {
+  const raw = String(value || "").toLowerCase();
+  if (raw.startsWith("en")) return "en";
+  if (raw.startsWith("es")) return "es";
+  return "pt-BR";
 }
 
 function sanitizeAircraftProfileInput(body = {}) {
@@ -397,6 +410,7 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 app.post("/auth/register", async (req,res)=>{
   try{
     const { email, password, consent, consentVersions } = req.body || {};
+    const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
     const cleanEmail = String(email || "").trim().toLowerCase();
     if(!cleanEmail || !password) return res.status(400).json({ error: "E-mail e senha são obrigatórios." });
     if(String(password).length < 6) return res.status(400).json({ error: "Senha deve ter pelo menos 6 caracteres." });
@@ -416,6 +430,7 @@ app.post("/auth/register", async (req,res)=>{
         emailVerificationToken: verificationToken,
         emailVerificationExpires: verificationExpires,
         plan: "FREE",
+        preferredLocale,
         consents: {
           create: {
             termsVersion: String(consentVersions?.terms || LEGAL_DOC_VERSIONS.terms),
@@ -433,6 +448,7 @@ app.post("/auth/register", async (req,res)=>{
         email: user.email,
         verifyUrl: buildVerificationUrl(verificationToken),
         userId: user.id,
+        locale: preferredLocale,
       })
       .catch((err) => console.error("sendEmailVerificationEmail:", err?.message || err));
 
@@ -450,6 +466,7 @@ app.post("/auth/register", async (req,res)=>{
 app.post("/auth/login", async (req,res)=>{
   try{
     const { email, password } = req.body || {};
+    const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
     const cleanEmail = String(email || "").trim().toLowerCase();
     if(!cleanEmail || !password) return res.status(400).json({ error: "E-mail e senha são obrigatórios." });
 
@@ -467,6 +484,10 @@ app.post("/auth/login", async (req,res)=>{
       });
     }
 
+    if (preferredLocale !== (user.preferredLocale || "pt-BR")) {
+      await prisma.user.update({ where: { id: user.id }, data: { preferredLocale } }).catch(() => null);
+      user.preferredLocale = preferredLocale;
+    }
     const safe = buildPublicUser(user);
     const token = signToken(safe);
     return res.json({ token, user: safe });
@@ -484,6 +505,8 @@ const RESEND_VERIFICATION_MSG =
 app.post("/auth/resend-verification", async (req, res) => {
   try {
     const email = String(req.body?.email || "").trim().toLowerCase();
+    const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
+    const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
     const generic = { ok: true, message: RESEND_VERIFICATION_MSG };
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.json(generic);
@@ -510,6 +533,7 @@ app.post("/auth/resend-verification", async (req, res) => {
         email: user.email,
         verifyUrl: buildVerificationUrl(verificationToken),
         userId: user.id,
+        locale: preferredLocale,
       })
       .catch((err) => console.error("sendEmailVerificationEmail resend:", err?.message || err));
 
@@ -522,6 +546,7 @@ app.post("/auth/resend-verification", async (req, res) => {
 app.post("/auth/verify-email", async (req, res) => {
   try {
     const token = String(req.body?.token || "").trim();
+    const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
     if (!token) return res.status(400).json({ error: "Token de confirmação ausente." });
 
     const user = await prisma.user.findFirst({
@@ -534,6 +559,7 @@ app.post("/auth/verify-email", async (req, res) => {
         email: true,
         plan: true,
         planStatus: true,
+        preferredLocale: true,
         emailVerifiedAt: true,
         createdAt: true,
       },
@@ -556,13 +582,19 @@ app.post("/auth/verify-email", async (req, res) => {
         email: true,
         plan: true,
         planStatus: true,
+        preferredLocale: true,
         emailVerifiedAt: true,
         createdAt: true,
       },
     });
 
+    if (preferredLocale !== (updated.preferredLocale || "pt-BR")) {
+      await prisma.user.update({ where: { id: updated.id }, data: { preferredLocale } }).catch(() => null);
+      updated.preferredLocale = preferredLocale;
+    }
+
     await emailService
-      .sendWelcomeEmail({ email: updated.email, userId: updated.id })
+      .sendWelcomeEmail({ email: updated.email, userId: updated.id, locale: updated.preferredLocale || preferredLocale })
       .catch((err) => console.error("sendWelcomeEmail after verify:", err?.message || err));
 
     return res.json({
@@ -586,7 +618,7 @@ app.post("/auth/forgot-password", async (req, res) => {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true, email: true },
+      select: { id: true, email: true, preferredLocale: true },
     });
     if (!user) return res.json(generic);
 
@@ -602,7 +634,7 @@ app.post("/auth/forgot-password", async (req, res) => {
     const resetUrl = `${base}/reset-password?token=${encodeURIComponent(rawToken)}`;
 
     await emailService
-      .sendPasswordResetEmail({ email: user.email, resetUrl, userId: user.id })
+      .sendPasswordResetEmail({ email: user.email, resetUrl, userId: user.id, locale: user.preferredLocale || preferredLocale })
       .catch((err) => console.error("sendPasswordResetEmail:", err?.message || err));
 
     return res.json(generic);
@@ -646,7 +678,7 @@ app.post("/auth/reset-password", async (req, res) => {
     });
 
     await emailService
-      .sendPasswordChangedEmail({ email: user.email, userId: user.id })
+      .sendPasswordChangedEmail({ email: user.email, userId: user.id, locale: user.preferredLocale })
       .catch((err) => console.error("sendPasswordChangedEmail:", err?.message || err));
 
     return res.json({ ok: true, message: "Senha atualizada. Você já pode entrar." });
@@ -665,6 +697,7 @@ app.get("/me", requireAuth, async (req,res)=>{
       email:true,
       plan:true,
       planStatus:true,
+      preferredLocale:true,
       emailVerifiedAt:true,
       currentPeriodEnd:true,
       trialEndsAt:true,
@@ -1180,8 +1213,13 @@ app.get("/api/taf", async (req, res) => {
 app.post("/api/stripe/checkout", requireAuth, async (req, res) => {
   const userId = req.auth?.sub;
   if (!userId) return res.status(401).json({ error: "Não autenticado." });
-  const u = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true, stripeCustomerId: true } });
+  const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true, stripeCustomerId: true, preferredLocale: true } });
   if (!u) return res.status(404).json({ error: "Usuário não encontrado." });
+  if (preferredLocale !== (u.preferredLocale || "pt-BR")) {
+    await prisma.user.update({ where: { id: u.id }, data: { preferredLocale } }).catch(() => null);
+    u.preferredLocale = preferredLocale;
+  }
 
   if (!stripe) return res.json({ demo: true });
 
@@ -1196,7 +1234,7 @@ app.post("/api/stripe/checkout", requireAuth, async (req, res) => {
   if (!customerId) {
     const customer = await stripe.customers.create({
       email: u.email,
-      metadata: { userId: u.id },
+      metadata: { userId: u.id, locale: u.preferredLocale || preferredLocale },
     });
     customerId = customer.id;
     await prisma.user.update({ where: { id: u.id }, data: { stripeCustomerId: customerId } }).catch(() => null);
@@ -1206,11 +1244,11 @@ app.post("/api/stripe/checkout", requireAuth, async (req, res) => {
     mode: "subscription",
     customer: customerId,
     client_reference_id: u.id,
-    metadata: { userId: u.id },
+    metadata: { userId: u.id, locale: u.preferredLocale || preferredLocale },
     line_items: [{ price: priceId, quantity: 1 }],
     subscription_data: {
       trial_period_days: 7,
-      metadata: { userId: u.id },
+      metadata: { userId: u.id, locale: u.preferredLocale || preferredLocale },
     },
     success_url: successUrl,
     cancel_url: cancelUrl,

@@ -2,10 +2,13 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import BrandMark from "../components/Brandmark";
+import LanguageSwitcher from "../components/LanguageSwitcher";
+import { getStoredLocale, useI18n } from "../i18n/I18nContext.jsx";
 
 export default function Register() {
   const nav = useNavigate();
   const { register } = useAuth();
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -24,7 +27,7 @@ export default function Register() {
 
     try {
       setLoading(true);
-            const response = await register({ email, password, accepted: agree });
+            const response = await register({ email, password, accepted: agree, locale: getStoredLocale() });
             nav("/verify-email", {
                 replace: true,
                 state: { email: response?.email || email },
@@ -38,27 +41,27 @@ export default function Register() {
 
   return (
     <div className="auth-wrap">
-      <div className="auth-card auth-card--wide" role="region" aria-label="Criar conta">
+      <div className="auth-card auth-card--wide" role="region" aria-label={t("auth.registerTitle")}>
         <div className="auth-head">
           <button type="button" className="auth-back" onClick={() => nav(-1)}>
-            ← Voltar
+            ← {t("auth.back")}
           </button>
           <div className="auth-brand" onClick={() => nav("/")} role="button" tabIndex={0}>
             <BrandMark size={46} />
           </div>
-          <div className="auth-spacer" />
+          <LanguageSwitcher compact />
         </div>
 
         <div className="auth-body auth-grid">
           <div className="auth-pane">
             <div>
-              <h1>Criar conta</h1>
-              <p>Marquisa • Cadastro com confirmação obrigatória de e-mail antes do primeiro acesso</p>
+              <h1>{t("auth.registerTitle")}</h1>
+              <p>{t("auth.registerCaption")}</p>
             </div>
 
             <form onSubmit={onSubmit} className="auth-form">
               <label>
-                <span>E-mail</span>
+                <span>{t("auth.email")}</span>
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -70,7 +73,7 @@ export default function Register() {
               </label>
 
               <label>
-                <span>Senha</span>
+                <span>{t("auth.password")}</span>
                 <input
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -82,7 +85,7 @@ export default function Register() {
               </label>
 
               <label>
-                <span>Confirmar senha</span>
+                <span>{t("auth.confirmPassword")}</span>
                 <input
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
@@ -96,19 +99,18 @@ export default function Register() {
               <label className="auth-check">
                 <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
                 <span>
-                  Eu li e concordo com os <Link to="/terms">Termos de Uso</Link> e a{" "}
-                  <Link to="/privacy">Política de Privacidade</Link>.
+                  {t("auth.acceptTerms")} <Link to="/terms">{t("common.terms")}</Link> · <Link to="/privacy">{t("common.privacy")}</Link>
                 </span>
               </label>
 
               {error && <div className="auth-error">⚠ {error}</div>}
 
               <button className="btn-primary" disabled={loading || !canSubmit}>
-                {loading ? "Criando..." : "Criar conta"}
+                {loading ? t("auth.creating") : t("auth.registerButton")}
               </button>
 
               <div className="auth-links auth-links--start">
-                <Link to="/login">Já tenho conta • Entrar</Link>
+                <Link to="/login">{t("auth.alreadyHaveAccount")} • {t("auth.loginButton")}</Link>
               </div>
 
               <div className="auth-hint">Após o cadastro, enviaremos um link para ativar sua conta.</div>
@@ -118,10 +120,10 @@ export default function Register() {
           <div className="auth-pane auth-pane--soft">
             <h2>Por que criar conta?</h2>
             <ul className="auth-copy-list">
-              <li>Salvar briefings e reabrir com 1 clique</li>
-              <li>Favoritar aeródromos</li>
-              <li>Guardar preferências e histórico</li>
-              <li>Em breve: assinatura e recursos premium</li>
+              <li>{t("billing.featureBriefings")}</li>
+              <li>{t("billing.featureFavorites")}</li>
+              <li>{t("billing.featureHistory")}</li>
+              <li>{t("billing.featureFuture")}</li>
             </ul>
             <div className="auth-chip-row">
               <span className="chip">Briefing</span>
