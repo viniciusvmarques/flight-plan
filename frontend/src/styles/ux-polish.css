@@ -754,6 +754,37 @@ button:focus-visible {
     gap: 10px;
 }
 
+.plan-route-chip {
+    gap: 10px;
+    padding: 7px 12px;
+}
+
+.plan-route-chip--compact {
+    gap: 8px;
+}
+
+.plan-route-point {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.plan-route-point strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.09);
+    color: #dbeafe;
+    font-size: 11px;
+}
+
+.plan-route-arrow {
+    color: rgba(226, 232, 240, 0.58);
+}
+
 .plan-grid {
     display: grid;
     gap: 12px;

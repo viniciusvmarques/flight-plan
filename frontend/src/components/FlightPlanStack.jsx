@@ -82,6 +82,26 @@ function ChecklistItem({ item }) {
     );
 }
 
+function RouteChip({ base }) {
+    return (
+        <span className="chip plan-route-chip">
+            <span className="plan-route-point">
+                <strong>A</strong>
+                <span>{base?.origin?.icao || "----"}</span>
+            </span>
+            {base?.dest?.icao ? (
+                <>
+                    <span className="plan-route-arrow">→</span>
+                    <span className="plan-route-point">
+                        <strong>B</strong>
+                        <span>{base.dest.icao}</span>
+                    </span>
+                </>
+            ) : null}
+        </span>
+    );
+}
+
 export default function FlightPlanStack({ base, plan, onPlanChange }) {
     const p = plan || {};
     const calc = calculatePlanner(p, {
@@ -118,8 +138,17 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                     </SectionHead>
 
                     <div className="plan-chip-row">
-                        <span className="chip">{base?.dest?.icao ? `A ${base?.origin?.icao || "----"} → B ${base.dest.icao}` : `A ${base?.origin?.icao || "----"}`}</span>
-                        {base?.alternate?.icao ? <span className="chip warn">C {base.alternate.icao}</span> : <span className="chip">Sem C</span>}
+                        <RouteChip base={base} />
+                        {base?.alternate?.icao ? (
+                            <span className="chip warn plan-route-chip plan-route-chip--compact">
+                                <span className="plan-route-point">
+                                    <strong>C</strong>
+                                    <span>{base.alternate.icao}</span>
+                                </span>
+                            </span>
+                        ) : (
+                            <span className="chip">Sem C</span>
+                        )}
                         <span className={`chip ${calc.flightRule === "IFR" ? "warn" : "ok"}`}>{calc.flightRule}</span>
                         <span className="chip">{calc.cruiseLevelLabel || "Nível pendente"}</span>
                     </div>
