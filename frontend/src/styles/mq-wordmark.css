@@ -9,6 +9,7 @@
     justify-content: flex-start;
     gap: var(--fp-brand-gap, 4px);
     width: fit-content;
+    max-width: 100%;
     min-width: 0;
 }
 
@@ -33,6 +34,8 @@
     gap: 8px;
     line-height: 1;
     user-select: none;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .mq-logo--compact {
@@ -58,6 +61,15 @@
     color: #f8fafc;
     text-shadow: 0 4px 18px rgba(2, 6, 23, 0.22);
     white-space: nowrap;
+    min-width: 0;
+}
+
+.auth-brand .fp-brand {
+    max-width: 100%;
+}
+
+.auth-brand .mq-logo {
+    justify-content: center;
 }
 
 .mq-logotype--compact {
@@ -87,5 +99,35 @@
     .fp-topbar .mq-plane-icon {
         width: 30px;
         height: 16px;
+    }
+
+    .auth-brand .fp-brand-tagline {
+        display: none;
+    }
+
+    .auth-brand .mq-logo {
+        gap: 4px;
+    }
+
+    .auth-brand .mq-logotype {
+        font-size: clamp(18px, 6.2vw, 24px) !important;
+        letter-spacing: 0.12em;
+    }
+
+    .auth-brand .mq-plane-icon {
+        width: 34px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 360px) {
+    .auth-brand .mq-logotype {
+        font-size: 17px !important;
+        letter-spacing: 0.1em;
+    }
+
+    .auth-brand .mq-plane-icon {
+        width: 28px;
+        height: 15px;
     }
 }
