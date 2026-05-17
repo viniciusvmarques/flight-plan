@@ -530,6 +530,36 @@ button:focus-visible {
     line-height: 1.5;
 }
 
+.billing-acceptance-box {
+    display: grid;
+    gap: 12px;
+}
+
+.billing-acceptance-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 13px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(2, 6, 23, 0.16);
+    color: rgba(226, 232, 240, 0.82);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.billing-acceptance-check input {
+    margin-top: 3px;
+    accent-color: #60a5fa;
+    flex: 0 0 auto;
+}
+
+.billing-acceptance-check a {
+    color: rgba(191, 219, 254, 0.96);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
 .pricing-head {
     display: flex;
     align-items: flex-start;

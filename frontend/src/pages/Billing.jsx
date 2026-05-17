@@ -16,6 +16,7 @@ export default function Billing() {
     const [error, setError] = useState("");
     const [status, setStatus] = useState(null);
     const [creating, setCreating] = useState(false);
+    const [acceptedCommercialTerms, setAcceptedCommercialTerms] = useState(false);
 
     const email = useMemo(() => user?.email || "", [user]);
 
@@ -53,6 +54,10 @@ export default function Billing() {
 
     async function startCheckout() {
         setError("");
+        if (!acceptedCommercialTerms) {
+            setError("Confirme que você leu e concorda com os termos comerciais antes de assinar.");
+            return;
+        }
         setCreating(true);
         try {
             const res = await apiPost("/api/stripe/checkout", {}, token);
@@ -266,9 +271,23 @@ export default function Billing() {
                                                 </button>
                                             </div>
                                         ) : (
-                                            <button className="btn-primary" type="button" onClick={startCheckout} disabled={creating}>
-                                                {creating ? "Abrindo..." : "Assinar Pro"}
-                                            </button>
+                                            <div className="billing-acceptance-box">
+                                                <label className="billing-acceptance-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={acceptedCommercialTerms}
+                                                        onChange={(event) => setAcceptedCommercialTerms(event.target.checked)}
+                                                    />
+                                                    <span>
+                                                        Li e concordo com os <Link to="/terms">Termos de Uso</Link>, a{" "}
+                                                        <Link to="/privacy">Política de Privacidade</Link> e a{" "}
+                                                        <Link to="/cancellation-policy">Política de Cancelamento</Link>, incluindo cobrança recorrente, regras de cancelamento, reembolso, arrependimento e ausência momentânea de emissão de nota fiscal.
+                                                    </span>
+                                                </label>
+                                                <button className="btn-primary" type="button" onClick={startCheckout} disabled={creating || !acceptedCommercialTerms}>
+                                                    {creating ? "Abrindo..." : "Assinar Pro"}
+                                                </button>
+                                            </div>
                                         )}
                                     </section>
                                 </div>
