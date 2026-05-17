@@ -330,6 +330,10 @@ export default function Dashboard() {
             setLastData(out);
             setPlannerSeed(basePlan);
             localStorage.setItem("fp_last_briefing", JSON.stringify(out));
+            toast(d ? `Briefing ${o} → ${d} gerado com sucesso.` : `Briefing ${o} gerado com sucesso.`, {
+                variant: "success",
+                title: "Briefing gerado",
+            });
         } catch (e) {
             setError(e?.message || "Erro ao gerar briefing");
         } finally {
