@@ -701,6 +701,14 @@ button:focus-visible {
     background: rgba(255, 255, 255, 0.03);
 }
 
+.plan-stack--anac {
+    gap: 16px;
+}
+
+.plan-stack--anac .plan-phase-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .plan-panel--dark {
     background: rgba(2, 6, 23, 0.22);
 }
@@ -713,6 +721,26 @@ button:focus-visible {
 .plan-section-head {
     display: grid;
     gap: 6px;
+}
+
+.plan-section-head--numbered {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+}
+
+.plan-step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    border: 1px solid rgba(96, 165, 250, 0.32);
+    background: rgba(59, 130, 246, 0.14);
+    color: #bfdbfe;
+    font-weight: 800;
+    font-size: 12px;
 }
 
 .plan-section-copy {
@@ -760,6 +788,21 @@ button:focus-visible {
     margin-top: 0;
 }
 
+.plan-textarea {
+    min-height: 96px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.plan-mini-panel {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.16);
+}
+
 .plan-metric {
     display: grid;
     gap: 6px;
@@ -792,6 +835,70 @@ button:focus-visible {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
+}
+
+.plan-brief-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.plan-summary-line {
+    display: grid;
+    gap: 6px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.2);
+}
+
+.plan-summary-line span,
+.plan-check-item span {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(226, 232, 240, 0.66);
+}
+
+.plan-summary-line strong {
+    color: #f8fafc;
+    line-height: 1.4;
+}
+
+.plan-check-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.plan-check-item {
+    display: grid;
+    gap: 6px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.2);
+}
+
+.plan-check-item strong {
+    color: rgba(241, 245, 249, 0.9);
+    line-height: 1.45;
+    font-size: 13px;
+}
+
+.plan-check-item--ok {
+    border-color: rgba(34, 197, 94, 0.24);
+    background: rgba(34, 197, 94, 0.08);
+}
+
+.plan-check-item--warn {
+    border-color: rgba(245, 158, 11, 0.24);
+    background: rgba(245, 158, 11, 0.08);
+}
+
+.plan-check-item--info {
+    border-color: rgba(96, 165, 250, 0.22);
+    background: rgba(59, 130, 246, 0.08);
 }
 
 .plan-context-card {
@@ -1106,6 +1213,9 @@ button:focus-visible {
     .aircraft-manager-grid,
     .pricing-grid,
     .billing-status-grid,
+    .plan-brief-grid,
+    .plan-check-grid,
+    .plan-stack--anac .plan-phase-grid,
     .plan-grid--3,
     .plan-grid--4,
     .plan-context-grid,

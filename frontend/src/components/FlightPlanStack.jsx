@@ -1,5 +1,5 @@
 import Card from "./Card";
-import { calculatePlanner, fmtHours, fmtMinutes } from "../utils/plannerEngine";
+import { calculatePlanner, fmtDeg, fmtMinutes } from "../utils/plannerEngine";
 
 function Field({ label, children, hint }) {
     return (
@@ -11,11 +11,37 @@ function Field({ label, children, hint }) {
     );
 }
 
+function SelectField({ label, value, onChange, options, hint }) {
+    return (
+        <Field label={label} hint={hint}>
+            <select className="input" value={value} onChange={(event) => onChange(event.target.value)}>
+                {options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+        </Field>
+    );
+}
+
 function MetricBox({ label, value, tone = "neutral" }) {
     return (
         <div className={`plan-metric plan-metric--${tone}`}>
             <span className="plan-metric-label">{label}</span>
             <strong className="plan-metric-value">{value}</strong>
+        </div>
+    );
+}
+
+function SectionHead({ step, title, children }) {
+    return (
+        <div className="plan-section-head plan-section-head--numbered">
+            <span className="plan-step">{step}</span>
+            <div>
+                <div className="card-title">{title}</div>
+                {children ? <p className="plan-section-copy">{children}</p> : null}
+            </div>
         </div>
     );
 }
@@ -38,55 +64,101 @@ function StationContext({ letter, title, station }) {
     );
 }
 
+function SummaryLine({ label, value }) {
+    return (
+        <div className="plan-summary-line">
+            <span>{label}</span>
+            <strong>{value || "—"}</strong>
+        </div>
+    );
+}
+
+function ChecklistItem({ item }) {
+    return (
+        <div className={`plan-check-item ${item.ok ? "plan-check-item--ok" : item.advisory ? "plan-check-item--info" : "plan-check-item--warn"}`}>
+            <span>{item.ok ? "OK" : item.advisory ? "Verificar" : "Atenção"}</span>
+            <strong>{item.label}</strong>
+        </div>
+    );
+}
+
 export default function FlightPlanStack({ base, plan, onPlanChange }) {
     const p = plan || {};
     const calc = calculatePlanner(p, {
         originAirport: base?.origin?.airport || null,
         destAirport: base?.dest?.airport || null,
         alternateAirport: base?.alternate?.airport || null,
+        originStation: base?.origin || null,
+        destStation: base?.dest || null,
+        alternateStation: base?.alternate || null,
         originIcao: base?.origin?.icao || "A",
         destIcao: base?.dest?.icao || "",
         alternateIcao: base?.alternate?.icao || "",
     });
 
     function setField(key, value) {
-        onPlanChange?.({ ...p, [key]: value });
+        const next = { ...p, [key]: value };
+        if (key === "flightRule" && value === "IFR" && !next.reserveRule) {
+            next.reserveRule = "IFR 45 min";
+            next.finalReserveMin = next.finalReserveMin || 45;
+        }
+        if (key === "flightRule" && value === "VFR" && !next.reserveRule) {
+            next.reserveRule = "VFR 30 min";
+            next.finalReserveMin = next.finalReserveMin || 30;
+        }
+        onPlanChange?.(next);
     }
 
     return (
-        <Card title="Planejador operacional">
-            <div className="plan-stack">
+        <Card title="Planejador ANAC">
+            <div className="plan-stack plan-stack--anac">
                 <section className="plan-panel plan-panel--dark">
-                    <div className="plan-section-head">
-                        <div className="card-title">Missão e parâmetros básicos</div>
-                        <p className="plan-section-copy">
-                            Ajuste os dados essenciais do voo com liberdade total, sem depender de um perfil pré-carregado.
-                        </p>
-                    </div>
+                    <SectionHead step="1" title="Missão">
+                        Defina regra de voo, identificação e nível planejado. Esta é a base da ficha de navegação.
+                    </SectionHead>
 
                     <div className="plan-chip-row">
                         <span className="chip">{base?.dest?.icao ? `A ${base?.origin?.icao || "----"} → B ${base.dest.icao}` : `A ${base?.origin?.icao || "----"}`}</span>
                         {base?.alternate?.icao ? <span className="chip warn">C {base.alternate.icao}</span> : <span className="chip">Sem C</span>}
-                        <span className="chip ok">{p.reserveRule || "Reserva livre"}</span>
+                        <span className={`chip ${calc.flightRule === "IFR" ? "warn" : "ok"}`}>{calc.flightRule}</span>
+                        <span className="chip">{calc.cruiseLevelLabel || "Nível pendente"}</span>
                     </div>
 
-                    <div className="plan-grid plan-grid--2">
+                    <div className="plan-grid plan-grid--4">
+                        <SelectField
+                            label="Regra de voo"
+                            value={p.flightRule || "VFR"}
+                            onChange={(value) => setField("flightRule", value)}
+                            options={[
+                                { value: "VFR", label: "VFR" },
+                                { value: "IFR", label: "IFR" },
+                            ]}
+                            hint="Use IFR quando houver rota/procedimento por instrumentos."
+                        />
+                        <SelectField
+                            label="Tipo de rota"
+                            value={p.routeMode || "direct"}
+                            onChange={(value) => setField("routeMode", value)}
+                            options={[
+                                { value: "direct", label: "Direta A-B" },
+                                { value: "manual", label: "Manual por carta" },
+                                { value: "checkpoints", label: "Checkpoints" },
+                            ]}
+                        />
                         <Field label="Callsign / identificação">
-                            <input
-                                className="input"
-                                value={p.callsign ?? ""}
-                                onChange={(e) => setField("callsign", e.target.value.toUpperCase())}
-                                placeholder="PP-ABC / MARQUISA 01"
-                            />
+                            <input className="input" value={p.callsign ?? ""} onChange={(e) => setField("callsign", e.target.value.toUpperCase())} placeholder="PP-ABC / MARQUISA 01" />
                         </Field>
                         <Field label="Matrícula">
                             <input className="input" value={p.registration ?? ""} onChange={(e) => setField("registration", e.target.value.toUpperCase())} placeholder="PT-ABC" />
                         </Field>
                     </div>
 
-                    <div className="plan-grid plan-grid--3">
-                        <Field label="Nível / altitude (ft)">
+                    <div className="plan-grid plan-grid--4">
+                        <Field label="Altitude (ft)">
                             <input className="input" value={p.cruiseAltFt ?? p.defaultCruiseAltFt ?? ""} onChange={(e) => setField("cruiseAltFt", e.target.value)} placeholder="6500" />
+                        </Field>
+                        <Field label="Nível / FL">
+                            <input className="input" value={p.cruiseLevel ?? ""} onChange={(e) => setField("cruiseLevel", e.target.value.toUpperCase())} placeholder="FL090 / A065" />
                         </Field>
                         <Field label="Payload básico (kg)">
                             <input className="input" value={p.payloadKg ?? ""} onChange={(e) => setField("payloadKg", e.target.value)} placeholder="300" />
@@ -98,23 +170,58 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                 </section>
 
                 <section className="plan-panel">
-                    <div className="plan-section-head">
-                        <div className="card-title">Base da rota</div>
-                        <p className="plan-section-copy">Ajuste distância, velocidade, vento e política de combustível do voo atual.</p>
-                    </div>
+                    <SectionHead step="2" title="Navegação estimada">
+                        Traduza a carta em números: distância, rumo, declinação, vento, proa e velocidade no solo.
+                    </SectionHead>
 
                     <div className="plan-grid plan-grid--4">
-                        <Field label="Distância planejada (NM)" hint={calc.suggestedRouteDistNm > 0 ? `Sugestão A-B: ${calc.suggestedRouteDistNm} NM` : null}>
+                        <Field label="Distância A-B (NM)" hint={calc.suggestedRouteDistNm > 0 ? `Sugestão: ${calc.suggestedRouteDistNm} NM` : null}>
                             <input className="input" value={p.routeDistNm ?? ""} onChange={(e) => setField("routeDistNm", e.target.value)} placeholder="165" />
+                        </Field>
+                        <Field label="Rumo verdadeiro (°)">
+                            <input className="input" value={p.trueCourseDeg ?? ""} onChange={(e) => setField("trueCourseDeg", e.target.value)} placeholder="092" />
+                        </Field>
+                        <Field label="Declinação (E + / W -)">
+                            <input className="input" value={p.magVariationDeg ?? ""} onChange={(e) => setField("magVariationDeg", e.target.value)} placeholder="-20" />
                         </Field>
                         <Field label="TAS (kt)">
                             <input className="input" value={p.tasKt ?? ""} onChange={(e) => setField("tasKt", e.target.value)} placeholder="122" />
                         </Field>
-                        <Field label="Componente de vento (kt)">
-                            <input className="input" value={p.windCompKt ?? ""} onChange={(e) => setField("windCompKt", e.target.value)} placeholder="+10 / -10" />
-                        </Field>
-                        <MetricBox label="GS estimado" value={calc.gsKt ? `${calc.gsKt.toFixed(0)} kt` : "—"} tone="ok" />
                     </div>
+
+                    <div className="plan-grid plan-grid--4">
+                        <Field label="Vento de (°)">
+                            <input className="input" value={p.windDirectionDeg ?? ""} onChange={(e) => setField("windDirectionDeg", e.target.value)} placeholder="140" />
+                        </Field>
+                        <Field label="Vento (kt)">
+                            <input className="input" value={p.windSpeedKt ?? ""} onChange={(e) => setField("windSpeedKt", e.target.value)} placeholder="12" />
+                        </Field>
+                        <Field label="GS manual (kt)" hint="Use se preferir informar GS direto.">
+                            <input className="input" value={p.groundSpeedKt ?? ""} onChange={(e) => setField("groundSpeedKt", e.target.value)} placeholder="115" />
+                        </Field>
+                        <Field label="EET manual (min)">
+                            <input className="input" value={p.eetMinutes ?? ""} onChange={(e) => setField("eetMinutes", e.target.value)} placeholder="vazio = automático" />
+                        </Field>
+                    </div>
+
+                    <div className="plan-summary-grid plan-summary-grid--4">
+                        <MetricBox label="Rumo magnético" value={fmtDeg(calc.magCourseDeg)} />
+                        <MetricBox label="Proa corrigida" value={fmtDeg(calc.headingDeg)} tone="ok" />
+                        <MetricBox label="GS estimado" value={calc.groundSpeedKt ? `${calc.groundSpeedKt.toFixed(0)} kt` : "—"} tone="ok" />
+                        <MetricBox label="EET" value={fmtMinutes(calc.eetMinutes)} />
+                    </div>
+
+                    <div className="plan-chip-row">
+                        <span className="chip">Proa/cauda: {Number.isFinite(calc.headwindKt) ? `${calc.headwindKt.toFixed(0)} kt` : "—"}</span>
+                        <span className="chip">Través: {Number.isFinite(calc.crosswindKt) ? `${Math.abs(calc.crosswindKt).toFixed(0)} kt` : "—"}</span>
+                        <span className="chip">Correção: {calc.windCorrectionDeg ? `${calc.windCorrectionDeg.toFixed(1)}°` : "—"}</span>
+                    </div>
+                </section>
+
+                <section className="plan-panel">
+                    <SectionHead step="3" title="Combustível e autonomia">
+                        Separe o combustível por blocos. O resultado mostra requerido, autonomia, pouso estimado e margem.
+                    </SectionHead>
 
                     <div className="plan-grid plan-grid--4">
                         <Field label="Fuel flow cruzeiro (L/h)">
@@ -131,135 +238,129 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         </Field>
                     </div>
 
+                    <div className="plan-phase-grid">
+                        <div className="plan-mini-panel">
+                            <div className="card-title">Táxi e subida</div>
+                            <div className="plan-grid plan-grid--2">
+                                <Field label="Táxi (L)">
+                                    <input className="input" value={p.taxiFuelL ?? ""} onChange={(e) => setField("taxiFuelL", e.target.value)} placeholder="8" />
+                                </Field>
+                                <Field label="Subida (min)">
+                                    <input className="input" value={p.climbTimeMin ?? ""} onChange={(e) => setField("climbTimeMin", e.target.value)} placeholder="14" />
+                                </Field>
+                                <Field label="Comb. subida (L)">
+                                    <input className="input" value={p.climbFuelL ?? ""} onChange={(e) => setField("climbFuelL", e.target.value)} placeholder="18" />
+                                </Field>
+                                <Field label="Descida (min)">
+                                    <input className="input" value={p.descentTimeMin ?? ""} onChange={(e) => setField("descentTimeMin", e.target.value)} placeholder="10" />
+                                </Field>
+                            </div>
+                        </div>
+
+                        <div className="plan-mini-panel">
+                            <div className="card-title">Cruzeiro</div>
+                            <div className="plan-grid plan-grid--2">
+                                <SelectField
+                                    label="Modo"
+                                    value={p.cruiseMode ?? "auto"}
+                                    onChange={(value) => setField("cruiseMode", value)}
+                                    options={[
+                                        { value: "auto", label: "Automático" },
+                                        { value: "manual", label: "Manual" },
+                                    ]}
+                                />
+                                <Field label="Distância cruzeiro (NM)">
+                                    <input className="input" value={p.cruiseDistNm ?? ""} onChange={(e) => setField("cruiseDistNm", e.target.value)} placeholder="vazio = A-B" />
+                                </Field>
+                                {String(p.cruiseMode ?? "auto") === "manual" ? (
+                                    <>
+                                        <Field label="Tempo cruzeiro (min)">
+                                            <input className="input" value={p.cruiseTimeMin ?? ""} onChange={(e) => setField("cruiseTimeMin", e.target.value)} placeholder="48" />
+                                        </Field>
+                                        <Field label="Comb. cruzeiro (L)">
+                                            <input className="input" value={p.cruiseFuelL ?? ""} onChange={(e) => setField("cruiseFuelL", e.target.value)} placeholder="28" />
+                                        </Field>
+                                    </>
+                                ) : (
+                                    <>
+                                        <MetricBox label="Tempo" value={fmtMinutes(calc.cruiseTimeMinAuto)} />
+                                        <MetricBox label="Combustível" value={`${calc.cruiseFuelLAuto.toFixed(1)} L`} tone="warn" />
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="plan-mini-panel">
+                            <div className="card-title">Reservas</div>
+                            <div className="plan-grid plan-grid--2">
+                                <Field label="Descida (L)">
+                                    <input className="input" value={p.descentFuelL ?? ""} onChange={(e) => setField("descentFuelL", e.target.value)} placeholder="5" />
+                                </Field>
+                                <Field label="Aproximação (L)">
+                                    <input className="input" value={p.approachFuelL ?? ""} onChange={(e) => setField("approachFuelL", e.target.value)} placeholder="4" />
+                                </Field>
+                                <Field label="Contingência (%)">
+                                    <input className="input" value={p.contingencyPct ?? ""} onChange={(e) => setField("contingencyPct", e.target.value)} placeholder="5" />
+                                </Field>
+                                <Field label="Reserva final (min)">
+                                    <input className="input" value={p.finalReserveMin ?? ""} onChange={(e) => setField("finalReserveMin", e.target.value)} placeholder="45" />
+                                </Field>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="plan-panel">
+                    <SectionHead step="4" title="Alternado e observações IFR/VFR">
+                        Para IFR, registre alternado e procedimento pretendido. Para VFR, use como checklist de decisão.
+                    </SectionHead>
+
                     <div className="plan-grid plan-grid--4">
-                        <Field label="Táxi (L)">
-                            <input className="input" value={p.taxiFuelL ?? ""} onChange={(e) => setField("taxiFuelL", e.target.value)} placeholder="8" />
+                        <Field label="Perna B-C (NM)" hint={calc.suggestedAlternateDistNm > 0 ? `Sugestão: ${calc.suggestedAlternateDistNm} NM` : null}>
+                            <input className="input" value={p.alternateLegDistNm ?? ""} onChange={(e) => setField("alternateLegDistNm", e.target.value)} placeholder="opcional" />
                         </Field>
-                        <Field label="Approach / landing (L)">
-                            <input className="input" value={p.approachFuelL ?? ""} onChange={(e) => setField("approachFuelL", e.target.value)} placeholder="4" />
+                        <Field label="GS alternado (kt)">
+                            <input className="input" value={p.alternateGsKt ?? ""} onChange={(e) => setField("alternateGsKt", e.target.value)} placeholder="usa GS base" />
                         </Field>
-                        <Field label="Contingência (%)">
-                            <input className="input" value={p.contingencyPct ?? ""} onChange={(e) => setField("contingencyPct", e.target.value)} placeholder="5" />
+                        <Field label="Comb. alternado (L)">
+                            <input className="input" value={p.alternateFuelL ?? ""} onChange={(e) => setField("alternateFuelL", e.target.value)} placeholder="auto se vazio" />
                         </Field>
-                        <Field label="Reserva final (min)">
-                            <input className="input" value={p.finalReserveMin ?? ""} onChange={(e) => setField("finalReserveMin", e.target.value)} placeholder="45" />
+                        <Field label="Extra fuel (L)">
+                            <input className="input" value={p.extraFuelL ?? ""} onChange={(e) => setField("extraFuelL", e.target.value)} placeholder="0" />
                         </Field>
                     </div>
 
                     <div className="plan-grid plan-grid--2">
-                        <Field label="Extra fuel (L)" hint="Coloque aqui combustível extra de operação, espera, replanejamento ou margem adicional.">
-                            <input className="input" value={p.extraFuelL ?? ""} onChange={(e) => setField("extraFuelL", e.target.value)} placeholder="0" />
+                        <Field label="Notas IFR / procedimento">
+                            <textarea className="input plan-textarea" value={p.ifrProcedureNotes ?? ""} onChange={(e) => setField("ifrProcedureNotes", e.target.value)} placeholder="SID, rota, STAR, IAC, mínimos, RMK..." />
                         </Field>
-                        <Field label="Observações operacionais">
-                            <input className="input" value={p.notes ?? ""} onChange={(e) => setField("notes", e.target.value)} placeholder="PAX leves, pista molhada, alternado obrigatório..." />
+                        <Field label="Observações VFR / navegação">
+                            <textarea className="input plan-textarea" value={p.notes ?? ""} onChange={(e) => setField("notes", e.target.value)} placeholder="Referências visuais, checkpoints, restrições, NOTAM/ROTAER a verificar..." />
                         </Field>
-                    </div>
-                </section>
-
-                <div className="plan-phase-grid">
-                    <section className="plan-panel">
-                        <div className="card-title">Subida</div>
-                        <div className="plan-grid plan-grid--2">
-                            <Field label="Tempo (min)">
-                                <input className="input" value={p.climbTimeMin ?? ""} onChange={(e) => setField("climbTimeMin", e.target.value)} placeholder="14" />
-                            </Field>
-                            <Field label="Combustível (L)">
-                                <input className="input" value={p.climbFuelL ?? ""} onChange={(e) => setField("climbFuelL", e.target.value)} placeholder="18" />
-                            </Field>
-                        </div>
-                    </section>
-
-                    <section className="plan-panel">
-                        <div className="card-title">Cruzeiro</div>
-                        <div className="plan-grid plan-grid--3">
-                            <Field label="Modo de cruzeiro">
-                                <select className="input" value={p.cruiseMode ?? "auto"} onChange={(e) => setField("cruiseMode", e.target.value)}>
-                                    <option value="auto">Auto</option>
-                                    <option value="manual">Manual</option>
-                                </select>
-                            </Field>
-                            <Field label="Distância cruzeiro (NM)">
-                                <input className="input" value={p.cruiseDistNm ?? ""} onChange={(e) => setField("cruiseDistNm", e.target.value)} placeholder="vazio = A-B" />
-                            </Field>
-                            <Field label="GS cruzeiro (kt)">
-                                <input className="input" value={p.cruiseGsKt ?? ""} onChange={(e) => setField("cruiseGsKt", e.target.value)} placeholder="vazio = GS base" />
-                            </Field>
-                        </div>
-
-                        {String(p.cruiseMode ?? "auto") === "manual" ? (
-                            <div className="plan-grid plan-grid--2">
-                                <Field label="Tempo cruzeiro (min)">
-                                    <input className="input" value={p.cruiseTimeMin ?? ""} onChange={(e) => setField("cruiseTimeMin", e.target.value)} placeholder="48" />
-                                </Field>
-                                <Field label="Combustível cruzeiro (L)">
-                                    <input className="input" value={p.cruiseFuelL ?? ""} onChange={(e) => setField("cruiseFuelL", e.target.value)} placeholder="28" />
-                                </Field>
-                            </div>
-                        ) : (
-                            <div className="plan-grid plan-grid--2">
-                                <MetricBox label="Tempo automático" value={fmtMinutes(calc.cruiseTimeMinAuto)} />
-                                <MetricBox label="Combustível automático" value={`${calc.cruiseFuelLAuto.toFixed(1)} L`} tone="warn" />
-                            </div>
-                        )}
-                    </section>
-
-                    <section className="plan-panel">
-                        <div className="card-title">Descida e alternado</div>
-                        <div className="plan-grid plan-grid--2">
-                            <Field label="Tempo descida (min)">
-                                <input className="input" value={p.descentTimeMin ?? ""} onChange={(e) => setField("descentTimeMin", e.target.value)} placeholder="10" />
-                            </Field>
-                            <Field label="Combustível descida (L)">
-                                <input className="input" value={p.descentFuelL ?? ""} onChange={(e) => setField("descentFuelL", e.target.value)} placeholder="5" />
-                            </Field>
-                        </div>
-
-                        <div className="plan-grid plan-grid--3">
-                            <Field label="Perna B-C (NM)" hint={calc.suggestedAlternateDistNm > 0 ? `Sugestão B-C: ${calc.suggestedAlternateDistNm} NM` : null}>
-                                <input className="input" value={p.alternateLegDistNm ?? ""} onChange={(e) => setField("alternateLegDistNm", e.target.value)} placeholder="opcional" />
-                            </Field>
-                            <Field label="GS alternado (kt)">
-                                <input className="input" value={p.alternateGsKt ?? ""} onChange={(e) => setField("alternateGsKt", e.target.value)} placeholder="usa GS base" />
-                            </Field>
-                            <Field label="Combustível alternado (L)">
-                                <input className="input" value={p.alternateFuelL ?? ""} onChange={(e) => setField("alternateFuelL", e.target.value)} placeholder="auto se vazio" />
-                            </Field>
-                        </div>
-                    </section>
-                </div>
-
-                <section className="plan-panel">
-                    <div className="plan-section-head">
-                        <div className="card-title">Contexto operacional</div>
-                        <p className="plan-section-copy">Elevação, pistas e estrutura básica dos aeródromos já entram no mesmo fluxo do planner.</p>
-                    </div>
-
-                    <div className="plan-context-grid">
-                        <StationContext letter="A" title="Origem" station={base?.origin} />
-                        <StationContext letter="B" title="Destino" station={base?.dest} />
-                        <StationContext letter="C" title="Alternativa" station={base?.alternate} />
                     </div>
                 </section>
 
                 <section className="plan-panel plan-panel--accent">
-                    <div className="plan-section-head">
-                        <div className="card-title">Resultado ao vivo</div>
-                        <p className="plan-section-copy">Blocos de combustível, margem de bordo, endurance e navlog simplificado por perna.</p>
-                    </div>
+                    <SectionHead step="5" title="Resumo para briefing">
+                        Saída didática: rota, regra, velocidade, nível, EET, autonomia, alternado, combustível e pendências.
+                    </SectionHead>
 
-                    <div className="plan-chip-row">
-                        <span className="chip ok">Trip: {fmtMinutes(calc.tripTimeMin)}</span>
-                        <span className="chip warn">Trip fuel: {calc.tripFuelL.toFixed(1)} L</span>
-                        <span className="chip">Alternado: {calc.alternateFuelL.toFixed(1)} L</span>
-                        <span className="chip">Reserva final: {calc.finalReserveFuelL.toFixed(1)} L</span>
-                        <span className={`chip ${calc.fuelMarginL >= 0 ? "ok" : "bad"}`}>Margem: {calc.fuelMarginL.toFixed(1)} L</span>
+                    <div className="plan-brief-grid">
+                        <SummaryLine label="Identificação" value={calc.flightPlanSummary.aircraftId} />
+                        <SummaryLine label="Regra" value={calc.flightPlanSummary.rule} />
+                        <SummaryLine label="Rota" value={calc.flightPlanSummary.route} />
+                        <SummaryLine label="Velocidade" value={calc.flightPlanSummary.speed} />
+                        <SummaryLine label="Nível" value={calc.flightPlanSummary.level} />
+                        <SummaryLine label="EET" value={calc.flightPlanSummary.eet} />
+                        <SummaryLine label="Autonomia" value={calc.flightPlanSummary.endurance} />
+                        <SummaryLine label="Alternado" value={calc.flightPlanSummary.alternate} />
                     </div>
 
                     <div className="plan-summary-grid plan-summary-grid--4">
-                        <MetricBox label="Required fuel" value={`${calc.requiredFuelL.toFixed(1)} L`} tone="bad" />
+                        <MetricBox label="Requerido" value={`${calc.requiredFuelL.toFixed(1)} L`} tone={calc.fuelMarginL >= 0 ? "warn" : "bad"} />
                         <MetricBox label="A bordo" value={`${calc.fuelOnBoardL.toFixed(1)} L`} tone="ok" />
                         <MetricBox label="No pouso" value={`${calc.estimatedLandingFuelL.toFixed(1)} L`} tone={calc.estimatedLandingFuelL >= calc.desiredLandingFuelL ? "ok" : "warn"} />
-                        <MetricBox label="Endurance" value={fmtHours(calc.enduranceHours)} />
+                        <MetricBox label="Margem" value={`${calc.fuelMarginL.toFixed(1)} L`} tone={calc.fuelMarginL >= 0 ? "ok" : "bad"} />
                     </div>
 
                     <div className="plan-summary-grid plan-summary-grid--4">
@@ -267,6 +368,12 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         <MetricBox label="Trip" value={`${calc.tripFuelL.toFixed(1)} L`} />
                         <MetricBox label="Reservas" value={`${calc.reservesFuelL.toFixed(1)} L`} />
                         <MetricBox label="Após requerido" value={`${calc.remainingAfterRequiredL.toFixed(1)} L`} tone={calc.remainingAfterRequiredL > 0 ? "ok" : "warn"} />
+                    </div>
+
+                    <div className="plan-context-grid">
+                        <StationContext letter="A" title="Origem" station={base?.origin} />
+                        <StationContext letter="B" title="Destino" station={base?.dest} />
+                        <StationContext letter="C" title="Alternativa" station={base?.alternate} />
                     </div>
 
                     {calc.legs.length ? (
@@ -283,6 +390,12 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         </div>
                     ) : null}
 
+                    <div className="plan-check-grid">
+                        {calc.checklist.map((item) => (
+                            <ChecklistItem key={item.key} item={item} />
+                        ))}
+                    </div>
+
                     {calc.warnings.length ? (
                         <div className="plan-warning-list">
                             {calc.warnings.map((warning) => (
@@ -294,12 +407,12 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                     ) : null}
 
                     <div className="plan-total">
-                        <div className="plan-total-label">Total estimado de combustível</div>
+                        <div className="plan-total-label">Combustível total requerido</div>
                         <div className="plan-total-value">
                             {calc.totalFuelL.toFixed(1)} <span>L</span>
                         </div>
                         <div className="plan-total-sub">
-                            Inclui táxi, trip, alternado, contingência, reserva final e extra fuel. Base forte para GA, em caráter estimativo.
+                            Estimativa didática baseada em táxi, trip, alternado, contingência, reserva final e extra. Não substitui ROTAER, NOTAM, cartas, manual da aeronave ou julgamento do piloto.
                         </div>
                     </div>
                 </section>
@@ -307,4 +420,3 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
         </Card>
     );
 }
-
