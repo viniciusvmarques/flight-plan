@@ -282,6 +282,18 @@ button:focus-visible {
 .wx-text {
     border-radius: 14px !important;
     line-height: 1.5 !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.wx-empty-state {
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.34);
+    color: rgba(226, 232, 240, 0.78);
+    line-height: 1.5;
+    font-size: 13px;
 }
 
 /* ----- Resumo / estados ----- */
@@ -1153,11 +1165,14 @@ button:focus-visible {
 .main-shell {
     height: auto !important;
     min-height: 100vh !important;
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 .main-scroll {
     overflow: visible !important;
     flex: 1 1 auto !important;
+    max-width: 100%;
 }
 
 .site-footer {
@@ -1176,6 +1191,26 @@ button:focus-visible {
 }
 
 @media (max-width: 520px) {
+    html,
+    body,
+    #root {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .app,
+    .main-shell,
+    .main-scroll,
+    .page-shell,
+    .fp-topbar,
+    .fp-sidebar,
+    .fp-card,
+    .card,
+    .wx-card-wrap {
+        min-width: 0;
+        max-width: 100%;
+    }
+
     .main-scroll {
         padding: 12px 10px 28px;
     }
@@ -1218,7 +1253,8 @@ button:focus-visible {
     .pricing-card,
     .billing-status-item,
     .billing-active-note,
-    .feature-item {
+    .feature-item,
+    .wx-empty-state {
         border-radius: 14px;
         padding: 13px;
     }

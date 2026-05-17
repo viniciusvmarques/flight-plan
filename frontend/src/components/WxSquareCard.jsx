@@ -14,6 +14,8 @@ export default function WxSquareCard({ label, station, showFav, isFav, onToggleF
 
     const metarError = station?.metarError;
     const tafError = station?.tafError;
+    const noMetarMessage = "METAR não disponível para este aeródromo no momento.";
+    const noTafMessage = "TAF não disponível para este aeródromo no momento.";
 
     return (
         <div className={`wx-card-wrap ${expanded ? "expanded" : ""}`}>
@@ -63,7 +65,7 @@ export default function WxSquareCard({ label, station, showFav, isFav, onToggleF
                         <div className="wx-label">METAR</div>
 
                         {metarError ? (
-                            <div className="wx-error">⚠️ {metarError}</div>
+                            <div className="wx-empty-state">{metarError || noMetarMessage}</div>
                         ) : (
                             <div className={`wx-text ${expanded ? "expanded" : ""}`}>{metarText}</div>
                         )}
@@ -73,7 +75,7 @@ export default function WxSquareCard({ label, station, showFav, isFav, onToggleF
                         <div className="wx-label">TAF</div>
 
                         {tafError ? (
-                            <div className="wx-error">⚠️ {tafError}</div>
+                            <div className="wx-empty-state">{tafError || noTafMessage}</div>
                         ) : (
                             <div className={`wx-text ${expanded ? "expanded" : ""}`}>{tafText}</div>
                         )}

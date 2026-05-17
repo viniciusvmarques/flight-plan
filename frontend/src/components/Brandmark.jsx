@@ -15,7 +15,7 @@ export default function BrandMark({ size = 40, showText = true, compact = false 
                 "--fp-brand-tag-size": `${subFs}px`,
             }}
         >
-            <MarquisaWordmark scale={s} compact={compact} />
+            <MarquisaWordmark scale={s} compact={compact} markOnly={!showText} />
             {showText ? <div className="fp-brand-tagline">briefing e plano de voo</div> : null}
         </div>
     );

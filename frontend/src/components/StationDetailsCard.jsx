@@ -55,6 +55,11 @@ function labelPt(category) {
     return "Sem dados";
 }
 
+function weatherMessage(kind, error) {
+    if (error) return error;
+    return `${kind} não disponível para este aeródromo no momento.`;
+}
+
 export default function StationDetailsCard({ station, airportInfo }) {
     if (!station) {
         return (
@@ -115,16 +120,12 @@ export default function StationDetailsCard({ station, airportInfo }) {
 
             <div className="detail-section">
                 <strong className="detail-heading">METAR</strong>
-                <pre>
-          {station.metar ? station.metar : (station.metarError || "Sem METAR disponível")}
-        </pre>
+                {station.metar ? <pre>{station.metar}</pre> : <div className="wx-empty-state">{weatherMessage("METAR", station.metarError)}</div>}
             </div>
 
             <div className="detail-section">
                 <strong className="detail-heading">TAF</strong>
-                <pre>
-          {station.taf ? station.taf : (station.tafError || "Sem TAF disponível")}
-        </pre>
+                {station.taf ? <pre>{station.taf}</pre> : <div className="wx-empty-state">{weatherMessage("TAF", station.tafError)}</div>}
             </div>
         </Card>
     );

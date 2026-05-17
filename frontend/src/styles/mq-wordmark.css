@@ -39,6 +39,10 @@
     gap: 6px;
 }
 
+.mq-logo--mark-only {
+    gap: 0;
+}
+
 .mq-plane-icon {
     display: block;
     overflow: visible;

@@ -65,20 +65,22 @@ function PlaneIcon({ planeId, trailId, compact }) {
  * Wordmark no estilo do Canva enviado:
  * nome + avião sempre na horizontal para manter a barra mais baixa.
  */
-export function MarquisaWordmark({ scale = 40, compact = false }) {
+export function MarquisaWordmark({ scale = 40, compact = false, markOnly = false }) {
     const uid = useId().replace(/:/g, "");
     const planeId = `mq-plane-${uid}`;
     const trailId = `mq-trail-${uid}`;
     const fontSize = Math.max(22, Math.round(scale * (compact ? 0.92 : 1.02)));
 
     return (
-        <div className={`mq-logo ${compact ? "mq-logo--compact" : ""}`} aria-label="Marquisa">
-            <div
-                className={`mq-logotype ${compact ? "mq-logotype--compact" : ""}`}
-                style={{ "--mq-font-size": `${fontSize}px` }}
-            >
-                MARQUISA
-            </div>
+        <div className={`mq-logo ${compact ? "mq-logo--compact" : ""} ${markOnly ? "mq-logo--mark-only" : ""}`} aria-label="Marquisa">
+            {!markOnly ? (
+                <div
+                    className={`mq-logotype ${compact ? "mq-logotype--compact" : ""}`}
+                    style={{ "--mq-font-size": `${fontSize}px` }}
+                >
+                    MARQUISA
+                </div>
+            ) : null}
             <PlaneIcon planeId={planeId} trailId={trailId} compact={compact} />
         </div>
     );
