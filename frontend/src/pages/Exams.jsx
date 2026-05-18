@@ -16,13 +16,15 @@ function formatTime(seconds) {
 }
 
 function subjectName(catalog, key) {
-    return catalog?.subjects?.find((item) => item.key === key)?.label || key || "Todas as matérias";
+    const allSubjects = catalog?.courses?.flatMap((course) => course.subjects || []) || catalog?.subjects || [];
+    return allSubjects.find((item) => item.key === key)?.label || key || "Todas as matérias";
 }
 
 export default function Exams() {
     const nav = useNavigate();
     const { toast, confirm } = useNotify();
     const [catalog, setCatalog] = useState(null);
+    const [selectedCourseKey, setSelectedCourseKey] = useState("PP-A");
     const [access, setAccess] = useState(null);
     const [history, setHistory] = useState([]);
     const [attempt, setAttempt] = useState(null);
@@ -43,6 +45,7 @@ export default function Exams() {
             ]);
             const accessRes = await apiGet("/api/exams/access").catch(() => null);
             setCatalog(catalogRes);
+            setSelectedCourseKey((current) => (catalogRes?.courses?.some((course) => course.key === current) ? current : catalogRes?.courses?.[0]?.key || "PP-A"));
             setAccess(accessRes);
             setHistory(historyRes?.items || []);
         } catch (e) {
@@ -77,6 +80,10 @@ export default function Exams() {
     const result = attempt?.score || null;
     const isPro = !!access?.isPro;
     const freeCompleteUsed = !!access?.freeCompleteUsed;
+    const courses = catalog?.courses || [];
+    const selectedCourse = courses.find((course) => course.key === selectedCourseKey) || courses[0] || null;
+    const selectedSubjects = selectedCourse?.subjects || catalog?.subjects || [];
+    const selectedCourseIsFree = selectedCourse?.key === "PP-A";
     const currentQuestion = questions[currentQuestionIndex] || questions[0] || null;
     const subjectGroups = useMemo(() => {
         const map = new Map();
@@ -109,7 +116,7 @@ export default function Exams() {
         setError("");
         setSubmitting(true);
         try {
-            const res = await apiPost("/api/exams/attempts", { mode, subject });
+            const res = await apiPost("/api/exams/attempts", { license: selectedCourse?.key || "PP-A", mode, subject });
             const nextAttempt = res?.attempt;
             setAttempt(nextAttempt);
             setAnswers({});
@@ -171,19 +178,19 @@ export default function Exams() {
 
     return (
         <div className="main-shell exams-shell">
-            <AppHeader title="Simulados ANAC" subtitle={isPro ? "Acesso PRO liberado" : "1 prova completa grátis"} />
+            <AppHeader title="Simulados ANAC" subtitle={isPro ? "PP, PC/IFR e Comissário liberados" : "1 prova PP grátis"} />
             <main className="main-scroll exams-page">
                 <section className="exam-hero">
                     <div>
                         <p className="exam-kicker">Banco autoral Marquisa</p>
-                        <h1>Simulados PP Avião com temporizador, correção e explicação.</h1>
+                        <h1>Simulados ANAC para PP, PC/IFR e Comissário.</h1>
                         <p>
-                            Cadastrados fazem 1 prova completa grátis. O plano PRO libera todos os simulados,
-                            treino por matéria e histórico de desempenho por R$ 19,90/mês.
+                            Cadastrados fazem 1 prova completa de PP grátis. O plano PRO libera PC/IFR,
+                            Comissário, treino por matéria e histórico de desempenho por R$ 19,90/mês.
                         </p>
                     </div>
                     <div className="exam-hero-stat">
-                        <strong>{catalog?.totalQuestions || 2000}</strong>
+                        <strong>{catalog?.totalQuestions || 6000}</strong>
                         <span>questões autorais</span>
                     </div>
                 </section>
@@ -193,15 +200,30 @@ export default function Exams() {
                 {!attempt ? (
                     <div className="exam-layout">
                         <Card title="COMECE UM SIMULADO">
+                            <div className="exam-course-grid">
+                                {courses.map((course) => (
+                                    <button
+                                        key={course.key}
+                                        type="button"
+                                        className={`exam-course-card ${course.key === selectedCourse?.key ? "exam-course-card--active" : ""}`}
+                                        onClick={() => setSelectedCourseKey(course.key)}
+                                    >
+                                        <span>{course.shortTitle}</span>
+                                        <strong>{course.title}</strong>
+                                        <small>{course.totalQuestions} questões • {course.completeExam?.questionCount || 100} por prova completa</small>
+                                        {!isPro && course.key !== "PP-A" ? <em>PRO</em> : null}
+                                    </button>
+                                ))}
+                            </div>
                             <div className="exam-access-banner">
                                 <div>
-                                    <strong>{isPro ? "PRO ativo: todos os simulados liberados" : "Acesso gratuito: 1 prova completa após cadastro"}</strong>
+                                    <strong>{isPro ? "PRO ativo: todos os cursos liberados" : "Acesso gratuito: 1 prova completa PP Avião"}</strong>
                                     <p>
                                         {isPro
-                                            ? "Você pode treinar por matéria, repetir provas completas e revisar gabaritos comentados."
+                                            ? "Você pode treinar PP, PC/IFR e Comissário por matéria, repetir provas completas e revisar gabaritos comentados."
                                             : freeCompleteUsed
-                                              ? "Você já usou a prova completa grátis. Assine o PRO para liberar todo o banco por R$ 19,90/mês."
-                                              : "Faça uma prova completa PP Avião com 100 questões. Se gostar, o PRO libera o restante por R$ 19,90/mês."}
+                                              ? "Você já usou a prova PP grátis. Assine o PRO para liberar todos os cursos por R$ 19,90/mês."
+                                              : "Faça uma prova completa PP Avião grátis. Se gostar, o PRO libera PC/IFR, Comissário e todo o banco por R$ 19,90/mês."}
                                     </p>
                                 </div>
                                 {!isPro ? (
@@ -212,20 +234,20 @@ export default function Exams() {
                             </div>
                             <div className="exam-actions-panel">
                                 <div>
-                                    <strong>Simulado completo PP Avião</strong>
-                                    <p>100 questões: 20 por matéria, correção por disciplina e indicação de segunda época.</p>
+                                    <strong>Simulado completo {selectedCourse?.shortTitle || "PP Avião"}</strong>
+                                    <p>{selectedCourse?.completeExam?.questionCount || 100} questões: 20 por matéria, correção por disciplina e gabarito comentado.</p>
                                 </div>
                                 <button
-                                    className={!isPro && freeCompleteUsed ? "btn-primary" : "primary"}
+                                    className={!isPro && (!selectedCourseIsFree || freeCompleteUsed) ? "btn-primary" : "primary"}
                                     type="button"
                                     disabled={loading || submitting}
-                                    onClick={() => (!isPro && freeCompleteUsed ? nav("/assinatura") : startAttempt("complete"))}
+                                    onClick={() => (!isPro && (!selectedCourseIsFree || freeCompleteUsed) ? nav("/assinatura") : startAttempt("complete"))}
                                 >
-                                    {!isPro && freeCompleteUsed ? "Assinar PRO por R$ 19,90" : "Iniciar completo"}
+                                    {!isPro && (!selectedCourseIsFree || freeCompleteUsed) ? "Assinar PRO por R$ 19,90" : "Iniciar completo"}
                                 </button>
                             </div>
                             <div className="exam-subject-grid">
-                                {(catalog?.subjects || []).map((subject) => (
+                                {selectedSubjects.map((subject) => (
                                     <button
                                         key={subject.key}
                                         type="button"
@@ -247,7 +269,7 @@ export default function Exams() {
                                     {history.map((item) => (
                                         <button key={item.id} type="button" className="exam-history-item" onClick={() => openHistoryAttempt(item.id)}>
                                             <span>
-                                                {item.mode === "complete" ? "Completo" : subjectName(catalog, item.subject)}
+                                                {item.mode === "complete" ? `Completo ${item.license || ""}` : subjectName(catalog, item.subject)}
                                                 <small>{new Date(item.startedAt).toLocaleString("pt-BR")}</small>
                                             </span>
                                             <strong className={item.passed ? "exam-pass" : "exam-fail"}>

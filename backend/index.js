@@ -17,6 +17,7 @@ import { createEmailService } from "./lib/email-service.js";
 import { AIRCRAFT_PRESETS, getAircraftPresetByKey, serializeAircraftPreset } from "./lib/aircraft-presets.js";
 import { LEGAL_DOC_VERSIONS, SITE_PROFILE, getClientIp, getUserAgent } from "./lib/site-config.js";
 import { EXAM_QUESTIONS, EXAM_SUBJECTS, publicQuestion, resultQuestion } from "./lib/exam-question-bank.js";
+import { EXTRA_EXAM_COURSES, EXTRA_EXAM_QUESTIONS } from "./lib/exam-extra-question-bank.js";
 
 const app = express();
 const DEFAULT_FRONTEND_ORIGIN = "http://localhost:5173";
@@ -403,7 +404,24 @@ async function requirePro(req,res,next){
   return next();
 }
 
-const EXAM_QUESTION_BY_ID = new Map(EXAM_QUESTIONS.map((question) => [question.id, question]));
+const EXAM_COURSES = [
+  {
+    key: "PP-A",
+    title: "Piloto Privado - Avião",
+    shortTitle: "PP Avião",
+    description: "Simulados para a banca teórica de Piloto Privado Avião.",
+    freeEnabled: true,
+    subjects: EXAM_SUBJECTS,
+  },
+  ...EXTRA_EXAM_COURSES,
+];
+const ALL_EXAM_QUESTIONS = [...EXAM_QUESTIONS, ...EXTRA_EXAM_QUESTIONS];
+const EXAM_QUESTION_BY_ID = new Map(ALL_EXAM_QUESTIONS.map((question) => [question.id, question]));
+
+function getExamCourse(license = "PP-A") {
+  const normalized = String(license || "PP-A").trim().toUpperCase();
+  return EXAM_COURSES.find((course) => course.key === normalized) || EXAM_COURSES[0];
+}
 
 function hashSeed(value) {
   return String(value || "")
@@ -444,8 +462,8 @@ function examDurationSeconds(mode, subject) {
   return subject === "NAV" ? 60 * 60 : 30 * 60;
 }
 
-function pickSubjectQuestions(subjectKey, seed, total = 20) {
-  const subjectPool = uniqueQuestionsByText(EXAM_QUESTIONS.filter((question) => question.subject === subjectKey));
+function pickSubjectQuestions(license, subjectKey, seed, total = 20) {
+  const subjectPool = uniqueQuestionsByText(ALL_EXAM_QUESTIONS.filter((question) => question.license === license && question.subject === subjectKey));
   const topicMap = new Map();
   for (const question of subjectPool) {
     if (!topicMap.has(question.topic)) topicMap.set(question.topic, []);
@@ -468,14 +486,15 @@ function pickSubjectQuestions(subjectKey, seed, total = 20) {
   return seededShuffle(picked, `${seed}:${subjectKey}:final`).slice(0, total);
 }
 
-function pickExamQuestions({ mode, subject, seed }) {
+function pickExamQuestions({ license = "PP-A", mode, subject, seed }) {
+  const course = getExamCourse(license);
   if (mode === "complete") {
-    return EXAM_SUBJECTS.flatMap((item) => pickSubjectQuestions(item.key, seed, 20));
+    return course.subjects.flatMap((item) => pickSubjectQuestions(course.key, item.key, seed, 20));
   }
 
   const normalizedSubject = String(subject || "").trim().toUpperCase();
-  if (!EXAM_SUBJECTS.some((item) => item.key === normalizedSubject)) return null;
-  return pickSubjectQuestions(normalizedSubject, seed, 20);
+  if (!course.subjects.some((item) => item.key === normalizedSubject)) return null;
+  return pickSubjectQuestions(course.key, normalizedSubject, seed, 20);
 }
 
 function repairDuplicateQuestionIds(questionIds, seed = "repair") {
@@ -500,7 +519,7 @@ function repairDuplicateQuestionIds(questionIds, seed = "repair") {
     }
 
     const replacement = seededShuffle(
-      uniqueQuestionsByText(EXAM_QUESTIONS.filter((candidate) => candidate.subject === question.subject)),
+      uniqueQuestionsByText(ALL_EXAM_QUESTIONS.filter((candidate) => candidate.license === question.license && candidate.subject === question.subject)),
       `${seed}:${question.subject}:${id}`
     ).find((candidate) => !usedIds.has(candidate.id) && !usedSignatures.has(normalizeQuestionSignature(candidate)));
 
@@ -1380,24 +1399,38 @@ app.get("/api/taf", async (req, res) => {
 // ===== SIMULADOS ANAC =====
 // ============================
 app.get("/api/exams/catalog", (req, res) => {
-  const subjects = EXAM_SUBJECTS.map((subject) => {
-    const count = EXAM_QUESTIONS.filter((question) => question.subject === subject.key).length;
-    return { ...subject, count, questionCountPerAttempt: 20, durationSeconds: examDurationSeconds("subject", subject.key) };
+  const courses = EXAM_COURSES.map((course) => {
+    const subjects = course.subjects.map((subject) => {
+      const count = ALL_EXAM_QUESTIONS.filter((question) => question.license === course.key && question.subject === subject.key).length;
+      return { ...subject, count, questionCountPerAttempt: 20, durationSeconds: examDurationSeconds("subject", subject.key) };
+    });
+    return {
+      ...course,
+      subjects,
+      totalQuestions: subjects.reduce((sum, item) => sum + item.count, 0),
+      completeExam: {
+        questionCount: course.subjects.length * 20,
+        questionsPerSubject: 20,
+        durationSeconds: examDurationSeconds("complete"),
+      },
+    };
   });
+  const defaultCourse = courses[0];
 
   return res.json({
-    license: "PP-A",
-    title: "Simulados ANAC PP Avião",
-    totalQuestions: EXAM_QUESTIONS.length,
+    license: defaultCourse.key,
+    title: "Simulados ANAC Marquisa",
+    totalQuestions: ALL_EXAM_QUESTIONS.length,
     completeExam: {
-      questionCount: 100,
+      questionCount: defaultCourse.completeExam.questionCount,
       questionsPerSubject: 20,
       durationSeconds: examDurationSeconds("complete"),
       approvalRule: "70% de acerto em cada matéria.",
       secondChanceRule: "Se reprovar em até 2 matérias, destaque para refazer apenas as pendentes.",
     },
-    subjects,
-    disclaimer: "Questões autorais de estudo, inspiradas no conteúdo cobrado para PP Avião. A Marquisa não é afiliada à ANAC e não reproduz provas oficiais.",
+    courses,
+    subjects: defaultCourse.subjects,
+    disclaimer: "Questões autorais de estudo, inspiradas no conteúdo cobrado em formações aeronáuticas. A Marquisa não é afiliada à ANAC e não reproduz provas oficiais.",
   });
 });
 
@@ -1447,6 +1480,7 @@ app.get("/api/exams/attempts", requireAuth, async (req, res) => {
 
 app.post("/api/exams/attempts", requireAuth, async (req, res) => {
   const userId = req.auth.sub;
+  const course = getExamCourse(req.body?.license || req.body?.course || "PP-A");
   const mode = String(req.body?.mode || "subject").trim().toLowerCase();
   const subject = String(req.body?.subject || "").trim().toUpperCase();
   if (!["subject", "complete"].includes(mode)) {
@@ -1459,9 +1493,9 @@ app.post("/api/exams/attempts", requireAuth, async (req, res) => {
   });
   const isPro = canAccessProPlan(user?.plan, user?.planStatus);
   if (!isPro) {
-    if (mode !== "complete") {
+    if (course.key !== "PP-A" || mode !== "complete") {
       return res.status(402).json({
-        error: "Os simulados por matéria fazem parte do plano PRO. O cadastro gratuito libera 1 simulado completo.",
+        error: "O cadastro gratuito libera 1 simulado completo de PP Avião. PC/IFR, Comissário e simulados por matéria fazem parte do plano PRO.",
       });
     }
 
@@ -1476,7 +1510,7 @@ app.post("/api/exams/attempts", requireAuth, async (req, res) => {
   }
 
   const seed = `${userId}:${Date.now()}:${Math.random()}`;
-  const questions = pickExamQuestions({ mode, subject, seed });
+  const questions = pickExamQuestions({ license: course.key, mode, subject, seed });
   if (!questions?.length) {
     return res.status(400).json({ error: "Matéria do simulado inválida." });
   }
@@ -1484,7 +1518,7 @@ app.post("/api/exams/attempts", requireAuth, async (req, res) => {
   const attempt = await prisma.examAttempt.create({
     data: {
       userId,
-      license: "PP-A",
+      license: course.key,
       mode,
       subject: mode === "subject" ? subject : null,
       questionIds: questions.map((question) => question.id),
