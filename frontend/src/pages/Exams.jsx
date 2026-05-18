@@ -78,6 +78,27 @@ export default function Exams() {
     const isPro = !!access?.isPro;
     const freeCompleteUsed = !!access?.freeCompleteUsed;
     const currentQuestion = questions[currentQuestionIndex] || questions[0] || null;
+    const subjectGroups = useMemo(() => {
+        const map = new Map();
+        questions.forEach((question, index) => {
+            const key = question.subject || "GERAL";
+            if (!map.has(key)) {
+                map.set(key, {
+                    key,
+                    label: question.subjectLabel || subjectName(catalog, key),
+                    items: [],
+                });
+            }
+            map.get(key).items.push({ question, index });
+        });
+        return Array.from(map.values());
+    }, [questions, catalog]);
+    const currentSubjectGroup =
+        subjectGroups.find((group) => group.key === currentQuestion?.subject) || subjectGroups[0] || { items: [] };
+    const currentSubjectQuestionIndex = Math.max(
+        0,
+        currentSubjectGroup.items.findIndex((item) => item.index === currentQuestionIndex)
+    );
 
     useEffect(() => {
         if (!questions.length) return;
@@ -343,7 +364,7 @@ export default function Exams() {
                                     <article className="exam-question-card exam-question-card--single">
                                         <div className="exam-question-head">
                                             <span>
-                                                Questão {currentQuestionIndex + 1} de {questions.length}
+                                                Questão {currentSubjectQuestionIndex + 1} de {currentSubjectGroup.items.length}
                                             </span>
                                             <small>
                                                 {currentQuestion.subjectLabel} • {currentQuestion.topic}
@@ -365,6 +386,30 @@ export default function Exams() {
                                             ))}
                                         </div>
                                     </article>
+
+                                    {subjectGroups.length > 1 ? (
+                                        <div className="exam-subject-tabs" aria-label="Matérias do simulado">
+                                            {subjectGroups.map((group) => {
+                                                const answeredInGroup = group.items.filter((item) => answers[item.question.id] !== undefined).length;
+                                                return (
+                                                    <button
+                                                        key={group.key}
+                                                        type="button"
+                                                        className={[
+                                                            "exam-subject-tab",
+                                                            group.key === currentSubjectGroup.key ? "exam-subject-tab--active" : "",
+                                                        ].join(" ")}
+                                                        onClick={() => setCurrentQuestionIndex(group.items[0]?.index || 0)}
+                                                    >
+                                                        <strong>{group.key}</strong>
+                                                        <span>
+                                                            {answeredInGroup}/{group.items.length}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : null}
 
                                     <div className="exam-window-actions">
                                         <button
@@ -389,16 +434,16 @@ export default function Exams() {
                                     </div>
 
                                     <div className="exam-question-nav" aria-label="Navegação entre questões">
-                                        {questions.map((question, index) => (
+                                        {currentSubjectGroup.items.map((item, index) => (
                                             <button
-                                                key={question.id}
+                                                key={item.question.id}
                                                 type="button"
                                                 className={[
                                                     "exam-question-nav-item",
-                                                    index === currentQuestionIndex ? "exam-question-nav-item--active" : "",
-                                                    answers[question.id] !== undefined ? "exam-question-nav-item--answered" : "",
+                                                    item.index === currentQuestionIndex ? "exam-question-nav-item--active" : "",
+                                                    answers[item.question.id] !== undefined ? "exam-question-nav-item--answered" : "",
                                                 ].join(" ")}
-                                                onClick={() => setCurrentQuestionIndex(index)}
+                                                onClick={() => setCurrentQuestionIndex(item.index)}
                                             >
                                                 {index + 1}
                                             </button>
