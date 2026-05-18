@@ -5,6 +5,7 @@ import AppHeader from "../components/AppHeader";
 import Card from "../components/Card";
 import { apiGet, apiPost } from "../services/apiClient";
 import { useNotify } from "../ui/NotifyContext.jsx";
+import { useI18n } from "../i18n/I18nContext.jsx";
 
 function formatTime(seconds) {
     const safe = Math.max(0, Number(seconds || 0));
@@ -15,14 +16,29 @@ function formatTime(seconds) {
     return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-function subjectName(catalog, key) {
+function translatedValue(t, key, fallback) {
+    const value = t(key);
+    return value === key ? fallback : value;
+}
+
+function subjectName(catalog, key, t) {
     const allSubjects = catalog?.courses?.flatMap((course) => course.subjects || []) || catalog?.subjects || [];
-    return allSubjects.find((item) => item.key === key)?.label || key || "Todas as matérias";
+    const fallback = allSubjects.find((item) => item.key === key)?.label || key || t("exams.allSubjects");
+    return translatedValue(t, `exams.subjects.${key}`, fallback);
+}
+
+function courseTitle(course, t) {
+    return translatedValue(t, `exams.courses.${course?.key}.title`, course?.title || "");
+}
+
+function courseShortTitle(course, t) {
+    return translatedValue(t, `exams.courses.${course?.key}.shortTitle`, course?.shortTitle || course?.title || "");
 }
 
 export default function Exams() {
     const nav = useNavigate();
     const { toast, confirm } = useNotify();
+    const { t, locale } = useI18n();
     const [catalog, setCatalog] = useState(null);
     const [selectedCourseKey, setSelectedCourseKey] = useState("PP-A");
     const [access, setAccess] = useState(null);
@@ -49,7 +65,7 @@ export default function Exams() {
             setAccess(accessRes);
             setHistory(historyRes?.items || []);
         } catch (e) {
-            setError(e?.message || "Não foi possível carregar os simulados.");
+            setError(e?.message || t("exams.loadError"));
         } finally {
             setLoading(false);
         }
@@ -92,14 +108,14 @@ export default function Exams() {
             if (!map.has(key)) {
                 map.set(key, {
                     key,
-                    label: question.subjectLabel || subjectName(catalog, key),
+                    label: question.subjectLabel || subjectName(catalog, key, t),
                     items: [],
                 });
             }
             map.get(key).items.push({ question, index });
         });
         return Array.from(map.values());
-    }, [questions, catalog]);
+    }, [questions, catalog, t]);
     const currentSubjectGroup =
         subjectGroups.find((group) => group.key === currentQuestion?.subject) || subjectGroups[0] || { items: [] };
     const currentSubjectQuestionIndex = Math.max(
@@ -122,9 +138,9 @@ export default function Exams() {
             setAnswers({});
             setCurrentQuestionIndex(0);
             setRemaining(nextAttempt?.durationSeconds || 0);
-            toast("Simulado iniciado. O temporizador já está correndo.", { variant: "success", title: "Simulados ANAC" });
+            toast(t("exams.startedToast"), { variant: "success", title: t("exams.title") });
         } catch (e) {
-            setError(e?.message || "Não foi possível iniciar o simulado.");
+            setError(e?.message || t("exams.startError"));
         } finally {
             setSubmitting(false);
         }
@@ -139,7 +155,7 @@ export default function Exams() {
             setCurrentQuestionIndex(0);
             setRemaining(0);
         } catch (e) {
-            setError(e?.message || "Não foi possível abrir este resultado.");
+            setError(e?.message || t("exams.openResultError"));
         }
     }
 
@@ -147,10 +163,10 @@ export default function Exams() {
         if (!attempt?.id || attempt.status === "submitted") return;
         if (!auto) {
             const ok = await confirm({
-                title: "Finalizar simulado",
-                message: `Você respondeu ${answeredCount} de ${questions.length} questões. Depois de finalizar, o gabarito comentado será exibido.`,
-                confirmLabel: "Finalizar",
-                cancelLabel: "Continuar prova",
+                title: t("exams.finishTitle"),
+                message: t("exams.finishMessage", { answered: answeredCount, total: questions.length }),
+                confirmLabel: t("exams.finishConfirm"),
+                cancelLabel: t("exams.continueExam"),
             });
             if (!ok) return;
         }
@@ -161,12 +177,12 @@ export default function Exams() {
             setAttempt(res?.attempt || null);
             setRemaining(0);
             await loadCatalog();
-            toast(auto ? "Tempo encerrado. Seu simulado foi corrigido." : "Simulado corrigido com gabarito comentado.", {
+            toast(auto ? t("exams.timeEndedToast") : t("exams.correctedToast"), {
                 variant: "success",
-                title: "Resultado",
+                title: t("exams.resultToastTitle"),
             });
         } catch (e) {
-            setError(e?.message || "Não foi possível finalizar o simulado.");
+            setError(e?.message || t("exams.submitError"));
         } finally {
             setSubmitting(false);
         }
@@ -178,20 +194,17 @@ export default function Exams() {
 
     return (
         <div className="main-shell exams-shell">
-            <AppHeader title="Simulados ANAC" subtitle={isPro ? "PP, PC/IFR e Comissário liberados" : "1 prova PP grátis"} />
+            <AppHeader title={t("exams.title")} subtitle={isPro ? t("exams.subtitlePro") : t("exams.subtitleFree")} />
             <main className="main-scroll exams-page">
                 <section className="exam-hero">
                     <div>
-                        <p className="exam-kicker">Banco autoral Marquisa</p>
-                        <h1>Simulados ANAC para PP, PC/IFR e Comissário.</h1>
-                        <p>
-                            Cadastrados fazem 1 prova completa de PP grátis. O plano PRO libera PC/IFR,
-                            Comissário, treino por matéria e histórico de desempenho por R$ 19,90/mês.
-                        </p>
+                        <p className="exam-kicker">{t("exams.kicker")}</p>
+                        <h1>{t("exams.heroTitle")}</h1>
+                        <p>{t("exams.heroCopy")}</p>
                     </div>
                     <div className="exam-hero-stat">
                         <strong>{catalog?.totalQuestions || 6000}</strong>
-                        <span>questões autorais</span>
+                        <span>{t("exams.questionsAuthored")}</span>
                     </div>
                 </section>
 
@@ -199,7 +212,7 @@ export default function Exams() {
 
                 {!attempt ? (
                     <div className="exam-layout">
-                        <Card title="COMECE UM SIMULADO">
+                        <Card title={t("exams.startTitle")}>
                             <div className="exam-course-grid">
                                 {courses.map((course) => (
                                     <button
@@ -208,34 +221,34 @@ export default function Exams() {
                                         className={`exam-course-card ${course.key === selectedCourse?.key ? "exam-course-card--active" : ""}`}
                                         onClick={() => setSelectedCourseKey(course.key)}
                                     >
-                                        <span>{course.shortTitle}</span>
-                                        <strong>{course.title}</strong>
-                                        <small>{course.totalQuestions} questões • {course.completeExam?.questionCount || 100} por prova completa</small>
+                                        <span>{courseShortTitle(course, t)}</span>
+                                        <strong>{courseTitle(course, t)}</strong>
+                                        <small>{t("exams.questionsPerComplete", { total: course.totalQuestions, count: course.completeExam?.questionCount || 100 })}</small>
                                         {!isPro && course.key !== "PP-A" ? <em>PRO</em> : null}
                                     </button>
                                 ))}
                             </div>
                             <div className="exam-access-banner">
                                 <div>
-                                    <strong>{isPro ? "PRO ativo: todos os cursos liberados" : "Acesso gratuito: 1 prova completa PP Avião"}</strong>
+                                    <strong>{isPro ? t("exams.proAllCourses") : t("exams.freeAccess")}</strong>
                                     <p>
                                         {isPro
-                                            ? "Você pode treinar PP, PC/IFR e Comissário por matéria, repetir provas completas e revisar gabaritos comentados."
+                                            ? t("exams.proAccessCopy")
                                             : freeCompleteUsed
-                                              ? "Você já usou a prova PP grátis. Assine o PRO para liberar todos os cursos por R$ 19,90/mês."
-                                              : "Faça uma prova completa PP Avião grátis. Se gostar, o PRO libera PC/IFR, Comissário e todo o banco por R$ 19,90/mês."}
+                                              ? t("exams.freeUsedCopy")
+                                              : t("exams.freeAvailableCopy")}
                                     </p>
                                 </div>
                                 {!isPro ? (
                                     <button className="secondary" type="button" onClick={() => nav("/assinatura")}>
-                                        Ver plano PRO
+                                        {t("exams.viewPro")}
                                     </button>
                                 ) : null}
                             </div>
                             <div className="exam-actions-panel">
                                 <div>
-                                    <strong>Simulado completo {selectedCourse?.shortTitle || "PP Avião"}</strong>
-                                    <p>{selectedCourse?.completeExam?.questionCount || 100} questões: 20 por matéria, correção por disciplina e gabarito comentado.</p>
+                                    <strong>{t("exams.completeExam", { course: courseShortTitle(selectedCourse, t) || courseShortTitle({ key: "PP-A" }, t) })}</strong>
+                                    <p>{t("exams.completeExamCopy", { count: selectedCourse?.completeExam?.questionCount || 100 })}</p>
                                 </div>
                                 <button
                                     className={!isPro && (!selectedCourseIsFree || freeCompleteUsed) ? "btn-primary" : "primary"}
@@ -243,7 +256,7 @@ export default function Exams() {
                                     disabled={loading || submitting}
                                     onClick={() => (!isPro && (!selectedCourseIsFree || freeCompleteUsed) ? nav("/assinatura") : startAttempt("complete"))}
                                 >
-                                    {!isPro && (!selectedCourseIsFree || freeCompleteUsed) ? "Assinar PRO por R$ 19,90" : "Iniciar completo"}
+                                    {!isPro && (!selectedCourseIsFree || freeCompleteUsed) ? t("exams.subscribePro") : t("exams.startComplete")}
                                 </button>
                             </div>
                             <div className="exam-subject-grid">
@@ -256,68 +269,67 @@ export default function Exams() {
                                         onClick={() => (isPro ? startAttempt("subject", subject.key) : nav("/assinatura"))}
                                     >
                                         <span>{subject.key}</span>
-                                        <strong>{subject.label}</strong>
-                                        <small>{isPro ? `20 questões • ${formatTime(subject.durationSeconds)}` : "Disponível no PRO"}</small>
+                                        <strong>{subjectName(catalog, subject.key, t)}</strong>
+                                        <small>{isPro ? t("exams.subjectMeta", { time: formatTime(subject.durationSeconds) }) : t("exams.availablePro")}</small>
                                     </button>
                                 ))}
                             </div>
                         </Card>
 
-                        <Card title="RESULTADOS RECENTES">
+                        <Card title={t("exams.recentResults")}>
                             {history.length ? (
                                 <div className="exam-history-list">
                                     {history.map((item) => (
                                         <button key={item.id} type="button" className="exam-history-item" onClick={() => openHistoryAttempt(item.id)}>
                                             <span>
-                                                {item.mode === "complete" ? `Completo ${item.license || ""}` : subjectName(catalog, item.subject)}
-                                                <small>{new Date(item.startedAt).toLocaleString("pt-BR")}</small>
+                                                {item.mode === "complete" ? t("exams.complete", { license: item.license || "" }) : subjectName(catalog, item.subject, t)}
+                                                <small>{new Date(item.startedAt).toLocaleString(locale)}</small>
                                             </span>
                                             <strong className={item.passed ? "exam-pass" : "exam-fail"}>
-                                                {item.status === "submitted" ? `${Math.round(item.percent)}%` : "Em aberto"}
+                                                {item.status === "submitted" ? `${Math.round(item.percent)}%` : t("exams.open")}
                                             </strong>
                                         </button>
                                     ))}
                                 </div>
                             ) : (
-                                <p className="muted">Seus resultados corrigidos aparecerão aqui.</p>
+                                <p className="muted">{t("exams.emptyResults")}</p>
                             )}
                         </Card>
 
-                        <Card title="AVISO IMPORTANTE">
+                        <Card title={t("exams.importantNotice")}>
                             <p className="muted">
-                                {catalog?.disclaimer ||
-                                    "Questões autorais de estudo, inspiradas no conteúdo cobrado em formações aeronáuticas. A Marquisa não é afiliada à ANAC e não reproduz provas oficiais."}
+                                {t("exams.disclaimer")}
                             </p>
                         </Card>
                     </div>
                 ) : result ? (
                     <div className="exam-layout">
                         <Card
-                            title="RESULTADO DO SIMULADO"
+                            title={t("exams.resultTitle")}
                             actions={
                                 <button className="secondary" type="button" onClick={() => setAttempt(null)}>
-                                    Voltar ao catálogo
+                                    {t("exams.backCatalog")}
                                 </button>
                             }
                         >
                             <div className="exam-result-hero">
                                 <div>
                                     <span className={result.passed ? "exam-pass" : "exam-fail"}>
-                                        {result.passed ? "Aprovado" : "Reprovado"}
+                                        {result.passed ? t("exams.approved") : t("exams.failed")}
                                     </span>
-                                    <h2>{result.percent}% de acerto</h2>
+                                    <h2>{t("exams.percentScore", { percent: result.percent })}</h2>
                                     <p>
-                                        {result.correctAnswers} de {result.totalQuestions} questões corretas.
+                                        {t("exams.correctCount", { correct: result.correctAnswers, total: result.totalQuestions })}
                                         {!result.passed && result.secondChanceEligible
-                                            ? " Você ficou em condição de foco para refazer até duas matérias pendentes."
+                                            ? t("exams.secondChance")
                                             : null}
                                     </p>
                                 </div>
                             </div>
                             <div className="exam-score-grid">
-                                {result.bySubject?.map((subject) => (
+                                        {result.bySubject?.map((subject) => (
                                     <div key={subject.key} className="exam-score-card">
-                                        <strong>{subject.label}</strong>
+                                        <strong>{subjectName(catalog, subject.key, t)}</strong>
                                         <span className={subject.passed ? "exam-pass" : "exam-fail"}>{subject.percent}%</span>
                                         <small>
                                             {subject.correct}/{subject.total} acertos
@@ -327,14 +339,14 @@ export default function Exams() {
                             </div>
                         </Card>
 
-                        <Card title="GABARITO COMENTADO">
+                        <Card title={t("exams.answerKey")}>
                             <div className="exam-review-list">
                                 {result.questions?.map((question, index) => (
                                     <article key={question.id} className="exam-review-item">
                                         <div className="exam-question-head">
-                                            <span>Questão {index + 1}</span>
+                                            <span>{t("exams.question", { number: index + 1 })}</span>
                                             <strong className={question.correct ? "exam-pass" : "exam-fail"}>
-                                                {question.correct ? "Correta" : "Revisar"}
+                                                {question.correct ? t("exams.correct") : t("exams.review")}
                                             </strong>
                                         </div>
                                         <p>{question.question}</p>
@@ -356,7 +368,7 @@ export default function Exams() {
                                             ))}
                                         </div>
                                         <p className="exam-explanation">{question.explanation}</p>
-                                        <small className="muted">Referência de estudo: {question.reference}</small>
+                                        <small className="muted">{t("exams.reference", { reference: question.reference })}</small>
                                     </article>
                                 ))}
                             </div>
@@ -365,19 +377,19 @@ export default function Exams() {
                 ) : (
                     <div className="exam-layout">
                         <Card
-                            title={attempt.mode === "complete" ? "SIMULADO COMPLETO" : subjectName(catalog, attempt.subject)}
+                            title={attempt.mode === "complete" ? t("exams.examCompleteTitle") : subjectName(catalog, attempt.subject, t)}
                             actions={
                                 <>
                                     <span className={remaining < 300 ? "exam-timer exam-timer--danger" : "exam-timer"}>{formatTime(remaining)}</span>
                                     <button className="primary" type="button" disabled={submitting} onClick={() => submitAttempt(false)}>
-                                        Finalizar e corrigir
+                                        {t("exams.finishAndCorrect")}
                                     </button>
                                 </>
                             }
                         >
                             <div className="exam-progress-line">
                                 <span>
-                                    {answeredCount}/{questions.length} respondidas
+                                    {t("exams.answered", { answered: answeredCount, total: questions.length })}
                                 </span>
                                 <progress max={questions.length || 1} value={answeredCount} />
                             </div>
@@ -386,10 +398,10 @@ export default function Exams() {
                                     <article className="exam-question-card exam-question-card--single">
                                         <div className="exam-question-head">
                                             <span>
-                                                Questão {currentSubjectQuestionIndex + 1} de {currentSubjectGroup.items.length}
+                                                {t("exams.questionOf", { current: currentSubjectQuestionIndex + 1, total: currentSubjectGroup.items.length })}
                                             </span>
                                             <small>
-                                                {currentQuestion.subjectLabel} • {currentQuestion.topic}
+                                                {subjectName(catalog, currentQuestion.subject, t)} • {currentQuestion.topic}
                                             </small>
                                         </div>
                                         <p className="exam-question-text">{currentQuestion.question}</p>
@@ -410,7 +422,7 @@ export default function Exams() {
                                     </article>
 
                                     {subjectGroups.length > 1 ? (
-                                        <div className="exam-subject-tabs" aria-label="Matérias do simulado">
+                                        <div className="exam-subject-tabs" aria-label={t("exams.subjectsAria")}>
                                             {subjectGroups.map((group) => {
                                                 const answeredInGroup = group.items.filter((item) => answers[item.question.id] !== undefined).length;
                                                 return (
@@ -440,7 +452,7 @@ export default function Exams() {
                                             disabled={currentQuestionIndex === 0}
                                             onClick={() => setCurrentQuestionIndex((value) => Math.max(0, value - 1))}
                                         >
-                                            Anterior
+                                            {t("exams.previous")}
                                         </button>
                                         <button
                                             className="secondary"
@@ -448,14 +460,14 @@ export default function Exams() {
                                             disabled={currentQuestionIndex >= questions.length - 1}
                                             onClick={() => setCurrentQuestionIndex((value) => Math.min(questions.length - 1, value + 1))}
                                         >
-                                            Próxima
+                                            {t("exams.next")}
                                         </button>
                                         <button className="primary" type="button" disabled={submitting} onClick={() => submitAttempt(false)}>
-                                            Finalizar prova
+                                            {t("exams.finishExam")}
                                         </button>
                                     </div>
 
-                                    <div className="exam-question-nav" aria-label="Navegação entre questões">
+                                    <div className="exam-question-nav" aria-label={t("exams.questionsAria")}>
                                         {currentSubjectGroup.items.map((item, index) => (
                                             <button
                                                 key={item.question.id}

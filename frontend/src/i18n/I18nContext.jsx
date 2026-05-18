@@ -60,10 +60,10 @@ export function I18nProvider({ children }) {
         document.documentElement.lang = locale;
         document.title =
             locale === "en"
-                ? "Marquisa | METAR, TAF and flight planning"
+                ? "Marquisa | ANAC simulators, METAR, TAF and flight planning"
                 : locale === "es"
-                  ? "Marquisa | METAR, TAF y planificación de vuelo"
-                  : "Marquisa | METAR, TAF e planejamento de voo";
+                  ? "Marquisa | Simulados ANAC, METAR, TAF y planificación de vuelo"
+                  : "Marquisa | Simulados ANAC, METAR, TAF e planejamento de voo";
     }, [locale]);
 
     function setLocale(nextLocale) {

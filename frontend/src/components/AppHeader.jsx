@@ -4,7 +4,7 @@ import { useAuth } from "../auth/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
-export default function AppHeader({ kicker = "Marquisa", title = "Centro de operações", subtitle = "" }) {
+export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = "" }) {
     const nav = useNavigate();
     const { user } = useAuth();
     const { t } = useI18n();
@@ -16,7 +16,7 @@ export default function AppHeader({ kicker = "Marquisa", title = "Centro de oper
                     <BrandMark size={38} showText={false} compact />
                     <div className="fp-topbar-titles">
                         <span className="fp-topbar-kicker">{kicker}</span>
-                        <span className="fp-topbar-title">{title}</span>
+                        <span className="fp-topbar-title">{title || t("appHeader.defaultTitle")}</span>
                         {subtitle ? <span className="fp-topbar-sub">{subtitle}</span> : null}
                     </div>
                 </button>
@@ -26,7 +26,7 @@ export default function AppHeader({ kicker = "Marquisa", title = "Centro de oper
                         {t("appHeader.briefing")}
                     </Link>
                     <Link className="fp-nav-link" to="/simulados">
-                        Simulados
+                        {t("exams.nav")}
                     </Link>
                     {user ? (
                         <>

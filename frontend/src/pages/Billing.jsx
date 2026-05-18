@@ -12,7 +12,7 @@ export default function Billing() {
     const nav = useNavigate();
     const { user, token, refreshMe } = useAuth();
     const [searchParams] = useSearchParams();
-    const { t, localizedPrice } = useI18n();
+    const { t, localizedPrice, locale } = useI18n();
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -64,11 +64,11 @@ export default function Billing() {
         try {
             const res = await apiPost("/api/stripe/checkout", { locale: getStoredLocale() }, token);
             if (res?.demo) {
-                setError("O servidor atual está em modo local sem Stripe ativo. No ambiente configurado, o checkout abrirá normalmente.");
+                setError(t("billing.localStripeDemo"));
                 return;
             }
             if (res?.url) window.location.href = res.url;
-            else throw new Error("URL do checkout não retornada");
+            else throw new Error(t("billing.checkoutUrlMissing"));
         } catch (e) {
             setError(e?.message || "Falha ao iniciar checkout");
         } finally {
@@ -81,7 +81,7 @@ export default function Billing() {
         try {
             const res = await apiPost("/api/stripe/portal", {}, token);
             if (res?.url) window.location.href = res.url;
-            else throw new Error("Portal não configurado");
+            else throw new Error(t("billing.portalMissing"));
         } catch (e) {
             setError(e?.message || "Falha ao abrir portal");
         }
@@ -90,15 +90,15 @@ export default function Billing() {
     const checkoutState = searchParams.get("checkout");
     const checkoutBanner =
         checkoutState === "success"
-            ? "Checkout concluído. Assim que o webhook confirmar o ciclo comercial, o status da sua assinatura será atualizado."
+            ? t("billing.checkoutSuccess")
             : checkoutState === "cancel"
-              ? "Seu checkout foi interrompido antes da confirmação. Você pode tentar novamente quando quiser."
+              ? t("billing.checkoutCancel")
               : "";
 
     function formatDate(value) {
         if (!value) return "—";
         try {
-            return new Date(value).toLocaleDateString("pt-BR");
+            return new Date(value).toLocaleDateString(locale);
         } catch {
             return "—";
         }
@@ -115,19 +115,23 @@ export default function Billing() {
 
     const isProActive = !!status?.active;
     const planLead = loading
-        ? "Carregando os dados da sua assinatura..."
+        ? t("billing.loadingLead")
         : isProActive
           ? status?.trialing
-              ? `Seu Pro está em teste gratuito${status?.trialEndsAt ? ` até ${formatDate(status.trialEndsAt)}` : ""}.`
-              : "Seu Pro está ativo e liberado para uso."
+              ? status?.trialEndsAt
+                  ? t("billing.trialLeadUntil", { date: formatDate(status.trialEndsAt) })
+                  : t("billing.trialLead", { date: "" })
+              : t("billing.activeLead")
           : status?.planStatus === "past_due"
-            ? "Existe uma pendência de pagamento para regularizar."
-            : "Você está no plano Free.";
+            ? t("billing.paymentRegularize")
+            : t("billing.freeLead");
     const renewalLead = status?.cancelAtPeriodEnd
-        ? `Cancelamento agendado${status?.currentPeriodEnd ? ` para ${formatDate(status.currentPeriodEnd)}` : ""}.`
+        ? status?.currentPeriodEnd
+            ? t("billing.cancelScheduledUntil", { date: formatDate(status.currentPeriodEnd) })
+            : t("billing.cancelScheduledLead", { date: "" })
         : status?.currentPeriodEnd
-          ? `Próximo ciclo em ${formatDate(status.currentPeriodEnd)}.`
-          : "Sem ciclo de cobrança ativo.";
+          ? t("billing.nextCycle", { date: formatDate(status.currentPeriodEnd) })
+          : t("billing.noCycle");
 
     return (
         <div className="main-shell">
@@ -145,8 +149,7 @@ export default function Billing() {
                                 <span className="page-eyebrow">{t("billing.heroEyebrow")}</span>
                                 <h1 className="page-title">{t("billing.heroTitle")}</h1>
                                 <p className="page-caption">
-                                    {t("billing.heroCaption")} Agora o mesmo plano também inclui simulados ANAC para PP,
-                                    PC/IFR e Comissário, com temporizador, correção por matéria e gabarito comentado.
+                                    {t("billing.heroCaption")} {t("billing.examsHeroAddOn")}
                                 </p>
                             </div>
 
@@ -169,13 +172,13 @@ export default function Billing() {
                     </section>
 
                     {checkoutBanner ? (
-                        <Card title="Atualização do checkout">
+                        <Card title={t("billing.checkoutUpdateTitle")}>
                             <div className="empty-note">{checkoutBanner}</div>
                         </Card>
                     ) : null}
 
                     {error ? (
-                        <Card title="Aviso">
+                        <Card title={t("common.warning")}>
                             <div className="empty-note">{error}</div>
                         </Card>
                     ) : null}
@@ -203,10 +206,10 @@ export default function Billing() {
                                         </div>
                                         <p className="page-caption">
                                             {isProActive
-                                                ? `${planLead} Use o portal para atualizar cartão, acompanhar cobrança ou cancelar quando precisar.`
+                                                ? t("billing.activePortalHint", { lead: planLead })
                                                 : status?.planStatus === "past_due"
-                                                  ? "Existe uma pendência de pagamento na sua assinatura. Enquanto ela não for regularizada, o acesso premium pode ficar restrito."
-                                                  : "Você ainda está no plano FREE. O cadastro libera 1 simulado completo; o PRO libera todos os simulados, continuidade operacional, salvamento em nuvem e favoritos sincronizados."}
+                                                  ? t("billing.pastDueCopy")
+                                                  : t("billing.freeUpsell")}
                                         </p>
                                         <div className="page-actions">
                                             <button className="secondary" type="button" onClick={refresh} disabled={loading}>
@@ -225,7 +228,7 @@ export default function Billing() {
                                     <div className="feature-item">{t("billing.featureBriefings")}</div>
                                     <div className="feature-item">{t("billing.featureFavorites")}</div>
                                     <div className="feature-item">{t("billing.featureHistory")}</div>
-                                            <div className="feature-item">Simulados ANAC para PP, PC/IFR e Comissário inclusos no PRO</div>
+                                            <div className="feature-item">{t("billing.examsIncluded")}</div>
                                     <div className="feature-item">{t("billing.featureFuture")}</div>
                                 </div>
                             </Card>
@@ -240,16 +243,16 @@ export default function Billing() {
                                                 <div className="pricing-name">Free</div>
                                                 <div className="pricing-price">R$ 0</div>
                                             </div>
-                                            <span className="chip">{isProActive ? "Base" : "Atual"}</span>
+                                            <span className="chip">{isProActive ? t("billing.basePlan") : t("common.current")}</span>
                                         </div>
                                         <div className="feature-list">
-                                            <div className="feature-item">Briefing METAR / TAF</div>
-                                            <div className="feature-item">Planejamento manual de combustível e tempo</div>
-                                            <div className="feature-item">1 simulado completo ANAC grátis após cadastro</div>
-                                            <div className="feature-item">Persistência local no navegador</div>
+                                            <div className="feature-item">{t("billing.freeFeatureMetar")}</div>
+                                            <div className="feature-item">{t("billing.freeFeaturePlanner")}</div>
+                                            <div className="feature-item">{t("billing.freeFeatureExam")}</div>
+                                            <div className="feature-item">{t("billing.freeFeatureLocal")}</div>
                                         </div>
                                         <button className="secondary" type="button" disabled>
-                                            {isProActive ? "Incluso" : "Plano atual"}
+                                            {isProActive ? t("common.included") : t("billing.currentPlan")}
                                         </button>
                                     </section>
 
@@ -265,7 +268,7 @@ export default function Billing() {
                                         <div className="feature-list">
                                             <div className="feature-item">{t("billing.proFeatureSync")}</div>
                                             <div className="feature-item">{t("billing.proFeatureReopen")}</div>
-                                            <div className="feature-item">Todos os simulados ANAC: prova completa, matérias, temporizador e gabarito comentado</div>
+                                            <div className="feature-item">{t("billing.proFeatureExams")}</div>
                                             <div className="feature-item">{t("billing.proFeatureStripe")}</div>
                                             <div className="feature-item">{t("billing.proFeatureFuture")}</div>
                                         </div>

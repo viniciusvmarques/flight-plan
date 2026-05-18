@@ -54,8 +54,8 @@ function hasCoordinates(airport) {
     return Number.isFinite(airport?.latitude) && Number.isFinite(airport?.longitude);
 }
 
-function friendlyWeatherError(kind, value) {
-    const fallback = `${kind} não disponível para este aeródromo no momento.`;
+function friendlyWeatherError(kind, value, t) {
+    const fallback = t("dashboard.weatherUnavailable", { kind });
     const text = String(value || "").trim();
     const lower = text.toLowerCase();
 
@@ -271,10 +271,10 @@ export default function Dashboard() {
             icao: code,
             metar: metarRes.status === "fulfilled" ? metarRes.value : null,
             taf: tafRes.status === "fulfilled" ? tafRes.value : null,
-            metarError: metarRes.status === "rejected" ? friendlyWeatherError("METAR", metarRes.reason?.message) : null,
-            tafError: tafRes.status === "rejected" ? friendlyWeatherError("TAF", tafRes.reason?.message) : null,
+            metarError: metarRes.status === "rejected" ? friendlyWeatherError("METAR", metarRes.reason?.message, t) : null,
+            tafError: tafRes.status === "rejected" ? friendlyWeatherError("TAF", tafRes.reason?.message, t) : null,
             airport: airportRes.status === "fulfilled" ? airportRes.value : null,
-            airportError: airportRes.status === "rejected" ? airportRes.reason?.message || "Falha ao buscar aeródromo" : null,
+                    airportError: airportRes.status === "rejected" ? airportRes.reason?.message || t("dashboard.airportFetchError") : null,
         };
     }
 
@@ -291,9 +291,9 @@ export default function Dashboard() {
         setAirportInfoLoading(false);
 
         try {
-            if (!isValidIcao(o)) throw new Error("Origem: ICAO inválido");
-            if (d && !isValidIcao(d)) throw new Error("Destino: ICAO inválido");
-            if (a && !isValidIcao(a)) throw new Error("Alternativa: ICAO inválido");
+            if (!isValidIcao(o)) throw new Error(t("dashboard.invalidOrigin"));
+            if (d && !isValidIcao(d)) throw new Error(t("dashboard.invalidDestination"));
+            if (a && !isValidIcao(a)) throw new Error(t("dashboard.invalidAlternate"));
 
             const tasks = [briefFor(o)];
             if (d) tasks.push(briefFor(d));
@@ -394,7 +394,7 @@ export default function Dashboard() {
             const info = await fetchAirport(icao);
             setAirportInfo(info);
         } catch (e) {
-            setAirportInfo({ error: e?.message || "Falha ao carregar dados do aeródromo" });
+            setAirportInfo({ error: e?.message || t("dashboard.airportLoadError") });
         } finally {
             setAirportInfoLoading(false);
         }
@@ -407,8 +407,8 @@ export default function Dashboard() {
     }
 
     const headerSubtitle = selectedIcao
-        ? "METAR, TAF e dados do aeródromo no mesmo fluxo operacional"
-        : "Meteorologia, estações e planejamento operacional em um único painel";
+        ? t("dashboard.detailsSubtitle")
+        : t("dashboard.defaultSubtitle");
 
     const routeHeadline = base?.dest?.icao
         ? `${base.origin?.icao || "A"} → ${base.dest.icao}`
@@ -416,7 +416,7 @@ export default function Dashboard() {
 
     const activeFocusLabel = selectedStation
         ? `${selectedStation.icao} em foco`
-        : "Selecione uma estação para abrir detalhes";
+        : t("dashboard.selectStationDetails");
 
     return (
         <div className="app">
@@ -439,7 +439,7 @@ export default function Dashboard() {
                                 {user ? (
                                     <div className="page-actions">
                                         <button className="secondary" type="button" onClick={() => nav("/simulados")}>
-                                            Simulados ANAC
+                                            {t("dashboard.examsTitle")}
                                         </button>
                                         <button className="secondary" type="button" onClick={saveBriefing}>
                                             {t("dashboard.saveBriefing")}
@@ -476,17 +476,16 @@ export default function Dashboard() {
                             </div>
                         </section>
 
-                        <Card title="SIMULADOS ANAC">
+                        <Card title={t("dashboard.examsTitle")}>
                             <div className="dashboard-sim-card">
                                 <div>
-                                    <strong>Treine PP, PC/IFR e Comissário em uma central de simulados.</strong>
+                                    <strong>{t("dashboard.examsLead")}</strong>
                                     <p>
-                                        Crie sua conta e faça 1 prova completa de PP grátis. O plano PRO libera PP, PC/IFR,
-                                        Comissário, treino por matéria, temporizador, correção e gabarito comentado por R$ 19,90/mês.
+                                        {t("dashboard.examsCopy")}
                                     </p>
                                 </div>
                                 <button className="primary" type="button" onClick={() => nav(user ? "/simulados" : "/register")}>
-                                    {user ? "Abrir simulados" : "Criar conta grátis"}
+                                    {user ? t("dashboard.openExams") : t("dashboard.createFreeAccount")}
                                 </button>
                             </div>
                         </Card>
@@ -523,7 +522,7 @@ export default function Dashboard() {
                                     <span className="dashboard-overview-copy">
                                         {plannerSummary
                                             ? `Trip ${plannerSummary.tripFuelL.toFixed(1)} L · margem ${plannerSummary.fuelMarginL.toFixed(1)} L`
-                                            : "Resumo aparece após gerar o briefing"}
+                                            : t("dashboard.summaryAfterBriefing")}
                                     </span>
                                 </article>
 
@@ -589,7 +588,7 @@ export default function Dashboard() {
 
                                         <div className="dashboard-weather-grid">
                                             <WxSquareCard
-                                                label={base.mode === "single" ? "A · AERÓDROMO" : "A · ORIGEM"}
+                                                label={base.mode === "single" ? t("dashboard.originLabelFull") : t("dashboard.originRouteLabel")}
                                                 station={base.origin}
                                                 showFav={!!user}
                                                 isFav={isFavorite(base.origin?.icao)}
@@ -635,7 +634,7 @@ export default function Dashboard() {
                                 <div className="dashboard-section-head">
                                     <div>
                                         <span className="dashboard-section-kicker">Planejamento operacional</span>
-                                        <h2 className="dashboard-section-title">Combustível, tempo, reserva e parâmetros do voo</h2>
+                                        <h2 className="dashboard-section-title">{t("dashboard.plannerSectionTitle")}</h2>
                                     </div>
                                 </div>
 
