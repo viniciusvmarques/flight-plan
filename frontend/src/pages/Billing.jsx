@@ -145,7 +145,8 @@ export default function Billing() {
                                 <span className="page-eyebrow">{t("billing.heroEyebrow")}</span>
                                 <h1 className="page-title">{t("billing.heroTitle")}</h1>
                                 <p className="page-caption">
-                                    {t("billing.heroCaption")}
+                                    {t("billing.heroCaption")} Agora o mesmo plano também inclui simulados ANAC PP Avião com temporizador,
+                                    correção por matéria e gabarito comentado.
                                 </p>
                             </div>
 
@@ -205,7 +206,7 @@ export default function Billing() {
                                                 ? `${planLead} Use o portal para atualizar cartão, acompanhar cobrança ou cancelar quando precisar.`
                                                 : status?.planStatus === "past_due"
                                                   ? "Existe uma pendência de pagamento na sua assinatura. Enquanto ela não for regularizada, o acesso premium pode ficar restrito."
-                                                  : "Você ainda está no plano FREE. O Pro libera continuidade operacional, salvamento em nuvem e favoritos sincronizados."}
+                                                  : "Você ainda está no plano FREE. O cadastro libera 1 simulado completo; o PRO libera todos os simulados, continuidade operacional, salvamento em nuvem e favoritos sincronizados."}
                                         </p>
                                         <div className="page-actions">
                                             <button className="secondary" type="button" onClick={refresh} disabled={loading}>
@@ -224,6 +225,7 @@ export default function Billing() {
                                     <div className="feature-item">{t("billing.featureBriefings")}</div>
                                     <div className="feature-item">{t("billing.featureFavorites")}</div>
                                     <div className="feature-item">{t("billing.featureHistory")}</div>
+                                            <div className="feature-item">Simulados ANAC PP Avião inclusos no PRO</div>
                                     <div className="feature-item">{t("billing.featureFuture")}</div>
                                 </div>
                             </Card>
@@ -243,6 +245,7 @@ export default function Billing() {
                                         <div className="feature-list">
                                             <div className="feature-item">Briefing METAR / TAF</div>
                                             <div className="feature-item">Planejamento manual de combustível e tempo</div>
+                                            <div className="feature-item">1 simulado completo ANAC grátis após cadastro</div>
                                             <div className="feature-item">Persistência local no navegador</div>
                                         </div>
                                         <button className="secondary" type="button" disabled>
@@ -262,6 +265,7 @@ export default function Billing() {
                                         <div className="feature-list">
                                             <div className="feature-item">{t("billing.proFeatureSync")}</div>
                                             <div className="feature-item">{t("billing.proFeatureReopen")}</div>
+                                            <div className="feature-item">Todos os simulados ANAC: prova completa, matérias, temporizador e gabarito comentado</div>
                                             <div className="feature-item">{t("billing.proFeatureStripe")}</div>
                                             <div className="feature-item">{t("billing.proFeatureFuture")}</div>
                                         </div>

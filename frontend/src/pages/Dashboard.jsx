@@ -438,6 +438,9 @@ export default function Dashboard() {
                                 </div>
                                 {user ? (
                                     <div className="page-actions">
+                                        <button className="secondary" type="button" onClick={() => nav("/simulados")}>
+                                            Simulados ANAC
+                                        </button>
                                         <button className="secondary" type="button" onClick={saveBriefing}>
                                             {t("dashboard.saveBriefing")}
                                         </button>
@@ -472,6 +475,21 @@ export default function Dashboard() {
                                 <span className="chip ok">{user ? t("dashboard.accountPlan", { plan: String(user.plan || "FREE").toUpperCase() }) : t("dashboard.visitorMode")}</span>
                             </div>
                         </section>
+
+                        <Card title="SIMULADOS ANAC PP AVIÃO">
+                            <div className="dashboard-sim-card">
+                                <div>
+                                    <strong>Faça 1 prova completa grátis depois de criar sua conta.</strong>
+                                    <p>
+                                        Treine com temporizador, 100 questões no simulado completo, correção por matéria e gabarito comentado.
+                                        O plano PRO libera todos os simulados por R$ 19,90/mês.
+                                    </p>
+                                </div>
+                                <button className="primary" type="button" onClick={() => nav(user ? "/simulados" : "/register")}>
+                                    {user ? "Abrir simulados" : "Criar conta grátis"}
+                                </button>
+                            </div>
+                        </Card>
 
                         {base ? (
                             <section className="dashboard-overview-grid">

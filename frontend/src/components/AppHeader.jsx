@@ -25,6 +25,9 @@ export default function AppHeader({ kicker = "Marquisa", title = "Centro de oper
                     <Link className="fp-nav-link" to="/">
                         {t("appHeader.briefing")}
                     </Link>
+                    <Link className="fp-nav-link" to="/simulados">
+                        Simulados
+                    </Link>
                     {user ? (
                         <>
                             <Link className="fp-nav-link" to="/perfil">

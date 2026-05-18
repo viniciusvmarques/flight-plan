@@ -37,6 +37,7 @@ model User {
   contactMessages ContactMessage[]
   emailLogs EmailLog[]
   aircraftProfiles AircraftProfile[]
+  examAttempts ExamAttempt[]
 }
 
 model Briefing {
@@ -128,4 +129,28 @@ model AircraftProfile {
 
   @@index([userId])
   @@index([userId, isDefault])
+}
+
+model ExamAttempt {
+  id              String    @id @default(uuid())
+  userId          String
+  license         String
+  mode            String
+  subject         String?
+  questionIds     Json
+  answers         Json?
+  score           Json?
+  totalQuestions  Int       @default(0)
+  correctAnswers  Int       @default(0)
+  percent         Float     @default(0)
+  passed          Boolean   @default(false)
+  status          String    @default("in_progress")
+  durationSeconds Int       @default(0)
+  startedAt       DateTime  @default(now())
+  submittedAt     DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startedAt])
+  @@index([license, mode])
 }

@@ -16,6 +16,7 @@ import { PrismaClient } from "@prisma/client";
 import { createEmailService } from "./lib/email-service.js";
 import { AIRCRAFT_PRESETS, getAircraftPresetByKey, serializeAircraftPreset } from "./lib/aircraft-presets.js";
 import { LEGAL_DOC_VERSIONS, SITE_PROFILE, getClientIp, getUserAgent } from "./lib/site-config.js";
+import { EXAM_QUESTIONS, EXAM_SUBJECTS, publicQuestion, resultQuestion } from "./lib/exam-question-bank.js";
 
 const app = express();
 const DEFAULT_FRONTEND_ORIGIN = "http://localhost:5173";
@@ -400,6 +401,97 @@ async function requirePro(req,res,next){
     return res.status(402).json({ error: "Recurso disponível apenas para assinaturas PRO ativas." });
   }
   return next();
+}
+
+const EXAM_QUESTION_BY_ID = new Map(EXAM_QUESTIONS.map((question) => [question.id, question]));
+
+function hashSeed(value) {
+  return String(value || "")
+    .split("")
+    .reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) >>> 0, 2166136261);
+}
+
+function seededShuffle(items, seedValue) {
+  const result = [...items];
+  let seed = hashSeed(seedValue);
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    const j = seed % (i + 1);
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function examDurationSeconds(mode, subject) {
+  if (mode === "complete") return 180 * 60;
+  return subject === "NAV" ? 60 * 60 : 30 * 60;
+}
+
+function pickExamQuestions({ mode, subject, seed }) {
+  if (mode === "complete") {
+    return EXAM_SUBJECTS.flatMap((item) => {
+      const pool = EXAM_QUESTIONS.filter((question) => question.subject === item.key);
+      return seededShuffle(pool, `${seed}:${item.key}`).slice(0, 20);
+    });
+  }
+
+  const normalizedSubject = String(subject || "").trim().toUpperCase();
+  if (!EXAM_SUBJECTS.some((item) => item.key === normalizedSubject)) return null;
+  const pool = EXAM_QUESTIONS.filter((question) => question.subject === normalizedSubject);
+  return seededShuffle(pool, `${seed}:${normalizedSubject}`).slice(0, 20);
+}
+
+function scoreExam(questionIds, answerMap) {
+  const questions = questionIds.map((id) => EXAM_QUESTION_BY_ID.get(id)).filter(Boolean);
+  const bySubject = {};
+  let correctAnswers = 0;
+
+  const resultQuestions = questions.map((question) => {
+    const rawAnswer = answerMap?.[question.id];
+    const selectedIndex = Number.isInteger(rawAnswer) ? rawAnswer : Number.parseInt(rawAnswer, 10);
+    const safeSelectedIndex = Number.isInteger(selectedIndex) && selectedIndex >= 0 ? selectedIndex : null;
+    const isCorrect = safeSelectedIndex === question.correctIndex;
+
+    if (!bySubject[question.subject]) {
+      bySubject[question.subject] = {
+        key: question.subject,
+        label: question.subjectLabel,
+        total: 0,
+        correct: 0,
+        percent: 0,
+        passed: false,
+      };
+    }
+
+    bySubject[question.subject].total += 1;
+    if (isCorrect) {
+      correctAnswers += 1;
+      bySubject[question.subject].correct += 1;
+    }
+
+    return resultQuestion(question, safeSelectedIndex);
+  });
+
+  for (const item of Object.values(bySubject)) {
+    item.percent = item.total ? Math.round((item.correct / item.total) * 100) : 0;
+    item.passed = item.percent >= 70;
+  }
+
+  const failedSubjects = Object.values(bySubject).filter((item) => !item.passed);
+  const totalQuestions = questions.length;
+  const percent = totalQuestions ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+  const passed = failedSubjects.length === 0;
+
+  return {
+    totalQuestions,
+    correctAnswers,
+    percent,
+    passed,
+    failedSubjects: failedSubjects.map((item) => item.key),
+    secondChanceEligible: !passed && failedSubjects.length > 0 && failedSubjects.length <= 2,
+    bySubject: Object.values(bySubject),
+    questions: resultQuestions,
+  };
 }
 
 // ===== Health =====
@@ -1204,6 +1296,215 @@ app.get("/api/taf", async (req, res) => {
     const raw = await fetchRaw("taf", icao);
     if (!raw) return res.status(404).send("Sem TAF disponível");
     res.type("text/plain").send(raw);
+});
+
+// ============================
+// ===== SIMULADOS ANAC =====
+// ============================
+app.get("/api/exams/catalog", (req, res) => {
+  const subjects = EXAM_SUBJECTS.map((subject) => {
+    const count = EXAM_QUESTIONS.filter((question) => question.subject === subject.key).length;
+    return { ...subject, count, questionCountPerAttempt: 20, durationSeconds: examDurationSeconds("subject", subject.key) };
+  });
+
+  return res.json({
+    license: "PP-A",
+    title: "Simulados ANAC PP Avião",
+    totalQuestions: EXAM_QUESTIONS.length,
+    completeExam: {
+      questionCount: 100,
+      questionsPerSubject: 20,
+      durationSeconds: examDurationSeconds("complete"),
+      approvalRule: "70% de acerto em cada matéria.",
+      secondChanceRule: "Se reprovar em até 2 matérias, destaque para refazer apenas as pendentes.",
+    },
+    subjects,
+    disclaimer: "Questões autorais de estudo, inspiradas no conteúdo cobrado para PP Avião. A Marquisa não é afiliada à ANAC e não reproduz provas oficiais.",
+  });
+});
+
+app.get("/api/exams/access", requireAuth, async (req, res) => {
+  const userId = req.auth.sub;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { plan: true, planStatus: true },
+  });
+  const isPro = canAccessProPlan(user?.plan, user?.planStatus);
+  const freeCompleteAttempts = await prisma.examAttempt.count({
+    where: { userId, mode: "complete" },
+  });
+
+  return res.json({
+    isPro,
+    freeCompleteUsed: freeCompleteAttempts > 0,
+    freeCompleteAttempts,
+    freeLimit: 1,
+    priceLabel: "R$ 19,90/mês",
+  });
+});
+
+app.get("/api/exams/attempts", requireAuth, async (req, res) => {
+  const userId = req.auth.sub;
+  const items = await prisma.examAttempt.findMany({
+    where: { userId },
+    orderBy: { startedAt: "desc" },
+    take: 50,
+    select: {
+      id: true,
+      license: true,
+      mode: true,
+      subject: true,
+      totalQuestions: true,
+      correctAnswers: true,
+      percent: true,
+      passed: true,
+      status: true,
+      durationSeconds: true,
+      startedAt: true,
+      submittedAt: true,
+    },
+  });
+  return res.json({ items });
+});
+
+app.post("/api/exams/attempts", requireAuth, async (req, res) => {
+  const userId = req.auth.sub;
+  const mode = String(req.body?.mode || "subject").trim().toLowerCase();
+  const subject = String(req.body?.subject || "").trim().toUpperCase();
+  if (!["subject", "complete"].includes(mode)) {
+    return res.status(400).json({ error: "Modo de simulado inválido." });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { plan: true, planStatus: true },
+  });
+  const isPro = canAccessProPlan(user?.plan, user?.planStatus);
+  if (!isPro) {
+    if (mode !== "complete") {
+      return res.status(402).json({
+        error: "Os simulados por matéria fazem parte do plano PRO. O cadastro gratuito libera 1 simulado completo.",
+      });
+    }
+
+    const freeCompleteAttempts = await prisma.examAttempt.count({
+      where: { userId, mode: "complete" },
+    });
+    if (freeCompleteAttempts >= 1) {
+      return res.status(402).json({
+        error: "Seu simulado completo gratuito já foi usado. Assine o PRO para liberar todos os simulados por R$ 19,90/mês.",
+      });
+    }
+  }
+
+  const seed = `${userId}:${Date.now()}:${Math.random()}`;
+  const questions = pickExamQuestions({ mode, subject, seed });
+  if (!questions?.length) {
+    return res.status(400).json({ error: "Matéria do simulado inválida." });
+  }
+
+  const attempt = await prisma.examAttempt.create({
+    data: {
+      userId,
+      license: "PP-A",
+      mode,
+      subject: mode === "subject" ? subject : null,
+      questionIds: questions.map((question) => question.id),
+      totalQuestions: questions.length,
+      durationSeconds: examDurationSeconds(mode, subject),
+    },
+  });
+
+  return res.json({
+    attempt: {
+      id: attempt.id,
+      license: attempt.license,
+      mode: attempt.mode,
+      subject: attempt.subject,
+      status: attempt.status,
+      durationSeconds: attempt.durationSeconds,
+      startedAt: attempt.startedAt,
+      questions: questions.map(publicQuestion),
+    },
+  });
+});
+
+app.get("/api/exams/attempts/:id", requireAuth, async (req, res) => {
+  const userId = req.auth.sub;
+  const attempt = await prisma.examAttempt.findUnique({ where: { id: String(req.params.id || "") } });
+  if (!attempt || attempt.userId !== userId) return res.status(404).json({ error: "Simulado não encontrado." });
+
+  const questionIds = Array.isArray(attempt.questionIds) ? attempt.questionIds : [];
+  const questions = questionIds.map((id) => EXAM_QUESTION_BY_ID.get(id)).filter(Boolean);
+
+  if (attempt.status === "submitted") {
+    const score = scoreExam(questionIds, attempt.answers || {});
+    return res.json({
+      attempt: {
+        id: attempt.id,
+        license: attempt.license,
+        mode: attempt.mode,
+        subject: attempt.subject,
+        status: attempt.status,
+        durationSeconds: attempt.durationSeconds,
+        startedAt: attempt.startedAt,
+        submittedAt: attempt.submittedAt,
+        score,
+      },
+    });
+  }
+
+  return res.json({
+    attempt: {
+      id: attempt.id,
+      license: attempt.license,
+      mode: attempt.mode,
+      subject: attempt.subject,
+      status: attempt.status,
+      durationSeconds: attempt.durationSeconds,
+      startedAt: attempt.startedAt,
+      questions: questions.map(publicQuestion),
+    },
+  });
+});
+
+app.post("/api/exams/attempts/:id/submit", requireAuth, async (req, res) => {
+  const userId = req.auth.sub;
+  const attempt = await prisma.examAttempt.findUnique({ where: { id: String(req.params.id || "") } });
+  if (!attempt || attempt.userId !== userId) return res.status(404).json({ error: "Simulado não encontrado." });
+  if (attempt.status === "submitted") return res.status(400).json({ error: "Este simulado já foi finalizado." });
+
+  const answers = req.body?.answers && typeof req.body.answers === "object" ? req.body.answers : {};
+  const questionIds = Array.isArray(attempt.questionIds) ? attempt.questionIds : [];
+  const score = scoreExam(questionIds, answers);
+
+  const updated = await prisma.examAttempt.update({
+    where: { id: attempt.id },
+    data: {
+      answers,
+      score,
+      totalQuestions: score.totalQuestions,
+      correctAnswers: score.correctAnswers,
+      percent: score.percent,
+      passed: score.passed,
+      status: "submitted",
+      submittedAt: new Date(),
+    },
+  });
+
+  return res.json({
+    attempt: {
+      id: updated.id,
+      license: updated.license,
+      mode: updated.mode,
+      subject: updated.subject,
+      status: updated.status,
+      durationSeconds: updated.durationSeconds,
+      startedAt: updated.startedAt,
+      submittedAt: updated.submittedAt,
+      score,
+    },
+  });
 });
 
 // ============================

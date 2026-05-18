@@ -12,6 +12,7 @@ import Contact from "./pages/Contact";
 import CancellationPolicy from "./pages/CancellationPolicy";
 import Profile from "./pages/Profile";
 import Billing from "./pages/Billing";
+import Exams from "./pages/Exams";
 
 import RequireAuth from "./auth/RequireAuth";
 
@@ -29,6 +30,14 @@ export default function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/cancellation-policy" element={<CancellationPolicy />} />
+            <Route
+                path="/simulados"
+                element={
+                    <RequireAuth>
+                        <Exams />
+                    </RequireAuth>
+                }
+            />
 
             <Route path="/account" element={<Navigate to="/perfil" replace />} />
 
@@ -65,6 +74,7 @@ export default function App() {
             {/* compat: rotas antigas */}
             <Route path="/subscription" element={<Navigate to="/assinatura" replace />} />
             <Route path="/billing" element={<Navigate to="/assinatura" replace />} />
+            <Route path="/exams" element={<Navigate to="/simulados" replace />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
