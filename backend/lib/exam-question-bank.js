@@ -364,15 +364,60 @@ function buildOptions(topic, variantIndex) {
   };
 }
 
+const OPERATIONAL_CASES = [
+  "aeronave de instrução em voo local no período da manhã",
+  "navegação escola entre dois aeródromos controlados",
+  "voo visual com alternado já definido no planejamento",
+  "trecho de treinamento com vento lateral previsto",
+  "preparação de decolagem após consulta de boletins atualizados",
+  "aproximação para aeródromo não controlado em condições visuais",
+  "voo de cheque com avaliação de tomada de decisão",
+  "briefing pré-voo com aluno e instrutor a bordo",
+  "navegação curta com mudança de meteorologia no destino",
+  "operação diurna com tráfego conhecido na terminal",
+  "trecho de cruzeiro com necessidade de recalcular estimados",
+  "planejamento com combustível limitado e margem operacional",
+  "revisão de pane simulada durante instrução",
+  "voo de readaptação com consulta de cartas e NOTAM",
+  "saída de aeródromo com restrição operacional publicada",
+  "exercício de fonia com órgão ATS em espaço controlado",
+  "avaliação de teto e visibilidade antes da partida",
+  "treinamento de circuito de tráfego com vento variável",
+  "deslocamento entre aeródromos com alternado próximo",
+  "voo solo supervisionado dentro dos limites autorizados",
+  "planejamento de rota com checkpoints visuais definidos",
+  "operação de instrução com aeronave leve a pistão",
+  "voo em área de treinamento com retorno ao aeródromo de origem",
+  "navegação visual com acompanhamento de consumo horário",
+  "preparação operacional em dia de alta temperatura",
+];
+
+const ROUTE_CASES = [
+  "SBGR-SBRJ",
+  "SBSP-SBMT",
+  "SBBH-SBPR",
+  "SBGO-SBAN",
+  "SBCF-SBZM",
+  "SBPA-SBCX",
+  "SBRF-SBJP",
+  "SBFL-SSKT",
+  "SBSV-SNCL",
+  "SBCT-SBLO",
+];
+
+function variantContext(subject, topic, index, globalIndex) {
+  const route = ROUTE_CASES[globalIndex % ROUTE_CASES.length];
+  const operation = OPERATIONAL_CASES[(index + globalIndex) % OPERATIONAL_CASES.length];
+  const altitude = [2500, 3500, 4500, 5500, 6500, 7500][globalIndex % 6];
+  const time = ["08:30", "09:45", "11:10", "13:20", "15:05", "16:40"][index % 6];
+  const sequence = String((index % 100) + 1).padStart(2, "0");
+
+  return `No caso ${subject.key}-${sequence}, considere ${operation}, rota ${route}, cruzeiro planejado de ${altitude} ft e briefing às ${time}. Tema: ${topic.topic}.`;
+}
+
 function makeQuestion(subject, topic, index, globalIndex) {
   const stem = topic.stems[index % topic.stems.length];
-  const scenario = [
-    "Considere uma operação de treinamento em aviação geral.",
-    "Durante o planejamento de um voo local de instrução.",
-    "Em uma navegação VFR de escola de aviação.",
-    "Ao revisar o briefing antes da decolagem.",
-    "Em uma situação típica de prova teórica.",
-  ][Math.floor(index / topic.stems.length) % 5];
+  const scenario = variantContext(subject, topic, index, globalIndex);
   const { options, correctIndex } = buildOptions(topic, globalIndex);
 
   return {

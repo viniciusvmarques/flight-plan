@@ -444,18 +444,38 @@ function examDurationSeconds(mode, subject) {
   return subject === "NAV" ? 60 * 60 : 30 * 60;
 }
 
+function pickSubjectQuestions(subjectKey, seed, total = 20) {
+  const subjectPool = uniqueQuestionsByText(EXAM_QUESTIONS.filter((question) => question.subject === subjectKey));
+  const topicMap = new Map();
+  for (const question of subjectPool) {
+    if (!topicMap.has(question.topic)) topicMap.set(question.topic, []);
+    topicMap.get(question.topic).push(question);
+  }
+
+  const groups = Array.from(topicMap.entries());
+  const baseTake = Math.floor(total / Math.max(1, groups.length));
+  const picked = [];
+  for (const [topic, items] of groups) {
+    picked.push(...seededShuffle(items, `${seed}:${subjectKey}:${topic}`).slice(0, baseTake));
+  }
+
+  if (picked.length < total) {
+    const usedIds = new Set(picked.map((question) => question.id));
+    const fill = seededShuffle(subjectPool, `${seed}:${subjectKey}:fill`).filter((question) => !usedIds.has(question.id));
+    picked.push(...fill.slice(0, total - picked.length));
+  }
+
+  return seededShuffle(picked, `${seed}:${subjectKey}:final`).slice(0, total);
+}
+
 function pickExamQuestions({ mode, subject, seed }) {
   if (mode === "complete") {
-    return EXAM_SUBJECTS.flatMap((item) => {
-      const pool = uniqueQuestionsByText(EXAM_QUESTIONS.filter((question) => question.subject === item.key));
-      return seededShuffle(pool, `${seed}:${item.key}`).slice(0, 20);
-    });
+    return EXAM_SUBJECTS.flatMap((item) => pickSubjectQuestions(item.key, seed, 20));
   }
 
   const normalizedSubject = String(subject || "").trim().toUpperCase();
   if (!EXAM_SUBJECTS.some((item) => item.key === normalizedSubject)) return null;
-  const pool = uniqueQuestionsByText(EXAM_QUESTIONS.filter((question) => question.subject === normalizedSubject));
-  return seededShuffle(pool, `${seed}:${normalizedSubject}`).slice(0, 20);
+  return pickSubjectQuestions(normalizedSubject, seed, 20);
 }
 
 function repairDuplicateQuestionIds(questionIds, seed = "repair") {
