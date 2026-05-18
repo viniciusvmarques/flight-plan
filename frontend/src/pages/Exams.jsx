@@ -27,6 +27,7 @@ export default function Exams() {
     const [history, setHistory] = useState([]);
     const [attempt, setAttempt] = useState(null);
     const [answers, setAnswers] = useState({});
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [remaining, setRemaining] = useState(0);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -76,6 +77,12 @@ export default function Exams() {
     const result = attempt?.score || null;
     const isPro = !!access?.isPro;
     const freeCompleteUsed = !!access?.freeCompleteUsed;
+    const currentQuestion = questions[currentQuestionIndex] || questions[0] || null;
+
+    useEffect(() => {
+        if (!questions.length) return;
+        if (currentQuestionIndex >= questions.length) setCurrentQuestionIndex(questions.length - 1);
+    }, [questions.length, currentQuestionIndex]);
 
     async function startAttempt(mode, subject = null) {
         setError("");
@@ -85,6 +92,7 @@ export default function Exams() {
             const nextAttempt = res?.attempt;
             setAttempt(nextAttempt);
             setAnswers({});
+            setCurrentQuestionIndex(0);
             setRemaining(nextAttempt?.durationSeconds || 0);
             toast("Simulado iniciado. O temporizador já está correndo.", { variant: "success", title: "Simulados ANAC" });
         } catch (e) {
@@ -100,6 +108,7 @@ export default function Exams() {
             const res = await apiGet(`/api/exams/attempts/${id}`);
             setAttempt(res?.attempt || null);
             setAnswers({});
+            setCurrentQuestionIndex(0);
             setRemaining(0);
         } catch (e) {
             setError(e?.message || "Não foi possível abrir este resultado.");
@@ -185,8 +194,13 @@ export default function Exams() {
                                     <strong>Simulado completo PP Avião</strong>
                                     <p>100 questões: 20 por matéria, correção por disciplina e indicação de segunda época.</p>
                                 </div>
-                                <button className="primary" type="button" disabled={loading || submitting || (!isPro && freeCompleteUsed)} onClick={() => startAttempt("complete")}>
-                                    {!isPro && freeCompleteUsed ? "Grátis já usado" : "Iniciar completo"}
+                                <button
+                                    className={!isPro && freeCompleteUsed ? "btn-primary" : "primary"}
+                                    type="button"
+                                    disabled={loading || submitting}
+                                    onClick={() => (!isPro && freeCompleteUsed ? nav("/assinatura") : startAttempt("complete"))}
+                                >
+                                    {!isPro && freeCompleteUsed ? "Assinar PRO por R$ 19,90" : "Iniciar completo"}
                                 </button>
                             </div>
                             <div className="exam-subject-grid">
@@ -194,9 +208,9 @@ export default function Exams() {
                                     <button
                                         key={subject.key}
                                         type="button"
-                                        className="exam-subject-card"
-                                        disabled={loading || submitting || !isPro}
-                                        onClick={() => startAttempt("subject", subject.key)}
+                                        className={`exam-subject-card ${!isPro ? "exam-subject-card--locked" : ""}`}
+                                        disabled={loading || submitting}
+                                        onClick={() => (isPro ? startAttempt("subject", subject.key) : nav("/assinatura"))}
                                     >
                                         <span>{subject.key}</span>
                                         <strong>{subject.label}</strong>
@@ -324,24 +338,26 @@ export default function Exams() {
                                 </span>
                                 <progress max={questions.length || 1} value={answeredCount} />
                             </div>
-                            <div className="exam-question-list">
-                                {questions.map((question, index) => (
-                                    <article key={question.id} className="exam-question-card">
+                            {currentQuestion ? (
+                                <div className="exam-test-window">
+                                    <article className="exam-question-card exam-question-card--single">
                                         <div className="exam-question-head">
                                             <span>
-                                                Questão {index + 1} • {question.subjectLabel}
+                                                Questão {currentQuestionIndex + 1} de {questions.length}
                                             </span>
-                                            <small>{question.topic}</small>
+                                            <small>
+                                                {currentQuestion.subjectLabel} • {currentQuestion.topic}
+                                            </small>
                                         </div>
-                                        <p>{question.question}</p>
+                                        <p className="exam-question-text">{currentQuestion.question}</p>
                                         <div className="exam-option-list">
-                                            {question.options.map((option, optionIndex) => (
-                                                <label key={`${question.id}-${option}`} className="exam-option exam-option--selectable">
+                                            {currentQuestion.options.map((option, optionIndex) => (
+                                                <label key={`${currentQuestion.id}-${option}`} className="exam-option exam-option--selectable">
                                                     <input
                                                         type="radio"
-                                                        name={question.id}
-                                                        checked={answers[question.id] === optionIndex}
-                                                        onChange={() => choose(question.id, optionIndex)}
+                                                        name={currentQuestion.id}
+                                                        checked={answers[currentQuestion.id] === optionIndex}
+                                                        onChange={() => choose(currentQuestion.id, optionIndex)}
                                                     />
                                                     <span>{String.fromCharCode(65 + optionIndex)}</span>
                                                     <p>{option}</p>
@@ -349,8 +365,47 @@ export default function Exams() {
                                             ))}
                                         </div>
                                     </article>
-                                ))}
-                            </div>
+
+                                    <div className="exam-window-actions">
+                                        <button
+                                            className="secondary"
+                                            type="button"
+                                            disabled={currentQuestionIndex === 0}
+                                            onClick={() => setCurrentQuestionIndex((value) => Math.max(0, value - 1))}
+                                        >
+                                            Anterior
+                                        </button>
+                                        <button
+                                            className="secondary"
+                                            type="button"
+                                            disabled={currentQuestionIndex >= questions.length - 1}
+                                            onClick={() => setCurrentQuestionIndex((value) => Math.min(questions.length - 1, value + 1))}
+                                        >
+                                            Próxima
+                                        </button>
+                                        <button className="primary" type="button" disabled={submitting} onClick={() => submitAttempt(false)}>
+                                            Finalizar prova
+                                        </button>
+                                    </div>
+
+                                    <div className="exam-question-nav" aria-label="Navegação entre questões">
+                                        {questions.map((question, index) => (
+                                            <button
+                                                key={question.id}
+                                                type="button"
+                                                className={[
+                                                    "exam-question-nav-item",
+                                                    index === currentQuestionIndex ? "exam-question-nav-item--active" : "",
+                                                    answers[question.id] !== undefined ? "exam-question-nav-item--answered" : "",
+                                                ].join(" ")}
+                                                onClick={() => setCurrentQuestionIndex(index)}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : null}
                         </Card>
                     </div>
                 )}
