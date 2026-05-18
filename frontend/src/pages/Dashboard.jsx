@@ -71,6 +71,7 @@ export default function Dashboard() {
     const { toast } = useNotify();
     const { t } = useI18n();
     const detailRef = useRef(null);
+    const simuladosRef = useRef(null);
 
     const [lastData, setLastData] = useState(() => {
         try {
@@ -107,6 +108,19 @@ export default function Dashboard() {
     useEffect(() => {
         saveJSON("fp_planner_seed", plannerSeed || {});
     }, [plannerSeed]);
+
+    useEffect(() => {
+        function scrollToSimulados() {
+            if (window.location.hash !== "#simulados") return;
+            window.setTimeout(() => {
+                simuladosRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 250);
+        }
+
+        scrollToSimulados();
+        window.addEventListener("hashchange", scrollToSimulados);
+        return () => window.removeEventListener("hashchange", scrollToSimulados);
+    }, []);
 
     useEffect(() => {
         let cancelled = false;
@@ -476,7 +490,8 @@ export default function Dashboard() {
                             </div>
                         </section>
 
-                        <Card title={t("dashboard.examsTitle")}>
+                        <section id="simulados" ref={simuladosRef} className="dashboard-anchor-section">
+                            <Card title={t("dashboard.examsTitle")}>
                             <div className="dashboard-sim-card">
                                 <div>
                                     <strong>{t("dashboard.examsLead")}</strong>
@@ -488,7 +503,8 @@ export default function Dashboard() {
                                     {user ? t("dashboard.openExams") : t("dashboard.createFreeAccount")}
                                 </button>
                             </div>
-                        </Card>
+                            </Card>
+                        </section>
 
                         {base ? (
                             <section className="dashboard-overview-grid">

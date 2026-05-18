@@ -103,6 +103,10 @@
     background: linear-gradient(135deg, rgba(20, 83, 45, 0.22), rgba(15, 23, 42, 0.56));
 }
 
+.dashboard-anchor-section {
+    scroll-margin-top: 96px;
+}
+
 .exam-access-banner p,
 .dashboard-sim-card p {
     margin: 5px 0 0;
