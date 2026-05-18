@@ -422,6 +422,23 @@ function seededShuffle(items, seedValue) {
   return result;
 }
 
+function normalizeQuestionSignature(question) {
+  return String(question?.question || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function uniqueQuestionsByText(items) {
+  const seen = new Set();
+  return items.filter((question) => {
+    const signature = normalizeQuestionSignature(question);
+    if (!signature || seen.has(signature)) return false;
+    seen.add(signature);
+    return true;
+  });
+}
+
 function examDurationSeconds(mode, subject) {
   if (mode === "complete") return 180 * 60;
   return subject === "NAV" ? 60 * 60 : 30 * 60;
@@ -430,15 +447,56 @@ function examDurationSeconds(mode, subject) {
 function pickExamQuestions({ mode, subject, seed }) {
   if (mode === "complete") {
     return EXAM_SUBJECTS.flatMap((item) => {
-      const pool = EXAM_QUESTIONS.filter((question) => question.subject === item.key);
+      const pool = uniqueQuestionsByText(EXAM_QUESTIONS.filter((question) => question.subject === item.key));
       return seededShuffle(pool, `${seed}:${item.key}`).slice(0, 20);
     });
   }
 
   const normalizedSubject = String(subject || "").trim().toUpperCase();
   if (!EXAM_SUBJECTS.some((item) => item.key === normalizedSubject)) return null;
-  const pool = EXAM_QUESTIONS.filter((question) => question.subject === normalizedSubject);
+  const pool = uniqueQuestionsByText(EXAM_QUESTIONS.filter((question) => question.subject === normalizedSubject));
   return seededShuffle(pool, `${seed}:${normalizedSubject}`).slice(0, 20);
+}
+
+function repairDuplicateQuestionIds(questionIds, seed = "repair") {
+  const usedIds = new Set();
+  const usedSignatures = new Set();
+  const repaired = [];
+  let changed = false;
+
+  for (const id of questionIds) {
+    const question = EXAM_QUESTION_BY_ID.get(id);
+    if (!question) {
+      changed = true;
+      continue;
+    }
+
+    const signature = normalizeQuestionSignature(question);
+    if (!usedSignatures.has(signature) && !usedIds.has(question.id)) {
+      repaired.push(question.id);
+      usedIds.add(question.id);
+      usedSignatures.add(signature);
+      continue;
+    }
+
+    const replacement = seededShuffle(
+      uniqueQuestionsByText(EXAM_QUESTIONS.filter((candidate) => candidate.subject === question.subject)),
+      `${seed}:${question.subject}:${id}`
+    ).find((candidate) => !usedIds.has(candidate.id) && !usedSignatures.has(normalizeQuestionSignature(candidate)));
+
+    if (replacement) {
+      repaired.push(replacement.id);
+      usedIds.add(replacement.id);
+      usedSignatures.add(normalizeQuestionSignature(replacement));
+    } else {
+      repaired.push(question.id);
+      usedIds.add(question.id);
+      usedSignatures.add(signature);
+    }
+    changed = true;
+  }
+
+  return { questionIds: repaired, changed };
 }
 
 function scoreExam(questionIds, answerMap) {
@@ -1434,7 +1492,17 @@ app.get("/api/exams/attempts/:id", requireAuth, async (req, res) => {
   const attempt = await prisma.examAttempt.findUnique({ where: { id: String(req.params.id || "") } });
   if (!attempt || attempt.userId !== userId) return res.status(404).json({ error: "Simulado não encontrado." });
 
-  const questionIds = Array.isArray(attempt.questionIds) ? attempt.questionIds : [];
+  let questionIds = Array.isArray(attempt.questionIds) ? attempt.questionIds : [];
+  if (attempt.status !== "submitted") {
+    const repaired = repairDuplicateQuestionIds(questionIds, attempt.id);
+    if (repaired.changed) {
+      questionIds = repaired.questionIds;
+      await prisma.examAttempt.update({
+        where: { id: attempt.id },
+        data: { questionIds, totalQuestions: questionIds.length },
+      });
+    }
+  }
   const questions = questionIds.map((id) => EXAM_QUESTION_BY_ID.get(id)).filter(Boolean);
 
   if (attempt.status === "submitted") {
@@ -1475,12 +1543,14 @@ app.post("/api/exams/attempts/:id/submit", requireAuth, async (req, res) => {
   if (attempt.status === "submitted") return res.status(400).json({ error: "Este simulado já foi finalizado." });
 
   const answers = req.body?.answers && typeof req.body.answers === "object" ? req.body.answers : {};
-  const questionIds = Array.isArray(attempt.questionIds) ? attempt.questionIds : [];
+  const repaired = repairDuplicateQuestionIds(Array.isArray(attempt.questionIds) ? attempt.questionIds : [], attempt.id);
+  const questionIds = repaired.questionIds;
   const score = scoreExam(questionIds, answers);
 
   const updated = await prisma.examAttempt.update({
     where: { id: attempt.id },
     data: {
+      questionIds,
       answers,
       score,
       totalQuestions: score.totalQuestions,
