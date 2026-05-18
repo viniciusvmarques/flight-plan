@@ -392,32 +392,26 @@ const OPERATIONAL_CASES = [
   "preparação operacional em dia de alta temperatura",
 ];
 
-const ROUTE_CASES = [
-  "SBGR-SBRJ",
-  "SBSP-SBMT",
-  "SBBH-SBPR",
-  "SBGO-SBAN",
-  "SBCF-SBZM",
-  "SBPA-SBCX",
-  "SBRF-SBJP",
-  "SBFL-SSKT",
-  "SBSV-SNCL",
-  "SBCT-SBLO",
-];
+function lowerFirst(value) {
+  const text = String(value || "").trim();
+  return text ? text.charAt(0).toLowerCase() + text.slice(1) : "";
+}
 
-function variantContext(subject, topic, index, globalIndex) {
-  const route = ROUTE_CASES[globalIndex % ROUTE_CASES.length];
+function variantContext(index, globalIndex) {
   const operation = OPERATIONAL_CASES[(index + globalIndex) % OPERATIONAL_CASES.length];
   const altitude = [2500, 3500, 4500, 5500, 6500, 7500][globalIndex % 6];
   const time = ["08:30", "09:45", "11:10", "13:20", "15:05", "16:40"][index % 6];
-  const sequence = String((index % 100) + 1).padStart(2, "0");
+  const contextStyle = globalIndex % 4;
 
-  return `No caso ${subject.key}-${sequence}, considere ${operation}, rota ${route}, cruzeiro planejado de ${altitude} ft e briefing às ${time}. Tema: ${topic.topic}.`;
+  if (contextStyle === 0) return `Durante ${operation},`;
+  if (contextStyle === 1) return `Em ${operation}, com cruzeiro planejado de ${altitude} ft,`;
+  if (contextStyle === 2) return `Antes de uma ${operation}, no briefing das ${time},`;
+  return `Considerando ${operation},`;
 }
 
 function makeQuestion(subject, topic, index, globalIndex) {
   const stem = topic.stems[index % topic.stems.length];
-  const scenario = variantContext(subject, topic, index, globalIndex);
+  const scenario = variantContext(index, globalIndex);
   const { options, correctIndex } = buildOptions(topic, globalIndex);
 
   return {
@@ -427,7 +421,7 @@ function makeQuestion(subject, topic, index, globalIndex) {
     subjectLabel: subject.label,
     topic: topic.topic,
     difficulty: ["facil", "media", "media", "dificil"][globalIndex % 4],
-    question: `${scenario} ${stem}`,
+    question: `${scenario} ${lowerFirst(stem)}`,
     options,
     correctIndex,
     explanation: topic.explanation,
