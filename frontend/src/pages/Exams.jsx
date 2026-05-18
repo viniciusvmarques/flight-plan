@@ -132,7 +132,7 @@ export default function Exams() {
         setError("");
         setSubmitting(true);
         try {
-            const res = await apiPost("/api/exams/attempts", { license: selectedCourse?.key || "PP-A", mode, subject });
+            const res = await apiPost("/api/exams/attempts", { license: selectedCourse?.key || "PP-A", mode, subject, locale });
             const nextAttempt = res?.attempt;
             setAttempt(nextAttempt);
             setAnswers({});
@@ -149,7 +149,7 @@ export default function Exams() {
     async function openHistoryAttempt(id) {
         setError("");
         try {
-            const res = await apiGet(`/api/exams/attempts/${id}`);
+            const res = await apiGet(`/api/exams/attempts/${id}?locale=${encodeURIComponent(locale)}`);
             setAttempt(res?.attempt || null);
             setAnswers({});
             setCurrentQuestionIndex(0);
@@ -173,7 +173,7 @@ export default function Exams() {
 
         setSubmitting(true);
         try {
-            const res = await apiPost(`/api/exams/attempts/${attempt.id}/submit`, { answers });
+            const res = await apiPost(`/api/exams/attempts/${attempt.id}/submit`, { answers, locale });
             setAttempt(res?.attempt || null);
             setRemaining(0);
             await loadCatalog();

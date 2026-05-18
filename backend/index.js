@@ -18,6 +18,7 @@ import { AIRCRAFT_PRESETS, getAircraftPresetByKey, serializeAircraftPreset } fro
 import { LEGAL_DOC_VERSIONS, SITE_PROFILE, getClientIp, getUserAgent } from "./lib/site-config.js";
 import { EXAM_QUESTIONS, EXAM_SUBJECTS, publicQuestion, resultQuestion } from "./lib/exam-question-bank.js";
 import { EXTRA_EXAM_COURSES, EXTRA_EXAM_QUESTIONS } from "./lib/exam-extra-question-bank.js";
+import { localizeExamQuestion, localizeExamScore } from "./lib/exam-question-localizer.js";
 
 const app = express();
 const DEFAULT_FRONTEND_ORIGIN = "http://localhost:5173";
@@ -421,6 +422,18 @@ const EXAM_QUESTION_BY_ID = new Map(ALL_EXAM_QUESTIONS.map((question) => [questi
 function getExamCourse(license = "PP-A") {
   const normalized = String(license || "PP-A").trim().toUpperCase();
   return EXAM_COURSES.find((course) => course.key === normalized) || EXAM_COURSES[0];
+}
+
+function examLocale(req) {
+  return normalizeLocale(req.body?.locale || req.query?.locale || req.headers["accept-language"]);
+}
+
+function publicLocalizedQuestion(question, locale) {
+  return localizeExamQuestion(publicQuestion(question), locale);
+}
+
+function localizedScore(questionIds, answers, locale) {
+  return localizeExamScore(scoreExam(questionIds, answers), locale);
 }
 
 function hashSeed(value) {
@@ -1480,6 +1493,7 @@ app.get("/api/exams/attempts", requireAuth, async (req, res) => {
 
 app.post("/api/exams/attempts", requireAuth, async (req, res) => {
   const userId = req.auth.sub;
+  const locale = examLocale(req);
   const course = getExamCourse(req.body?.license || req.body?.course || "PP-A");
   const mode = String(req.body?.mode || "subject").trim().toLowerCase();
   const subject = String(req.body?.subject || "").trim().toUpperCase();
@@ -1536,13 +1550,14 @@ app.post("/api/exams/attempts", requireAuth, async (req, res) => {
       status: attempt.status,
       durationSeconds: attempt.durationSeconds,
       startedAt: attempt.startedAt,
-      questions: questions.map(publicQuestion),
+      questions: questions.map((question) => publicLocalizedQuestion(question, locale)),
     },
   });
 });
 
 app.get("/api/exams/attempts/:id", requireAuth, async (req, res) => {
   const userId = req.auth.sub;
+  const locale = examLocale(req);
   const attempt = await prisma.examAttempt.findUnique({ where: { id: String(req.params.id || "") } });
   if (!attempt || attempt.userId !== userId) return res.status(404).json({ error: "Simulado não encontrado." });
 
@@ -1560,7 +1575,7 @@ app.get("/api/exams/attempts/:id", requireAuth, async (req, res) => {
   const questions = questionIds.map((id) => EXAM_QUESTION_BY_ID.get(id)).filter(Boolean);
 
   if (attempt.status === "submitted") {
-    const score = scoreExam(questionIds, attempt.answers || {});
+    const score = localizedScore(questionIds, attempt.answers || {}, locale);
     return res.json({
       attempt: {
         id: attempt.id,
@@ -1585,13 +1600,14 @@ app.get("/api/exams/attempts/:id", requireAuth, async (req, res) => {
       status: attempt.status,
       durationSeconds: attempt.durationSeconds,
       startedAt: attempt.startedAt,
-      questions: questions.map(publicQuestion),
+      questions: questions.map((question) => publicLocalizedQuestion(question, locale)),
     },
   });
 });
 
 app.post("/api/exams/attempts/:id/submit", requireAuth, async (req, res) => {
   const userId = req.auth.sub;
+  const locale = examLocale(req);
   const attempt = await prisma.examAttempt.findUnique({ where: { id: String(req.params.id || "") } });
   if (!attempt || attempt.userId !== userId) return res.status(404).json({ error: "Simulado não encontrado." });
   if (attempt.status === "submitted") return res.status(400).json({ error: "Este simulado já foi finalizado." });
@@ -1599,18 +1615,19 @@ app.post("/api/exams/attempts/:id/submit", requireAuth, async (req, res) => {
   const answers = req.body?.answers && typeof req.body.answers === "object" ? req.body.answers : {};
   const repaired = repairDuplicateQuestionIds(Array.isArray(attempt.questionIds) ? attempt.questionIds : [], attempt.id);
   const questionIds = repaired.questionIds;
-  const score = scoreExam(questionIds, answers);
+  const rawScore = scoreExam(questionIds, answers);
+  const score = localizeExamScore(rawScore, locale);
 
   const updated = await prisma.examAttempt.update({
     where: { id: attempt.id },
     data: {
       questionIds,
       answers,
-      score,
-      totalQuestions: score.totalQuestions,
-      correctAnswers: score.correctAnswers,
-      percent: score.percent,
-      passed: score.passed,
+      score: rawScore,
+      totalQuestions: rawScore.totalQuestions,
+      correctAnswers: rawScore.correctAnswers,
+      percent: rawScore.percent,
+      passed: rawScore.passed,
       status: "submitted",
       submittedAt: new Date(),
     },
