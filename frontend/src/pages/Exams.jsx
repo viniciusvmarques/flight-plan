@@ -99,7 +99,9 @@ export default function Exams() {
     const courses = catalog?.courses || [];
     const selectedCourse = courses.find((course) => course.key === selectedCourseKey) || courses[0] || null;
     const selectedSubjects = selectedCourse?.subjects || catalog?.subjects || [];
-    const selectedCourseIsFree = selectedCourse?.key === "PP-A";
+    const freeEligibleCourses = access?.freeEligibleCourses || ["PP-A", "CMS"];
+    const selectedCourseIsFree = freeEligibleCourses.includes(selectedCourse?.key);
+    const selectedCourseFreeUsed = !!access?.freeCompleteUsedByCourse?.[selectedCourse?.key];
     const currentQuestion = questions[currentQuestionIndex] || questions[0] || null;
     const subjectGroups = useMemo(() => {
         const map = new Map();
@@ -224,7 +226,7 @@ export default function Exams() {
                                         <span>{courseShortTitle(course, t)}</span>
                                         <strong>{courseTitle(course, t)}</strong>
                                         <small>{t("exams.questionsPerComplete", { total: course.totalQuestions, count: course.completeExam?.questionCount || 100 })}</small>
-                                        {!isPro && course.key !== "PP-A" ? <em>PRO</em> : null}
+                                        {!isPro && !freeEligibleCourses.includes(course.key) ? <em>PRO</em> : null}
                                     </button>
                                 ))}
                             </div>
@@ -234,6 +236,8 @@ export default function Exams() {
                                     <p>
                                         {isPro
                                             ? t("exams.proAccessCopy")
+                                            : selectedCourseIsFree && selectedCourseFreeUsed
+                                              ? t("exams.freeCourseUsedCopy")
                                             : freeCompleteUsed
                                               ? t("exams.freeUsedCopy")
                                               : t("exams.freeAvailableCopy")}
@@ -251,12 +255,12 @@ export default function Exams() {
                                     <p>{t("exams.completeExamCopy", { count: selectedCourse?.completeExam?.questionCount || 100 })}</p>
                                 </div>
                                 <button
-                                    className={!isPro && (!selectedCourseIsFree || freeCompleteUsed) ? "btn-primary" : "primary"}
+                                    className={!isPro && (!selectedCourseIsFree || selectedCourseFreeUsed) ? "btn-primary" : "primary"}
                                     type="button"
                                     disabled={loading || submitting}
-                                    onClick={() => (!isPro && (!selectedCourseIsFree || freeCompleteUsed) ? nav("/assinatura") : startAttempt("complete"))}
+                                    onClick={() => (!isPro && (!selectedCourseIsFree || selectedCourseFreeUsed) ? nav("/assinatura") : startAttempt("complete"))}
                                 >
-                                    {!isPro && (!selectedCourseIsFree || freeCompleteUsed) ? t("exams.subscribePro") : t("exams.startComplete")}
+                                    {!isPro && (!selectedCourseIsFree || selectedCourseFreeUsed) ? t("exams.subscribePro") : t("exams.startComplete")}
                                 </button>
                             </div>
                             <div className="exam-subject-grid">

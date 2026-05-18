@@ -416,6 +416,7 @@ const EXAM_COURSES = [
   },
   ...EXTRA_EXAM_COURSES,
 ];
+const FREE_EXAM_COURSES = ["PP-A", "CMS"];
 const ALL_EXAM_QUESTIONS = [...EXAM_QUESTIONS, ...EXTRA_EXAM_QUESTIONS];
 const EXAM_QUESTION_BY_ID = new Map(ALL_EXAM_QUESTIONS.map((question) => [question.id, question]));
 
@@ -1419,6 +1420,7 @@ app.get("/api/exams/catalog", (req, res) => {
     });
     return {
       ...course,
+      freeEnabled: FREE_EXAM_COURSES.includes(course.key),
       subjects,
       totalQuestions: subjects.reduce((sum, item) => sum + item.count, 0),
       completeExam: {
@@ -1454,15 +1456,26 @@ app.get("/api/exams/access", requireAuth, async (req, res) => {
     select: { plan: true, planStatus: true },
   });
   const isPro = canAccessProPlan(user?.plan, user?.planStatus);
-  const freeCompleteAttempts = await prisma.examAttempt.count({
-    where: { userId, mode: "complete" },
-  });
+  const freeCompleteAttemptsByCourse = {};
+  await Promise.all(
+    FREE_EXAM_COURSES.map(async (license) => {
+      freeCompleteAttemptsByCourse[license] = await prisma.examAttempt.count({
+        where: { userId, mode: "complete", license },
+      });
+    })
+  );
+  const freeCompleteAttempts = Object.values(freeCompleteAttemptsByCourse).reduce((sum, count) => sum + count, 0);
 
   return res.json({
     isPro,
-    freeCompleteUsed: freeCompleteAttempts > 0,
+    freeCompleteUsed: FREE_EXAM_COURSES.every((license) => (freeCompleteAttemptsByCourse[license] || 0) > 0),
+    freeCompleteUsedByCourse: Object.fromEntries(
+      FREE_EXAM_COURSES.map((license) => [license, (freeCompleteAttemptsByCourse[license] || 0) > 0])
+    ),
     freeCompleteAttempts,
-    freeLimit: 1,
+    freeCompleteAttemptsByCourse,
+    freeEligibleCourses: FREE_EXAM_COURSES,
+    freeLimit: FREE_EXAM_COURSES.length,
     priceLabel: "R$ 19,90/mês",
   });
 });
@@ -1507,18 +1520,18 @@ app.post("/api/exams/attempts", requireAuth, async (req, res) => {
   });
   const isPro = canAccessProPlan(user?.plan, user?.planStatus);
   if (!isPro) {
-    if (course.key !== "PP-A" || mode !== "complete") {
+    if (!FREE_EXAM_COURSES.includes(course.key) || mode !== "complete") {
       return res.status(402).json({
-        error: "O cadastro gratuito libera 1 simulado completo de PP Avião. PC/IFR, Comissário e simulados por matéria fazem parte do plano PRO.",
+        error: "O cadastro gratuito libera 1 simulado completo de PP Avião e 1 simulado completo de Comissário. PC/IFR e simulados por matéria fazem parte do plano PRO.",
       });
     }
 
     const freeCompleteAttempts = await prisma.examAttempt.count({
-      where: { userId, mode: "complete" },
+      where: { userId, mode: "complete", license: course.key },
     });
     if (freeCompleteAttempts >= 1) {
       return res.status(402).json({
-        error: "Seu simulado completo gratuito já foi usado. Assine o PRO para liberar todos os simulados por R$ 19,90/mês.",
+        error: "Seu simulado completo gratuito deste curso já foi usado. Assine o PRO para liberar todos os simulados por R$ 19,90/mês.",
       });
     }
   }
