@@ -286,7 +286,7 @@ export default function Exams() {
                         <Card title="AVISO IMPORTANTE">
                             <p className="muted">
                                 {catalog?.disclaimer ||
-                                    "Questões autorais de estudo, inspiradas no conteúdo cobrado para PP Avião. A Marquisa não é afiliada à ANAC e não reproduz provas oficiais."}
+                                    "Questões autorais de estudo, inspiradas no conteúdo cobrado em formações aeronáuticas. A Marquisa não é afiliada à ANAC e não reproduz provas oficiais."}
                             </p>
                         </Card>
                     </div>

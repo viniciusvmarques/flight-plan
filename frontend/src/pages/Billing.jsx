@@ -145,8 +145,8 @@ export default function Billing() {
                                 <span className="page-eyebrow">{t("billing.heroEyebrow")}</span>
                                 <h1 className="page-title">{t("billing.heroTitle")}</h1>
                                 <p className="page-caption">
-                                    {t("billing.heroCaption")} Agora o mesmo plano também inclui simulados ANAC PP Avião com temporizador,
-                                    correção por matéria e gabarito comentado.
+                                    {t("billing.heroCaption")} Agora o mesmo plano também inclui simulados ANAC para PP,
+                                    PC/IFR e Comissário, com temporizador, correção por matéria e gabarito comentado.
                                 </p>
                             </div>
 
@@ -225,7 +225,7 @@ export default function Billing() {
                                     <div className="feature-item">{t("billing.featureBriefings")}</div>
                                     <div className="feature-item">{t("billing.featureFavorites")}</div>
                                     <div className="feature-item">{t("billing.featureHistory")}</div>
-                                            <div className="feature-item">Simulados ANAC PP Avião inclusos no PRO</div>
+                                            <div className="feature-item">Simulados ANAC para PP, PC/IFR e Comissário inclusos no PRO</div>
                                     <div className="feature-item">{t("billing.featureFuture")}</div>
                                 </div>
                             </Card>

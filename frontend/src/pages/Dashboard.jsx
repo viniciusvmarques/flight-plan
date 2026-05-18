@@ -476,13 +476,13 @@ export default function Dashboard() {
                             </div>
                         </section>
 
-                        <Card title="SIMULADOS ANAC PP AVIÃO">
+                        <Card title="SIMULADOS ANAC">
                             <div className="dashboard-sim-card">
                                 <div>
-                                    <strong>Faça 1 prova completa grátis depois de criar sua conta.</strong>
+                                    <strong>Treine PP, PC/IFR e Comissário em uma central de simulados.</strong>
                                     <p>
-                                        Treine com temporizador, 100 questões no simulado completo, correção por matéria e gabarito comentado.
-                                        O plano PRO libera todos os simulados por R$ 19,90/mês.
+                                        Crie sua conta e faça 1 prova completa de PP grátis. O plano PRO libera PP, PC/IFR,
+                                        Comissário, treino por matéria, temporizador, correção e gabarito comentado por R$ 19,90/mês.
                                     </p>
                                 </div>
                                 <button className="primary" type="button" onClick={() => nav(user ? "/simulados" : "/register")}>
