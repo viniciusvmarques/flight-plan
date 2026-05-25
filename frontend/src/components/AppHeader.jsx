@@ -28,6 +28,9 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
                     <Link className="fp-nav-link" to="/weather">
                         {t("weather.nav")}
                     </Link>
+                    <Link className="fp-nav-link" to="/computador">
+                        {t("flightComputer.nav")}
+                    </Link>
                     <Link className="fp-nav-link" to="/quiz">
                         {t("quiz.nav")}
                     </Link>

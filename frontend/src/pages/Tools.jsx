@@ -104,6 +104,13 @@ export default function Tools() {
                     </Card>
                 </div>
 
+                <Card title={t("flightComputer.shortTitle")}>
+                    <p className="growth-section-lead">{t("flightComputer.toolsPromo")}</p>
+                    <button type="button" className="primary" onClick={() => nav("/computador")}>
+                        {t("flightComputer.openComputer")}
+                    </button>
+                </Card>
+
                 <GrowthCtaBar
                     secondaryLabel={t("hub.weatherTitle")}
                     primaryLabel={t("hub.quizTitle")}

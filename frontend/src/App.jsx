@@ -15,6 +15,7 @@ import Billing from "./pages/Billing";
 import Exams from "./pages/Exams";
 import Weather from "./pages/Weather";
 import Tools from "./pages/Tools";
+import FlightComputer from "./pages/FlightComputer";
 import Quiz from "./pages/Quiz";
 import SeoLanding from "./pages/SeoLanding";
 import ExamResultShare from "./pages/ExamResultShare";
@@ -27,6 +28,8 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/weather" element={<Weather />} />
             <Route path="/tools" element={<Tools />} />
+            <Route path="/computador" element={<FlightComputer />} />
+            <Route path="/flight-computer" element={<Navigate to="/computador" replace />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/metar-decoder" element={<SeoLanding pageKey="metar" />} />
             <Route path="/flight-planning" element={<SeoLanding pageKey="planning" />} />

@@ -6,6 +6,7 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const HUB_ITEMS = [
     { key: "weather", icon: "WX", path: "/weather", accent: false },
+    { key: "flightComputer", icon: "E6", path: "/computador", accent: false },
     { key: "tools", icon: "FX", path: "/tools", accent: false },
     { key: "quiz", icon: "Q5", path: "/quiz", accent: true },
     { key: "exams", icon: "AN", path: "/#simulados", accent: true },
@@ -45,7 +46,7 @@ export default function HomeHub() {
                 ) : null}
             </div>
 
-            <div className="home-hub-grid">
+            <div className="home-hub-grid home-hub-grid--5">
                 {HUB_ITEMS.map((item) => (
                     <button
                         key={item.key}
