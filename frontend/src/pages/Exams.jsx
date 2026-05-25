@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppFooter from "../components/AppFooter";
 import AppHeader from "../components/AppHeader";
+import ExamProgressChart from "../components/ExamProgressChart";
+import ExamShareCard from "../components/ExamShareCard";
 import Card from "../components/Card";
 import { apiGet, apiPost } from "../services/apiClient";
 import { useNotify } from "../ui/NotifyContext.jsx";
@@ -281,6 +283,7 @@ export default function Exams() {
                         </Card>
 
                         <Card title={t("exams.recentResults")}>
+                            <ExamProgressChart items={history} />
                             {history.length ? (
                                 <div className="exam-history-list">
                                     {history.map((item) => (
@@ -330,6 +333,13 @@ export default function Exams() {
                                     </p>
                                 </div>
                             </div>
+                            <ExamShareCard
+                                result={result}
+                                courseLabel={courseShortTitle(
+                                    catalog?.courses?.find((c) => c.key === attempt?.license) || { key: attempt?.license },
+                                    t
+                                )}
+                            />
                             <div className="exam-score-grid">
                                         {result.bySubject?.map((subject) => (
                                     <div key={subject.key} className="exam-score-card">

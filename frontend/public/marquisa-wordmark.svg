@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260" fill="none">
+  <defs>
+    <linearGradient id="letters" x1="80" y1="58" x2="780" y2="190" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC" />
+      <stop offset="0.55" stop-color="#DBEAFE" />
+      <stop offset="1" stop-color="#93C5FD" />
+    </linearGradient>
+    <linearGradient id="plane" x1="865" y1="53" x2="1030" y2="170" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" />
+      <stop offset="0.58" stop-color="#E2E8F0" />
+      <stop offset="1" stop-color="#94A3B8" />
+    </linearGradient>
+    <linearGradient id="trail" x1="748" y1="162" x2="945" y2="96" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#93C5FD" stop-opacity="0.94" />
+      <stop offset="1" stop-color="#E2E8F0" stop-opacity="0.48" />
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="1200" height="260" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#020617" flood-opacity="0.34" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="260" rx="38" fill="#020617" />
+  <rect x="2" y="2" width="1196" height="256" rx="36" stroke="#1D4ED8" stroke-opacity="0.28" stroke-width="4" />
+
+  <g filter="url(#shadow)">
+    <text
+      x="70"
+      y="158"
+      fill="url(#letters)"
+      font-family="Montserrat, Arial, Helvetica, sans-serif"
+      font-size="104"
+      font-weight="800"
+      letter-spacing="13"
+    >MARQUISA</text>
+  </g>
+
+  <path d="M735 158 C780 110, 824 108, 876 139" stroke="url(#trail)" stroke-width="6" stroke-linecap="round" stroke-dasharray="12 16" />
+  <path d="M876 139 C932 162, 988 145, 1040 95" stroke="url(#trail)" stroke-width="6" stroke-linecap="round" stroke-dasharray="12 16" />
+
+  <g filter="url(#shadow)" transform="translate(900 34) rotate(-8 84 84)">
+    <path
+      d="M84 10 106 72 168 78 180 90 168 102 106 108 84 196 68 196 71 108 30 132 18 132 36 94 18 54 30 54 71 78 68 10Z"
+      fill="url(#plane)"
+    />
+    <path
+      d="M84 10 98 72 150 78 160 90 150 102 98 108 84 196 75 196 77 108 48 126 42 118 60 94 42 68 48 60 77 78 75 10Z"
+      fill="#F8FAFC"
+      opacity="0.64"
+    />
+    <path d="M84 32 94 90 84 168" stroke="#1E293B" stroke-opacity="0.16" stroke-width="4" stroke-linecap="round" />
+  </g>
+</svg>

@@ -511,6 +511,22 @@ function pickExamQuestions({ license = "PP-A", mode, subject, seed }) {
   return pickSubjectQuestions(course.key, normalizedSubject, seed, 20);
 }
 
+function pickSampleQuestions(license = "CMS", count = 5, seed) {
+  const course = getExamCourse(license);
+  const target = Math.min(10, Math.max(3, Number(count) || 5));
+  const picked = [];
+  let round = 0;
+  while (picked.length < target && round < 60) {
+    for (const subject of course.subjects) {
+      if (picked.length >= target) break;
+      const batch = pickSubjectQuestions(course.key, subject.key, `${seed}:${subject.key}:${round}`, 1);
+      if (batch[0]) picked.push(batch[0]);
+    }
+    round += 1;
+  }
+  return uniqueQuestionsByText(picked).slice(0, target);
+}
+
 function repairDuplicateQuestionIds(questionIds, seed = "repair") {
   const usedIds = new Set();
   const usedSignatures = new Set();
@@ -1407,6 +1423,49 @@ app.get("/api/taf", async (req, res) => {
     const raw = await fetchRaw("taf", icao);
     if (!raw) return res.status(404).send("Sem TAF disponível");
     res.type("text/plain").send(raw);
+});
+
+// ============================
+// ===== PÚBLICO / GROWTH =====
+// ============================
+app.get("/api/public/stats", async (req, res) => {
+  const [examAttempts, users] = await Promise.all([
+    prisma.examAttempt.count({ where: { status: "submitted" } }).catch(() => 0),
+    prisma.user.count().catch(() => 0),
+  ]);
+  return res.json({
+    examAttempts,
+    users,
+    questionsBank: ALL_EXAM_QUESTIONS.length,
+    courses: EXAM_COURSES.length,
+  });
+});
+
+app.get("/api/exams/sample", (req, res) => {
+  const license = String(req.query.license || "CMS").trim().toUpperCase();
+  const locale = examLocale(req);
+  const count = Math.min(10, Math.max(3, Number.parseInt(req.query.count, 10) || 5));
+  const course = getExamCourse(license);
+  const seed = `guest:${Date.now()}:${Math.random()}`;
+  const questions = pickSampleQuestions(course.key, count, seed);
+  if (!questions.length) return res.status(400).json({ error: "Não foi possível gerar amostra." });
+
+  return res.json({
+    sessionId: seed,
+    license: course.key,
+    courseTitle: course.title,
+    questionIds: questions.map((question) => question.id),
+    questions: questions.map((question) => publicLocalizedQuestion(question, locale)),
+  });
+});
+
+app.post("/api/exams/sample/score", (req, res) => {
+  const locale = examLocale(req);
+  const questionIds = Array.isArray(req.body?.questionIds) ? req.body.questionIds : [];
+  const answers = req.body?.answers && typeof req.body.answers === "object" ? req.body.answers : {};
+  if (!questionIds.length) return res.status(400).json({ error: "Questões inválidas." });
+  const score = localizedScore(questionIds, answers, locale);
+  return res.json({ score });
 });
 
 // ============================

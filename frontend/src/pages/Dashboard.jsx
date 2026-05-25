@@ -26,6 +26,7 @@ import {
 import { useAuth } from "../auth/AuthContext";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
+import HomeHub from "../components/HomeHub";
 import { useNotify } from "../ui/NotifyContext.jsx";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
@@ -441,6 +442,7 @@ export default function Dashboard() {
 
                 <div className="main-scroll">
                     <div className="page-shell">
+                        <HomeHub />
                         <section className="page-hero page-hero--dashboard">
                             <div className="page-hero-head">
                                 <div className="page-hero-copy">
@@ -450,16 +452,21 @@ export default function Dashboard() {
                                         {t("dashboard.caption")}
                                     </p>
                                 </div>
-                                {user ? (
-                                    <div className="page-actions">
-                                        <button className="secondary" type="button" onClick={() => nav("/simulados")}>
-                                            {t("dashboard.examsTitle")}
+                                <div className="page-actions">
+                                    <button className="secondary" type="button" onClick={() => nav("/simulados")}>
+                                        {t("dashboard.examsTitle")}
+                                    </button>
+                                    {base ? (
+                                        <button className="secondary" type="button" onClick={() => window.print()}>
+                                            {t("dashboard.printBriefing")}
                                         </button>
+                                    ) : null}
+                                    {user ? (
                                         <button className="secondary" type="button" onClick={saveBriefing}>
                                             {t("dashboard.saveBriefing")}
                                         </button>
-                                    </div>
-                                ) : null}
+                                    ) : null}
+                                </div>
                             </div>
                             <div className="dashboard-route-strip">
                                 <div className="dashboard-route-pill">
