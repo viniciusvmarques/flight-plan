@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
 import Card from "../components/Card";
+import GrowthPageHero from "../components/GrowthPageHero";
+import GrowthCtaBar from "../components/GrowthCtaBar";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
 const PAGE_KEYS = ["metar", "planning", "pp", "cms"];
@@ -18,6 +20,7 @@ export default function SeoLanding({ pageKey = "metar" }) {
     const nav = useNavigate();
     const { t } = useI18n();
     const key = PAGE_KEYS.includes(pageKey) ? pageKey : "metar";
+    const bullets = (t(`seo.${key}.bullets`) || "").split("|").filter(Boolean);
 
     useEffect(() => {
         document.title = t(`seo.${key}.documentTitle`);
@@ -26,27 +29,33 @@ export default function SeoLanding({ pageKey = "metar" }) {
     return (
         <div className="main-shell">
             <AppHeader title={t(`seo.${key}.headerTitle`)} subtitle={t(`seo.${key}.headerSubtitle`)} />
-            <main className="main-scroll seo-landing">
-                <section className="public-tool-hero">
-                    <h1>{t(`seo.${key}.heroTitle`)}</h1>
-                    <p>{t(`seo.${key}.heroCopy`)}</p>
-                </section>
+            <main className="main-scroll growth-page">
+                <GrowthPageHero
+                    kicker="Marquisa"
+                    title={t(`seo.${key}.heroTitle`)}
+                    copy={t(`seo.${key}.heroCopy`)}
+                />
+
                 <Card title={t(`seo.${key}.sectionTitle`)}>
-                    <p>{t(`seo.${key}.sectionCopy`)}</p>
-                    <ul className="seo-landing-list">
-                        {(t(`seo.${key}.bullets`) || "").split("|").filter(Boolean).map((item) => (
-                            <li key={item}>{item}</li>
+                    <p className="growth-section-lead">{t(`seo.${key}.sectionCopy`)}</p>
+                    <ul className="growth-feature-list">
+                        {bullets.map((item) => (
+                            <li key={item}>
+                                <span className="growth-feature-check" aria-hidden="true">
+                                    ✓
+                                </span>
+                                <span>{item}</span>
+                            </li>
                         ))}
                     </ul>
                 </Card>
-                <div className="public-tool-cta">
-                    <button type="button" className="secondary" onClick={() => nav(SEO_ROUTES[key].secondary)}>
-                        {t(`seo.${key}.secondaryCta`)}
-                    </button>
-                    <button type="button" className="primary" onClick={() => nav(SEO_ROUTES[key].primary)}>
-                        {t(`seo.${key}.primaryCta`)}
-                    </button>
-                </div>
+
+                <GrowthCtaBar
+                    secondaryLabel={t(`seo.${key}.secondaryCta`)}
+                    primaryLabel={t(`seo.${key}.primaryCta`)}
+                    onSecondary={() => nav(SEO_ROUTES[key].secondary)}
+                    onPrimary={() => nav(SEO_ROUTES[key].primary)}
+                />
             </main>
             <AppFooter />
         </div>

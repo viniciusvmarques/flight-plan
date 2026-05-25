@@ -1,9 +1,7 @@
-import { useRef } from "react";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
 export default function ExamShareCard({ result, courseLabel }) {
     const { t } = useI18n();
-    const cardRef = useRef(null);
 
     function buildShareUrl() {
         const params = new URLSearchParams({
@@ -35,14 +33,14 @@ export default function ExamShareCard({ result, courseLabel }) {
     }
 
     return (
-        <div className="exam-share-wrap">
-            <div ref={cardRef} className="exam-share-card">
+        <div className="exam-share-block">
+            <div className="exam-share-card">
                 <span className="exam-share-kicker">MARQUISA</span>
                 <strong className={result?.passed ? "exam-pass" : "exam-fail"}>
                     {result?.passed ? t("exams.approved") : t("exams.failed")}
                 </strong>
                 <h3>{t("exams.percentScore", { percent: result?.percent ?? 0 })}</h3>
-                <p>{courseLabel}</p>
+                <p className="exam-share-course">{courseLabel}</p>
                 <small>
                     {t("exams.correctCount", {
                         correct: result?.correctAnswers ?? 0,
@@ -50,7 +48,7 @@ export default function ExamShareCard({ result, courseLabel }) {
                     })}
                 </small>
             </div>
-            <button type="button" className="secondary" onClick={shareResult}>
+            <button type="button" className="primary exam-share-button" onClick={shareResult}>
                 {t("share.button")}
             </button>
         </div>

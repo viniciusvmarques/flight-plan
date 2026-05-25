@@ -3,11 +3,16 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
 import Card from "../components/Card";
+import GrowthPageHero from "../components/GrowthPageHero";
+import GrowthCtaBar from "../components/GrowthCtaBar";
 import { fetchMetar, fetchTaf } from "../services/weatherService";
 import { fetchAirport } from "../services/airportsService";
 import { decodeMetarSummary } from "../utils/metarDecoder";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
+import { flightCategoryChipClass } from "../utils/flightCategoryChip";
 import { useI18n } from "../i18n/I18nContext.jsx";
+
+const QUICK_ICAO = ["SBGR", "SBRJ", "SBSP", "KJFK", "EGLL"];
 
 export default function Weather() {
     const nav = useNavigate();
@@ -26,6 +31,7 @@ export default function Weather() {
             setError(t("weather.invalidIcao"));
             return;
         }
+        setIcao(clean);
         setLoading(true);
         setError("");
         try {
@@ -56,77 +62,105 @@ export default function Weather() {
 
     const summary = decodeMetarSummary(metar, locale);
     const category = classifyFromMetar(metar);
+    const hasData = !!(metar || taf);
 
     return (
         <div className="main-shell">
             <AppHeader title={t("weather.title")} subtitle={t("weather.subtitle")} />
-            <main className="main-scroll">
-                <section className="public-tool-hero">
-                    <h1>{t("weather.heroTitle")}</h1>
-                    <p>{t("weather.heroCopy")}</p>
-                </section>
+            <main className="main-scroll growth-page">
+                <GrowthPageHero
+                    kicker={t("weather.nav")}
+                    title={t("weather.heroTitle")}
+                    copy={t("weather.heroCopy")}
+                    statValue={icao}
+                    statLabel={hasData ? "ICAO" : t("weather.searchButton")}
+                />
+
+                {error ? <div className="form-error">{error}</div> : null}
 
                 <Card title={t("weather.searchTitle")}>
                     <form
-                        className="public-tool-form"
+                        className="growth-search-form"
                         onSubmit={(e) => {
                             e.preventDefault();
                             loadWeather(icao);
                         }}
                     >
-                        <label>
-                            ICAO
-                            <input value={icao} onChange={(e) => setIcao(e.target.value.toUpperCase().slice(0, 4))} maxLength={4} placeholder="SBGR" />
+                        <label className="growth-search-field">
+                            <span>ICAO</span>
+                            <input
+                                className="growth-search-input"
+                                value={icao}
+                                onChange={(e) => setIcao(e.target.value.toUpperCase().slice(0, 4))}
+                                maxLength={4}
+                                placeholder="SBGR"
+                                autoComplete="off"
+                                spellCheck={false}
+                            />
                         </label>
-                        <button className="primary" type="submit" disabled={loading}>
+                        <button className="primary growth-search-submit" type="submit" disabled={loading}>
                             {loading ? t("common.loading") : t("weather.searchButton")}
                         </button>
                     </form>
-                    {error ? <div className="form-error">{error}</div> : null}
+                    <div className="growth-quick-chips">
+                        <span className="growth-quick-label">{t("weather.quickLabel")}</span>
+                        {QUICK_ICAO.map((code) => (
+                            <button
+                                key={code}
+                                type="button"
+                                className={`growth-quick-chip ${icao === code ? "growth-quick-chip--active" : ""}`}
+                                onClick={() => loadWeather(code)}
+                            >
+                                {code}
+                            </button>
+                        ))}
+                    </div>
                 </Card>
 
-                {metar || taf ? (
-                    <>
+                {hasData ? (
+                    <div className="growth-stack">
                         <Card title={t("weather.decoderTitle")}>
-                            <div className="weather-decoder-grid">
-                                <div>
-                                    <span className="chip">{category}</span>
+                            <div className="wx-decoder-panel">
+                                <div className="wx-decoder-main">
+                                    <span className={flightCategoryChipClass(category)}>{category}</span>
                                     <p>{summary.categoryLabel}</p>
                                 </div>
-                                <ul>
-                                    {summary.hints.map((hint) => (
-                                        <li key={hint}>{hint}</li>
-                                    ))}
-                                </ul>
+                                {summary.hints.length ? (
+                                    <ul className="wx-decoder-hints">
+                                        {summary.hints.map((hint) => (
+                                            <li key={hint}>{hint}</li>
+                                        ))}
+                                    </ul>
+                                ) : null}
                             </div>
                         </Card>
-                        <div className="public-tool-grid">
+
+                        <div className="growth-two-col">
                             <Card title={`METAR · ${icao}`}>
-                                <pre className="wx-raw">{metar || t("weather.metarUnavailable")}</pre>
+                                <pre className="wx-raw-panel">{metar || t("weather.metarUnavailable")}</pre>
                             </Card>
                             <Card title={`TAF · ${icao}`}>
-                                <pre className="wx-raw">{taf || t("weather.tafUnavailable")}</pre>
+                                <pre className="wx-raw-panel">{taf || t("weather.tafUnavailable")}</pre>
                             </Card>
                         </div>
+
                         {airport ? (
                             <Card title={t("weather.airportTitle")}>
-                                <p>
+                                <p className="wx-airport-line">
                                     <strong>{airport.name || icao}</strong>
-                                    {airport.city ? ` · ${airport.city}` : ""}
+                                    {airport.city ? <span> · {airport.city}</span> : null}
                                 </p>
                             </Card>
                         ) : null}
-                    </>
+                    </div>
                 ) : null}
 
-                <div className="public-tool-cta">
-                    <button type="button" className="secondary" onClick={() => nav("/quiz")}>
-                        {t("hub.quizTitle")}
-                    </button>
-                    <button type="button" className="primary" onClick={() => nav("/#simulados")}>
-                        {t("dashboard.openExams")}
-                    </button>
-                </div>
+                <GrowthCtaBar
+                    secondaryLabel={t("hub.quizTitle")}
+                    primaryLabel={t("dashboard.openExams")}
+                    onSecondary={() => nav("/quiz")}
+                    onPrimary={() => nav("/#simulados")}
+                />
             </main>
             <AppFooter />
         </div>

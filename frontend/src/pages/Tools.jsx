@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
 import Card from "../components/Card";
+import GrowthPageHero from "../components/GrowthPageHero";
+import GrowthCtaBar from "../components/GrowthCtaBar";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
 function toNumber(value, fallback = 0) {
@@ -17,7 +19,6 @@ export default function Tools() {
     const [windDir, setWindDir] = useState("270");
     const [windSpeed, setWindSpeed] = useState("12");
     const [runway, setRunway] = useState("09");
-    const [gust, setGust] = useState("0");
 
     const [liters, setLiters] = useState("100");
     const [density, setDensity] = useState("0.72");
@@ -44,65 +45,71 @@ export default function Tools() {
     return (
         <div className="main-shell">
             <AppHeader title={t("tools.title")} subtitle={t("tools.subtitle")} />
-            <main className="main-scroll">
-                <section className="public-tool-hero">
-                    <h1>{t("tools.heroTitle")}</h1>
-                    <p>{t("tools.heroCopy")}</p>
-                </section>
+            <main className="main-scroll growth-page">
+                <GrowthPageHero kicker={t("tools.title")} title={t("tools.heroTitle")} copy={t("tools.heroCopy")} statValue="2" statLabel={t("tools.subtitle")} />
 
-                <div className="public-tool-grid">
+                <div className="growth-two-col">
                     <Card title={t("tools.crosswindTitle")}>
-                        <div className="tools-form-grid">
-                            <label>
-                                {t("tools.windDir")}
-                                <input value={windDir} onChange={(e) => setWindDir(e.target.value)} />
+                        <div className="growth-field-grid">
+                            <label className="growth-field">
+                                <span>{t("tools.windDir")}</span>
+                                <input value={windDir} onChange={(e) => setWindDir(e.target.value)} inputMode="decimal" />
                             </label>
-                            <label>
-                                {t("tools.windSpeed")}
-                                <input value={windSpeed} onChange={(e) => setWindSpeed(e.target.value)} />
+                            <label className="growth-field">
+                                <span>{t("tools.windSpeed")}</span>
+                                <input value={windSpeed} onChange={(e) => setWindSpeed(e.target.value)} inputMode="decimal" />
                             </label>
-                            <label>
-                                {t("tools.runway")}
-                                <input value={runway} onChange={(e) => setRunway(e.target.value)} />
-                            </label>
-                            <label>
-                                {t("tools.gust")}
-                                <input value={gust} onChange={(e) => setGust(e.target.value)} />
+                            <label className="growth-field">
+                                <span>{t("tools.runway")}</span>
+                                <input value={runway} onChange={(e) => setRunway(e.target.value)} inputMode="decimal" />
                             </label>
                         </div>
-                        <div className="tools-result">
-                            <strong>{t("tools.crosswindResult", { value: crosswind.xw })}</strong>
-                            <p>{t("tools.headwindResult", { value: crosswind.head })}</p>
-                            <small>{t("tools.angleResult", { value: crosswind.angle })}</small>
+                        <div className="growth-result-panel">
+                            <div className="growth-result-item">
+                                <span>{t("tools.crosswindLabel")}</span>
+                                <strong>{crosswind.xw} kt</strong>
+                            </div>
+                            <div className="growth-result-item">
+                                <span>{t("tools.headwindLabel")}</span>
+                                <strong>{crosswind.head} kt</strong>
+                            </div>
+                            <div className="growth-result-item growth-result-item--muted">
+                                <span>{t("tools.angleLabel")}</span>
+                                <strong>{crosswind.angle}°</strong>
+                            </div>
                         </div>
                     </Card>
 
                     <Card title={t("tools.fuelTitle")}>
-                        <div className="tools-form-grid">
-                            <label>
-                                {t("tools.liters")}
-                                <input value={liters} onChange={(e) => setLiters(e.target.value)} />
+                        <div className="growth-field-grid growth-field-grid--2">
+                            <label className="growth-field">
+                                <span>{t("tools.liters")}</span>
+                                <input value={liters} onChange={(e) => setLiters(e.target.value)} inputMode="decimal" />
                             </label>
-                            <label>
-                                {t("tools.density")}
-                                <input value={density} onChange={(e) => setDensity(e.target.value)} />
+                            <label className="growth-field">
+                                <span>{t("tools.density")}</span>
+                                <input value={density} onChange={(e) => setDensity(e.target.value)} inputMode="decimal" />
                             </label>
                         </div>
-                        <div className="tools-result">
-                            <strong>{t("tools.fuelLb", { value: fuel.lb })}</strong>
-                            <p>{t("tools.fuelGal", { value: fuel.usGal })}</p>
+                        <div className="growth-result-panel">
+                            <div className="growth-result-item">
+                                <span>{t("tools.fuelLbLabel")}</span>
+                                <strong>{fuel.lb} lb</strong>
+                            </div>
+                            <div className="growth-result-item">
+                                <span>{t("tools.fuelGalLabel")}</span>
+                                <strong>{fuel.usGal} US gal</strong>
+                            </div>
                         </div>
                     </Card>
                 </div>
 
-                <div className="public-tool-cta">
-                    <button type="button" className="secondary" onClick={() => nav("/weather")}>
-                        {t("hub.weatherTitle")}
-                    </button>
-                    <button type="button" className="primary" onClick={() => nav("/quiz")}>
-                        {t("hub.quizTitle")}
-                    </button>
-                </div>
+                <GrowthCtaBar
+                    secondaryLabel={t("hub.weatherTitle")}
+                    primaryLabel={t("hub.quizTitle")}
+                    onSecondary={() => nav("/weather")}
+                    onPrimary={() => nav("/quiz")}
+                />
             </main>
             <AppFooter />
         </div>

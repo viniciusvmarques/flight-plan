@@ -10,21 +10,28 @@ export default function ExamProgressChart({ items = [] }) {
             .reverse();
     }, [items]);
 
-    if (!recent.length) return <p className="muted">{t("exams.chartEmpty")}</p>;
+    if (!recent.length) {
+        return <p className="growth-chart-empty muted">{t("exams.chartEmpty")}</p>;
+    }
 
     const max = Math.max(...recent.map((item) => Number(item.percent) || 0), 1);
 
     return (
-        <div className="exam-progress-chart" aria-label={t("exams.chartTitle")}>
+        <div className="growth-chart" aria-label={t("exams.chartTitle")}>
+            <div className="growth-chart-head">
+                <strong>{t("exams.chartTitle")}</strong>
+                <span className="muted">{recent.length} {t("exams.chartRuns")}</span>
+            </div>
             <div className="exam-progress-chart-bars">
-                {recent.map((item) => (
+                {recent.map((item, index) => (
                     <div key={item.id} className="exam-progress-chart-col">
                         <div
                             className={`exam-progress-chart-bar ${item.passed ? "exam-progress-chart-bar--pass" : "exam-progress-chart-bar--fail"}`}
-                            style={{ height: `${Math.max(8, (Number(item.percent) / max) * 100)}%` }}
+                            style={{ height: `${Math.max(12, (Number(item.percent) / max) * 100)}%` }}
                             title={`${Math.round(item.percent)}%`}
                         />
                         <small>{Math.round(item.percent)}%</small>
+                        <em>{index + 1}</em>
                     </div>
                 ))}
             </div>

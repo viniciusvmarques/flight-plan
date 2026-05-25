@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
 import Card from "../components/Card";
+import GrowthCtaBar from "../components/GrowthCtaBar";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
 export default function ExamResultShare() {
@@ -23,7 +24,7 @@ export default function ExamResultShare() {
     return (
         <div className="main-shell">
             <AppHeader title={t("share.pageTitle")} subtitle={t("share.pageSubtitle")} />
-            <main className="main-scroll">
+            <main className="main-scroll growth-page">
                 <Card title={t("share.cardTitle")}>
                     <div className="exam-share-card exam-share-card--public">
                         <span className="exam-share-kicker">MARQUISA</span>
@@ -31,7 +32,7 @@ export default function ExamResultShare() {
                             {result.passed ? t("exams.approved") : t("exams.failed")}
                         </strong>
                         <h2>{t("exams.percentScore", { percent: result.percent })}</h2>
-                        <p>{result.course}</p>
+                        <p className="exam-share-course">{result.course}</p>
                         <small>
                             {t("exams.correctCount", {
                                 correct: result.correctAnswers,
@@ -39,15 +40,13 @@ export default function ExamResultShare() {
                             })}
                         </small>
                     </div>
-                    <div className="public-tool-cta">
-                        <button type="button" className="primary" onClick={() => nav("/quiz")}>
-                            {t("hub.quizTitle")}
-                        </button>
-                        <button type="button" className="secondary" onClick={() => nav("/register")}>
-                            {t("quiz.createAccount")}
-                        </button>
-                    </div>
                 </Card>
+                <GrowthCtaBar
+                    secondaryLabel={t("quiz.createAccount")}
+                    primaryLabel={t("hub.quizTitle")}
+                    onSecondary={() => nav("/register")}
+                    onPrimary={() => nav("/quiz")}
+                />
             </main>
             <AppFooter />
         </div>
