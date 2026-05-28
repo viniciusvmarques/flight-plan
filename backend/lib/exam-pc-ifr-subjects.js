@@ -170,7 +170,7 @@ export const PC_IFR_SUBJECTS = [
     ],
   },
   {
-    key: "PERFPC"
+    key: "PERFPC",
     label: "Performance e Planejamento PC",
     topics: [
       topic("Peso, pista e combustível", REF_PERF, [
@@ -197,7 +197,7 @@ export const PC_IFR_SUBJECTS = [
     ],
   },
   {
-    key: "TECIFR"
+    key: "TECIFR",
     label: "Conhecimentos Técnicos IFR",
     topics: [
       topic("Instrumentos e sistemas", REF_TEC, [
