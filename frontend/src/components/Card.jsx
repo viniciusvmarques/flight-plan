@@ -1,6 +1,6 @@
-export default function Card({ title, titleLeft, actions, children }) {
+export default function Card({ title, titleLeft, actions, children, className = "" }) {
     return (
-        <section className="card fp-card">
+        <section className={`card fp-card xp-card ${className}`.trim()}>
             <div className="card-header">
                 <div className="card-title-row">
                     {titleLeft}
@@ -8,7 +8,7 @@ export default function Card({ title, titleLeft, actions, children }) {
                 </div>
                 {actions ? <div className="card-actions">{actions}</div> : null}
             </div>
-            <div className="card-body">{children}</div>
+            <div className="card-body xp-card-body">{children}</div>
         </section>
     );
 }

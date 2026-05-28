@@ -78,6 +78,21 @@
         word-break: break-word;
     }
 
+    .tools-promo-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tools-promo-card .primary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .xp-briefing-actions .secondary,
+    .dash-briefing-actions .secondary {
+        width: 100%;
+    }
+
     .exam-access-banner,
     .dashboard-sim-card {
         flex-direction: column;

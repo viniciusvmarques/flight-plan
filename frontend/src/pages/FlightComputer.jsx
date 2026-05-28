@@ -2,9 +2,13 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
-import Card from "../components/Card";
-import GrowthPageHero from "../components/GrowthPageHero";
 import GrowthCtaBar from "../components/GrowthCtaBar";
+import {
+    ExperienceHero,
+    ResultHighlight,
+    SegmentedControl,
+    WorkbenchCard,
+} from "../components/experience/ExperienceUI";
 import {
     computeDensityAltitude,
     computeFuel,
@@ -72,11 +76,13 @@ export default function FlightComputer() {
         return { tasResult, daResult };
     }, [ias, pressureAlt, oat]);
 
+    const tabItems = TABS.map((key) => ({ id: key, label: t(`flightComputer.tabs.${key}`) }));
+
     return (
         <div className="main-shell">
             <AppHeader compact />
-            <main className="main-scroll growth-page flight-computer-page">
-                <GrowthPageHero
+            <main className="main-scroll growth-page experience-surface flight-computer-page">
+                <ExperienceHero
                     kicker={t("flightComputer.kicker")}
                     title={t("flightComputer.heroTitle")}
                     copy={t("flightComputer.heroCopy")}
@@ -84,139 +90,126 @@ export default function FlightComputer() {
                     statLabel={t("flightComputer.statLabel")}
                 />
 
-                <div className="flight-computer-tabs" role="tablist" aria-label={t("flightComputer.title")}>
-                    {TABS.map((key) => (
-                        <button
-                            key={key}
-                            type="button"
-                            role="tab"
-                            aria-selected={tab === key}
-                            className={`flight-computer-tab ${tab === key ? "flight-computer-tab--active" : ""}`}
-                            onClick={() => setTab(key)}
-                        >
-                            {t(`flightComputer.tabs.${key}`)}
-                        </button>
-                    ))}
-                </div>
+                <SegmentedControl tabs={tabItems} value={tab} onChange={setTab} ariaLabel={t("flightComputer.title")} />
 
                 {tab === "wind" ? (
-                    <Card title={t("flightComputer.windTitle")}>
-                        <p className="growth-section-lead">{t("flightComputer.windCopy")}</p>
-                        <div className="growth-field-grid">
-                            <Field label={t("flightComputer.trueCourse")} value={trueCourse} onChange={setTrueCourse} unit="°" />
-                            <Field label={t("flightComputer.tas")} value={tas} onChange={setTas} unit="kt" />
-                            <Field label={t("flightComputer.windDir")} value={windDir} onChange={setWindDir} unit="°" />
-                            <Field label={t("flightComputer.windSpeed")} value={windSpeed} onChange={setWindSpeed} unit="kt" />
-                        </div>
-                        {wind ? (
-                            <div className="flight-computer-results">
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.wca")}</span>
-                                    <strong>{wind.wca > 0 ? "+" : ""}{wind.wca}°</strong>
-                                </div>
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.heading")}</span>
-                                    <strong>{wind.heading}°</strong>
-                                </div>
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.groundSpeed")}</span>
-                                    <strong>{wind.groundSpeed} kt</strong>
-                                </div>
+                    <WorkbenchCard
+                        title={t("flightComputer.windTitle")}
+                        lead={t("flightComputer.windCopy")}
+                        inputs={
+                            <div className="growth-field-grid">
+                                <Field label={t("flightComputer.trueCourse")} value={trueCourse} onChange={setTrueCourse} unit="°" />
+                                <Field label={t("flightComputer.tas")} value={tas} onChange={setTas} unit="kt" />
+                                <Field label={t("flightComputer.windDir")} value={windDir} onChange={setWindDir} unit="°" />
+                                <Field label={t("flightComputer.windSpeed")} value={windSpeed} onChange={setWindSpeed} unit="kt" />
                             </div>
-                        ) : null}
-                    </Card>
+                        }
+                        results={
+                            wind ? (
+                                <ResultHighlight
+                                    primaryIndex={2}
+                                    items={[
+                                        { label: t("flightComputer.wca"), value: `${wind.wca > 0 ? "+" : ""}${wind.wca}°` },
+                                        { label: t("flightComputer.heading"), value: `${wind.heading}°` },
+                                        { label: t("flightComputer.groundSpeed"), value: `${wind.groundSpeed} kt` },
+                                    ]}
+                                />
+                            ) : null
+                        }
+                    />
                 ) : null}
 
                 {tab === "tsd" ? (
-                    <Card title={t("flightComputer.tsdTitle")}>
-                        <p className="growth-section-lead">{t("flightComputer.tsdCopy")}</p>
-                        <div className="growth-field-grid growth-field-grid--2">
-                            <Field label={t("flightComputer.distance")} value={tsdDistance} onChange={setTsdDistance} unit="nm" />
-                            <Field label={t("flightComputer.speed")} value={tsdSpeed} onChange={setTsdSpeed} unit="kt" placeholder="—" />
-                            <Field label={t("flightComputer.time")} value={tsdTime} onChange={setTsdTime} unit="h" />
-                        </div>
-                        {tsd ? (
-                            <div className="flight-computer-results">
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.distance")}</span>
-                                    <strong>{tsd.distance} nm</strong>
-                                </div>
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.speed")}</span>
-                                    <strong>{tsd.speed} kt</strong>
-                                </div>
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.time")}</span>
-                                    <strong>{formatHoursMinutes(tsd.timeHours)}</strong>
-                                </div>
+                    <WorkbenchCard
+                        title={t("flightComputer.tsdTitle")}
+                        lead={t("flightComputer.tsdCopy")}
+                        inputs={
+                            <div className="growth-field-grid growth-field-grid--2">
+                                <Field label={t("flightComputer.distance")} value={tsdDistance} onChange={setTsdDistance} unit="nm" />
+                                <Field label={t("flightComputer.speed")} value={tsdSpeed} onChange={setTsdSpeed} unit="kt" placeholder="—" />
+                                <Field label={t("flightComputer.time")} value={tsdTime} onChange={setTsdTime} unit="h" />
                             </div>
-                        ) : (
-                            <p className="muted">{t("flightComputer.tsdHint")}</p>
-                        )}
-                    </Card>
+                        }
+                        results={
+                            tsd ? (
+                                <ResultHighlight
+                                    items={[
+                                        { label: t("flightComputer.distance"), value: `${tsd.distance} nm` },
+                                        { label: t("flightComputer.speed"), value: `${tsd.speed} kt` },
+                                        { label: t("flightComputer.time"), value: formatHoursMinutes(tsd.timeHours) },
+                                    ]}
+                                />
+                            ) : null
+                        }
+                        footer={!tsd ? <p className="muted">{t("flightComputer.tsdHint")}</p> : null}
+                    />
                 ) : null}
 
                 {tab === "fuel" ? (
-                    <Card title={t("flightComputer.fuelTitle")}>
-                        <p className="growth-section-lead">{t("flightComputer.fuelCopy")}</p>
-                        <div className="growth-field-grid growth-field-grid--2">
-                            <Field label={t("flightComputer.fuelFlow")} value={fuelFlow} onChange={setFuelFlow} unit="L/h" />
-                            <Field label={t("flightComputer.fuelTime")} value={fuelTime} onChange={setFuelTime} unit="h" />
-                            <Field label={t("flightComputer.fuelTotal")} value={fuelTotal} onChange={setFuelTotal} unit="L" placeholder="—" />
-                        </div>
-                        {fuel ? (
-                            <div className="flight-computer-results">
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.fuelFlow")}</span>
-                                    <strong>{fuel.flowPerHour} L/h</strong>
-                                </div>
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.fuelTime")}</span>
-                                    <strong>{formatHoursMinutes(fuel.timeHours)}</strong>
-                                </div>
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.fuelTotal")}</span>
-                                    <strong>{fuel.totalFuel} L</strong>
-                                </div>
+                    <WorkbenchCard
+                        title={t("flightComputer.fuelTitle")}
+                        lead={t("flightComputer.fuelCopy")}
+                        inputs={
+                            <div className="growth-field-grid growth-field-grid--2">
+                                <Field label={t("flightComputer.fuelFlow")} value={fuelFlow} onChange={setFuelFlow} unit="L/h" />
+                                <Field label={t("flightComputer.fuelTime")} value={fuelTime} onChange={setFuelTime} unit="h" />
+                                <Field label={t("flightComputer.fuelTotal")} value={fuelTotal} onChange={setFuelTotal} unit="L" placeholder="—" />
                             </div>
-                        ) : (
-                            <p className="muted">{t("flightComputer.fuelHint")}</p>
-                        )}
-                    </Card>
+                        }
+                        results={
+                            fuel ? (
+                                <ResultHighlight
+                                    primaryIndex={2}
+                                    items={[
+                                        { label: t("flightComputer.fuelFlow"), value: `${fuel.flowPerHour} L/h` },
+                                        { label: t("flightComputer.fuelTime"), value: formatHoursMinutes(fuel.timeHours) },
+                                        { label: t("flightComputer.fuelTotal"), value: `${fuel.totalFuel} L` },
+                                    ]}
+                                />
+                            ) : null
+                        }
+                        footer={!fuel ? <p className="muted">{t("flightComputer.fuelHint")}</p> : null}
+                    />
                 ) : null}
 
                 {tab === "performance" ? (
                     <div className="growth-two-col">
-                        <Card title={t("flightComputer.tasTitle")}>
-                            <div className="growth-field-grid growth-field-grid--2">
-                                <Field label={t("flightComputer.ias")} value={ias} onChange={setIas} unit="kt" />
-                                <Field label={t("flightComputer.pressureAlt")} value={pressureAlt} onChange={setPressureAlt} unit="ft" />
-                            </div>
-                            <div className="flight-computer-results flight-computer-results--single">
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.tas")}</span>
-                                    <strong>{performance.tasResult.tas} kt</strong>
+                        <WorkbenchCard
+                            title={t("flightComputer.tasTitle")}
+                            inputs={
+                                <div className="growth-field-grid growth-field-grid--2">
+                                    <Field label={t("flightComputer.ias")} value={ias} onChange={setIas} unit="kt" />
+                                    <Field label={t("flightComputer.pressureAlt")} value={pressureAlt} onChange={setPressureAlt} unit="ft" />
                                 </div>
-                            </div>
-                            <p className="muted flight-computer-note">{t("flightComputer.tasNote")}</p>
-                        </Card>
-                        <Card title={t("flightComputer.daTitle")}>
-                            <div className="growth-field-grid growth-field-grid--2">
-                                <Field label={t("flightComputer.pressureAlt")} value={pressureAlt} onChange={setPressureAlt} unit="ft" />
-                                <Field label={t("flightComputer.oat")} value={oat} onChange={setOat} unit="°C" />
-                            </div>
-                            <div className="flight-computer-results">
-                                <div className="growth-result-item growth-result-item--muted">
-                                    <span>{t("flightComputer.isaTemp")}</span>
-                                    <strong>{performance.daResult.isaTempC}°C</strong>
+                            }
+                            results={
+                                <ResultHighlight
+                                    items={[{ label: t("flightComputer.tas"), value: `${performance.tasResult.tas} kt` }]}
+                                />
+                            }
+                            footer={<p className="muted">{t("flightComputer.tasNote")}</p>}
+                        />
+                        <WorkbenchCard
+                            title={t("flightComputer.daTitle")}
+                            inputs={
+                                <div className="growth-field-grid growth-field-grid--2">
+                                    <Field label={t("flightComputer.pressureAlt")} value={pressureAlt} onChange={setPressureAlt} unit="ft" />
+                                    <Field label={t("flightComputer.oat")} value={oat} onChange={setOat} unit="°C" />
                                 </div>
-                                <div className="growth-result-item">
-                                    <span>{t("flightComputer.densityAlt")}</span>
-                                    <strong>{performance.daResult.densityAltFt.toLocaleString()} ft</strong>
-                                </div>
-                            </div>
-                            <p className="muted flight-computer-note">{t("flightComputer.daNote")}</p>
-                        </Card>
+                            }
+                            results={
+                                <ResultHighlight
+                                    items={[
+                                        { label: t("flightComputer.isaTemp"), value: `${performance.daResult.isaTempC}°C`, muted: true },
+                                        {
+                                            label: t("flightComputer.densityAlt"),
+                                            value: `${performance.daResult.densityAltFt.toLocaleString()} ft`,
+                                        },
+                                    ]}
+                                />
+                            }
+                            footer={<p className="muted">{t("flightComputer.daNote")}</p>}
+                        />
                     </div>
                 ) : null}
 

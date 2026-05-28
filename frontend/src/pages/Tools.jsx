@@ -2,9 +2,13 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
-import Card from "../components/Card";
-import GrowthPageHero from "../components/GrowthPageHero";
 import GrowthCtaBar from "../components/GrowthCtaBar";
+import {
+    ExperienceHero,
+    ResultHighlight,
+    ToolNavCard,
+    WorkbenchCard,
+} from "../components/experience/ExperienceUI";
 import { useI18n } from "../i18n/I18nContext.jsx";
 import { computeRunwayWindComponents } from "../utils/flightComputer";
 
@@ -13,9 +17,19 @@ function toNumber(value, fallback = 0) {
     return Number.isFinite(n) ? n : fallback;
 }
 
+function Field({ label, value, onChange }) {
+    return (
+        <label className="growth-field">
+            <span>{label}</span>
+            <input value={value} onChange={(e) => onChange(e.target.value)} inputMode="decimal" />
+        </label>
+    );
+}
+
 export default function Tools() {
     const nav = useNavigate();
     const { t } = useI18n();
+    const [activeTool, setActiveTool] = useState("crosswind");
 
     const [windDir, setWindDir] = useState("270");
     const [windSpeed, setWindSpeed] = useState("12");
@@ -42,81 +56,86 @@ export default function Tools() {
         return { lb: lb.toFixed(1), usGal: usGal.toFixed(2) };
     }, [liters, density]);
 
+    const headLabel =
+        Number(crosswind.head) < 0 ? `${crosswind.head} kt (${t("tools.tailwindShort")})` : `${crosswind.head} kt`;
+
     return (
         <div className="main-shell">
             <AppHeader compact />
-            <main className="main-scroll growth-page">
-                <GrowthPageHero kicker={t("tools.title")} title={t("tools.heroTitle")} copy={t("tools.heroCopy")} statValue="2" statLabel={t("tools.subtitle")} />
+            <main className="main-scroll growth-page experience-surface">
+                <ExperienceHero kicker={t("tools.title")} title={t("tools.heroTitle")} copy={t("tools.heroCopy")} statValue="2" statLabel={t("tools.subtitle")} />
 
-                <div className="growth-two-col">
-                    <Card title={t("tools.crosswindTitle")}>
-                        <div className="growth-field-grid">
-                            <label className="growth-field">
-                                <span>{t("tools.windDir")}</span>
-                                <input value={windDir} onChange={(e) => setWindDir(e.target.value)} inputMode="decimal" />
-                            </label>
-                            <label className="growth-field">
-                                <span>{t("tools.windSpeed")}</span>
-                                <input value={windSpeed} onChange={(e) => setWindSpeed(e.target.value)} inputMode="decimal" />
-                            </label>
-                            <label className="growth-field">
-                                <span>{t("tools.runway")}</span>
-                                <input value={runway} onChange={(e) => setRunway(e.target.value)} inputMode="decimal" />
-                            </label>
-                        </div>
-                        <div className="growth-result-panel">
-                            <div className="growth-result-item">
-                                <span>{t("tools.crosswindLabel")}</span>
-                                <strong>{crosswind.xw} kt</strong>
-                            </div>
-                            <div className="growth-result-item">
-                                <span>{t("tools.headwindLabel")}</span>
-                                <strong>
-                                    {crosswind.head} kt
-                                    {Number(crosswind.head) < 0 ? ` (${t("tools.tailwindShort")})` : ""}
-                                </strong>
-                            </div>
-                            <div className="growth-result-item growth-result-item--muted">
-                                <span>{t("tools.runwayHeadingLabel")}</span>
-                                <strong>{crosswind.runwayHeading}°</strong>
-                            </div>
-                            <div className="growth-result-item growth-result-item--muted">
-                                <span>{t("tools.angleLabel")}</span>
-                                <strong>{crosswind.angle}°</strong>
-                            </div>
-                        </div>
-                    </Card>
-
-                    <Card title={t("tools.fuelTitle")}>
-                        <div className="growth-field-grid growth-field-grid--2">
-                            <label className="growth-field">
-                                <span>{t("tools.liters")}</span>
-                                <input value={liters} onChange={(e) => setLiters(e.target.value)} inputMode="decimal" />
-                            </label>
-                            <label className="growth-field">
-                                <span>{t("tools.density")}</span>
-                                <input value={density} onChange={(e) => setDensity(e.target.value)} inputMode="decimal" />
-                            </label>
-                        </div>
-                        <div className="growth-result-panel">
-                            <div className="growth-result-item">
-                                <span>{t("tools.fuelLbLabel")}</span>
-                                <strong>{fuel.lb} lb</strong>
-                            </div>
-                            <div className="growth-result-item">
-                                <span>{t("tools.fuelGalLabel")}</span>
-                                <strong>{fuel.usGal} US gal</strong>
-                            </div>
-                        </div>
-                    </Card>
+                <div className="xp-tool-nav-row">
+                    <ToolNavCard
+                        active={activeTool === "crosswind"}
+                        icon="↔"
+                        title={t("tools.crosswindTitle")}
+                        description={t("tools.crosswindNavHint")}
+                        onClick={() => setActiveTool("crosswind")}
+                    />
+                    <ToolNavCard
+                        active={activeTool === "fuel"}
+                        icon="⛽"
+                        title={t("tools.fuelTitle")}
+                        description={t("tools.fuelNavHint")}
+                        onClick={() => setActiveTool("fuel")}
+                    />
                 </div>
 
-                <Card title={t("flightComputer.shortTitle")}>
-                    <p className="growth-section-lead">{t("flightComputer.toolsPromo")}</p>
-                    <button type="button" className="primary tools-promo-btn" onClick={() => nav("/computador")}>
+                {activeTool === "crosswind" ? (
+                    <WorkbenchCard
+                        title={t("tools.crosswindTitle")}
+                        lead={t("tools.crosswindLead")}
+                        inputs={
+                            <div className="growth-field-grid">
+                                <Field label={t("tools.windDir")} value={windDir} onChange={setWindDir} />
+                                <Field label={t("tools.windSpeed")} value={windSpeed} onChange={setWindSpeed} />
+                                <Field label={t("tools.runway")} value={runway} onChange={setRunway} />
+                            </div>
+                        }
+                        results={
+                            <ResultHighlight
+                                primaryIndex={0}
+                                items={[
+                                    { label: t("tools.crosswindLabel"), value: `${crosswind.xw} kt` },
+                                    { label: t("tools.headwindLabel"), value: headLabel },
+                                    { label: t("tools.runwayHeadingLabel"), value: `${crosswind.runwayHeading}°`, muted: true },
+                                    { label: t("tools.angleLabel"), value: `${crosswind.angle}°`, muted: true },
+                                ]}
+                            />
+                        }
+                    />
+                ) : (
+                    <WorkbenchCard
+                        title={t("tools.fuelTitle")}
+                        lead={t("tools.fuelLead")}
+                        inputs={
+                            <div className="growth-field-grid growth-field-grid--2">
+                                <Field label={t("tools.liters")} value={liters} onChange={setLiters} />
+                                <Field label={t("tools.density")} value={density} onChange={setDensity} />
+                            </div>
+                        }
+                        results={
+                            <ResultHighlight
+                                primaryIndex={0}
+                                items={[
+                                    { label: t("tools.fuelLbLabel"), value: `${fuel.lb} lb` },
+                                    { label: t("tools.fuelGalLabel"), value: `${fuel.usGal} US gal` },
+                                ]}
+                            />
+                        }
+                    />
+                )}
+
+                <div className="tools-promo-card">
+                    <div>
+                        <strong>{t("flightComputer.shortTitle")}</strong>
+                        <p>{t("flightComputer.toolsPromo")}</p>
+                    </div>
+                    <button type="button" className="primary" onClick={() => nav("/computador")}>
                         {t("flightComputer.openComputer")}
                     </button>
-                </Card>
+                </div>
 
                 <GrowthCtaBar
                     secondaryLabel={t("hub.weatherTitle")}

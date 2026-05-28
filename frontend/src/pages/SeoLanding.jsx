@@ -29,7 +29,7 @@ export default function SeoLanding({ pageKey = "metar" }) {
     return (
         <div className="main-shell">
             <AppHeader compact />
-            <main className="main-scroll growth-page">
+            <main className="main-scroll growth-page experience-surface">
                 <GrowthPageHero
                     kicker="Marquisa"
                     title={t(`seo.${key}.heroTitle`)}
