@@ -63,31 +63,31 @@ export default function Profile() {
     function savePrefs() {
         if (!prefKey) return;
         saveJSON(prefKey, { name, track });
-        toast("Suas preferências foram atualizadas neste dispositivo.", { variant: "success", title: "Preferências" });
+        toast(t("profile.prefsSaved"), { variant: "success", title: t("profile.prefsTitle") });
     }
 
     async function clearBriefings() {
         if (!user) return;
         const plan = String(user?.plan || "FREE").toUpperCase();
         if (plan !== "PRO") {
-            toast("Histórico na nuvem está disponível no plano PRO.", { variant: "warning", title: "Plano PRO" });
+            toast(t("profile.proBriefingsOnly"), { variant: "warning", title: t("profile.proTitle") });
             return;
         }
         const ok = await confirm({
-            title: "Apagar histórico",
-            message: "Todos os briefings salvos serão removidos permanentemente. Esta ação não pode ser desfeita.",
-            confirmLabel: "Apagar",
-            cancelLabel: "Cancelar",
+            title: t("profile.clearBriefingsTitle"),
+            message: t("profile.clearBriefingsMessage"),
+            confirmLabel: t("profile.deleteLabel"),
+            cancelLabel: t("common.cancel"),
             danger: true,
         });
         if (!ok) return;
         Promise.all((briefings || []).map((b) => api(`/api/briefings/${b.id}`, { method: "DELETE" }).catch(() => null)))
             .then(() => {
                 setBriefings([]);
-                toast("O histórico de briefings foi limpo.", { variant: "success", title: "Concluído" });
+                toast(t("profile.clearBriefingsDone"), { variant: "success", title: t("profile.doneTitle") });
             })
             .catch((e) =>
-                toast(e?.message || "Não foi possível apagar o histórico.", { variant: "error", title: "Erro" })
+                toast(e?.message || t("profile.clearBriefingsError"), { variant: "error", title: t("profile.errorTitle") })
             );
     }
 
@@ -95,42 +95,41 @@ export default function Profile() {
         if (!user) return;
         const plan = String(user?.plan || "FREE").toUpperCase();
         if (plan !== "PRO") {
-            toast("Favoritos sincronizados exigem o plano PRO.", { variant: "warning", title: "Plano PRO" });
+            toast(t("profile.proFavsOnly"), { variant: "warning", title: t("profile.proTitle") });
             return;
         }
         const ok = await confirm({
-            title: "Apagar favoritos",
-            message: "Todos os aeródromos favoritos serão removidos da sua conta.",
-            confirmLabel: "Apagar",
-            cancelLabel: "Cancelar",
+            title: t("profile.clearFavsTitle"),
+            message: t("profile.clearFavsMessage"),
+            confirmLabel: t("profile.deleteLabel"),
+            cancelLabel: t("common.cancel"),
             danger: true,
         });
         if (!ok) return;
         Promise.all((favs || []).map((f) => api(`/api/favorites/${f.icao}`, { method: "DELETE" }).catch(() => null)))
             .then(() => {
                 setFavs([]);
-                toast("Seus favoritos foram removidos.", { variant: "success", title: "Concluído" });
+                toast(t("profile.clearFavsDone"), { variant: "success", title: t("profile.doneTitle") });
             })
             .catch((e) =>
-                toast(e?.message || "Não foi possível apagar os favoritos.", { variant: "error", title: "Erro" })
+                toast(e?.message || t("profile.clearFavsError"), { variant: "error", title: t("profile.errorTitle") })
             );
     }
 
     async function deleteAccount() {
         if (!user) return;
         const ok = await confirm({
-            title: "Excluir conta",
-            message:
-                `Esta ação apaga sua conta, briefings salvos, favoritos e perfis de aeronave. ${t("common.subscriptionDeletionNotice")} Deseja continuar?`,
-            confirmLabel: "Continuar",
-            cancelLabel: "Cancelar",
+            title: t("profile.deleteAccountConfirmTitle"),
+            message: t("profile.deleteAccountConfirmMessage", { notice: t("common.subscriptionDeletionNotice") }),
+            confirmLabel: t("profile.deleteAccountConfirmLabel"),
+            cancelLabel: t("common.cancel"),
             danger: true,
         });
         if (!ok) return;
 
-        const typed = window.prompt(`Para confirmar a exclusão definitiva, digite seu e-mail: ${user.email}`);
+        const typed = window.prompt(t("profile.deleteEmailPrompt", { email: user.email }));
         if (String(typed || "").trim().toLowerCase() !== String(user.email || "").toLowerCase()) {
-            toast("Exclusão cancelada. O e-mail digitado não confere.", { variant: "warning", title: "Confirmação inválida" });
+            toast(t("profile.deleteEmailMismatch"), { variant: "warning", title: t("profile.deleteEmailMismatchTitle") });
             return;
         }
 
@@ -140,13 +139,11 @@ export default function Profile() {
             localStorage.removeItem("fp_planner_seed");
             if (prefKey) localStorage.removeItem(prefKey);
             logout();
-            toast("Sua conta foi excluída.", { variant: "success", title: "Conta excluída" });
+            toast(t("profile.deleteAccountDone"), { variant: "success", title: t("profile.deleteAccountDoneTitle") });
             nav("/login");
         } catch (e) {
-            const message =
-                e?.message ||
-                "Não foi possível excluir a conta agora. Se houver assinatura ativa, cancele primeiro na área de assinatura.";
-            toast(message, { variant: "error", title: "Erro ao excluir conta" });
+            const message = e?.message || t("profile.deleteAccountError");
+            toast(message, { variant: "error", title: t("profile.deleteAccountErrorTitle") });
         }
     }
 

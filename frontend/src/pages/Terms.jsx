@@ -14,7 +14,7 @@ export default function Terms() {
             <div className="legal-card legal-card--wide">
                 <div className="legal-back">
                     <button type="button" className="auth-back" onClick={() => nav(-1)}>
-                        ← Voltar
+                        ← {t("legal.back")}
                     </button>
                 </div>
                 <div className="legal-meta">

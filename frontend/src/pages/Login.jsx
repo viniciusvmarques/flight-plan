@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import BrandMark from "../components/Brandmark";
 import LanguageSwitcher from "../components/LanguageSwitcher";
@@ -8,7 +8,18 @@ import { useI18n } from "../i18n/I18nContext.jsx";
 export default function Login() {
   const nav = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
+
+  function resolveNextPath() {
+    const raw = searchParams.get("next") || "";
+    if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+    const from = location.state?.from;
+    if (from?.pathname) {
+      return `${from.pathname}${from.search || ""}${from.hash || ""}`;
+    }
+    return "/";
+  }
   const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,12 +43,12 @@ export default function Login() {
     try {
       setLoading(true);
       await login({ email, password });
-      nav("/");
+      nav(resolveNextPath(), { replace: true });
     } catch (err) {
       if (err?.code === "EMAIL_NOT_VERIFIED") {
         setUnverifiedEmail(err?.email || email);
       }
-      setError(err?.message || "Falha ao entrar");
+      setError(err?.message || t("auth.loginFailed"));
     } finally {
       setLoading(false);
     }

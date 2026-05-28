@@ -346,7 +346,7 @@ export default function Exams() {
                                         <strong>{subjectName(catalog, subject.key, t)}</strong>
                                         <span className={subject.passed ? "exam-pass" : "exam-fail"}>{subject.percent}%</span>
                                         <small>
-                                            {subject.correct}/{subject.total} acertos
+                                            {t("exams.subjectHits", { correct: subject.correct, total: subject.total })}
                                         </small>
                                     </div>
                                 ))}

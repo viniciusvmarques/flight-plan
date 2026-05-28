@@ -13,7 +13,7 @@ export default function CancellationPolicy() {
             <div className="legal-card legal-card--wide">
                 <div className="legal-back">
                     <button type="button" className="auth-back" onClick={() => nav(-1)}>
-                        ← Voltar
+                        ← {t("legal.back")}
                     </button>
                 </div>
 

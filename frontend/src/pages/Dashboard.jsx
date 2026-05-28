@@ -427,10 +427,10 @@ export default function Dashboard() {
 
     const routeHeadline = base?.dest?.icao
         ? `${base.origin?.icao || "A"} → ${base.dest.icao}`
-        : base?.origin?.icao || "Aguardando rota";
+        : base?.origin?.icao || t("dashboard.awaitingRoute");
 
     const activeFocusLabel = selectedStation
-        ? `${selectedStation.icao} em foco`
+        ? t("dashboard.stationInFocus", { icao: selectedStation.icao })
         : t("dashboard.selectStationDetails");
 
     return (
@@ -473,21 +473,21 @@ export default function Dashboard() {
                                     <span className="dashboard-route-code">A</span>
                                     <div className="dashboard-route-meta">
                                         <span className="dashboard-route-label">{t("common.origin")}</span>
-                                        <strong className="dashboard-route-value">{base?.origin?.icao || "Pendente"}</strong>
+                                        <strong className="dashboard-route-value">{base?.origin?.icao || t("dashboard.pendingRoute")}</strong>
                                     </div>
                                 </div>
                                 <div className="dashboard-route-pill">
                                     <span className="dashboard-route-code">B</span>
                                     <div className="dashboard-route-meta">
                                         <span className="dashboard-route-label">{t("common.destination")}</span>
-                                        <strong className="dashboard-route-value">{base?.dest?.icao || "Opcional"}</strong>
+                                        <strong className="dashboard-route-value">{base?.dest?.icao || t("dashboard.optionalField")}</strong>
                                     </div>
                                 </div>
                                 <div className="dashboard-route-pill">
                                     <span className="dashboard-route-code">C</span>
                                     <div className="dashboard-route-meta">
                                         <span className="dashboard-route-label">{t("common.alternate")}</span>
-                                        <strong className="dashboard-route-value">{base?.alternate?.icao || "Opcional"}</strong>
+                                        <strong className="dashboard-route-value">{base?.alternate?.icao || t("dashboard.optionalField")}</strong>
                                     </div>
                                 </div>
                             </div>
@@ -527,7 +527,9 @@ export default function Dashboard() {
                                     <span className="dashboard-overview-label">{t("dashboard.planning")}</span>
                                     <strong className="dashboard-overview-value">
                                         {base?.plan?.cruiseAltFt || base?.plan?.defaultCruiseAltFt
-                                            ? `Cruzeiro ${base.plan?.cruiseAltFt || base.plan?.defaultCruiseAltFt} ft`
+                                            ? t("dashboard.cruiseAltitude", {
+                                                  alt: base.plan?.cruiseAltFt || base.plan?.defaultCruiseAltFt,
+                                              })
                                             : t("dashboard.paramsFree")}
                                     </strong>
                                     <span className="dashboard-overview-copy">
@@ -544,7 +546,10 @@ export default function Dashboard() {
                                     </strong>
                                     <span className="dashboard-overview-copy">
                                         {plannerSummary
-                                            ? `Trip ${plannerSummary.tripFuelL.toFixed(1)} L · margem ${plannerSummary.fuelMarginL.toFixed(1)} L`
+                                            ? t("dashboard.tripFuelLine", {
+                                                  trip: plannerSummary.tripFuelL.toFixed(1),
+                                                  margin: plannerSummary.fuelMarginL.toFixed(1),
+                                              })
                                             : t("dashboard.summaryAfterBriefing")}
                                     </span>
                                 </article>

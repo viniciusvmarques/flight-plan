@@ -165,14 +165,16 @@ export default function Billing() {
                                     {t("billing.myAccount")}
                                 </button>
                                 <button className="secondary" type="button" onClick={() => nav("/")}>
-                                    Dashboard
+                                    {t("billing.dashboardLink")}
                                 </button>
                             </div>
                         </div>
 
                         <div className="page-chip-row">
                             <span className="chip">{email || t("billing.noAccount")}</span>
-                            <span className={`chip ${isProActive ? "ok" : ""}`}>Plano: {status?.plan || "FREE"}</span>
+                            <span className={`chip ${isProActive ? "ok" : ""}`}>
+                                {t("billing.planChip", { plan: status?.plan || "FREE" })}
+                            </span>
                             <span className="chip">{humanStatusLabel()}</span>
                             <span className="chip">{status?.cancelAtPeriodEnd ? t("billing.cancelScheduled") : isProActive ? t("billing.accessGranted") : t("billing.noActiveSubscription")}</span>
                         </div>
