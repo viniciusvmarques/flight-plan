@@ -66,13 +66,117 @@
 
 .exam-question-card--single {
     padding: 22px 24px;
+    min-height: 0;
+}
+
+.exam-question-meta {
+    display: block;
+    max-width: 55%;
+    text-align: right;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.exam-option--selectable {
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+}
+
+.exam-option-letter {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.exam-option-text {
+    min-width: 0;
+}
+
+.exam-option--selected {
+    border-color: rgba(96, 165, 250, 0.55) !important;
+    background: rgba(37, 99, 235, 0.18) !important;
+}
+
+.exam-subject-tabs--scroll {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.exam-subject-tabs--scroll .exam-subject-tab {
+    flex: 0 0 auto;
+    min-width: 118px;
+}
+
+.exam-test-footer {
+    display: grid;
+    gap: 12px;
+}
+
+.exam-question-map {
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.46);
+}
+
+.exam-question-map summary {
+    cursor: pointer;
+    padding: 12px 14px;
+    font-weight: 800;
+    font-size: 0.88rem;
+    color: rgba(226, 232, 240, 0.88);
+    list-style: none;
+}
+
+.exam-question-map summary::-webkit-details-marker {
+    display: none;
+}
+
+.exam-question-map[open] .exam-question-nav {
+    padding: 0 14px 14px;
+    margin-top: 0;
+    border: none;
+    background: transparent;
+}
+
+.exams-page .card-actions {
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 @media (max-width: 720px) {
     .exam-prose,
     .exam-question-text,
-    .exam-option p {
+    .exam-option p,
+    .exam-option-text {
         font-size: 1.05rem;
         line-height: 1.72;
     }
+
+    .exam-question-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .exam-question-meta {
+        max-width: 100%;
+        text-align: left;
+    }
+
+    .exam-question-card--single {
+        padding: 16px 14px;
+    }
+
+    .exam-test-footer {
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
+        padding: 10px 0 4px;
+        background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.92) 18%);
+    }
+
 }

@@ -352,6 +352,8 @@ export const es = {
         allSubjects: "Todas las materias",
         subjectsAria: "Materias del simulado",
         questionsAria: "Navegación entre preguntas",
+        optionsAria: "Alternativas de la pregunta",
+        questionMap: "Mapa de preguntas ({answered}/{total})",
         courses: {
             "PP-A": { title: "Piloto Privado - Avión", shortTitle: "Piloto Privado" },
             "PC-IFR": { title: "Piloto Comercial / IFR", shortTitle: "Comercial/IFR" },

@@ -352,6 +352,8 @@ export const en = {
         allSubjects: "All subjects",
         subjectsAria: "Simulator subjects",
         questionsAria: "Question navigation",
+        optionsAria: "Answer choices",
+        questionMap: "Question map ({answered}/{total})",
         courses: {
             "PP-A": { title: "Private Pilot - Airplane", shortTitle: "Private Pilot" },
             "PC-IFR": { title: "Commercial Pilot / IFR", shortTitle: "Commercial/IFR" },

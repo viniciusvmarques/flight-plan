@@ -1032,7 +1032,7 @@
 }
 
 .exam-question-card--single {
-    min-height: 430px;
+    min-height: 0;
     border-color: rgba(203, 213, 225, 0.2);
     background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.9));
 }
@@ -1071,9 +1071,9 @@
 
 .exam-option {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: 40px minmax(0, 1fr);
     gap: 12px;
-    align-items: flex-start;
+    align-items: start;
     padding: 14px 15px;
     border-radius: 14px;
     border: 1px solid rgba(203, 213, 225, 0.18);

@@ -169,10 +169,10 @@ export default function Quiz() {
                             <div className="exam-test-window">
                                 <article className="exam-question-card exam-question-card--single exam-prose">
                                     <p className="exam-question-text">{current.question}</p>
-                                    <div className="exam-option-list">
+                                    <div className="exam-option-list" role="radiogroup">
                                         {current.options.map((option, optionIndex) => (
                                             <label
-                                                key={`${current.id}-${option}`}
+                                                key={`${current.id}-${optionIndex}`}
                                                 className={`exam-option exam-option--selectable ${answers[current.id] === optionIndex ? "exam-option--selected" : ""}`}
                                             >
                                                 <input
@@ -183,12 +183,13 @@ export default function Quiz() {
                                                         setAnswers((prev) => ({ ...prev, [current.id]: optionIndex }))
                                                     }
                                                 />
-                                                <span>{String.fromCharCode(65 + optionIndex)}</span>
-                                                <p>{option}</p>
+                                                <span className="exam-option-letter">{String.fromCharCode(65 + optionIndex)}</span>
+                                                <p className="exam-option-text">{option}</p>
                                             </label>
                                         ))}
                                     </div>
                                 </article>
+                                <div className="exam-test-footer">
                                 <div className="exam-window-actions">
                                     <button type="button" className="secondary" disabled={index === 0} onClick={() => setIndex((v) => v - 1)}>
                                         {t("exams.previous")}
@@ -212,6 +213,7 @@ export default function Quiz() {
                                             {t("quiz.finish")}
                                         </button>
                                     )}
+                                </div>
                                 </div>
                             </div>
                         ) : null}

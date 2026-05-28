@@ -409,34 +409,8 @@ export default function Exams() {
                             </div>
                             {currentQuestion ? (
                                 <div className="exam-test-window">
-                                    <article className="exam-question-card exam-question-card--single exam-prose">
-                                        <div className="exam-question-head">
-                                            <span>
-                                                {t("exams.questionOf", { current: currentSubjectQuestionIndex + 1, total: currentSubjectGroup.items.length })}
-                                            </span>
-                                            <small>
-                                                {subjectName(catalog, currentQuestion.subject, t)} • {currentQuestion.topic}
-                                            </small>
-                                        </div>
-                                        <p className="exam-question-text">{currentQuestion.question}</p>
-                                        <div className="exam-option-list">
-                                            {currentQuestion.options.map((option, optionIndex) => (
-                                                <label key={`${currentQuestion.id}-${option}`} className="exam-option exam-option--selectable">
-                                                    <input
-                                                        type="radio"
-                                                        name={currentQuestion.id}
-                                                        checked={answers[currentQuestion.id] === optionIndex}
-                                                        onChange={() => choose(currentQuestion.id, optionIndex)}
-                                                    />
-                                                    <span>{String.fromCharCode(65 + optionIndex)}</span>
-                                                    <p>{option}</p>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </article>
-
                                     {subjectGroups.length > 1 ? (
-                                        <div className="exam-subject-tabs" aria-label={t("exams.subjectsAria")}>
+                                        <div className="exam-subject-tabs exam-subject-tabs--scroll" aria-label={t("exams.subjectsAria")}>
                                             {subjectGroups.map((group) => {
                                                 const answeredInGroup = group.items.filter((item) => answers[item.question.id] !== undefined).length;
                                                 return (
@@ -459,43 +433,82 @@ export default function Exams() {
                                         </div>
                                     ) : null}
 
-                                    <div className="exam-window-actions">
-                                        <button
-                                            className="secondary"
-                                            type="button"
-                                            disabled={currentQuestionIndex === 0}
-                                            onClick={() => setCurrentQuestionIndex((value) => Math.max(0, value - 1))}
-                                        >
-                                            {t("exams.previous")}
-                                        </button>
-                                        <button
-                                            className="secondary"
-                                            type="button"
-                                            disabled={currentQuestionIndex >= questions.length - 1}
-                                            onClick={() => setCurrentQuestionIndex((value) => Math.min(questions.length - 1, value + 1))}
-                                        >
-                                            {t("exams.next")}
-                                        </button>
-                                        <button className="primary" type="button" disabled={submitting} onClick={() => submitAttempt(false)}>
-                                            {t("exams.finishExam")}
-                                        </button>
-                                    </div>
+                                    <article className="exam-question-card exam-question-card--single exam-prose">
+                                        <div className="exam-question-head">
+                                            <span>
+                                                {t("exams.questionOf", { current: currentSubjectQuestionIndex + 1, total: currentSubjectGroup.items.length })}
+                                            </span>
+                                            <small className="exam-question-meta">
+                                                {subjectName(catalog, currentQuestion.subject, t)} · {currentQuestion.topic}
+                                            </small>
+                                        </div>
+                                        <p className="exam-question-text">{currentQuestion.question}</p>
+                                        <div className="exam-option-list" role="radiogroup" aria-label={t("exams.optionsAria")}>
+                                            {currentQuestion.options.map((option, optionIndex) => (
+                                                <label
+                                                    key={`${currentQuestion.id}-${optionIndex}`}
+                                                    className={[
+                                                        "exam-option exam-option--selectable",
+                                                        answers[currentQuestion.id] === optionIndex ? "exam-option--selected" : "",
+                                                    ].join(" ")}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name={currentQuestion.id}
+                                                        checked={answers[currentQuestion.id] === optionIndex}
+                                                        onChange={() => choose(currentQuestion.id, optionIndex)}
+                                                    />
+                                                    <span className="exam-option-letter">{String.fromCharCode(65 + optionIndex)}</span>
+                                                    <p className="exam-option-text">{option}</p>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </article>
 
-                                    <div className="exam-question-nav" aria-label={t("exams.questionsAria")}>
-                                        {currentSubjectGroup.items.map((item, index) => (
+                                    <div className="exam-test-footer">
+                                        <div className="exam-window-actions">
                                             <button
-                                                key={item.question.id}
+                                                className="secondary"
                                                 type="button"
-                                                className={[
-                                                    "exam-question-nav-item",
-                                                    item.index === currentQuestionIndex ? "exam-question-nav-item--active" : "",
-                                                    answers[item.question.id] !== undefined ? "exam-question-nav-item--answered" : "",
-                                                ].join(" ")}
-                                                onClick={() => setCurrentQuestionIndex(item.index)}
+                                                disabled={currentQuestionIndex === 0}
+                                                onClick={() => setCurrentQuestionIndex((value) => Math.max(0, value - 1))}
                                             >
-                                                {index + 1}
+                                                {t("exams.previous")}
                                             </button>
-                                        ))}
+                                            <button
+                                                className="secondary"
+                                                type="button"
+                                                disabled={currentQuestionIndex >= questions.length - 1}
+                                                onClick={() => setCurrentQuestionIndex((value) => Math.min(questions.length - 1, value + 1))}
+                                            >
+                                                {t("exams.next")}
+                                            </button>
+                                        </div>
+
+                                        <details className="exam-question-map">
+                                            <summary>
+                                                {t("exams.questionMap", {
+                                                    answered: answeredCount,
+                                                    total: questions.length,
+                                                })}
+                                            </summary>
+                                            <div className="exam-question-nav" aria-label={t("exams.questionsAria")}>
+                                                {currentSubjectGroup.items.map((item, index) => (
+                                                    <button
+                                                        key={item.question.id}
+                                                        type="button"
+                                                        className={[
+                                                            "exam-question-nav-item",
+                                                            item.index === currentQuestionIndex ? "exam-question-nav-item--active" : "",
+                                                            answers[item.question.id] !== undefined ? "exam-question-nav-item--answered" : "",
+                                                        ].join(" ")}
+                                                        onClick={() => setCurrentQuestionIndex(item.index)}
+                                                    >
+                                                        {index + 1}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </details>
                                     </div>
                                 </div>
                             ) : null}

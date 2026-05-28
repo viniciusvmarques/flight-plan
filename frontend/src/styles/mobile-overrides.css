@@ -208,10 +208,26 @@
         justify-content: flex-start;
     }
 
+    .card-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
     .card-actions .primary,
     .card-actions .secondary,
     .card-actions .exam-timer {
+        width: 100%;
         max-width: 100%;
+        justify-content: center;
+    }
+
+    .exams-page .card-actions .exam-timer {
+        order: -1;
+    }
+
+    .exam-question-map:not([open]) .exam-question-nav {
+        display: none;
     }
 
     .exam-window-actions {
