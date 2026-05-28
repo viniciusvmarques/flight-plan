@@ -192,3 +192,50 @@ export function formatHoursMinutes(hours) {
     const m = Math.round((hours - h) * 60);
     return `${h}h ${String(m).padStart(2, "0")}m`;
 }
+
+/**
+ * Rumo magnético a partir do verdadeiro (convenção escola: Leste −, Oeste + no TH→MH).
+ * variationDeg: valor absoluto da declinação; variationEast true se declinação leste.
+ */
+export function computeMagneticHeading({ trueHeading, variationDeg, variationEast }) {
+    const th = normalizeAngle(toNum(trueHeading));
+    const varDeg = Math.abs(toNum(variationDeg));
+    const sign = variationEast ? -1 : 1;
+    const mh = normalizeAngle(th + sign * varDeg);
+    return {
+        trueHeading: th,
+        variationDeg: varDeg,
+        magneticHeading: mh,
+        variationEast: !!variationEast,
+    };
+}
+
+/** Subida ou descida: tempo, distância horizontal (nm) com GS e razão em ft/min. */
+export function computeVerticalLeg({ altitudeFt, rateFpm, groundSpeedKt }) {
+    const alt = Math.max(0, toNum(altitudeFt));
+    const rate = Math.max(1, Math.abs(toNum(rateFpm)));
+    const gs = Math.max(1, toNum(groundSpeedKt));
+    const minutes = alt / rate;
+    const hours = minutes / 60;
+    const distanceNm = gs * hours;
+    return {
+        altitudeFt: alt,
+        rateFpm: rate,
+        groundSpeedKt: gs,
+        timeMinutes: Number(minutes.toFixed(0)),
+        timeHours: Number(hours.toFixed(2)),
+        distanceNm: Number(distanceNm.toFixed(1)),
+    };
+}
+
+/** Combustível por etapa: consumo L/h × tempo (h). */
+export function computeLegFuel({ flowPerHour, timeHours }) {
+    const flow = toNum(flowPerHour);
+    const time = toNum(timeHours);
+    if (flow <= 0 || time <= 0) return null;
+    return {
+        flowPerHour: flow,
+        timeHours: time,
+        fuelLiters: Number((flow * time).toFixed(1)),
+    };
+}

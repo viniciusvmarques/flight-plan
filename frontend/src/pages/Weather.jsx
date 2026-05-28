@@ -137,10 +137,10 @@ export default function Weather() {
                 </ExperienceCommandBar>
 
                 {hasData ? (
-                    <div className="growth-stack">
+                    <div className="xp-weather-results">
                         <WxCategoryPanel category={category} categoryLabel={summary.categoryLabel} hints={summary.hints} />
 
-                        <div className="xp-bulletin-grid">
+                        <div className="xp-bulletin-stack">
                             <BulletinPanel
                                 label={`METAR · ${icao}`}
                                 text={metar}

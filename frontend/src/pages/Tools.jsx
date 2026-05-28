@@ -62,7 +62,7 @@ export default function Tools() {
     return (
         <div className="main-shell">
             <AppHeader compact />
-            <main className="main-scroll growth-page experience-surface">
+            <main className="main-scroll growth-page experience-surface xp-tools-layout">
                 <ExperienceHero kicker={t("tools.title")} title={t("tools.heroTitle")} copy={t("tools.heroCopy")} statValue="2" statLabel={t("tools.subtitle")} />
 
                 <div className="xp-tool-nav-row">

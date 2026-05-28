@@ -103,9 +103,9 @@ export function SegmentedControl({ tabs, value, onChange, ariaLabel }) {
     );
 }
 
-export function WorkbenchCard({ title, lead, inputs, results, footer, children }) {
+export function WorkbenchCard({ id, title, lead, inputs, results, footer, children }) {
     return (
-        <section className="xp-workbench">
+        <section className="xp-workbench" id={id}>
             <header className="xp-workbench-head">
                 <h2>{title}</h2>
                 {lead ? <p>{lead}</p> : null}
