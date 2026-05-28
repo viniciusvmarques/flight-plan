@@ -1,7 +1,6 @@
 /**
- * Simulados — tipografia de leitura (Literata).
+ * Simulados — tipografia de leitura (Lora).
  * UI (títulos, botões, abas) permanece Plus Jakarta / Montserrat.
- * Baseado em boas práticas: ~66ch por linha, line-height 1.65–1.75, peso 400–500 no corpo.
  */
 
 .exam-surface {
@@ -17,7 +16,7 @@
     font-size: var(--exam-size-body);
     font-weight: 400;
     line-height: var(--exam-leading);
-    letter-spacing: 0.015em;
+    letter-spacing: 0.01em;
     white-space: normal;
     font-optical-sizing: auto;
     -webkit-font-smoothing: antialiased;
@@ -34,14 +33,14 @@
     font-family: var(--font-exam);
     font-weight: 400;
     line-height: var(--exam-leading);
-    letter-spacing: 0.015em;
+    letter-spacing: 0.01em;
     color: var(--exam-text);
     white-space: normal;
     overflow-wrap: break-word;
     word-wrap: break-word;
     hyphens: auto;
     -webkit-hyphens: auto;
-    font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
+    font-feature-settings: "kern" 1, "liga" 1;
     text-rendering: optimizeLegibility;
 }
 
