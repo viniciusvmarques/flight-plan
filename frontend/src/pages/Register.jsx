@@ -4,6 +4,7 @@ import { useAuth } from "../auth/AuthContext";
 import BrandMark from "../components/Brandmark";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { getStoredLocale, useI18n } from "../i18n/I18nContext.jsx";
+import { trackSignupConversion } from "../lib/googleAds.js";
 
 export default function Register() {
   const nav = useNavigate();
@@ -28,6 +29,7 @@ export default function Register() {
     try {
       setLoading(true);
             const response = await register({ email, password, accepted: agree, locale: getStoredLocale() });
+            trackSignupConversion();
             nav("/verify-email", {
                 replace: true,
                 state: { email: response?.email || email },

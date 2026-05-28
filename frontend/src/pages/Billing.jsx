@@ -7,6 +7,7 @@ import { useAuth } from "../auth/AuthContext";
 import { apiGet, apiPost } from "../services/apiClient";
 import { siteProfile } from "../content/siteProfile";
 import { getStoredLocale, useI18n } from "../i18n/I18nContext.jsx";
+import { trackPurchaseConversion } from "../lib/googleAds.js";
 
 export default function Billing() {
     const nav = useNavigate();
@@ -53,6 +54,12 @@ export default function Billing() {
         refresh();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (searchParams.get("checkout") !== "success") return;
+        trackPurchaseConversion(19.9, "BRL");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
     async function startCheckout() {
         setError("");
