@@ -376,8 +376,8 @@ export default function Exams() {
                                                             : "",
                                                     ].join(" ")}
                                                 >
-                                                    <span>{String.fromCharCode(65 + optionIndex)}</span>
-                                                    <p>{option}</p>
+                                                    <span className="exam-option-letter">{String.fromCharCode(65 + optionIndex)}</span>
+                                                    <p className="exam-option-text">{option}</p>
                                                 </div>
                                             ))}
                                         </div>

@@ -1101,7 +1101,8 @@
     line-height: 1;
 }
 
-.exam-option p {
+.exam-option p,
+.exam-option-text {
     margin: 0;
     padding-top: 4px;
     color: rgba(248, 250, 252, 0.94);

@@ -1,6 +1,5 @@
 /**
- * Tipografia de leitura para simulados — questões, alternativas e gabarito.
- * Substitui a herança monoespaçada dos cards, que cansava a leitura.
+ * Simulados — mesma família tipográfica do site, com leitura confortável.
  */
 
 .exam-surface .card-body,
@@ -11,50 +10,52 @@
 
 .exam-prose,
 .exam-question-text,
-.exam-option p,
+.exam-option-text,
 .exam-explanation,
 .exam-review-item > p,
 .exam-review-item .exam-explanation {
-    font-family: var(--font-exam);
-    font-size: 1.125rem;
-    font-weight: 450;
-    line-height: 1.78;
-    letter-spacing: 0.01em;
-    word-spacing: 0.03em;
+    font-family: var(--font-sans);
+    font-size: 1.02rem;
+    font-weight: 500;
+    line-height: 1.65;
+    letter-spacing: -0.01em;
     color: #f1f5f9;
     white-space: normal;
     overflow-wrap: anywhere;
-    hyphens: auto;
-    -webkit-hyphens: auto;
-    font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
     text-rendering: optimizeLegibility;
 }
 
 .exam-question-text {
-    margin: 10px 0 20px !important;
-    max-width: 68ch;
+    margin: 10px 0 18px !important;
+    max-width: 72ch;
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.62;
+    color: #f8fafc;
 }
 
-.exam-option p {
+.exam-option-text {
     margin: 0;
     padding-top: 2px;
-    font-size: 1.06rem;
-    line-height: 1.72;
-    max-width: 62ch;
+    font-size: 0.98rem;
+    font-weight: 500;
+    line-height: 1.58;
+    max-width: none;
 }
 
 .exam-explanation {
-    font-size: 1.02rem;
-    line-height: 1.72;
-    max-width: 70ch;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.6;
+    max-width: 72ch;
 }
 
 .exam-review-item > p {
     margin: 0 0 12px;
 }
 
-/* Letras A/B/C/D e UI permanecem sans */
 .exam-option span,
+.exam-option-letter,
 .exam-question-head,
 .exam-question-head small,
 .exam-subject-tab,
@@ -65,7 +66,7 @@
 }
 
 .exam-question-card--single {
-    padding: 22px 24px;
+    padding: 20px 22px;
     min-height: 0;
 }
 
@@ -86,10 +87,6 @@
 .exam-option-letter {
     flex-shrink: 0;
     margin-top: 2px;
-}
-
-.exam-option-text {
-    min-width: 0;
 }
 
 .exam-option--selected {
@@ -126,7 +123,7 @@
 .exam-question-map summary {
     cursor: pointer;
     padding: 12px 14px;
-    font-weight: 800;
+    font-weight: 700;
     font-size: 0.88rem;
     color: rgba(226, 232, 240, 0.88);
     list-style: none;
@@ -149,12 +146,14 @@
 }
 
 @media (max-width: 720px) {
-    .exam-prose,
-    .exam-question-text,
-    .exam-option p,
+    .exam-question-text {
+        font-size: 1.02rem;
+        line-height: 1.6;
+    }
+
     .exam-option-text {
-        font-size: 1.05rem;
-        line-height: 1.72;
+        font-size: 0.96rem;
+        line-height: 1.55;
     }
 
     .exam-question-head {
@@ -178,5 +177,4 @@
         padding: 10px 0 4px;
         background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.92) 18%);
     }
-
 }

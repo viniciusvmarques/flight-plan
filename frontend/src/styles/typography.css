@@ -5,7 +5,7 @@
 :root {
     --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --font-display: "Montserrat", "Plus Jakarta Sans", ui-sans-serif, sans-serif;
-    --font-exam: "Source Serif 4", "Literata", Georgia, "Times New Roman", serif;
+    --font-exam: var(--font-sans);
     --font-size-base: 15px;
     --leading-normal: 1.6;
     --tracking-tight: -0.02em;
