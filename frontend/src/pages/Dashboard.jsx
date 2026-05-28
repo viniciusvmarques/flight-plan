@@ -438,7 +438,7 @@ export default function Dashboard() {
             <Sidebar onBrief={handleBrief} />
 
             <div className="main-shell">
-                <AppHeader kicker={t("dashboard.headerKicker")} title={t("dashboard.headerTitle")} subtitle={t("dashboard.headerSubtitle")} />
+                <AppHeader compact />
 
                 <div className="main-scroll">
                     <div className="page-shell">

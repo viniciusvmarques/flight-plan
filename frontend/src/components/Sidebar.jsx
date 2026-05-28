@@ -22,6 +22,11 @@ export default function Sidebar({ onBrief, children }) {
     const [dest, setDest] = useState("");
     const [alternate, setAlternate] = useState("");
 
+    const [routeOpen, setRouteOpen] = useState(() => {
+        if (typeof window === "undefined") return true;
+        return window.matchMedia("(min-width: 769px)").matches;
+    });
+
     useEffect(() => {
         try {
             const raw = localStorage.getItem("fp_last_briefing");
@@ -33,6 +38,14 @@ export default function Sidebar({ onBrief, children }) {
         } catch {
             /* ignore */
         }
+    }, []);
+
+    useEffect(() => {
+        const mq = window.matchMedia("(min-width: 769px)");
+        const sync = () => setRouteOpen(mq.matches);
+        sync();
+        mq.addEventListener("change", sync);
+        return () => mq.removeEventListener("change", sync);
     }, []);
 
     function onSubmit(e) {
@@ -51,8 +64,14 @@ export default function Sidebar({ onBrief, children }) {
                     <div className="fp-sidebar-caption">{t("sidebar.caption")}</div>
                 </div>
 
-                <form className="fp-brief-form" onSubmit={onSubmit}>
-                    <h2 className="fp-sidebar-title">{t("sidebar.title")}</h2>
+                <details
+                    className="fp-route-drawer"
+                    open={routeOpen}
+                    onToggle={(e) => setRouteOpen(e.currentTarget.open)}
+                >
+                    <summary className="fp-route-drawer-summary">{t("sidebar.title")}</summary>
+                    <form className="fp-brief-form" onSubmit={onSubmit}>
+                    <h2 className="fp-sidebar-title fp-sidebar-title--desktop">{t("sidebar.title")}</h2>
                     <p className="fp-sidebar-lead">{t("sidebar.lead")}</p>
 
                     <div className="field">
@@ -106,7 +125,8 @@ export default function Sidebar({ onBrief, children }) {
                     <button type="submit" className="primary">
                         {t("sidebar.submit")}
                     </button>
-                </form>
+                    </form>
+                </details>
 
                 {children}
 

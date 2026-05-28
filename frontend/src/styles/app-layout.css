@@ -298,6 +298,22 @@
     min-width: 0;
 }
 
+.fp-topbar-site-name {
+    display: none;
+}
+
+.fp-topbar-titles--compact .fp-topbar-site-name {
+    display: block;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #f8fafc;
+}
+
+.fp-topbar-titles--compact .fp-topbar-titles-detail {
+    display: none;
+}
+
 .fp-topbar-kicker {
     font-size: 10px;
     color: rgba(191, 219, 254, 0.88);

@@ -70,16 +70,13 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
                     <span className="fp-topbar-mark" aria-hidden="true">
                         <BrandMark size={38} showText={false} compact />
                     </span>
-                    <div className="fp-topbar-titles">
-                        {compact ? (
-                            <span className="fp-topbar-title">{t("appHeader.siteName")}</span>
-                        ) : (
-                            <>
-                                <span className="fp-topbar-kicker">{kicker}</span>
-                                <span className="fp-topbar-title">{title || t("appHeader.defaultTitle")}</span>
-                                {subtitle ? <span className="fp-topbar-sub">{subtitle}</span> : null}
-                            </>
-                        )}
+                    <div className={`fp-topbar-titles ${compact ? "fp-topbar-titles--compact" : ""}`}>
+                        <span className="fp-topbar-site-name">{t("appHeader.siteName")}</span>
+                        <div className="fp-topbar-titles-detail">
+                            <span className="fp-topbar-kicker">{kicker}</span>
+                            <span className="fp-topbar-title">{title || t("appHeader.defaultTitle")}</span>
+                            {subtitle ? <span className="fp-topbar-sub">{subtitle}</span> : null}
+                        </div>
                     </div>
                 </button>
 

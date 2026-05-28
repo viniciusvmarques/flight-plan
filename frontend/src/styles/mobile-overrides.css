@@ -1,0 +1,355 @@
+/**
+ * Correções de layout mobile — carregado por último.
+ */
+
+@media (max-width: 768px) {
+    .fp-topbar-inner {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .fp-topbar-brand {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: calc(100% - 48px);
+    }
+
+    .fp-topbar-site-name {
+        display: block;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        color: #f8fafc;
+        white-space: nowrap;
+    }
+
+    .fp-topbar-titles-detail {
+        display: none;
+    }
+
+    .fp-topbar-menu-btn {
+        flex-shrink: 0;
+    }
+
+    .main-scroll {
+        padding: 14px 12px 28px !important;
+    }
+
+    .page-shell {
+        gap: 14px;
+    }
+
+    .page-hero {
+        padding: 16px 14px;
+        gap: 12px;
+    }
+
+    .page-hero--dashboard .page-hero-head {
+        display: none;
+    }
+
+    .page-hero-head {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .page-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .page-actions .primary,
+    .page-actions .secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dashboard-route-strip {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-route-pill {
+        min-width: 0;
+    }
+
+    .dashboard-route-value {
+        word-break: break-word;
+    }
+
+    .exam-access-banner,
+    .dashboard-sim-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .exam-access-banner .secondary,
+    .dashboard-sim-card .primary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .home-hub {
+        padding: 14px 12px;
+    }
+
+    .home-hub-head {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .home-hub-metrics {
+        width: 100%;
+    }
+
+    .home-hub-metrics--single .home-hub-metric {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .home-hub-grid,
+    .home-hub-grid--5 {
+        grid-template-columns: 1fr;
+    }
+
+    .home-hub-card {
+        grid-template-columns: 44px minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        align-items: start;
+        min-height: 0;
+        padding: 14px 36px 14px 14px;
+        gap: 6px 12px;
+    }
+
+    .home-hub-card-icon {
+        grid-row: 1 / span 2;
+    }
+
+    .home-hub-card-body {
+        grid-column: 2;
+        min-width: 0;
+    }
+
+    .home-hub-card-body strong,
+    .home-hub-card-body p {
+        overflow-wrap: anywhere;
+    }
+
+    .home-hub-card-tag {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: start;
+    }
+
+    .growth-hero {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 16px 14px;
+    }
+
+    .growth-hero .exam-hero-stat {
+        width: 100%;
+        justify-self: stretch;
+    }
+
+    .exam-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .exam-hero-stat {
+        width: 100%;
+    }
+
+    .exam-actions-panel {
+        display: grid;
+        gap: 12px;
+    }
+
+    .exam-actions-panel .primary {
+        width: 100%;
+        justify-self: stretch;
+    }
+
+    .exam-course-grid,
+    .exam-subject-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .exam-access-banner {
+        display: grid;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .card-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .card-actions .primary,
+    .card-actions .secondary,
+    .card-actions .exam-timer {
+        max-width: 100%;
+    }
+
+    .exam-window-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .exam-window-actions .primary,
+    .exam-window-actions .secondary {
+        width: 100%;
+    }
+
+    .exam-question-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .exam-question-nav-item {
+        min-width: 36px;
+    }
+
+    .flight-computer-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .flight-computer-tab {
+        width: 100%;
+        text-align: center;
+        padding: 10px 8px;
+        font-size: 0.8rem;
+    }
+
+    .growth-search-form {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .growth-search-field {
+        flex: none;
+        width: 100%;
+    }
+
+    .growth-search-submit {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .growth-quick-chips {
+        gap: 6px;
+    }
+
+    .fp-account-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .fp-account-email {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+
+    .fp-account-actions {
+        flex-wrap: wrap;
+    }
+
+    .site-footer-inner {
+        padding: 12px 14px;
+        font-size: 11px;
+        line-height: 1.45;
+    }
+
+    .fp-sidebar-head {
+        display: none;
+    }
+
+    .fp-route-drawer {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 4px 10px 12px;
+        background: rgba(2, 6, 23, 0.35);
+    }
+
+    .fp-route-drawer-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 4px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #f1f5f9;
+        cursor: pointer;
+        list-style: none;
+    }
+
+    .fp-route-drawer-summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .fp-route-drawer-summary::after {
+        content: "+";
+        font-size: 1.1rem;
+        color: #93c5fd;
+    }
+
+    .fp-route-drawer[open] .fp-route-drawer-summary::after {
+        content: "−";
+    }
+
+    .fp-route-drawer .fp-brief-form {
+        margin-top: 8px;
+    }
+}
+
+@media (min-width: 769px) {
+    .fp-route-drawer {
+        border: none;
+        padding: 0;
+        background: transparent;
+    }
+
+    .fp-route-drawer-summary {
+        display: none;
+    }
+
+    .fp-sidebar-title--desktop {
+        display: block;
+    }
+
+    .fp-route-drawer .fp-sidebar-lead {
+        margin-top: 0;
+    }
+}
+
+.fp-sidebar-title--desktop {
+    display: none;
+}
+
+@media (max-width: 400px) {
+    .fp-topbar-mark .mq-plane-icon {
+        width: 30px;
+        height: 16px;
+    }
+
+
+    .home-hub-copy h2 {
+        font-size: 1.15rem;
+    }
+}
