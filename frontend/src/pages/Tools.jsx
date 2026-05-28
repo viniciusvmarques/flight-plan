@@ -6,6 +6,7 @@ import Card from "../components/Card";
 import GrowthPageHero from "../components/GrowthPageHero";
 import GrowthCtaBar from "../components/GrowthCtaBar";
 import { useI18n } from "../i18n/I18nContext.jsx";
+import { computeRunwayWindComponents } from "../utils/flightComputer";
 
 function toNumber(value, fallback = 0) {
     const n = Number.parseFloat(String(value).replace(",", "."));
@@ -24,14 +25,13 @@ export default function Tools() {
     const [density, setDensity] = useState("0.72");
 
     const crosswind = useMemo(() => {
-        const rwy = (toNumber(runway) * 10) % 360;
-        const wdir = toNumber(windDir) % 360;
-        const wspd = toNumber(windSpeed);
-        const angle = Math.abs(((wdir - rwy + 540) % 360) - 180);
-        const rad = (angle * Math.PI) / 180;
-        const xw = Math.abs(Math.sin(rad) * wspd);
-        const head = Math.cos(rad) * wspd;
-        return { xw: xw.toFixed(1), head: head.toFixed(1), angle: angle.toFixed(0) };
+        const result = computeRunwayWindComponents({ windDir, windSpeed, runway });
+        return {
+            xw: String(result.crosswindKt),
+            head: String(result.headwindKt),
+            angle: String(result.angleDeg),
+            runwayHeading: result.runwayHeading,
+        };
     }, [windDir, windSpeed, runway]);
 
     const fuel = useMemo(() => {
@@ -71,7 +71,14 @@ export default function Tools() {
                             </div>
                             <div className="growth-result-item">
                                 <span>{t("tools.headwindLabel")}</span>
-                                <strong>{crosswind.head} kt</strong>
+                                <strong>
+                                    {crosswind.head} kt
+                                    {Number(crosswind.head) < 0 ? ` (${t("tools.tailwindShort")})` : ""}
+                                </strong>
+                            </div>
+                            <div className="growth-result-item growth-result-item--muted">
+                                <span>{t("tools.runwayHeadingLabel")}</span>
+                                <strong>{crosswind.runwayHeading}°</strong>
                             </div>
                             <div className="growth-result-item growth-result-item--muted">
                                 <span>{t("tools.angleLabel")}</span>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const DEFAULT_QUESTIONS_BANK = 6000;
 
 const HUB_ITEMS = [
     { key: "weather", icon: "WX", path: "/weather", accent: false },
@@ -15,14 +16,6 @@ const HUB_ITEMS = [
 export default function HomeHub() {
     const nav = useNavigate();
     const { t } = useI18n();
-    const [stats, setStats] = useState(null);
-
-    useEffect(() => {
-        fetch(`${API}/api/public/stats`)
-            .then((r) => (r.ok ? r.json() : null))
-            .then((data) => setStats(data))
-            .catch(() => null);
-    }, []);
 
     return (
         <section className="home-hub" aria-label={t("hub.title")}>
@@ -32,18 +25,6 @@ export default function HomeHub() {
                     <h2>{t("hub.title")}</h2>
                     <p>{t("hub.subtitle")}</p>
                 </div>
-                {stats ? (
-                    <div className="home-hub-metrics">
-                        <div className="home-hub-metric">
-                            <strong>{stats.examAttempts || 0}</strong>
-                            <span>{t("hub.metricAttempts")}</span>
-                        </div>
-                        <div className="home-hub-metric">
-                            <strong>{(stats.questionsBank || 6000).toLocaleString()}</strong>
-                            <span>{t("hub.metricQuestions")}</span>
-                        </div>
-                    </div>
-                ) : null}
             </div>
 
             <div className="home-hub-grid home-hub-grid--5">

@@ -16,6 +16,58 @@ function normalizeSignedAngle(deg) {
 
 const DEG = Math.PI / 180;
 
+/**
+ * Converte entrada de pista (09, 9, 090, 27 ou rumo 90°) para rumo magnético em graus.
+ */
+export function parseRunwayHeading(input) {
+    const raw = String(input ?? "").trim();
+    const n = toNum(raw, NaN);
+    if (!Number.isFinite(n)) return 0;
+
+    if (/^\d{3}$/.test(raw)) {
+        return normalizeAngle(parseInt(raw, 10));
+    }
+
+    const runwayNum = Math.round(n);
+    if (runwayNum >= 1 && runwayNum <= 36) {
+        const slot = runwayNum % 36;
+        return slot === 0 ? 0 : slot * 10;
+    }
+
+    if (n > 36 && n <= 360) {
+        return normalizeAngle(n);
+    }
+
+    if (n > 0 && n <= 36) {
+        const slot = Math.round(n) % 36;
+        return slot === 0 ? 0 : slot * 10;
+    }
+
+    return normalizeAngle(n);
+}
+
+/** Ângulo agudo (0–180°) entre vento (de onde vem) e rumo da pista. */
+export function windRunwayAngleDeg(windDirDeg, runwayHeadingDeg) {
+    return Math.abs(normalizeSignedAngle(windDirDeg - runwayHeadingDeg));
+}
+
+/** Componentes de vento na pista (kt). head > 0 = proa, head < 0 = cauda. */
+export function computeRunwayWindComponents({ windDir, windSpeed, runway }) {
+    const wdir = normalizeAngle(toNum(windDir));
+    const wspd = Math.max(0, toNum(windSpeed));
+    const rwy = parseRunwayHeading(runway);
+    const angle = windRunwayAngleDeg(wdir, rwy);
+    const rad = angle * DEG;
+    const crosswind = Math.abs(Math.sin(rad) * wspd);
+    const head = Math.cos(rad) * wspd;
+    return {
+        runwayHeading: rwy,
+        crosswindKt: Number(crosswind.toFixed(1)),
+        headwindKt: Number(head.toFixed(1)),
+        angleDeg: Number(angle.toFixed(0)),
+    };
+}
+
 /** Vento em relação ao rumo verdadeiro (TC). */
 export function computeWindTriangle({ trueCourse, tas, windDir, windSpeed }) {
     const tc = normalizeAngle(toNum(trueCourse));
