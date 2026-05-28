@@ -16,7 +16,9 @@ export default function BrandMark({ size = 40, showText = true, compact = false 
             }}
         >
             <MarquisaWordmark scale={s} compact={compact} />
-            {showText ? <div className="fp-brand-tagline">briefing e plano de voo</div> : null}
+            {showText ? (
+                <div className="fp-brand-tagline">Simulados ANAC, METAR/TAF e plano de voo</div>
+            ) : null}
         </div>
     );
 }

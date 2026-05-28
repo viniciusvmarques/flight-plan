@@ -58,12 +58,26 @@ export function I18nProvider({ children }) {
             /* ignore */
         }
         document.documentElement.lang = locale;
-        document.title =
+        const title =
             locale === "en"
-                ? "Marquisa | ANAC simulators, METAR, TAF and flight planning"
+                ? "Simulado ANAC PP, PC/IFR & Cabin Crew | Marquisa"
                 : locale === "es"
-                  ? "Marquisa | Simulados ANAC, METAR, TAF y planificación de vuelo"
-                  : "Marquisa | Simulados ANAC, METAR, TAF e planejamento de voo";
+                  ? "Simulado ANAC PP, PC/IFR y Comisario | Marquisa"
+                  : "Simulado ANAC PP, PC/IFR e Comissário | Marquisa";
+        const description =
+            locale === "en"
+                ? "ANAC mock exams for Private Pilot, Commercial/IFR and Cabin Crew with timer and commented answers. METAR/TAF and flight tools."
+                : locale === "es"
+                  ? "Simulados ANAC para PP, PC/IFR y Comisario con temporizador y respuestas comentadas. METAR/TAF y herramientas de vuelo."
+                  : "Simulados ANAC para PP, PC/IFR e Comissário com temporizador e gabarito comentado. METAR/TAF e ferramentas de voo.";
+        document.title = title;
+        let meta = document.querySelector('meta[name="description"]');
+        if (!meta) {
+            meta = document.createElement("meta");
+            meta.setAttribute("name", "description");
+            document.head.appendChild(meta);
+        }
+        meta.setAttribute("content", description);
     }, [locale]);
 
     function setLocale(nextLocale) {
