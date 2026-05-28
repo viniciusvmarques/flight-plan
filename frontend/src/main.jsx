@@ -12,6 +12,7 @@ import "./styles/ux-polish.css";
 import "./styles/experience.css";
 import "./styles/exam-reading.css";
 import "./styles/mobile-overrides.css";
+import "./styles/experience-spacing.css";
 import "./ui/notify.css";
 import { AuthProvider } from "./auth/AuthContext";
 import { NotifyProvider } from "./ui/NotifyContext.jsx";

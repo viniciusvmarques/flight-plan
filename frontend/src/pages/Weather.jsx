@@ -7,6 +7,7 @@ import {
     BulletinPanel,
     ExperienceCommandBar,
     ExperienceHero,
+    ExperiencePageStack,
     WxCategoryPanel,
 } from "../components/experience/ExperienceUI";
 import { fetchMetar, fetchTaf } from "../services/weatherService";
@@ -83,6 +84,7 @@ export default function Weather() {
         <div className="main-shell">
             <AppHeader compact />
             <main className="main-scroll growth-page experience-surface">
+                <ExperiencePageStack>
                 <ExperienceHero
                     kicker={t("weather.nav")}
                     title={t("weather.heroTitle")}
@@ -173,6 +175,7 @@ export default function Weather() {
                     onSecondary={() => nav("/quiz")}
                     onPrimary={() => nav("/#simulados")}
                 />
+                </ExperiencePageStack>
             </main>
             <AppFooter />
         </div>

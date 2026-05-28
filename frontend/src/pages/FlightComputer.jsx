@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
 import GrowthCtaBar from "../components/GrowthCtaBar";
-import { ExperienceHero, ResultHighlight, WorkbenchCard } from "../components/experience/ExperienceUI";
+import { ExperienceHero, ExperiencePageStack, ResultHighlight, WorkbenchCard } from "../components/experience/ExperienceUI";
 import {
     computeDensityAltitude,
     computeFuel,
@@ -118,6 +118,7 @@ export default function FlightComputer() {
         <div className="main-shell">
             <AppHeader compact />
             <main className="main-scroll growth-page experience-surface flight-computer-page">
+                <ExperiencePageStack>
                 <ExperienceHero
                     kicker={t("flightComputer.kicker")}
                     title={t("flightComputer.heroTitle")}
@@ -362,6 +363,7 @@ export default function FlightComputer() {
                     onSecondary={() => nav("/weather")}
                     onPrimary={() => nav("/")}
                 />
+                </ExperiencePageStack>
             </main>
             <AppFooter />
         </div>

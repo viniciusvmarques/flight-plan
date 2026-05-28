@@ -1,5 +1,10 @@
 import { flightCategoryChipClass } from "../../utils/flightCategoryChip";
 
+/** Empilha seções da página com espaço fixo entre cards (evita sobreposição visual). */
+export function ExperiencePageStack({ children, className = "" }) {
+    return <div className={`xp-page-stack${className ? ` ${className}` : ""}`}>{children}</div>;
+}
+
 export function ExperienceHero({ kicker, title, copy, statValue, statLabel, badge }) {
     return (
         <section className="xp-hero">

@@ -5,6 +5,7 @@ import AppFooter from "../components/AppFooter";
 import GrowthCtaBar from "../components/GrowthCtaBar";
 import {
     ExperienceHero,
+    ExperiencePageStack,
     ResultHighlight,
     ToolNavCard,
     WorkbenchCard,
@@ -63,6 +64,7 @@ export default function Tools() {
         <div className="main-shell">
             <AppHeader compact />
             <main className="main-scroll growth-page experience-surface xp-tools-layout">
+                <ExperiencePageStack>
                 <ExperienceHero kicker={t("tools.title")} title={t("tools.heroTitle")} copy={t("tools.heroCopy")} statValue="2" statLabel={t("tools.subtitle")} />
 
                 <div className="xp-tool-nav-row">
@@ -143,6 +145,7 @@ export default function Tools() {
                     onSecondary={() => nav("/weather")}
                     onPrimary={() => nav("/quiz")}
                 />
+                </ExperiencePageStack>
             </main>
             <AppFooter />
         </div>

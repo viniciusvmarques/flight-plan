@@ -1,0 +1,104 @@
+/**
+ * Espaçamento das páginas Weather / Tools / Computador — carregado por último.
+ */
+
+.main-scroll.growth-page.experience-surface {
+    display: block !important;
+    gap: 0 !important;
+}
+
+.xp-page-stack {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Espaço entre blocos principais — margin é mais estável que gap com sombras grandes */
+.xp-page-stack > * {
+    margin: 0 !important;
+    flex-shrink: 0;
+    width: 100%;
+    position: relative;
+    isolation: isolate;
+}
+
+.xp-page-stack > * + * {
+    margin-top: 30px !important;
+}
+
+.xp-page-stack .fc-sections,
+.xp-page-stack .xp-weather-results,
+.xp-page-stack .xp-bulletin-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0 !important;
+}
+
+.xp-page-stack .fc-sections > *,
+.xp-page-stack .xp-weather-results > *,
+.xp-page-stack .xp-bulletin-stack > * {
+    margin: 0 !important;
+}
+
+.xp-page-stack .fc-sections > * + *,
+.xp-page-stack .xp-weather-results > * + *,
+.xp-page-stack .xp-bulletin-stack > * + * {
+    margin-top: 26px !important;
+}
+
+.xp-page-stack .growth-two-col {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px !important;
+    align-items: start;
+}
+
+/* Cards: sombra menor + sem “subir” no hover (evita invadir o card de baixo) */
+.experience-surface .xp-hero,
+.experience-surface .xp-command,
+.experience-surface .xp-workbench,
+.experience-surface .xp-category-panel,
+.experience-surface .xp-bulletin,
+.experience-surface .xp-tool-nav,
+.experience-surface .tools-promo-card,
+.experience-surface .growth-cta-bar,
+.experience-surface .fc-jump-nav,
+.experience-surface .xp-airport-strip {
+    box-shadow: 0 6px 20px rgba(2, 6, 23, 0.32) !important;
+    transform: none !important;
+}
+
+.experience-surface .xp-tool-nav:hover,
+.experience-surface .xp-tool-nav:focus-visible,
+.experience-surface .growth-quick-chip:hover,
+.experience-surface .fp-card:hover,
+.experience-surface .card:hover {
+    transform: none !important;
+}
+
+.experience-surface .xp-workbench {
+    overflow: visible;
+}
+
+.experience-surface .xp-workbench-head h2,
+.experience-surface .xp-hero-copy h1 {
+    font-family: var(--font-growth-title);
+}
+
+@media (max-width: 800px) {
+    .xp-page-stack > * + * {
+        margin-top: 24px !important;
+    }
+
+    .xp-page-stack .fc-sections > * + *,
+    .xp-page-stack .xp-weather-results > * + *,
+    .xp-page-stack .xp-bulletin-stack > * + * {
+        margin-top: 22px !important;
+    }
+
+    .xp-page-stack .growth-two-col {
+        grid-template-columns: 1fr;
+        gap: 22px !important;
+    }
+}
