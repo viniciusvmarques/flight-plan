@@ -1055,14 +1055,9 @@
 .exam-question-card > p,
 .exam-review-item > p {
     margin: 0 0 12px;
-    color: #f8fafc;
-    line-height: 1.55;
 }
 
-.exam-question-text {
-    margin: 8px 0 18px !important;
-    color: #f8fafc;
-}
+/* Tipografia de leitura: exam-reading.css (Literata) */
 
 .exam-option-list {
     display: grid;

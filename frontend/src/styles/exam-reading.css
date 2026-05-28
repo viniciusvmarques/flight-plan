@@ -1,11 +1,27 @@
 /**
- * Simulados — mesma família tipográfica do site, com leitura confortável.
+ * Simulados — tipografia de leitura (Literata).
+ * UI (títulos, botões, abas) permanece Plus Jakarta / Montserrat.
+ * Baseado em boas práticas: ~66ch por linha, line-height 1.65–1.75, peso 400–500 no corpo.
  */
 
+.exam-surface {
+    --exam-reading-max: 68ch;
+}
+
+/* Sobrescreve experience.css que força Jakarta no card-body */
 .exam-surface .card-body,
-.exam-surface .xp-card-body {
-    font-family: var(--font-sans);
+.exam-surface .xp-card-body,
+.exam-surface.growth-page .fp-card .card-body,
+.exam-surface.growth-page .fp-card .xp-card-body {
+    font-family: var(--font-exam);
+    font-size: var(--exam-size-body);
+    font-weight: 400;
+    line-height: var(--exam-leading);
+    letter-spacing: 0.015em;
     white-space: normal;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
 .exam-prose,
@@ -13,60 +29,85 @@
 .exam-option-text,
 .exam-explanation,
 .exam-review-item > p,
-.exam-review-item .exam-explanation {
-    font-family: var(--font-sans);
-    font-size: 1.02rem;
-    font-weight: 500;
-    line-height: 1.65;
-    letter-spacing: -0.01em;
-    color: #f1f5f9;
+.exam-review-item .exam-explanation,
+.exam-option p {
+    font-family: var(--font-exam);
+    font-weight: 400;
+    line-height: var(--exam-leading);
+    letter-spacing: 0.015em;
+    color: var(--exam-text);
     white-space: normal;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
     text-rendering: optimizeLegibility;
 }
 
 .exam-question-text {
-    margin: 10px 0 18px !important;
-    max-width: 72ch;
-    font-size: 1.08rem;
-    font-weight: 600;
-    line-height: 1.62;
-    color: #f8fafc;
+    margin: 12px 0 22px !important;
+    max-width: var(--exam-reading-max);
+    font-size: var(--exam-size-question);
+    font-weight: 500;
+    line-height: var(--exam-leading-tight);
+    color: var(--exam-text-strong);
 }
 
-.exam-option-text {
+.exam-option-text,
+.exam-option p {
     margin: 0;
-    padding-top: 2px;
-    font-size: 0.98rem;
-    font-weight: 500;
-    line-height: 1.58;
+    padding-top: 3px;
+    font-size: var(--exam-size-body);
+    font-weight: 400;
+    line-height: var(--exam-leading);
     max-width: none;
+    color: var(--exam-text);
 }
 
 .exam-explanation {
-    font-size: 0.95rem;
-    font-weight: 500;
-    line-height: 1.6;
-    max-width: 72ch;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: var(--exam-leading);
+    max-width: var(--exam-reading-max);
+    color: rgba(226, 232, 240, 0.88);
 }
 
 .exam-review-item > p {
-    margin: 0 0 12px;
+    margin: 0 0 14px;
+    max-width: var(--exam-reading-max);
 }
 
+/* Letras A/B/C/D, metadados e controles = sans do site */
 .exam-option span,
 .exam-option-letter,
 .exam-question-head,
+.exam-question-head span,
 .exam-question-head small,
+.exam-question-meta,
 .exam-subject-tab,
 .exam-question-nav-item,
 .exam-window-actions button,
-.growth-quiz-dot {
+.exam-question-map summary,
+.growth-quiz-dot,
+.growth-quiz-progress,
+.exam-progress-line,
+.exam-timer,
+.exam-course-card,
+.exam-subject-card,
+.exam-access-banner,
+.exam-actions-panel,
+.exam-hero,
+.exam-hero-stat,
+.exam-kicker,
+.exam-share-card {
     font-family: var(--font-sans);
+    letter-spacing: inherit;
+    hyphens: none;
 }
 
 .exam-question-card--single {
-    padding: 20px 22px;
+    padding: 22px 24px;
     min-height: 0;
 }
 
@@ -74,24 +115,36 @@
     display: block;
     max-width: 55%;
     text-align: right;
-    line-height: 1.35;
+    line-height: 1.4;
+    font-size: 0.8rem;
+    font-weight: 600;
     overflow-wrap: anywhere;
 }
 
 .exam-option--selectable {
-    grid-template-columns: 40px minmax(0, 1fr);
+    grid-template-columns: 42px minmax(0, 1fr);
     align-items: start;
-    gap: 12px;
+    gap: 14px;
+    padding: 15px 16px;
 }
 
 .exam-option-letter {
     flex-shrink: 0;
-    margin-top: 2px;
+    margin-top: 3px;
+    font-weight: 700;
 }
 
 .exam-option--selected {
     border-color: rgba(96, 165, 250, 0.55) !important;
-    background: rgba(37, 99, 235, 0.18) !important;
+    background: rgba(37, 99, 235, 0.16) !important;
+}
+
+.exam-review-list {
+    gap: 16px;
+}
+
+.exam-review-item {
+    padding: 18px 20px;
 }
 
 .exam-subject-tabs--scroll {
@@ -145,15 +198,22 @@
     gap: 8px;
 }
 
-@media (max-width: 720px) {
-    .exam-question-text {
-        font-size: 1.02rem;
-        line-height: 1.6;
-    }
+/* Gabarito: opções corretas/erradas legíveis */
+.exam-surface .exam-option--correct .exam-option-text,
+.exam-surface .exam-option--correct p {
+    color: #dcfce7;
+}
 
-    .exam-option-text {
-        font-size: 0.96rem;
-        line-height: 1.55;
+.exam-surface .exam-option--wrong .exam-option-text,
+.exam-surface .exam-option--wrong p {
+    color: #fecaca;
+}
+
+@media (max-width: 720px) {
+    .exam-surface {
+        --exam-size-body: 1.03rem;
+        --exam-size-question: 1.12rem;
+        --exam-leading: 1.68;
     }
 
     .exam-question-head {
@@ -166,8 +226,14 @@
         text-align: left;
     }
 
-    .exam-question-card--single {
+    .exam-question-card--single,
+    .exam-review-item {
         padding: 16px 14px;
+    }
+
+    .exam-option--selectable {
+        padding: 14px 12px;
+        gap: 12px;
     }
 
     .exam-test-footer {
@@ -175,6 +241,12 @@
         bottom: 0;
         z-index: 2;
         padding: 10px 0 4px;
-        background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.92) 18%);
+        background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.94) 22%);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .exam-option--selectable {
+        transition: border-color 0.15s ease, background 0.15s ease;
     }
 }

@@ -5,7 +5,14 @@
 :root {
     --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --font-display: "Montserrat", "Plus Jakarta Sans", ui-sans-serif, sans-serif;
-    --font-exam: var(--font-sans);
+    /* Literata: leitura longa (questões, alternativas, gabarito) */
+    --font-exam: "Literata", "Georgia", "Iowan Old Style", "Palatino Linotype", serif;
+    --exam-text: #e8edf4;
+    --exam-text-strong: #f4f7fb;
+    --exam-leading: 1.72;
+    --exam-leading-tight: 1.65;
+    --exam-size-body: 1.0625rem;
+    --exam-size-question: 1.1875rem;
     --font-size-base: 15px;
     --leading-normal: 1.6;
     --tracking-tight: -0.02em;
