@@ -258,6 +258,10 @@
     gap: 10px;
 }
 
+.home-hub-metrics--single .home-hub-metric {
+    min-width: 140px;
+}
+
 .home-hub-metric {
     min-width: 120px;
     padding: 12px 14px;

@@ -16,6 +16,18 @@ const HUB_ITEMS = [
 export default function HomeHub() {
     const nav = useNavigate();
     const { t } = useI18n();
+    const [questionsBank, setQuestionsBank] = useState(DEFAULT_QUESTIONS_BANK);
+
+    useEffect(() => {
+        fetch(`${API}/api/public/stats`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((data) => {
+                if (data?.questionsBank > 0) {
+                    setQuestionsBank(data.questionsBank);
+                }
+            })
+            .catch(() => null);
+    }, []);
 
     return (
         <section className="home-hub" aria-label={t("hub.title")}>
@@ -24,6 +36,12 @@ export default function HomeHub() {
                     <span className="home-hub-badge">{t("hub.badge")}</span>
                     <h2>{t("hub.title")}</h2>
                     <p>{t("hub.subtitle")}</p>
+                </div>
+                <div className="home-hub-metrics home-hub-metrics--single">
+                    <div className="home-hub-metric">
+                        <strong>{questionsBank.toLocaleString()}</strong>
+                        <span>{t("hub.metricQuestions")}</span>
+                    </div>
                 </div>
             </div>
 
