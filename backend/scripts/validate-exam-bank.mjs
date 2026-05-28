@@ -1,9 +1,13 @@
 import { EXAM_QUESTIONS } from "../lib/exam-question-bank.js";
 import { EXTRA_EXAM_QUESTIONS } from "../lib/exam-extra-question-bank.js";
+import { normalizeExamPrompt } from "../lib/exam-bank-core.js";
 
-const all = [...EXAM_QUESTIONS, ...EXTRA_EXAM_QUESTIONS];
+const all = [...EXAM_QUESTIONS, ...EXTRA_EXAM_QUESTIONS].map((q) => ({
+  ...q,
+  question: normalizeExamPrompt(q.question),
+}));
 const badIndex = all.filter((q) => q.correctIndex < 0);
-const badColon = all.filter((q) => /:\s*$/.test(String(q.question).trim()) || /:\?\s*$/.test(String(q.question).trim()));
+const badColon = all.filter((q) => /:\s*\??\s*$/u.test(String(q.question).trim()));
 const badNoQuestion = all.filter((q) => !String(q.question).trim().endsWith("?"));
 
 console.log({

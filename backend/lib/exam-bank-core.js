@@ -3,7 +3,7 @@
  */
 
 export function q(prompt, correct, distractors) {
-  return { prompt, correct, distractors: distractors.slice(0, 3) };
+  return { prompt: normalizeExamPrompt(prompt), correct, distractors: distractors.slice(0, 3) };
 }
 
 export function topic(topicName, reference, items, explanation) {
@@ -20,23 +20,20 @@ function capitalizeSentence(text) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-function normalizeExamPrompt(text) {
+/** Garante enunciado terminado em "?" — nunca ":", ":?" ou ": ?". */
+export function normalizeExamPrompt(text) {
   let value = String(text || "").trim();
   if (!value) return "";
 
-  // Corrige artefato "enunciado:" + "?" → "enunciado:?"
-  value = value.replace(/:+\?+$/u, "?").replace(/\?+$/u, "?");
+  value = value.replace(/\uFF1A/g, ":");
 
-  // Formato antigo de lacuna ("METAR representa:") → pergunta fechada
-  if (value.endsWith(":")) {
-    value = value.slice(0, -1).trim();
-  }
+  // Remove sufixos : ?, :?, ::?, etc.
+  value = value.replace(/:+\s*\?+\s*$/u, "").trim();
+  value = value.replace(/:+\s*$/u, "").trim();
+  value = value.replace(/[\s;,.!?]+$/u, "").trim();
 
-  if (!value.endsWith("?")) {
-    value = `${value}?`;
-  }
-
-  return value;
+  if (!value) return "?";
+  return `${value}?`;
 }
 
 function resolveTopicItem(topicItem, subjectIndex, globalIndex) {
@@ -109,7 +106,7 @@ export function publicQuestion(question) {
     subjectLabel: question.subjectLabel,
     topic: question.topic,
     difficulty: question.difficulty,
-    question: question.question,
+    question: normalizeExamPrompt(question.question),
     options: question.options,
   };
 }

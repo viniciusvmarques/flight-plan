@@ -18,6 +18,7 @@ import { AIRCRAFT_PRESETS, getAircraftPresetByKey, serializeAircraftPreset } fro
 import { LEGAL_DOC_VERSIONS, SITE_PROFILE, getClientIp, getUserAgent } from "./lib/site-config.js";
 import { EXAM_QUESTIONS, EXAM_SUBJECTS, publicQuestion, resultQuestion } from "./lib/exam-question-bank.js";
 import { EXTRA_EXAM_COURSES, EXTRA_EXAM_QUESTIONS } from "./lib/exam-extra-question-bank.js";
+import { normalizeExamPrompt } from "./lib/exam-bank-core.js";
 import { localizeExamQuestion, localizeExamScore } from "./lib/exam-question-localizer.js";
 
 const app = express();
@@ -417,7 +418,11 @@ const EXAM_COURSES = [
   ...EXTRA_EXAM_COURSES,
 ];
 const FREE_EXAM_COURSES = ["PP-A", "CMS"];
-const ALL_EXAM_QUESTIONS = [...EXAM_QUESTIONS, ...EXTRA_EXAM_QUESTIONS];
+function sanitizeExamQuestion(question) {
+  return { ...question, question: normalizeExamPrompt(question.question) };
+}
+
+const ALL_EXAM_QUESTIONS = [...EXAM_QUESTIONS, ...EXTRA_EXAM_QUESTIONS].map(sanitizeExamQuestion);
 const EXAM_QUESTION_BY_ID = new Map(ALL_EXAM_QUESTIONS.map((question) => [question.id, question]));
 
 function getExamCourse(license = "PP-A") {
