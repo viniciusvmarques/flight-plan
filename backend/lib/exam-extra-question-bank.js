@@ -1,59 +1,8 @@
+import { PC_IFR_SUBJECTS } from "./exam-pc-ifr-subjects.js";
+
 function topic(topicName, reference, stems, correct, distractors, explanation) {
   return { topic: topicName, reference, stems, correct, distractors, explanation };
 }
-
-const PC_IFR_SUBJECTS = [
-  {
-    key: "REGIFR",
-    label: "Regulamentos IFR e Operações",
-    topics: [
-      topic("Regras IFR e autorização", "RBAC 61/91 e ICA 100-12", ["em operação IFR, a autorização de tráfego deve ser compreendida como:", "antes de ingressar em espaço aéreo controlado em IFR, o piloto deve:", "quando uma autorização IFR não puder ser cumprida, a conduta correta é:"], "Uma autorização condicionada ao controle de tráfego, sem dispensar o piloto de manter a operação segura.", ["Uma garantia de separação contra terreno em qualquer fase do voo.", "Uma permissão para ignorar limitações da aeronave.", "Uma substituição integral do planejamento de combustível."], "A autorização IFR organiza fluxo e separação, mas não elimina responsabilidades do piloto."),
-      topic("Mínimos operacionais", "Procedimentos IFR e mínimos publicados", ["em uma aproximação por instrumentos, os mínimos publicados servem para:", "ao atingir a altitude mínima sem referências visuais requeridas, o piloto deve:", "a decisão de prosseguir abaixo dos mínimos depende principalmente de:"], "Definir limites mínimos para continuidade segura da aproximação conforme procedimento e referências visuais.", ["Autorizar descida ilimitada quando o piloto conhece o aeródromo.", "Substituir a necessidade de alternado no planejamento.", "Permitir pouso mesmo sem qualquer referência externa."], "Mínimos IFR orientam a decisão de pouso ou arremetida e protegem contra obstáculos."),
-      topic("Plano de voo IFR", "MCA 100-11 e planejamento ATS", ["um plano IFR corretamente preenchido deve informar:", "a rota e o nível pretendido em um plano IFR são importantes porque:", "alterações relevantes no planejamento IFR devem ser tratadas por:"], "Dados de identificação, rota, nível, regras de voo, autonomia, alternado e demais informações operacionais.", ["Apenas o aeródromo de partida, sem detalhes de rota.", "Somente o nome do piloto e o número de passageiros.", "A meteorologia estimada sem relação com a aeronave."], "O plano IFR apoia coordenação ATS, busca e salvamento e gerenciamento de fluxo."),
-      topic("Alternado IFR", "Planejamento IFR - alternado e autonomia", ["na escolha de alternado IFR, o piloto deve considerar:", "um alternado adequado para IFR precisa ser analisado quanto a:", "a previsão meteorológica do alternado é relevante porque:"], "Meteorologia, procedimentos disponíveis, operação do aeródromo, combustível e compatibilidade com a aeronave.", ["Apenas a distância em linha reta até o destino.", "Somente a preferência comercial do passageiro.", "Exclusivamente a existência de restaurante no terminal."], "O alternado IFR deve ser realmente utilizável se o destino ficar indisponível."),
-    ],
-  },
-  {
-    key: "METIFR",
-    label: "Meteorologia IFR",
-    topics: [
-      topic("Nebulosidade e teto IFR", "Meteorologia aeronáutica IFR", ["em planejamento IFR, teto baixo no destino influencia diretamente:", "a análise de camada de nuvens em uma aproximação IFR é relevante para:", "condição abaixo dos mínimos no destino exige:"], "A escolha de procedimento, alternado, combustível e possibilidade de arremetida.", ["Apenas a seleção da pintura da aeronave.", "Somente o conforto acústico da cabine.", "Exclusivamente o cálculo de peso básico vazio."], "Teto e visibilidade são decisivos para aproximação e alternado."),
-      topic("Gelo e trovoadas", "Meteorologia operacional - gelo, CB e turbulência", ["a presença de cumulonimbus na rota IFR deve ser tratada como:", "formação de gelo em voo por instrumentos pode causar:", "ao planejar rota com previsão de trovoadas, o piloto deve:"], "Risco operacional relevante, exigindo desvio, espera, alternado ou replanejamento.", ["Condição irrelevante para aeronaves leves.", "Fenômeno que melhora a sustentação da aeronave.", "Sinal de que a comunicação rádio será dispensável."], "CB, gelo e turbulência afetam controle, performance e segurança."),
-      topic("TAF e tendência", "Códigos TAF, TEMPO, BECMG e PROB", ["em TAF, grupos de mudança são usados para:", "a interpretação de TEMPO em previsão IFR indica:", "ao avaliar BECMG no período do voo, o piloto deve:"], "Indicar mudanças previstas nas condições meteorológicas dentro do período de validade.", ["Registrar a manutenção programada da aeronave.", "Autorizar automaticamente aproximação abaixo dos mínimos.", "Cancelar a necessidade de consulta a NOTAM."], "TAF com grupos de mudança ajuda a prever janela de operação, alternado e combustível."),
-      topic("Altimetria IFR", "Altimetria, QNH e níveis de voo", ["em voo IFR, ajuste altimétrico correto é essencial para:", "ao cruzar a altitude de transição, o ajuste do altímetro deve:", "erro de ajuste altimétrico pode resultar em:"], "Manter separação vertical adequada e cumprir altitudes ou níveis autorizados.", ["Aumentar automaticamente a velocidade verdadeira.", "Eliminar necessidade de vigilância de tráfego.", "Corrigir falhas do sistema elétrico."], "Altimetria incorreta compromete separação vertical e segurança contra obstáculos."),
-    ],
-  },
-  {
-    key: "NAVIFR",
-    label: "Navegação IFR",
-    topics: [
-      topic("Rádio navegação", "VOR, NDB, GNSS e radiais", ["a interceptação de uma radial VOR requer:", "em navegação por instrumentos, identificação positiva do auxílio serve para:", "ao usar GNSS em IFR, o piloto deve confirmar:"], "Sintonizar, identificar o auxílio e estabelecer proa de interceptação compatível com a posição.", ["Usar qualquer frequência próxima sem identificação.", "Desconsiderar indicação de curso durante a aproximação.", "Voar apenas por referência visual ao terreno."], "Navegação IFR exige identificação e acompanhamento correto dos auxílios."),
-      topic("Saídas e chegadas IFR", "SID, STAR e cartas IFR", ["uma SID publicada tem como finalidade:", "uma STAR auxilia principalmente na:", "restrições de altitude e velocidade em cartas IFR devem ser:"], "Padronizar trajetórias, reduzir carga de trabalho e organizar separação do tráfego.", ["Substituir a autorização do controle em todos os casos.", "Permitir descida sem observância de mínimos.", "Cancelar a necessidade de comunicação bilateral."], "Procedimentos publicados organizam fluxo e devem ser lidos junto com autorização ATS."),
-      topic("Aproximação por instrumentos", "IAC - procedimentos IFR", ["em uma aproximação não precisão, o piloto deve observar:", "o segmento final de aproximação exige atenção especial a:", "o ponto de aproximação perdida representa:"], "Curso, altitudes mínimas, gradiente, tempo/distância e ponto de aproximação perdida.", ["Apenas a cor das luzes internas da cabine.", "Somente a autonomia restante após o pouso.", "Exclusivamente o número de passageiros."], "Cartas de aproximação trazem limites e pontos críticos para continuidade ou arremetida."),
-      topic("Espera IFR", "Procedimentos de espera", ["em procedimento de espera, o piloto deve cumprir:", "a entrada em espera depende principalmente de:", "a velocidade em espera deve respeitar:"], "Curso, perna, altitude, sentido de curva, tempo/distância e autorização recebida.", ["Somente a preferência de rumo do piloto.", "Qualquer órbita visual ao redor do aeródromo.", "A maior velocidade possível para economizar tempo."], "Espera IFR é procedimento padronizado para separar tráfego e organizar fluxo."),
-    ],
-  },
-  {
-    key: "PERFPC",
-    label: "Performance e Planejamento PC",
-    topics: [
-      topic("Peso e balanceamento", "Manual de voo - peso e CG", ["em operação comercial, peso e balanceamento devem ser verificados para:", "CG fora do envelope pode afetar:", "o peso máximo de decolagem é limitado por:"], "Garantir que a aeronave opere dentro do envelope aprovado e com performance suficiente.", ["Apenas definir a tarifa cobrada do passageiro.", "Eliminar a necessidade de inspeção pré-voo.", "Corrigir automaticamente erro de navegação."], "Peso e CG influenciam pista requerida, subida, estabilidade e controle."),
-      topic("Performance de pista", "Performance de decolagem e pouso", ["a distância de decolagem aumenta quando há:", "pista contaminada ou molhada exige:", "temperatura elevada e altitude de pressão alta tendem a:"], "Avaliação conservadora da performance e comparação com pista disponível.", ["Redução automática da distância de decolagem.", "Dispensa do cálculo de peso.", "Aumento garantido de razão de subida."], "Performance depende de peso, vento, pista, pressão, temperatura e configuração."),
-      topic("Combustível IFR", "Planejamento de combustível IFR", ["o combustível IFR deve contemplar:", "reserva e alternado no planejamento IFR servem para:", "consumo maior que o previsto em rota exige:"], "Táxi, rota, aproximação, alternado, reserva, contingências e margens aplicáveis.", ["Somente o consumo até o destino em ar calmo.", "Apenas combustível visual de circuito.", "Exclusivamente combustível para acionamento."], "Planejamento IFR exige margem para espera, alternado, desvios e aproximação perdida."),
-      topic("Decisão operacional", "Gerenciamento de risco PC/IFR", ["em operação PC, a decisão de alternar deve considerar:", "pressão comercial durante mau tempo deve ser tratada como:", "quando a aeronave não atende à performance requerida, o piloto deve:"], "Risco operacional, mínimos, combustível, performance, condição da aeronave e segurança.", ["Motivo para reduzir margens abaixo do mínimo.", "Autorização para ignorar limitações do manual.", "Fator que elimina responsabilidade do comandante."], "Operação profissional exige decisões conservadoras e aderentes a limites técnicos e legais."),
-    ],
-  },
-  {
-    key: "TECIFR",
-    label: "Conhecimentos Técnicos IFR",
-    topics: [
-      topic("Instrumentos giroscópicos", "Instrumentos de voo IFR", ["falha de instrumento giroscópico em IFR pode exigir:", "o horizonte artificial auxilia principalmente em:", "comparação cruzada de instrumentos serve para:"], "Uso de redundância, cross-check e procedimentos adequados para manter controle da aeronave.", ["Desligar todos os instrumentos remanescentes.", "Prosseguir sem referência de atitude.", "Cancelar a necessidade de comunicação."], "IFR depende de interpretação consistente dos instrumentos e reconhecimento de falhas."),
-      topic("Sistema pitot-estático", "Pitot-estático - velocímetro, altímetro e VSI", ["bloqueio no sistema pitot-estático pode afetar:", "aquecimento de pitot é usado para:", "leituras inconsistentes de velocidade devem levar o piloto a:"], "Indicações de velocidade, altitude ou razão de subida, exigindo diagnóstico e procedimento.", ["Alterar apenas a frequência do transponder.", "Melhorar automaticamente a razão de subida.", "Eliminar a necessidade de atitude e potência."], "Pitot-estático é crítico para instrumentos básicos, especialmente em IMC."),
-      topic("Transponder e vigilância", "Equipamentos ATS - transponder", ["o transponder auxilia o ATS por:", "código transponder incorreto pode causar:", "modo altitude no transponder permite:"], "Fornecer identificação e, quando disponível, informação de altitude ao controle de tráfego.", ["Substituir a navegação da aeronave.", "Gerar autorização automática de pouso.", "Corrigir erro de ajuste de potência."], "Transponder melhora vigilância ATS e consciência de tráfego."),
-      topic("Automação IFR", "Uso operacional de piloto automático", ["o piloto automático em IFR deve ser usado como:", "dependência excessiva de automação pode causar:", "antes de acoplar modos de navegação, o piloto deve:"], "Auxílio para reduzir carga de trabalho, mantendo monitoramento ativo e capacidade manual.", ["Substituto integral do comandante.", "Garantia de separação contra qualquer obstáculo.", "Permissão para abandonar o cross-check."], "Automação ajuda, mas exige monitoramento e prontidão para assumir."),
-    ],
-  },
-];
 
 const CABIN_CREW_SUBJECTS = [
   {
@@ -109,7 +58,14 @@ const CABIN_CREW_SUBJECTS = [
 ];
 
 const EXTRA_COURSES = [
-  { key: "PC-IFR", title: "Piloto Comercial / IFR", shortTitle: "PC/IFR", description: "Treino avançado para Piloto Comercial, IFR e navegação por instrumentos.", subjects: PC_IFR_SUBJECTS },
+  {
+    key: "PC-IFR",
+    title: "Piloto Comercial / IFR",
+    shortTitle: "PC/IFR",
+    description:
+      "Simulado PC/IFR com ênfase em navegação rádio (NDB, VOR, DME, ILS), cartas, espera, planejamento de rota e performance — alinhado ao programa ANAC de navegação por instrumentos.",
+    subjects: PC_IFR_SUBJECTS,
+  },
   { key: "CMS", title: "Comissário de Voo", shortTitle: "Comissário", description: "Simulados para comissário de voo, emergência, segurança, primeiros socorros e regulamentação.", subjects: CABIN_CREW_SUBJECTS },
 ];
 
@@ -139,6 +95,16 @@ const CONTEXTS = [
   "Durante uma verificação de rotina",
   "Ao aplicar procedimentos de segurança",
   "Em uma situação de coordenação operacional",
+  "Ao estudar navegação rádio para PC/IFR",
+  "Durante resolução de problema de rota IFR",
+  "Na leitura de carta de aproximação IAC",
+  "Ao preparar cálculo de vento e tempo de perna",
+  "Em exercício de interceptação VOR",
+  "Na revisão de procedimento de espera publicado",
+  "Ao planejar combustível para alternado IFR",
+  "Durante simulado de aproximação por instrumentos",
+  "Ao interpretar indicação ADF em rota",
+  "Na checagem de DME e segmentos de descida",
 ];
 
 function rotate(list, offset) {
@@ -150,10 +116,22 @@ function lowerFirst(value) {
   return text ? text.charAt(0).toLowerCase() + text.slice(1) : "";
 }
 
+function resolveTopicItem(topicItem, subjectIndex, globalIndex) {
+  if (Array.isArray(topicItem.items) && topicItem.items.length) {
+    return topicItem.items[(subjectIndex + globalIndex) % topicItem.items.length];
+  }
+  return {
+    stem: topicItem.stems[(subjectIndex + globalIndex) % topicItem.stems.length],
+    correct: topicItem.correct,
+    distractors: topicItem.distractors,
+  };
+}
+
 function makeQuestion(course, subject, topicItem, subjectIndex, globalIndex) {
   const context = CONTEXTS[(subjectIndex + globalIndex) % CONTEXTS.length];
-  const stem = topicItem.stems[subjectIndex % topicItem.stems.length];
-  const options = rotate([topicItem.correct, ...topicItem.distractors], globalIndex % 4);
+  const item = resolveTopicItem(topicItem, subjectIndex, globalIndex);
+  const stem = item.stem;
+  const options = rotate([item.correct, ...item.distractors], globalIndex % 4);
   return {
     id: `${course.key}-${subject.key}-${String(subjectIndex + 1).padStart(4, "0")}`,
     license: course.key,
@@ -164,7 +142,7 @@ function makeQuestion(course, subject, topicItem, subjectIndex, globalIndex) {
     difficulty: ["facil", "media", "media", "dificil"][globalIndex % 4],
     question: `${context}, ${lowerFirst(stem)}`,
     options,
-    correctIndex: options.indexOf(topicItem.correct),
+    correctIndex: options.indexOf(item.correct),
     explanation: topicItem.explanation,
     reference: topicItem.reference,
     status: "approved",
