@@ -108,7 +108,7 @@
 }
 
 /* ----- Growth pages (weather, tools, quiz, SEO) ----- */
-.growth-page {
+.growth-page:not(.experience-surface) {
     display: grid;
     gap: 18px;
     max-width: 1080px;
@@ -140,7 +140,7 @@
     line-height: 1.55;
 }
 
-.growth-stack {
+.growth-page:not(.experience-surface) .growth-stack {
     display: grid;
     gap: 16px;
 }

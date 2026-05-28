@@ -7,6 +7,8 @@
     --font-display: "Montserrat", "Plus Jakarta Sans", ui-sans-serif, sans-serif;
     /* Lora: leitura das provas — serif elegante e confortável */
     --font-exam: "Lora", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    --font-growth: var(--font-sans);
+    --font-growth-title: var(--font-display);
     --exam-text: #e9e6e0;
     --exam-text-strong: #f6f4ef;
     --exam-leading: 1.74;

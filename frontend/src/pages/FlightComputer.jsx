@@ -5,7 +5,6 @@ import AppFooter from "../components/AppFooter";
 import GrowthCtaBar from "../components/GrowthCtaBar";
 import { ExperienceHero, ResultHighlight, WorkbenchCard } from "../components/experience/ExperienceUI";
 import {
-    computeClimbPlanning,
     computeDensityAltitude,
     computeFuel,
     computeLegFuel,
