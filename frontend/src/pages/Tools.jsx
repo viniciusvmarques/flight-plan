@@ -44,7 +44,7 @@ export default function Tools() {
 
     return (
         <div className="main-shell">
-            <AppHeader title={t("tools.title")} subtitle={t("tools.subtitle")} />
+            <AppHeader compact />
             <main className="main-scroll growth-page">
                 <GrowthPageHero kicker={t("tools.title")} title={t("tools.heroTitle")} copy={t("tools.heroCopy")} statValue="2" statLabel={t("tools.subtitle")} />
 
@@ -113,7 +113,7 @@ export default function Tools() {
 
                 <Card title={t("flightComputer.shortTitle")}>
                     <p className="growth-section-lead">{t("flightComputer.toolsPromo")}</p>
-                    <button type="button" className="primary" onClick={() => nav("/computador")}>
+                    <button type="button" className="primary tools-promo-btn" onClick={() => nav("/computador")}>
                         {t("flightComputer.openComputer")}
                     </button>
                 </Card>

@@ -66,7 +66,7 @@ export default function Weather() {
 
     return (
         <div className="main-shell">
-            <AppHeader title={t("weather.title")} subtitle={t("weather.subtitle")} />
+            <AppHeader compact />
             <main className="main-scroll growth-page">
                 <GrowthPageHero
                     kicker={t("weather.nav")}

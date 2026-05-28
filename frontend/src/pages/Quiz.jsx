@@ -75,7 +75,7 @@ export default function Quiz() {
 
     return (
         <div className="main-shell">
-            <AppHeader title={t("quiz.title")} subtitle={t("quiz.subtitle")} />
+            <AppHeader compact />
             <main className="main-scroll growth-page">
                 <GrowthPageHero
                     kicker={t("quiz.nav")}

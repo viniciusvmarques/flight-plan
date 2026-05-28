@@ -53,6 +53,7 @@ export const es = {
         menuTitle: "Menú",
         menuOpen: "Abrir menú",
         menuClose: "Cerrar menú",
+        siteName: "Marquisa",
     },
     footer: {
         rights: "Todos los derechos reservados.",

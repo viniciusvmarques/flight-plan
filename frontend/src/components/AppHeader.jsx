@@ -5,7 +5,7 @@ import { useAuth } from "../auth/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
-export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = "" }) {
+export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = "", compact = false }) {
     const nav = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
@@ -67,13 +67,40 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
         <header className="fp-topbar" role="banner">
             <div className="fp-topbar-inner">
                 <button type="button" className="fp-topbar-brand" onClick={() => nav("/")} aria-label={t("appHeader.goToBriefing")}>
-                    <BrandMark size={38} showText={false} compact />
+                    <span className="fp-topbar-mark" aria-hidden="true">
+                        <BrandMark size={38} showText={false} compact />
+                    </span>
                     <div className="fp-topbar-titles">
-                        <span className="fp-topbar-kicker">{kicker}</span>
-                        <span className="fp-topbar-title">{title || t("appHeader.defaultTitle")}</span>
-                        {subtitle ? <span className="fp-topbar-sub">{subtitle}</span> : null}
+                        {compact ? (
+                            <span className="fp-topbar-title">{t("appHeader.siteName")}</span>
+                        ) : (
+                            <>
+                                <span className="fp-topbar-kicker">{kicker}</span>
+                                <span className="fp-topbar-title">{title || t("appHeader.defaultTitle")}</span>
+                                {subtitle ? <span className="fp-topbar-sub">{subtitle}</span> : null}
+                            </>
+                        )}
                     </div>
                 </button>
+
+                <nav className="fp-topbar-nav fp-topbar-nav--desktop" aria-label={t("appHeader.navLabel")}>
+                    {navItems.map((item) =>
+                        item.key === "exams" && !user ? (
+                            <Link key={item.key} className="fp-nav-link" to="/" onClick={goSimulados}>
+                                {item.label}
+                            </Link>
+                        ) : (
+                            <Link
+                                key={item.key}
+                                className={["fp-nav-link", item.accent ? "fp-nav-link--accent" : ""].join(" ")}
+                                to={item.to}
+                            >
+                                {item.label}
+                            </Link>
+                        )
+                    )}
+                    <LanguageSwitcher compact />
+                </nav>
 
                 <button
                     type="button"
@@ -85,33 +112,6 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
                     <span className="fp-topbar-menu-icon" aria-hidden="true" />
                     <span className="sr-only">{menuOpen ? t("appHeader.menuClose") : t("appHeader.menuOpen")}</span>
                 </button>
-
-                <nav className="fp-topbar-nav fp-topbar-nav--desktop" aria-label={t("appHeader.navLabel")}>
-                    {navItems.map((item) =>
-                        item.key === "exams" && !user ? (
-                            <Link
-                                key={item.key}
-                                className="fp-nav-link"
-                                to="/"
-                                onClick={goSimulados}
-                            >
-                                {item.label}
-                            </Link>
-                        ) : (
-                            <Link
-                                key={item.key}
-                                className={[
-                                    "fp-nav-link",
-                                    item.accent ? "fp-nav-link--accent" : "",
-                                ].join(" ")}
-                                to={item.to}
-                            >
-                                {item.label}
-                            </Link>
-                        )
-                    )}
-                    <LanguageSwitcher compact />
-                </nav>
             </div>
 
             <div

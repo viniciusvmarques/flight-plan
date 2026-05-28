@@ -274,13 +274,20 @@
     align-items: center;
     gap: 12px;
     min-width: 0;
-    flex: 1;
+    flex: 0 1 auto;
+    max-width: min(560px, 55vw);
     background: none;
     border: 0;
     padding: 0;
     cursor: pointer;
     color: inherit;
     text-align: left;
+}
+
+.fp-topbar-mark {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
 }
 
 .fp-topbar-titles {
@@ -362,6 +369,9 @@
 
 .fp-topbar-nav--desktop {
     display: flex;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    min-width: 0;
 }
 
 .fp-mobile-nav {
@@ -663,42 +673,40 @@
     }
 }
 
+@media (max-width: 768px) {
+    .fp-topbar-kicker,
+    .fp-topbar-sub {
+        display: none;
+    }
+
+    .fp-topbar-brand {
+        max-width: calc(100% - 56px);
+    }
+
+    .fp-topbar-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 14px;
+    }
+}
+
 @media (max-width: 520px) {
     .fp-topbar-inner {
         align-items: center;
         gap: 10px;
         padding: 10px 12px;
         flex-wrap: nowrap;
-        overflow: hidden;
     }
 
     .fp-topbar-brand {
-        display: grid;
-        grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-        align-items: center;
-        flex: 1;
-        min-width: 0;
         gap: 10px;
+        max-width: calc(100% - 52px);
     }
 
-    .fp-topbar-titles {
-        min-width: 0;
-        overflow: hidden;
-    }
-
-    .fp-topbar-title,
-    .fp-topbar-sub {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .fp-topbar-title {
-        white-space: nowrap;
-        font-size: 14px;
-        letter-spacing: 0.02em;
-    }
-
-    .fp-topbar-sub {
+    .fp-topbar-titles--minimal,
+    .fp-topbar-titles .fp-topbar-kicker,
+    .fp-topbar-titles .fp-topbar-sub {
         display: none;
     }
 

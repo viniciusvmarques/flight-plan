@@ -53,6 +53,7 @@ export const ptBR = {
         menuTitle: "Menu",
         menuOpen: "Abrir menu",
         menuClose: "Fechar menu",
+        siteName: "Marquisa",
     },
     footer: {
         rights: "Todos os direitos reservados.",

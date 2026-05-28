@@ -23,7 +23,7 @@ export default function ExamResultShare() {
 
     return (
         <div className="main-shell">
-            <AppHeader title={t("share.pageTitle")} subtitle={t("share.pageSubtitle")} />
+            <AppHeader compact />
             <main className="main-scroll growth-page">
                 <Card title={t("share.cardTitle")}>
                     <div className="exam-share-card exam-share-card--public">

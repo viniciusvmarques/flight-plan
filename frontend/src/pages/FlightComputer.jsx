@@ -74,7 +74,7 @@ export default function FlightComputer() {
 
     return (
         <div className="main-shell">
-            <AppHeader title={t("flightComputer.title")} subtitle={t("flightComputer.subtitle")} />
+            <AppHeader compact />
             <main className="main-scroll growth-page flight-computer-page">
                 <GrowthPageHero
                     kicker={t("flightComputer.kicker")}
