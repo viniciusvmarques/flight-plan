@@ -20,10 +20,23 @@ function capitalizeSentence(text) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-function ensureQuestionMark(text) {
-  const value = String(text || "").trim();
+function normalizeExamPrompt(text) {
+  let value = String(text || "").trim();
   if (!value) return "";
-  return value.endsWith("?") ? value : `${value}?`;
+
+  // Corrige artefato "enunciado:" + "?" → "enunciado:?"
+  value = value.replace(/:+\?+$/u, "?").replace(/\?+$/u, "?");
+
+  // Formato antigo de lacuna ("METAR representa:") → pergunta fechada
+  if (value.endsWith(":")) {
+    value = value.slice(0, -1).trim();
+  }
+
+  if (!value.endsWith("?")) {
+    value = `${value}?`;
+  }
+
+  return value;
 }
 
 function resolveTopicItem(topicItem, subjectIndex, globalIndex) {
@@ -39,7 +52,7 @@ function resolveTopicItem(topicItem, subjectIndex, globalIndex) {
 
 export function makeExamQuestion({ subject, topicItem, subjectIndex, globalIndex, license, licenseLabel, idPrefix }) {
   const item = resolveTopicItem(topicItem, subjectIndex, globalIndex);
-  const prompt = ensureQuestionMark(item.prompt || item.stem || "");
+  const prompt = normalizeExamPrompt(item.prompt || item.stem || "");
   const correctOption = capitalizeSentence(item.correct);
   const options = rotate(
     [correctOption, ...(item.distractors || []).map((option) => capitalizeSentence(option))],

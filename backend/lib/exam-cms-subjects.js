@@ -43,7 +43,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Segundo a regulamentação aplicável ao comissário, sua função na tripulação de cabine inclui:",
+            "O que inclui a função do comissário na tripulação de cabine, segundo a regulamentação aplicável?",
             "Executar procedimentos de segurança, comunicar anormalidades e coordenar ações com a cabine de comando.",
             [
               "Autorizar sozinho alterações de peso e balanceamento da aeronave.",
@@ -52,7 +52,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O comissário de voo atua na interface entre passageiros e operação. Isso implica:",
+            "O que implica a atuação do comissário na interface entre passageiros e operação?",
             "Traduzir procedimentos de segurança em conduta de cabine e apoio à decisão operacional.",
             [
               "Assumir exclusivamente a responsabilidade pela navegação da aeronave.",
@@ -77,7 +77,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A comunicação entre a tripulação de cabine e a cabine de comando deve ser:",
+            "Como deve ser a comunicação entre a tripulação de cabine e a cabine de comando?",
             "Objetiva, oportuna e adequada ao nível de risco da informação transmitida.",
             [
               "Reservada apenas ao final do voo, para não interromper o serviço.",
@@ -86,7 +86,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Informações críticas de segurança identificadas em cabine devem ser repassadas:",
+            "Como devem ser repassadas informações críticas de segurança identificadas em cabine?",
             "Imediatamente à cabine de comando e registradas conforme procedimento do operador.",
             [
               "Somente após o desembarque de todos os passageiros.",
