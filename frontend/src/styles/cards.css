@@ -21,9 +21,16 @@
 }
 
 .card-body {
+    font-family: var(--font-sans, "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    white-space: normal;
+}
+
+.card-body--mono {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: 0.86rem;
+    line-height: 1.5;
     white-space: pre-wrap;
 }
 .chip {

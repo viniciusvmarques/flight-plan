@@ -199,7 +199,7 @@ export default function Exams() {
     return (
         <div className="main-shell exams-shell">
             <AppHeader title={t("exams.title")} subtitle={isPro ? t("exams.subtitlePro") : t("exams.subtitleFree")} />
-            <main className="main-scroll exams-page">
+            <main className="main-scroll exams-page exam-surface">
                 <section className="exam-hero">
                     <div>
                         <p className="exam-kicker">{t("exams.kicker")}</p>
@@ -356,7 +356,7 @@ export default function Exams() {
                         <Card title={t("exams.answerKey")}>
                             <div className="exam-review-list">
                                 {result.questions?.map((question, index) => (
-                                    <article key={question.id} className="exam-review-item">
+                                    <article key={question.id} className="exam-review-item exam-prose">
                                         <div className="exam-question-head">
                                             <span>{t("exams.question", { number: index + 1 })}</span>
                                             <strong className={question.correct ? "exam-pass" : "exam-fail"}>
@@ -409,7 +409,7 @@ export default function Exams() {
                             </div>
                             {currentQuestion ? (
                                 <div className="exam-test-window">
-                                    <article className="exam-question-card exam-question-card--single">
+                                    <article className="exam-question-card exam-question-card--single exam-prose">
                                         <div className="exam-question-head">
                                             <span>
                                                 {t("exams.questionOf", { current: currentSubjectQuestionIndex + 1, total: currentSubjectGroup.items.length })}

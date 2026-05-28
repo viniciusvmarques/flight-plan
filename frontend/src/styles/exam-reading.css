@@ -1,0 +1,78 @@
+/**
+ * Tipografia de leitura para simulados — questões, alternativas e gabarito.
+ * Substitui a herança monoespaçada dos cards, que cansava a leitura.
+ */
+
+.exam-surface .card-body,
+.exam-surface .xp-card-body {
+    font-family: var(--font-sans);
+    white-space: normal;
+}
+
+.exam-prose,
+.exam-question-text,
+.exam-option p,
+.exam-explanation,
+.exam-review-item > p,
+.exam-review-item .exam-explanation {
+    font-family: var(--font-exam);
+    font-size: 1.125rem;
+    font-weight: 450;
+    line-height: 1.78;
+    letter-spacing: 0.01em;
+    word-spacing: 0.03em;
+    color: #f1f5f9;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
+    text-rendering: optimizeLegibility;
+}
+
+.exam-question-text {
+    margin: 10px 0 20px !important;
+    max-width: 68ch;
+}
+
+.exam-option p {
+    margin: 0;
+    padding-top: 2px;
+    font-size: 1.06rem;
+    line-height: 1.72;
+    max-width: 62ch;
+}
+
+.exam-explanation {
+    font-size: 1.02rem;
+    line-height: 1.72;
+    max-width: 70ch;
+}
+
+.exam-review-item > p {
+    margin: 0 0 12px;
+}
+
+/* Letras A/B/C/D e UI permanecem sans */
+.exam-option span,
+.exam-question-head,
+.exam-question-head small,
+.exam-subject-tab,
+.exam-question-nav-item,
+.exam-window-actions button,
+.growth-quiz-dot {
+    font-family: var(--font-sans);
+}
+
+.exam-question-card--single {
+    padding: 22px 24px;
+}
+
+@media (max-width: 720px) {
+    .exam-prose,
+    .exam-question-text,
+    .exam-option p {
+        font-size: 1.05rem;
+        line-height: 1.72;
+    }
+}

@@ -1062,9 +1062,6 @@
 .exam-question-text {
     margin: 8px 0 18px !important;
     color: #f8fafc;
-    font-size: 1.05rem;
-    line-height: 1.7;
-    letter-spacing: 0.01em;
 }
 
 .exam-option-list {
@@ -1108,8 +1105,6 @@
     margin: 0;
     padding-top: 4px;
     color: rgba(248, 250, 252, 0.94);
-    line-height: 1.6;
-    letter-spacing: 0.01em;
 }
 
 .exam-option--selectable {

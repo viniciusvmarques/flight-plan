@@ -76,7 +76,7 @@ export default function Quiz() {
     return (
         <div className="main-shell">
             <AppHeader compact />
-            <main className="main-scroll growth-page experience-surface">
+            <main className="main-scroll growth-page experience-surface exam-surface">
                 <GrowthPageHero
                     kicker={t("quiz.nav")}
                     title={t("quiz.heroTitle")}
@@ -167,7 +167,7 @@ export default function Quiz() {
 
                         {current ? (
                             <div className="exam-test-window">
-                                <article className="exam-question-card exam-question-card--single">
+                                <article className="exam-question-card exam-question-card--single exam-prose">
                                     <p className="exam-question-text">{current.question}</p>
                                     <div className="exam-option-list">
                                         {current.options.map((option, optionIndex) => (
