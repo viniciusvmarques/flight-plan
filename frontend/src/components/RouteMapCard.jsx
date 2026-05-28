@@ -4,11 +4,18 @@ import { MapContainer, Marker, Polyline, ScaleControl, TileLayer, Tooltip, useMa
 import Card from "./Card";
 import { haversineNm } from "../utils/distance";
 
-function makeMarkerIcon(role, isSelected) {
+function categoryClass(category) {
+    if (category === "VFR") return "fp-map-marker--vfr";
+    if (category === "MVFR") return "fp-map-marker--mvfr";
+    if (category === "IFR") return "fp-map-marker--ifr";
+    return "fp-map-marker--nodata";
+}
+
+function makeMarkerIcon(role, isSelected, category) {
     const label = role === "origin" ? "A" : role === "dest" ? "B" : "C";
     return L.divIcon({
         className: "fp-map-marker-wrap",
-        html: `<span class="fp-map-marker fp-map-marker--${role} ${isSelected ? "fp-map-marker--selected" : ""}">${label}</span>`,
+        html: `<span class="fp-map-marker fp-map-marker--${role} ${categoryClass(category)} ${isSelected ? "fp-map-marker--selected" : ""}">${label}</span>`,
         iconSize: [28, 28],
         iconAnchor: [14, 14],
     });
@@ -98,7 +105,10 @@ export default function RouteMapCard({ markers, selectedIcao, onSelect }) {
                     <span className="chip">A · Origem</span>
                     <span className="chip">B · Destino</span>
                     <span className="chip">C · Alternativa</span>
-                    <span className="chip">Clique em um ponto para abrir detalhes</span>
+                    <span className="chip ok">VFR</span>
+                    <span className="chip warn">MVFR</span>
+                    <span className="chip bad">IFR</span>
+                    <span className="chip muted">Clique em um marcador para detalhes</span>
                 </div>
 
                 <div className="route-map-frame">
@@ -132,7 +142,7 @@ export default function RouteMapCard({ markers, selectedIcao, onSelect }) {
                             <Marker
                                 key={marker.icao}
                                 position={[marker.lat, marker.lon]}
-                                icon={makeMarkerIcon(marker.role, selectedIcao === marker.icao)}
+                                icon={makeMarkerIcon(marker.role, selectedIcao === marker.icao, marker.category)}
                                 eventHandlers={{
                                     click: () => onSelect?.(marker.icao),
                                 }}

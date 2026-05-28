@@ -3,11 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import Sidebar from "../components/Sidebar";
 import Card from "../components/Card";
-import SummaryCard from "../components/SummaryCard";
-import StationsCard from "../components/StationsCard";
-import StationDetailsCard from "../components/StationDetailsCard";
-
-import WxSquareCard from "../components/WxSquareCard";
+import DashboardBriefingWorkspace from "../components/DashboardBriefingWorkspace";
 import FlightPlanStack from "../components/FlightPlanStack";
 
 import { fetchMetar, fetchTaf } from "../services/weatherService";
@@ -70,8 +66,8 @@ export default function Dashboard() {
     const { user } = useAuth();
     const nav = useNavigate();
     const { toast } = useNotify();
-    const { t } = useI18n();
-    const detailRef = useRef(null);
+    const { t, locale } = useI18n();
+    const briefingRef = useRef(null);
     const simuladosRef = useRef(null);
 
     const [lastData, setLastData] = useState(() => {
@@ -351,6 +347,9 @@ export default function Dashboard() {
                 variant: "success",
                 title: t("dashboard.briefingGeneratedTitle"),
             });
+            window.requestAnimationFrame(() => {
+                briefingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
         } catch (e) {
             setError(e?.message || "Erro ao gerar briefing");
         } finally {
@@ -377,22 +376,7 @@ export default function Dashboard() {
         return null;
     }, [base, selectedIcao]);
 
-    function scrollToDetails() {
-        if (!detailRef.current) return;
-        window.requestAnimationFrame(() => {
-            detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-    }
-
-    useEffect(() => {
-        if (!selectedStation) return;
-        scrollToDetails();
-    }, [selectedStation]);
-
     async function openDetails(icao) {
-        if (selectedIcao === icao && detailRef.current) {
-            scrollToDetails();
-        }
         setSelectedIcao(icao);
 
         const cachedStation = [base?.origin, base?.dest, base?.alternate].filter(Boolean).find((station) => station.icao === icao);
@@ -421,17 +405,26 @@ export default function Dashboard() {
         setAirportInfoLoading(false);
     }
 
-    const headerSubtitle = selectedIcao
-        ? t("dashboard.detailsSubtitle")
-        : t("dashboard.defaultSubtitle");
-
-    const routeHeadline = base?.dest?.icao
-        ? `${base.origin?.icao || "A"} → ${base.dest.icao}`
-        : base?.origin?.icao || t("dashboard.awaitingRoute");
-
-    const activeFocusLabel = selectedStation
-        ? t("dashboard.stationInFocus", { icao: selectedStation.icao })
-        : t("dashboard.selectStationDetails");
+    const markers = useMemo(() => {
+        if (!base) return [];
+        const list = [];
+        const push = (station, role) => {
+            if (!station?.icao || !hasCoordinates(station.airport)) return;
+            const category = classifyFromMetar(station.metar);
+            list.push({
+                icao: station.icao,
+                lat: station.airport.latitude,
+                lon: station.airport.longitude,
+                role,
+                category,
+                label: `${station.icao} · ${category}`,
+            });
+        };
+        push(base.origin, "origin");
+        if (base.dest) push(base.dest, "dest");
+        if (base.alternate) push(base.alternate, "alternate");
+        return list;
+    }, [base]);
 
     return (
         <div className="app">
@@ -441,33 +434,8 @@ export default function Dashboard() {
                 <AppHeader compact />
 
                 <div className="main-scroll">
-                    <div className="page-shell">
-                        <HomeHub />
-                        <section className="page-hero page-hero--dashboard">
-                            <div className="page-hero-head">
-                                <div className="page-hero-copy">
-                                    <span className="page-eyebrow">{t("dashboard.eyebrow")}</span>
-                                    <h1 className="page-title">{t("dashboard.title")}</h1>
-                                    <p className="page-caption">
-                                        {t("dashboard.caption")}
-                                    </p>
-                                </div>
-                                <div className="page-actions">
-                                    <button className="secondary" type="button" onClick={() => nav("/simulados")}>
-                                        {t("dashboard.examsTitle")}
-                                    </button>
-                                    {base ? (
-                                        <button className="secondary" type="button" onClick={() => window.print()}>
-                                            {t("dashboard.printBriefing")}
-                                        </button>
-                                    ) : null}
-                                    {user ? (
-                                        <button className="secondary" type="button" onClick={saveBriefing}>
-                                            {t("dashboard.saveBriefing")}
-                                        </button>
-                                    ) : null}
-                                </div>
-                            </div>
+                    <div className="page-shell dashboard-page-shell">
+                        <section className="dashboard-route-bar" aria-label={t("dashboard.routeBarLabel")}>
                             <div className="dashboard-route-strip">
                                 <div className="dashboard-route-pill">
                                     <span className="dashboard-route-code">A</span>
@@ -491,78 +459,8 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                             </div>
-
-                            <div className="dashboard-meta-strip">
-                                <span className="chip ok">{user ? t("dashboard.accountPlan", { plan: String(user.plan || "FREE").toUpperCase() }) : t("dashboard.visitorMode")}</span>
-                            </div>
+                            <p className="dashboard-route-hint muted">{t("dashboard.sidebarHint")}</p>
                         </section>
-
-                        <section id="simulados" ref={simuladosRef} className="dashboard-anchor-section">
-                            <Card title={t("dashboard.examsTitle")}>
-                            <div className="dashboard-sim-card">
-                                <div>
-                                    <strong>{t("dashboard.examsLead")}</strong>
-                                    <p>
-                                        {t("dashboard.examsCopy")}
-                                    </p>
-                                </div>
-                                <button className="primary" type="button" onClick={() => nav(user ? "/simulados" : "/register")}>
-                                    {user ? t("dashboard.openExams") : t("dashboard.createFreeAccount")}
-                                </button>
-                            </div>
-                            </Card>
-                        </section>
-
-                        {base ? (
-                            <section className="dashboard-overview-grid">
-                                <article className="dashboard-overview-card">
-                                    <span className="dashboard-overview-label">{t("dashboard.routeActive")}</span>
-                                    <strong className="dashboard-overview-value">{routeHeadline}</strong>
-                                    <span className="dashboard-overview-copy">
-                                        {base?.alternate?.icao ? `${t("common.alternate")}: ${base.alternate.icao}` : t("dashboard.noAlternate")}
-                                    </span>
-                                </article>
-
-                                <article className="dashboard-overview-card">
-                                    <span className="dashboard-overview-label">{t("dashboard.planning")}</span>
-                                    <strong className="dashboard-overview-value">
-                                        {base?.plan?.cruiseAltFt || base?.plan?.defaultCruiseAltFt
-                                            ? t("dashboard.cruiseAltitude", {
-                                                  alt: base.plan?.cruiseAltFt || base.plan?.defaultCruiseAltFt,
-                                              })
-                                            : t("dashboard.paramsFree")}
-                                    </strong>
-                                    <span className="dashboard-overview-copy">
-                                        {base?.plan?.reserveRule
-                                            ? `Reserva ${base.plan.reserveRule}`
-                                            : t("dashboard.adjustReserve")}
-                                    </span>
-                                </article>
-
-                                <article className="dashboard-overview-card">
-                                    <span className="dashboard-overview-label">{t("dashboard.fuel")}</span>
-                                    <strong className="dashboard-overview-value">
-                                        {plannerSummary ? `${plannerSummary.totalFuelL.toFixed(1)} L` : "—"}
-                                    </strong>
-                                    <span className="dashboard-overview-copy">
-                                        {plannerSummary
-                                            ? t("dashboard.tripFuelLine", {
-                                                  trip: plannerSummary.tripFuelL.toFixed(1),
-                                                  margin: plannerSummary.fuelMarginL.toFixed(1),
-                                              })
-                                            : t("dashboard.summaryAfterBriefing")}
-                                    </span>
-                                </article>
-
-                                <article className="dashboard-overview-card">
-                                    <span className="dashboard-overview-label">{t("dashboard.focus")}</span>
-                                    <strong className="dashboard-overview-value">{activeFocusLabel}</strong>
-                                    <span className="dashboard-overview-copy">
-                                        {selectedStation ? t("dashboard.detailsOpen") : t("dashboard.useStations")}
-                                    </span>
-                                </article>
-                            </section>
-                        ) : null}
 
                         {loading && <Card title={t("common.loading")}>{t("dashboard.loadingBrief")}</Card>}
                         {error && <Card title={t("common.error")}>{error}</Card>}
@@ -571,7 +469,7 @@ export default function Dashboard() {
                             <Card title={t("dashboard.startTitle")}>
                                 <div className="empty-note route-start-note">
                                     <span>{t("dashboard.startSentence")}</span>
-                                    <div className="route-start-list" aria-label="Campos da rota">
+                                    <div className="route-start-list" aria-label={t("dashboard.routeFieldsLabel")}>
                                         <span className="route-start-item">
                                             <strong>A</strong>
                                             <span>{t("dashboard.originRequired")}</span>
@@ -589,92 +487,67 @@ export default function Dashboard() {
                             </Card>
                         )}
 
-                        {base && (
+                        {base ? (
                             <>
-                                <div className="dashboard-section-head">
-                                    <div>
-                                        <span className="dashboard-section-kicker">{t("dashboard.wxKicker")}</span>
-                                        <h2 className="dashboard-section-title">{t("dashboard.wxTitle")}</h2>
-                                    </div>
-                                </div>
-
-                                <div className="dashboard-support-grid">
-                                    <div className="dashboard-side-stack">
-                                        <div className="dashboard-summary-grid">
-                                            <SummaryCard
-                                                counts={counts}
-                                                loading={loading}
-                                                onRefresh={() =>
-                                                    handleBrief(base.origin?.icao || "", base.dest?.icao || "", base.alternate?.icao || "", {
-                                                        plan: base.plan || plannerSeed || null,
-                                                    })
-                                                }
-                                            />
-
-                                            <StationsCard data={base} selectedIcao={selectedIcao} onSelect={(icao) => openDetails(icao)} />
-                                        </div>
-
-                                        <div className="dashboard-weather-grid">
-                                            <WxSquareCard
-                                                label={base.mode === "single" ? t("dashboard.originLabelFull") : t("dashboard.originRouteLabel")}
-                                                station={base.origin}
-                                                showFav={!!user}
-                                                isFav={isFavorite(base.origin?.icao)}
-                                                onToggleFav={toggleFavorite}
-                                            />
-
-                                            {base.dest && (
-                                                <WxSquareCard
-                                                    label="B · DESTINO"
-                                                    station={base.dest}
-                                                    showFav={!!user}
-                                                    isFav={isFavorite(base.dest?.icao)}
-                                                    onToggleFav={toggleFavorite}
-                                                />
-                                            )}
-
-                                            {base.alternate && (
-                                                <WxSquareCard
-                                                    label="C · ALTERNATIVA"
-                                                    station={base.alternate}
-                                                    showFav={!!user}
-                                                    isFav={isFavorite(base.alternate?.icao)}
-                                                    onToggleFav={toggleFavorite}
-                                                />
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {selectedStation ? (
-                                    <div ref={detailRef} className="dashboard-detail-shell">
-                                        <button className="secondary detail-back" onClick={closeDetails} type="button">
-                                            Fechar detalhes
-                                        </button>
-
-                                        <StationDetailsCard
-                                            station={selectedStation}
-                                            airportInfo={airportInfoLoading ? { name: "Carregando...", runwaysText: "—", elevationFt: null } : airportInfo}
-                                        />
-                                    </div>
-                                ) : null}
-
-                                <div className="dashboard-section-head">
-                                    <div>
-                                        <span className="dashboard-section-kicker">Planejamento operacional</span>
-                                        <h2 className="dashboard-section-title">{t("dashboard.plannerSectionTitle")}</h2>
-                                    </div>
-                                </div>
-
-                                <div className="dashboard-planner-shell">
-                                    <FlightPlanStack
+                                <div ref={briefingRef} id="briefing-workspace" className="dashboard-briefing-anchor">
+                                    <DashboardBriefingWorkspace
                                         base={base}
-                                        plan={base.plan || plannerSeed}
-                                        onPlanChange={updatePlan}
+                                        counts={counts}
+                                        loading={loading}
+                                        user={user}
+                                        selectedIcao={selectedIcao}
+                                        selectedStation={selectedStation}
+                                        airportInfo={airportInfo}
+                                        airportInfoLoading={airportInfoLoading}
+                                        markers={markers}
+                                        plannerSummary={plannerSummary}
+                                        onSelectStation={openDetails}
+                                        onCloseDetails={closeDetails}
+                                        onRefresh={() =>
+                                            handleBrief(base.origin?.icao || "", base.dest?.icao || "", base.alternate?.icao || "", {
+                                                plan: base.plan || plannerSeed || null,
+                                            })
+                                        }
+                                        onSave={saveBriefing}
+                                        onPrint={() => window.print()}
+                                        onToggleFav={toggleFavorite}
+                                        isFavorite={isFavorite}
+                                        t={t}
+                                        locale={locale}
                                     />
                                 </div>
+
+                                <section className="dashboard-planner-section" aria-labelledby="dashboard-planner-heading">
+                                    <div className="dashboard-section-head">
+                                        <div>
+                                            <span className="dashboard-section-kicker">{t("dashboard.plannerKicker")}</span>
+                                            <h2 id="dashboard-planner-heading" className="dashboard-section-title">
+                                                {t("dashboard.plannerSectionTitle")}
+                                            </h2>
+                                        </div>
+                                    </div>
+                                    <div className="dashboard-planner-shell">
+                                        <FlightPlanStack base={base} plan={base.plan || plannerSeed} onPlanChange={updatePlan} />
+                                    </div>
+                                </section>
                             </>
-                        )}
+                        ) : null}
+
+                        <HomeHub />
+
+                        <section id="simulados" ref={simuladosRef} className="dashboard-anchor-section">
+                            <Card title={t("dashboard.examsTitle")}>
+                                <div className="dashboard-sim-card">
+                                    <div>
+                                        <strong>{t("dashboard.examsLead")}</strong>
+                                        <p>{t("dashboard.examsCopy")}</p>
+                                    </div>
+                                    <button className="primary" type="button" onClick={() => nav(user ? "/simulados" : "/register")}>
+                                        {user ? t("dashboard.openExams") : t("dashboard.createFreeAccount")}
+                                    </button>
+                                </div>
+                            </Card>
+                        </section>
                     </div>
                 </div>
 
