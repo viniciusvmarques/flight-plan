@@ -170,7 +170,8 @@ export const es = {
     auth: {
         back: "Volver",
         loginTitle: "Entrar",
-        loginCaption: "Accede a tu cuenta para guardar briefings, favoritos y planificación.",
+        loginCaption: "Accede a tu cuenta para usar simulados ANAC, guardar briefings y planificación de vuelo.",
+        loginSignupHint: "Al crear cuenta y confirmar el email, desbloqueas simulados (PP y Tripulante) y planificación guardada en la nube.",
         email: "Email",
         password: "Contraseña",
         forgotPassword: "Olvidé mi contraseña",
@@ -180,7 +181,7 @@ export const es = {
         loggingIn: "Entrando...",
         resetSuccess: "Contraseña redefinida correctamente. Entra con la nueva contraseña.",
         registerTitle: "Crear cuenta",
-        registerCaption: "Marquisa • Confirmación de email obligatoria antes del primer acceso",
+        registerCaption: "Crea tu cuenta para acceder a simulados ANAC. Enviamos un enlace de confirmación por email antes del primer acceso.",
         confirmPassword: "Confirmar contraseña",
         acceptTerms: "Leí y acepto los Términos de Uso y la Política de Privacidad.",
         registerButton: "Crear cuenta",

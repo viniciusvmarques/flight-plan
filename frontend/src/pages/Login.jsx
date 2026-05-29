@@ -126,7 +126,7 @@ export default function Login() {
             </div>
           </form>
 
-          <div className="auth-hint">Login com e-mail e senha (backend Prisma + Postgres).</div>
+          <p className="auth-hint">{t("auth.loginSignupHint")}</p>
         </div>
       </div>
 

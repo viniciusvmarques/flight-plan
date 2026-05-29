@@ -170,7 +170,8 @@ export const en = {
     auth: {
         back: "Back",
         loginTitle: "Log in",
-        loginCaption: "Access your account to save briefings, favorites and planning.",
+        loginCaption: "Access your account to use ANAC practice exams, saved briefings and flight planning.",
+        loginSignupHint: "When you create an account and confirm your email, you unlock simulators (PP and Cabin Crew) and cloud-saved planning.",
         email: "Email",
         password: "Password",
         forgotPassword: "Forgot my password",
@@ -180,7 +181,7 @@ export const en = {
         loggingIn: "Logging in...",
         resetSuccess: "Password reset successfully. Log in with the new password.",
         registerTitle: "Create account",
-        registerCaption: "Marquisa • Email confirmation is required before first access",
+        registerCaption: "Create your account to access ANAC practice exams. We send a confirmation link by email before your first sign-in.",
         confirmPassword: "Confirm password",
         acceptTerms: "I have read and agree to the Terms of Use and Privacy Policy.",
         registerButton: "Create account",
