@@ -3,17 +3,6 @@
  */
 
 @media (max-width: 768px) {
-    .fp-topbar-inner {
-        padding: 10px 12px;
-        gap: 8px;
-    }
-
-    .fp-topbar-brand {
-        flex: 1 1 auto;
-        min-width: 0;
-        max-width: calc(100% - 48px);
-    }
-
     .fp-topbar-site-name {
         display: block;
         font-size: 15px;
@@ -21,18 +10,96 @@
         letter-spacing: 0.06em;
         color: #f8fafc;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
     }
 
     .fp-topbar-titles-detail {
         display: none;
     }
 
-    .fp-topbar-menu-btn {
-        flex-shrink: 0;
+    .main-scroll {
+        padding: 14px max(12px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom))
+            max(12px, env(safe-area-inset-left)) !important;
     }
 
-    .main-scroll {
-        padding: 14px 12px 28px !important;
+    /* Páginas Weather / Tools / Computador */
+    .xp-page-stack > * + * {
+        margin-top: 22px !important;
+    }
+
+    .xp-hero,
+    .growth-hero {
+        padding: 18px 16px;
+        gap: 14px;
+    }
+
+    .xp-hero-aside {
+        justify-items: stretch;
+        grid-template-columns: 1fr;
+    }
+
+    .xp-hero-stat {
+        width: 100%;
+    }
+
+    .fc-jump-nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding-bottom: 4px;
+    }
+
+    .fc-jump-link {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    .xp-tool-nav-row {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .xp-workbench-head {
+        padding: 16px 16px 10px;
+    }
+
+    .xp-workbench-inputs,
+    .xp-workbench-results,
+    .xp-workbench-foot {
+        padding: 16px;
+    }
+
+    .xp-result-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .growth-cta-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .growth-cta-bar .primary,
+    .growth-cta-bar .secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .growth-search-form {
+        gap: 10px;
+    }
+
+    .fp-mobile-nav-lang .language-switcher {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .fp-mobile-nav-lang .language-switcher-item {
+        flex: 1 1 0;
+        text-align: center;
     }
 
     .page-shell {
@@ -379,8 +446,21 @@
         height: 16px;
     }
 
+    .fp-topbar-menu-btn {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        min-height: 42px;
+    }
 
     .home-hub-copy h2 {
         font-size: 1.15rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fp-mobile-nav-panel,
+    .fp-topbar-menu-icon span {
+        transition: none !important;
     }
 }

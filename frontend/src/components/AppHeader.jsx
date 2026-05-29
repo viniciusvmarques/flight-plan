@@ -101,12 +101,16 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
 
                 <button
                     type="button"
-                    className="fp-topbar-menu-btn"
+                    className={`fp-topbar-menu-btn${menuOpen ? " fp-topbar-menu-btn--open" : ""}`}
                     aria-expanded={menuOpen}
                     aria-controls="fp-mobile-nav"
                     onClick={() => setMenuOpen((open) => !open)}
                 >
-                    <span className="fp-topbar-menu-icon" aria-hidden="true" />
+                    <span className="fp-topbar-menu-icon" aria-hidden="true">
+                        <span />
+                        <span />
+                        <span />
+                    </span>
                     <span className="sr-only">{menuOpen ? t("appHeader.menuClose") : t("appHeader.menuOpen")}</span>
                 </button>
             </div>
