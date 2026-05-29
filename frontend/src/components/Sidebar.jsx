@@ -22,10 +22,7 @@ export default function Sidebar({ onBrief, children }) {
     const [dest, setDest] = useState("");
     const [alternate, setAlternate] = useState("");
 
-    const [routeOpen, setRouteOpen] = useState(() => {
-        if (typeof window === "undefined") return true;
-        return window.matchMedia("(min-width: 769px)").matches;
-    });
+    const [routeOpen, setRouteOpen] = useState(true);
 
     useEffect(() => {
         try {
@@ -38,14 +35,6 @@ export default function Sidebar({ onBrief, children }) {
         } catch {
             /* ignore */
         }
-    }, []);
-
-    useEffect(() => {
-        const mq = window.matchMedia("(min-width: 769px)");
-        const sync = () => setRouteOpen(mq.matches);
-        sync();
-        mq.addEventListener("change", sync);
-        return () => mq.removeEventListener("change", sync);
     }, []);
 
     function onSubmit(e) {

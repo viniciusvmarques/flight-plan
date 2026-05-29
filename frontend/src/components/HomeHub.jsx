@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { useI18n } from "../i18n/I18nContext.jsx";
+import { scrollToSimulados } from "../utils/scrollToSimulados";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 const DEFAULT_QUESTIONS_BANK = 6000;
@@ -10,11 +12,12 @@ const HUB_ITEMS = [
     { key: "flightComputer", icon: "E6", path: "/computador", accent: false },
     { key: "tools", icon: "FX", path: "/tools", accent: false },
     { key: "quiz", icon: "Q5", path: "/quiz", accent: true },
-    { key: "exams", icon: "AN", path: "/#simulados", accent: true },
+    { key: "exams", icon: "AN", path: null, accent: true },
 ];
 
 export default function HomeHub() {
     const nav = useNavigate();
+    const { user } = useAuth();
     const { t } = useI18n();
     const [questionsBank, setQuestionsBank] = useState(DEFAULT_QUESTIONS_BANK);
 
@@ -51,7 +54,17 @@ export default function HomeHub() {
                         key={item.key}
                         type="button"
                         className={`home-hub-card ${item.accent ? "home-hub-card--accent" : ""}`}
-                        onClick={() => nav(item.path)}
+                        onClick={() => {
+                            if (item.key === "exams") {
+                                if (user) {
+                                    nav("/simulados");
+                                    return;
+                                }
+                                scrollToSimulados(nav);
+                                return;
+                            }
+                            nav(item.path);
+                        }}
                     >
                         <span className="home-hub-card-icon" aria-hidden="true">
                             {item.icon}

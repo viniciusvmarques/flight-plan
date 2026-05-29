@@ -4,8 +4,9 @@ import BrandMark from "./Brandmark";
 import { useAuth } from "../auth/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useI18n } from "../i18n/I18nContext.jsx";
+import { scrollToSimulados } from "../utils/scrollToSimulados";
 
-export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = "", compact = false }) {
+export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = "", compact = false, hideMobileMenu = false }) {
     const nav = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
@@ -48,15 +49,13 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
     }, [menuOpen]);
 
     function goSimulados(e) {
-        if (user) return;
-        e.preventDefault();
+        if (e) e.preventDefault();
         setMenuOpen(false);
-        if (location.pathname === "/") {
-            window.location.hash = "simulados";
-            document.getElementById("simulados")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (user) {
+            nav("/simulados");
             return;
         }
-        nav("/#simulados");
+        scrollToSimulados(nav);
     }
 
     function closeMenu() {
@@ -64,7 +63,7 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
     }
 
     return (
-        <header className="fp-topbar" role="banner">
+        <header className={`fp-topbar${hideMobileMenu ? " fp-topbar--no-mobile-menu" : ""}`} role="banner">
             <div className="fp-topbar-inner">
                 <button type="button" className="fp-topbar-brand" onClick={() => nav("/")} aria-label={t("appHeader.goToBriefing")}>
                     <span className="fp-topbar-mark" aria-hidden="true">
@@ -99,22 +98,25 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
                     <LanguageSwitcher compact />
                 </nav>
 
-                <button
-                    type="button"
-                    className={`fp-topbar-menu-btn${menuOpen ? " fp-topbar-menu-btn--open" : ""}`}
-                    aria-expanded={menuOpen}
-                    aria-controls="fp-mobile-nav"
-                    onClick={() => setMenuOpen((open) => !open)}
-                >
-                    <span className="fp-topbar-menu-icon" aria-hidden="true">
-                        <span />
-                        <span />
-                        <span />
-                    </span>
-                    <span className="sr-only">{menuOpen ? t("appHeader.menuClose") : t("appHeader.menuOpen")}</span>
-                </button>
+                {!hideMobileMenu ? (
+                    <button
+                        type="button"
+                        className={`fp-topbar-menu-btn${menuOpen ? " fp-topbar-menu-btn--open" : ""}`}
+                        aria-expanded={menuOpen}
+                        aria-controls="fp-mobile-nav"
+                        onClick={() => setMenuOpen((open) => !open)}
+                    >
+                        <span className="fp-topbar-menu-icon" aria-hidden="true">
+                            <span />
+                            <span />
+                            <span />
+                        </span>
+                        <span className="sr-only">{menuOpen ? t("appHeader.menuClose") : t("appHeader.menuOpen")}</span>
+                    </button>
+                ) : null}
             </div>
 
+            {!hideMobileMenu ? (
             <div
                 id="fp-mobile-nav"
                 className={`fp-mobile-nav ${menuOpen ? "fp-mobile-nav--open" : ""}`}
@@ -161,6 +163,7 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
                     </div>
                 </div>
             </div>
+            ) : null}
         </header>
     );
 }

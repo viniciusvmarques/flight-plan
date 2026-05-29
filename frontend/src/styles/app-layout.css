@@ -303,14 +303,15 @@
 }
 
 .fp-topbar-titles--compact .fp-topbar-site-name {
-    display: block;
-    font-size: 15px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    color: #f8fafc;
+    display: none;
 }
 
 .fp-topbar-titles--compact .fp-topbar-titles-detail {
+    display: none;
+}
+
+/* Um único nome da marca no header (wordmark); evita “Marquisa” duplicado à direita */
+.fp-topbar .fp-topbar-titles-detail {
     display: none;
 }
 
@@ -427,14 +428,11 @@
 }
 
 .fp-mobile-nav {
-    display: block;
-    pointer-events: none;
-    visibility: hidden;
+    display: none;
 }
 
 .fp-mobile-nav--open {
-    pointer-events: auto;
-    visibility: visible;
+    display: block;
 }
 
 .fp-mobile-nav-backdrop {
@@ -698,12 +696,9 @@
         flex-direction: column;
     }
 
-    .main-shell {
-        order: -1;
-    }
-
+    /* Rota (sidebar) primeiro; conteúdo e rodapé depois */
     .fp-sidebar {
-        order: 2;
+        order: -1;
         position: relative;
         width: 100%;
         max-width: none;
@@ -711,6 +706,10 @@
         max-height: none;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .main-shell {
+        order: 0;
     }
 
     .fp-sidebar-inner {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Sidebar from "../components/Sidebar";
 import Card from "../components/Card";
@@ -65,10 +65,23 @@ function friendlyWeatherError(kind, value, t) {
 export default function Dashboard() {
     const { user } = useAuth();
     const nav = useNavigate();
+    const location = useLocation();
     const { toast } = useNotify();
     const { t, locale } = useI18n();
     const briefingRef = useRef(null);
     const simuladosRef = useRef(null);
+
+    useEffect(() => {
+        const hash = (location.hash || "").replace(/^#/, "");
+        if (hash !== "simulados") return;
+        const timer = window.setTimeout(() => {
+            (simuladosRef.current || document.getElementById("simulados"))?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }, 80);
+        return () => window.clearTimeout(timer);
+    }, [location.pathname, location.hash]);
 
     const [lastData, setLastData] = useState(() => {
         try {
@@ -431,7 +444,7 @@ export default function Dashboard() {
             <Sidebar onBrief={handleBrief} />
 
             <div className="main-shell">
-                <AppHeader compact />
+                <AppHeader compact hideMobileMenu />
 
                 <div className="main-scroll">
                     <div className="page-shell dashboard-page-shell">

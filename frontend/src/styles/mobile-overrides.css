@@ -3,19 +3,34 @@
  */
 
 @media (max-width: 768px) {
-    .fp-topbar-site-name {
-        display: block;
-        font-size: 15px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        color: #f8fafc;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
+    .fp-topbar--no-mobile-menu .fp-topbar-inner {
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .fp-topbar-titles-detail {
+    .fp-topbar-mark .mq-logotype {
+        font-size: clamp(18px, 5vw, 22px) !important;
+        letter-spacing: 0.12em !important;
+    }
+
+    .fp-route-drawer {
+        border: none;
+        padding: 0;
+        background: transparent;
+    }
+
+    .fp-route-drawer-summary {
+        display: none;
+    }
+
+    .fp-route-drawer .fp-brief-form {
+        margin-top: 0;
+    }
+
+    .fp-sidebar {
+        padding-top: 0;
+    }
+
+    .fp-sidebar-head {
         display: none;
     }
 
