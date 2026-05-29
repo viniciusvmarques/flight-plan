@@ -2531,20 +2531,21 @@ button.danger-action:hover:not(:disabled) {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 14px;
-    align-items: stretch;
+    align-items: start;
 }
 
 .dashboard-summary-grid > .fp-card,
 .dashboard-weather-grid > .wx-card-wrap > .fp-card {
-    height: 100%;
+    height: auto;
     display: flex;
     flex-direction: column;
 }
 
 .dashboard-summary-grid > .fp-card .card-body,
 .dashboard-weather-grid > .wx-card-wrap > .fp-card .card-body {
-    flex: 1;
+    flex: 0 1 auto;
     display: flex;
+    flex-direction: column;
     min-height: 0;
 }
 
@@ -2553,11 +2554,12 @@ button.danger-action:hover:not(:disabled) {
 .dashboard-weather-grid > .wx-card-wrap,
 .dashboard-weather-grid .wx-body {
     width: 100%;
-    height: 100%;
+    height: auto;
 }
 
 .dashboard-weather-grid > .wx-card-wrap {
     display: flex;
+    align-self: start;
 }
 
 .dashboard-summary-grid .stations-list {
@@ -2953,18 +2955,32 @@ button.danger-action:hover:not(:disabled) {
 .dash-wx-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    gap: 14px;
+    align-items: start;
 }
 
 .dash-wx-col {
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-self: start;
     gap: 10px;
+    height: auto;
+    min-height: 0;
     padding: 14px;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer;
     transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.dash-wx-col-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 .dash-wx-col:hover {
@@ -3013,19 +3029,47 @@ button.danger-action:hover:not(:disabled) {
 
 .dash-wx-raw {
     display: none;
+    flex-direction: column;
     gap: 10px;
+    width: 100%;
+    margin-top: 4px;
 }
 
 .dash-wx-raw--open {
-    display: grid;
+    display: flex;
+}
+
+.dash-wx-raw-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+    width: 100%;
 }
 
 .dash-wx-raw-block pre {
-    margin: 6px 0 0;
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    background: rgba(2, 6, 23, 0.45);
     white-space: pre-wrap;
     word-break: break-word;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.78rem;
+    line-height: 1.5;
     color: rgba(226, 232, 240, 0.9);
+    max-height: 7.5rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.dash-wx-raw-block--taf pre {
+    max-height: min(16rem, 38vh);
+}
+
+.dash-wx-raw-block .wx-label {
+    margin-bottom: 0;
 }
 
 .dash-station-detail {

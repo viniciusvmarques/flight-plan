@@ -79,23 +79,25 @@ function BriefingWxColumn({
                 </div>
             </div>
 
-            <p className="dash-wx-airport">{station.airport?.name || t("dashboard.unknownAirport")}</p>
-            <span className={flightCategoryChipClass(category)}>{categoryLabel(category, t)}</span>
+            <div className="dash-wx-col-summary">
+                <p className="dash-wx-airport">{station.airport?.name || t("dashboard.unknownAirport")}</p>
+                <span className={flightCategoryChipClass(category)}>{categoryLabel(category, t)}</span>
 
-            {summary.hints.length ? (
-                <ul className="dash-wx-hints">
-                    {summary.hints.slice(0, 3).map((hint) => (
-                        <li key={hint}>{hint}</li>
-                    ))}
-                </ul>
-            ) : null}
+                {summary.hints.length ? (
+                    <ul className="dash-wx-hints">
+                        {summary.hints.slice(0, 3).map((hint) => (
+                            <li key={hint}>{hint}</li>
+                        ))}
+                    </ul>
+                ) : null}
+            </div>
 
             <div className={`dash-wx-raw ${showRaw ? "dash-wx-raw--open" : ""}`}>
-                <div className="dash-wx-raw-block">
+                <div className="dash-wx-raw-block dash-wx-raw-block--metar">
                     <span className="wx-label">METAR</span>
                     <pre>{station.metar || t("dashboard.metarUnavailable")}</pre>
                 </div>
-                <div className="dash-wx-raw-block">
+                <div className="dash-wx-raw-block dash-wx-raw-block--taf">
                     <span className="wx-label">TAF</span>
                     <pre>{station.taf || t("dashboard.tafUnavailable")}</pre>
                 </div>
