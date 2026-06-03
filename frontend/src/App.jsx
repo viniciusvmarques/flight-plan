@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
+import GoogleAnalyticsTracker from "./components/GoogleAnalyticsTracker";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -24,7 +25,9 @@ import RequireAuth from "./auth/RequireAuth";
 
 export default function App() {
     return (
-        <Routes>
+        <>
+            <GoogleAnalyticsTracker />
+            <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/weather" element={<Weather />} />
             <Route path="/tools" element={<Tools />} />
@@ -94,5 +97,6 @@ export default function App() {
 
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </>
     );
 }
