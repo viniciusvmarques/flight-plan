@@ -8,3 +8,17 @@ export const FIXED_SAMPLE_QUESTION_IDS = {
 };
 
 export const FIXED_SAMPLE_SESSION_ID = "guest-sample-global";
+
+/** Rotação determinística das alternativas na amostra grátis (gabarito não fica só na letra A). */
+export const FIXED_SAMPLE_DISPLAY_OFFSET = {
+  "CMS-REGCMS-0001": 1,
+  "CMS-EMGCMS-0001": 2,
+  "CMS-SBVCMS-0001": 3,
+  "CMS-SEGCMS-0001": 1,
+  "CMS-AERCMS-0001": 2,
+  "PP-A-NAV-0001": 3,
+  "PP-A-REG-0001": 1,
+  "PP-A-MET-0001": 2,
+  "PP-A-TEV-0001": 3,
+  "PP-A-CTE-0001": 1,
+};

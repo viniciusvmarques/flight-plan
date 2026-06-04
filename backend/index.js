@@ -18,8 +18,12 @@ import { AIRCRAFT_PRESETS, getAircraftPresetByKey, serializeAircraftPreset } fro
 import { LEGAL_DOC_VERSIONS, SITE_PROFILE, getClientIp, getUserAgent } from "./lib/site-config.js";
 import { EXAM_QUESTIONS, EXAM_SUBJECTS, publicQuestion, resultQuestion } from "./lib/exam-question-bank.js";
 import { EXTRA_EXAM_COURSES, EXTRA_EXAM_QUESTIONS } from "./lib/exam-extra-question-bank.js";
-import { normalizeExamPrompt } from "./lib/exam-bank-core.js";
-import { FIXED_SAMPLE_QUESTION_IDS, FIXED_SAMPLE_SESSION_ID } from "./lib/fixed-exam-sample.js";
+import { normalizeExamPrompt, withPresentationOptions } from "./lib/exam-bank-core.js";
+import {
+  FIXED_SAMPLE_DISPLAY_OFFSET,
+  FIXED_SAMPLE_QUESTION_IDS,
+  FIXED_SAMPLE_SESSION_ID,
+} from "./lib/fixed-exam-sample.js";
 import { localizeExamQuestion, localizeExamScore } from "./lib/exam-question-localizer.js";
 
 const app = express();
@@ -435,8 +439,13 @@ function examLocale(req) {
   return normalizeLocale(req.body?.locale || req.query?.locale || req.headers["accept-language"]);
 }
 
-function publicLocalizedQuestion(question, locale) {
-  return localizeExamQuestion(publicQuestion(question), locale);
+function publicLocalizedQuestion(question, locale, presentationOffset = null) {
+  return localizeExamQuestion(publicQuestion(question, question.id, presentationOffset), locale);
+}
+
+function fixedSamplePresentationOffset(questionId) {
+  const offset = FIXED_SAMPLE_DISPLAY_OFFSET[questionId];
+  return Number.isInteger(offset) ? offset : null;
 }
 
 function localizedScore(questionIds, answers, locale) {
@@ -551,7 +560,9 @@ function buildFixedSamplePayload(license, locale) {
     license: course.key,
     courseTitle: course.title,
     questionIds,
-    questions: questions.map((question) => publicLocalizedQuestion(question, locale)),
+    questions: questions.map((question) =>
+      publicLocalizedQuestion(question, locale, fixedSamplePresentationOffset(question.id))
+    ),
   };
 }
 
@@ -602,10 +613,12 @@ function scoreExam(questionIds, answerMap) {
   let correctAnswers = 0;
 
   const resultQuestions = questions.map((question) => {
+    const sampleOffset = fixedSamplePresentationOffset(question.id);
+    const presented = withPresentationOptions(question, question.id, sampleOffset);
     const rawAnswer = answerMap?.[question.id];
     const selectedIndex = Number.isInteger(rawAnswer) ? rawAnswer : Number.parseInt(rawAnswer, 10);
     const safeSelectedIndex = Number.isInteger(selectedIndex) && selectedIndex >= 0 ? selectedIndex : null;
-    const isCorrect = safeSelectedIndex === question.correctIndex;
+    const isCorrect = safeSelectedIndex === presented.correctIndex;
 
     if (!bySubject[question.subject]) {
       bySubject[question.subject] = {
@@ -624,7 +637,7 @@ function scoreExam(questionIds, answerMap) {
       bySubject[question.subject].correct += 1;
     }
 
-    return resultQuestion(question, safeSelectedIndex);
+    return resultQuestion(question, safeSelectedIndex, presented, sampleOffset);
   });
 
   for (const item of Object.values(bySubject)) {

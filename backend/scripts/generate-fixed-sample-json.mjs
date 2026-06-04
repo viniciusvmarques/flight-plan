@@ -5,7 +5,11 @@ import { EXAM_QUESTIONS, EXAM_SUBJECTS } from "../lib/exam-question-bank.js";
 import { EXTRA_EXAM_COURSES, EXTRA_EXAM_QUESTIONS } from "../lib/exam-extra-question-bank.js";
 import { normalizeExamPrompt } from "../lib/exam-bank-core.js";
 import { publicQuestion } from "../lib/exam-question-bank.js";
-import { FIXED_SAMPLE_QUESTION_IDS, FIXED_SAMPLE_SESSION_ID } from "../lib/fixed-exam-sample.js";
+import {
+  FIXED_SAMPLE_DISPLAY_OFFSET,
+  FIXED_SAMPLE_QUESTION_IDS,
+  FIXED_SAMPLE_SESSION_ID,
+} from "../lib/fixed-exam-sample.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -37,7 +41,10 @@ for (const license of Object.keys(FIXED_SAMPLE_QUESTION_IDS)) {
     license: course.key,
     courseTitle: course.title,
     questionIds,
-    questions: questions.map((question) => publicQuestion(question)),
+    questions: questions.map((question) => {
+      const offset = FIXED_SAMPLE_DISPLAY_OFFSET[question.id];
+      return publicQuestion(question, question.id, Number.isInteger(offset) ? offset : null);
+    }),
   };
 }
 
