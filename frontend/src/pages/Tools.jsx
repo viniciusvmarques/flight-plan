@@ -89,7 +89,7 @@ export default function Tools() {
                         title={t("tools.crosswindTitle")}
                         lead={t("tools.crosswindLead")}
                         inputs={
-                            <div className="growth-field-grid">
+                            <div className="growth-field-grid growth-field-grid--3">
                                 <Field label={t("tools.windDir")} value={windDir} onChange={setWindDir} />
                                 <Field label={t("tools.windSpeed")} value={windSpeed} onChange={setWindSpeed} />
                                 <Field label={t("tools.runway")} value={runway} onChange={setRunway} />
@@ -97,7 +97,7 @@ export default function Tools() {
                         }
                         results={
                             <ResultHighlight
-                                primaryIndex={0}
+                                equal
                                 items={[
                                     { label: t("tools.crosswindLabel"), value: `${crosswind.xw} kt` },
                                     { label: t("tools.headwindLabel"), value: headLabel },
@@ -119,7 +119,7 @@ export default function Tools() {
                         }
                         results={
                             <ResultHighlight
-                                primaryIndex={0}
+                                equal
                                 items={[
                                     { label: t("tools.fuelLbLabel"), value: `${fuel.lb} lb` },
                                     { label: t("tools.fuelGalLabel"), value: `${fuel.usGal} US gal` },

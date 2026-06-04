@@ -650,6 +650,7 @@ export const es = {
         windFormula: "WCA ≈ arcsin(Viento·sin(θ)/TAS); rumbo = RV + WCA; GS por ley de cosenos en el triángulo de viento.",
         runwayTitle: "Componentes en pista",
         runwayCopy: "Ángulo entre viento y eje de pista; viento cruzado y componente de proa/cola.",
+        runway: "Pista",
         runwayFormula: "Cruzado = |Viento|·sin(α); proa (+) = |Viento|·cos(α), α = viento − rumbo de pista.",
         headingTitle: "Rumbo magnético (MV)",
         headingCopy: "Conversión RV → MV con declinación (convención escuela: Este −, Oeste +).",

@@ -1,0 +1,180 @@
+{
+  "CMS": {
+    "sessionId": "guest-sample-global:CMS:sample-v1",
+    "license": "CMS",
+    "courseTitle": "Comissário de Voo",
+    "questionIds": [
+      "CMS-REGCMS-0001",
+      "CMS-EMGCMS-0001",
+      "CMS-SBVCMS-0001",
+      "CMS-SEGCMS-0001",
+      "CMS-AERCMS-0001"
+    ],
+    "questions": [
+      {
+        "id": "CMS-REGCMS-0001",
+        "license": "CMS",
+        "subject": "REGCMS",
+        "subjectLabel": "Regulamentação do Comissário",
+        "topic": "Funções e responsabilidades",
+        "difficulty": "facil",
+        "question": "Qual é a principal responsabilidade do comissário de voo durante a operação?",
+        "options": [
+          "Garantir a segurança dos passageiros, o cumprimento dos procedimentos de cabine e o apoio à operação.",
+          "Controlar tecnicamente os motores e sistemas de propulsão da aeronave.",
+          "Definir o plano de voo e a rota ATS junto ao órgão de controle.",
+          "Comandar a navegação por instrumentos na cabine de comando."
+        ]
+      },
+      {
+        "id": "CMS-EMGCMS-0001",
+        "license": "CMS",
+        "subject": "EMGCMS",
+        "subjectLabel": "Emergência e Sobrevivência",
+        "topic": "Evacuação",
+        "difficulty": "facil",
+        "question": "Em uma evacuação de emergência, o comando vocal do comissário deve ser?",
+        "options": [
+          "Claro, firme e voltado à saída segura e rápida dos passageiros.",
+          "Longo e explicativo, detalhando causas técnicas para cada passageiro.",
+          "Dado somente após todos recolherem pertences pessoais.",
+          "Substituído por silêncio total para evitar qualquer reação dos passageiros."
+        ]
+      },
+      {
+        "id": "CMS-SBVCMS-0001",
+        "license": "CMS",
+        "subject": "SBVCMS",
+        "subjectLabel": "Primeiros Socorros",
+        "topic": "Avaliação inicial",
+        "difficulty": "facil",
+        "question": "Diante de passageiro inconsciente, a avaliação inicial deve verificar?",
+        "options": [
+          "Segurança da cena, responsividade, respiração e necessidade de acionar apoio.",
+          "Preferência alimentar e bebida consumida no embarque apenas.",
+          "Somente o número do assento e destino final do passageiro.",
+          "A cor e o peso da bagagem despachada do passageiro."
+        ]
+      },
+      {
+        "id": "CMS-SEGCMS-0001",
+        "license": "CMS",
+        "subject": "SEGCMS",
+        "subjectLabel": "Segurança e AVSEC",
+        "topic": "Interferência ilícita",
+        "difficulty": "facil",
+        "question": "Conduta suspeita em cabine deve ser tratada com?",
+        "options": [
+          "Discrição, comunicação adequada e cumprimento dos procedimentos de segurança.",
+          "Divulgação pública imediata no sistema de áudio para todos os passageiros.",
+          "Confronto físico direto sem avaliação de risco ou apoio.",
+          "Ignorância se o voo estiver a menos de trinta minutos do destino."
+        ]
+      },
+      {
+        "id": "CMS-AERCMS-0001",
+        "license": "CMS",
+        "subject": "AERCMS",
+        "subjectLabel": "Conhecimentos Gerais de Aviação",
+        "topic": "Partes da aeronave",
+        "difficulty": "facil",
+        "question": "A fuselagem de uma aeronave tem como função principal?",
+        "options": [
+          "Acomodar tripulação, passageiros e carga, integrando estrutura e sistemas.",
+          "Gerar combustível durante o voo de cruzeiro.",
+          "Substituir o sistema de comunicação rádio da tripulação.",
+          "Controlar exclusivamente condições meteorológicas externas."
+        ]
+      }
+    ]
+  },
+  "PP-A": {
+    "sessionId": "guest-sample-global:PP-A:sample-v1",
+    "license": "PP-A",
+    "courseTitle": "Piloto Privado - Avião",
+    "questionIds": [
+      "PP-A-NAV-0001",
+      "PP-A-REG-0001",
+      "PP-A-MET-0001",
+      "PP-A-TEV-0001",
+      "PP-A-CTE-0001"
+    ],
+    "questions": [
+      {
+        "id": "PP-A-NAV-0001",
+        "license": "PP-A",
+        "subject": "NAV",
+        "subjectLabel": "Navegação Aérea Visual",
+        "topic": "Rumo, proa e vento cruzado",
+        "difficulty": "facil",
+        "question": "Com vento da esquerda em cruzeiro, qual correção de proa é adequada para manter o rumo desejado?",
+        "options": [
+          "Proa à esquerda do rumo (WCA positivo).",
+          "Proa igual ao rumo, sem correção.",
+          "Proa à direita do rumo.",
+          "Manter proa no checkpoint e ignorar deriva."
+        ]
+      },
+      {
+        "id": "PP-A-REG-0001",
+        "license": "PP-A",
+        "subject": "REG",
+        "subjectLabel": "Regulamentos de Tráfego Aéreo",
+        "topic": "Responsabilidade VFR",
+        "difficulty": "facil",
+        "question": "Em VFR, quem decide continuar ou abortar o voo?",
+        "options": [
+          "O piloto em comando, com base em condições e regulamento.",
+          "O passageiro, por maioria.",
+          "A torre, em todos os trechos.",
+          "O fabricante da aeronave."
+        ]
+      },
+      {
+        "id": "PP-A-MET-0001",
+        "license": "PP-A",
+        "subject": "MET",
+        "subjectLabel": "Meteorologia Aeronáutica",
+        "topic": "METAR e decisão VFR",
+        "difficulty": "facil",
+        "question": "O que o METAR representa?",
+        "options": [
+          "Observação no aeródromo em horário específico.",
+          "Previsão para 24 h.",
+          "Boletim sinótico mundial.",
+          "Plano de voo obrigatório."
+        ]
+      },
+      {
+        "id": "PP-A-TEV-0001",
+        "license": "PP-A",
+        "subject": "TEV",
+        "subjectLabel": "Teoria de Voo",
+        "topic": "Sustentação e estol",
+        "difficulty": "facil",
+        "question": "De quê a sustentação depende principalmente?",
+        "options": [
+          "Velocidade, densidade, área e ângulo de ataque.",
+          "Somente cor da aeronave.",
+          "Apenas QNH.",
+          "Código transponder."
+        ]
+      },
+      {
+        "id": "PP-A-CTE-0001",
+        "license": "PP-A",
+        "subject": "CTE",
+        "subjectLabel": "Conhecimentos Técnicos",
+        "topic": "Motor e combustível",
+        "difficulty": "facil",
+        "question": "O que o ciclo Otto de quatro tempos inclui?",
+        "options": [
+          "Admissão, compressão, combustão/expansão e escape.",
+          "Apenas admissão e escape.",
+          "Compressão contínua sem válvulas.",
+          "Combustão externa."
+        ]
+      }
+    ]
+  }
+}

@@ -650,6 +650,7 @@ export const en = {
         windFormula: "WCA ≈ arcsin(Wind·sin(θ)/TAS); heading = TC + WCA; GS from the wind triangle cosine law.",
         runwayTitle: "Runway components",
         runwayCopy: "Angle between wind and runway axis; crosswind and head/tail component.",
+        runway: "Runway",
         runwayFormula: "Crosswind = |Wind|·sin(α); head (+) = |Wind|·cos(α), α = wind − runway heading.",
         headingTitle: "Magnetic heading (MH)",
         headingCopy: "TH → MH using magnetic variation (school rule: East −, West +).",

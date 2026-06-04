@@ -19,6 +19,7 @@ import { LEGAL_DOC_VERSIONS, SITE_PROFILE, getClientIp, getUserAgent } from "./l
 import { EXAM_QUESTIONS, EXAM_SUBJECTS, publicQuestion, resultQuestion } from "./lib/exam-question-bank.js";
 import { EXTRA_EXAM_COURSES, EXTRA_EXAM_QUESTIONS } from "./lib/exam-extra-question-bank.js";
 import { normalizeExamPrompt } from "./lib/exam-bank-core.js";
+import { FIXED_SAMPLE_QUESTION_IDS, FIXED_SAMPLE_SESSION_ID } from "./lib/fixed-exam-sample.js";
 import { localizeExamQuestion, localizeExamScore } from "./lib/exam-question-localizer.js";
 
 const app = express();
@@ -530,6 +531,28 @@ function pickSampleQuestions(license = "CMS", count = 5, seed) {
     round += 1;
   }
   return uniqueQuestionsByText(picked).slice(0, target);
+}
+
+function getFixedSampleQuestions(license) {
+  const courseKey = getExamCourse(license).key;
+  const questionIds = FIXED_SAMPLE_QUESTION_IDS[courseKey] || FIXED_SAMPLE_QUESTION_IDS["PP-A"];
+  return questionIds.map((id) => EXAM_QUESTION_BY_ID.get(id)).filter(Boolean);
+}
+
+function buildFixedSamplePayload(license, locale) {
+  const course = getExamCourse(license);
+  const questionIds = FIXED_SAMPLE_QUESTION_IDS[course.key] || FIXED_SAMPLE_QUESTION_IDS["PP-A"];
+  const questions = getFixedSampleQuestions(course.key);
+  if (questions.length !== questionIds.length) {
+    return null;
+  }
+  return {
+    sessionId: `${FIXED_SAMPLE_SESSION_ID}:${course.key}:sample-v1`,
+    license: course.key,
+    courseTitle: course.title,
+    questionIds,
+    questions: questions.map((question) => publicLocalizedQuestion(question, locale)),
+  };
 }
 
 function repairDuplicateQuestionIds(questionIds, seed = "repair") {
@@ -1449,19 +1472,9 @@ app.get("/api/public/stats", async (req, res) => {
 app.get("/api/exams/sample", (req, res) => {
   const license = String(req.query.license || "CMS").trim().toUpperCase();
   const locale = examLocale(req);
-  const count = Math.min(10, Math.max(3, Number.parseInt(req.query.count, 10) || 5));
-  const course = getExamCourse(license);
-  const seed = `guest:${Date.now()}:${Math.random()}`;
-  const questions = pickSampleQuestions(course.key, count, seed);
-  if (!questions.length) return res.status(400).json({ error: "Não foi possível gerar amostra." });
-
-  return res.json({
-    sessionId: seed,
-    license: course.key,
-    courseTitle: course.title,
-    questionIds: questions.map((question) => question.id),
-    questions: questions.map((question) => publicLocalizedQuestion(question, locale)),
-  });
+  const payload = buildFixedSamplePayload(license, locale);
+  if (!payload) return res.status(400).json({ error: "Não foi possível gerar amostra." });
+  return res.json(payload);
 });
 
 app.post("/api/exams/sample/score", (req, res) => {

@@ -72,13 +72,13 @@ export function BulletinPanel({ label, text, emptyLabel, onCopy, copyLabel = "Co
     );
 }
 
-export function ResultHighlight({ items, primaryIndex = 0 }) {
+export function ResultHighlight({ items, primaryIndex = null, equal = false }) {
     return (
-        <div className="xp-result-grid" role="group">
+        <div className={`xp-result-grid${equal ? " xp-result-grid--equal" : ""}`} role="group">
             {items.map((item, index) => (
                 <div
                     key={item.label}
-                    className={`xp-result-tile ${index === primaryIndex ? "xp-result-tile--primary" : ""} ${item.muted ? "xp-result-tile--muted" : ""}`}
+                    className={`xp-result-tile ${!equal && index === primaryIndex ? "xp-result-tile--primary" : ""} ${item.muted ? "xp-result-tile--muted" : ""}`}
                 >
                     <span>{item.label}</span>
                     <strong>{item.value}</strong>

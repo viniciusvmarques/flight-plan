@@ -142,7 +142,7 @@ export default function FlightComputer() {
                         lead={t("flightComputer.windCopy")}
                         footer={<p className="fc-formula-note">{t("flightComputer.windFormula")}</p>}
                         inputs={
-                            <div className="growth-field-grid">
+                            <div className="growth-field-grid growth-field-grid--2">
                                 <Field label={t("flightComputer.trueCourse")} value={trueCourse} onChange={setTrueCourse} unit="°" />
                                 <Field label={t("flightComputer.tas")} value={tas} onChange={setTas} unit="kt" />
                                 <Field label={t("flightComputer.windDir")} value={windDir} onChange={setWindDir} unit="°" />
@@ -152,7 +152,7 @@ export default function FlightComputer() {
                         results={
                             wind ? (
                                 <ResultHighlight
-                                    primaryIndex={2}
+                                    equal
                                     items={[
                                         { label: t("flightComputer.wca"), value: `${wind.wca > 0 ? "+" : ""}${wind.wca}°` },
                                         { label: t("flightComputer.heading"), value: `${wind.heading}°` },
@@ -169,16 +169,16 @@ export default function FlightComputer() {
                         lead={t("flightComputer.runwayCopy")}
                         footer={<p className="fc-formula-note">{t("flightComputer.runwayFormula")}</p>}
                         inputs={
-                            <div className="growth-field-grid growth-field-grid--2">
-                                <Field label={t("tools.windDir")} value={rwyWindDir} onChange={setRwyWindDir} unit="°" />
-                                <Field label={t("tools.windSpeed")} value={rwyWindSpeed} onChange={setRwyWindSpeed} unit="kt" />
-                                <Field label={t("tools.runway")} value={runway} onChange={setRunway} placeholder="09" />
+                            <div className="growth-field-grid growth-field-grid--3">
+                                <Field label={t("flightComputer.windDir")} value={rwyWindDir} onChange={setRwyWindDir} unit="°" />
+                                <Field label={t("flightComputer.windSpeed")} value={rwyWindSpeed} onChange={setRwyWindSpeed} unit="kt" />
+                                <Field label={t("flightComputer.runway")} value={runway} onChange={setRunway} unit="°" placeholder="09" />
                             </div>
                         }
                         results={
                             runwayWind ? (
                                 <ResultHighlight
-                                    primaryIndex={0}
+                                    equal
                                     items={[
                                         { label: t("tools.crosswindLabel"), value: `${runwayWind.crosswindKt} kt` },
                                         { label: t("tools.headwindLabel"), value: rwyHeadLabel },
@@ -211,6 +211,7 @@ export default function FlightComputer() {
                         results={
                             magnetic ? (
                                 <ResultHighlight
+                                    equal
                                     items={[
                                         { label: t("flightComputer.magneticHeading"), value: `${magnetic.magneticHeading}°` },
                                         {
@@ -245,6 +246,7 @@ export default function FlightComputer() {
                         results={
                             tsd ? (
                                 <ResultHighlight
+                                    equal
                                     items={[
                                         { label: t("flightComputer.distance"), value: `${tsd.distance} nm` },
                                         { label: t("flightComputer.speed"), value: `${tsd.speed} kt` },
@@ -276,7 +278,7 @@ export default function FlightComputer() {
                         results={
                             fuel ? (
                                 <ResultHighlight
-                                    primaryIndex={2}
+                                    equal
                                     items={[
                                         { label: t("flightComputer.fuelFlow"), value: `${fuel.flowPerHour} L/h` },
                                         { label: t("flightComputer.fuelTime"), value: formatHoursMinutes(fuel.timeHours) },
@@ -304,7 +306,7 @@ export default function FlightComputer() {
                         results={
                             climb ? (
                                 <ResultHighlight
-                                    primaryIndex={0}
+                                    equal
                                     items={[
                                         { label: t("flightComputer.climbTime"), value: formatHoursMinutes(climb.timeHours) },
                                         { label: t("flightComputer.climbDistance"), value: `${climb.distanceNm} nm` },
@@ -330,7 +332,7 @@ export default function FlightComputer() {
                                 </div>
                             }
                             results={
-                                <ResultHighlight items={[{ label: t("flightComputer.tas"), value: `${performance.tasResult.tas} kt` }]} />
+                                <ResultHighlight equal items={[{ label: t("flightComputer.tas"), value: `${performance.tasResult.tas} kt` }]} />
                             }
                         />
                         <WorkbenchCard
@@ -344,6 +346,7 @@ export default function FlightComputer() {
                             }
                             results={
                                 <ResultHighlight
+                                    equal
                                     items={[
                                         { label: t("flightComputer.isaTemp"), value: `${performance.daResult.isaTempC}°C`, muted: true },
                                         {

@@ -7,6 +7,8 @@ import GrowthPageHero from "../components/GrowthPageHero";
 import GrowthCtaBar from "../components/GrowthCtaBar";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
+import { sampleIdsMatch } from "../data/fixedSampleIds";
+
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const COURSES = [
@@ -29,6 +31,15 @@ export default function Quiz() {
     const current = questions[index];
     const answeredCount = useMemo(() => Object.keys(answers).length, [answers]);
 
+    async function loadStaticSample() {
+        const res = await fetch("/fixed-sample.json", { cache: "no-store" });
+        if (!res.ok) return null;
+        const bank = await res.json();
+        const pack = bank?.[license];
+        if (!pack?.questions?.length || !sampleIdsMatch(license, pack.questionIds)) return null;
+        return pack;
+    }
+
     async function startSample() {
         setLoading(true);
         setError("");
@@ -36,17 +47,37 @@ export default function Quiz() {
         setAnswers({});
         setIndex(0);
         try {
-            const res = await fetch(
-                `${API}/api/exams/sample?license=${encodeURIComponent(license)}&count=5&locale=${encodeURIComponent(locale)}`
-            );
-            const data = await res.json();
-            if (!res.ok) throw new Error(data?.error || t("quiz.loadError"));
+            let data = null;
+
+            try {
+                const res = await fetch(
+                    `${API}/api/exams/sample?license=${encodeURIComponent(license)}&locale=${encodeURIComponent(locale)}`
+                );
+                const apiData = await res.json();
+                if (res.ok && sampleIdsMatch(license, apiData.questionIds)) {
+                    data = apiData;
+                }
+            } catch {
+                /* API indisponível ou versão antiga — usa JSON estático */
+            }
+
+            if (!data) {
+                data = await loadStaticSample();
+            }
+
+            if (!data) throw new Error(t("quiz.loadError"));
             setSession(data);
         } catch (e) {
             setError(e?.message || t("quiz.loadError"));
         } finally {
             setLoading(false);
         }
+    }
+
+    function retrySameSample() {
+        setResult(null);
+        setAnswers({});
+        setIndex(0);
     }
 
     async function finishSample() {
@@ -130,10 +161,7 @@ export default function Quiz() {
                         <GrowthCtaBar
                             secondaryLabel={t("quiz.tryAgain")}
                             primaryLabel={t("quiz.createAccount")}
-                            onSecondary={() => {
-                                setSession(null);
-                                setResult(null);
-                            }}
+                            onSecondary={retrySameSample}
                             onPrimary={() => nav("/register")}
                         />
                     </div>

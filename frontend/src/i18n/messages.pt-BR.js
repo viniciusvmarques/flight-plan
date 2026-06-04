@@ -650,6 +650,7 @@ export const ptBR = {
         windFormula: "WCA ≈ arcsin(Vento·sin(θ)/TAS); proa = RV + WCA; GS pela lei dos cossenos no triângulo de vento.",
         runwayTitle: "Componentes na pista",
         runwayCopy: "Ângulo entre vento e eixo da pista; vento cruzado e componente de proa/cauda.",
+        runway: "Pista",
         runwayFormula: "Cruzado = |Vento|·sin(α); proa (+) = |Vento|·cos(α), com α = vento − rumo da pista.",
         headingTitle: "Rumo magnético (MV)",
         headingCopy: "Conversão TH → MH com declinação magnética (convenção escola: Leste −, Oeste +).",
