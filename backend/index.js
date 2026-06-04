@@ -1178,12 +1178,23 @@ app.delete("/api/favorites/:icao", requireAuth, requirePro, async (req,res)=>{
   return res.json({ ok:true });
 });
 
-// Endpoint de "demo upgrade" quando Stripe não estiver configurado
-app.post("/api/demo/upgrade", requireAuth, async (req,res)=>{
+// Demo upgrade — apenas desenvolvimento local sem Stripe (bloqueado em produção)
+app.post("/api/demo/upgrade", requireAuth, async (req, res) => {
+  if (IS_PRODUCTION) {
+    return res.status(403).json({ error: "Assinatura PRO disponível apenas via checkout." });
+  }
+  if (stripe) {
+    return res.status(403).json({ error: "Stripe configurado — use /api/stripe/checkout." });
+  }
   const id = req.auth.sub;
-  const user = await prisma.user.update({ where: { id }, data: { plan: "PRO", planStatus: "demo" }, select: { id:true, email:true, plan:true, planStatus:true, createdAt:true } });
-  const token = signToken(user);
-  return res.json({ token, user });
+  const user = await prisma.user.update({
+    where: { id },
+    data: { plan: "PRO", planStatus: "demo" },
+    select: { id: true, email: true, plan: true, planStatus: true, emailVerifiedAt: true, preferredLocale: true, createdAt: true },
+  });
+  const safe = buildPublicUser(user);
+  const token = signToken(safe);
+  return res.json({ token, user: safe });
 });
 
 

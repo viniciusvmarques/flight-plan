@@ -58,4 +58,4 @@ No `frontend/.env`:
 - `POST /api/stripe/portal` (autenticado) — abre o **Customer Portal** (cancelar/alterar cartão).
 - `POST /api/stripe/webhook` — recebe eventos do Stripe e atualiza o plano do usuário.
 
-Se o Stripe não estiver configurado, o sistema entra em **modo demo** e libera upgrade via `/api/demo/upgrade`.
+Em **desenvolvimento local** sem Stripe, `/api/demo/upgrade` libera PRO de teste. Em **produção** essa rota retorna 403 — use apenas checkout Stripe.
