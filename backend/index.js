@@ -690,14 +690,27 @@ app.post("/auth/register", async (req,res)=>{
       select: { id:true, email:true, plan:true, planStatus:true, emailVerifiedAt:true, createdAt:true },
     });
 
-    await emailService
-      .sendEmailVerificationEmail({
+    await Promise.allSettled([
+      emailService.sendEmailVerificationEmail({
         email: user.email,
         verifyUrl: buildVerificationUrl(verificationToken),
         userId: user.id,
         locale: preferredLocale,
-      })
-      .catch((err) => console.error("sendEmailVerificationEmail:", err?.message || err));
+      }),
+      emailService.sendNewSignupNotificationEmail({
+        email: user.email,
+        userId: user.id,
+        preferredLocale,
+        createdAt: user.createdAt,
+        emailVerified: false,
+      }),
+    ]).then((results) => {
+      for (const result of results) {
+        if (result.status === "rejected") {
+          console.error("register emails:", result.reason?.message || result.reason);
+        }
+      }
+    });
 
     return res.json({
       ok: true,

@@ -14,6 +14,12 @@ export const SITE_PROFILE = {
     privacyEmail: process.env.PRIVACY_EMAIL || process.env.SUPPORT_EMAIL || "contato@marquisa.com.br",
     contactReceiverEmail:
         process.env.CONTACT_RECEIVER_EMAIL || process.env.SUPPORT_EMAIL || "contato@marquisa.com.br",
+    /** Destino dos avisos de novo cadastro (padrão: mesmo do formulário de contato). */
+    signupNotifyEmail:
+        process.env.SIGNUP_NOTIFY_EMAIL ||
+        process.env.CONTACT_RECEIVER_EMAIL ||
+        process.env.SUPPORT_EMAIL ||
+        "contato@marquisa.com.br",
     cityCountry: process.env.LEGAL_CITY_COUNTRY || "",
     documentId: process.env.LEGAL_DOCUMENT_ID || "",
     supportHours: process.env.SUPPORT_HOURS || "Segunda a sexta, em horário comercial.",

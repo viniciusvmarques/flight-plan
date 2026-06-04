@@ -435,6 +435,53 @@ export function createEmailService(prisma) {
             });
         },
 
+        async sendNewSignupNotificationEmail({
+            email,
+            userId = null,
+            preferredLocale = "pt-BR",
+            createdAt = null,
+            emailVerified = false,
+        }) {
+            if (process.env.SIGNUP_NOTIFY_ENABLED === "false") return;
+
+            const skipList = String(process.env.SIGNUP_NOTIFY_SKIP_EMAILS || "")
+                .split(",")
+                .map((item) => item.trim().toLowerCase())
+                .filter(Boolean);
+            if (skipList.includes(String(email || "").trim().toLowerCase())) return;
+
+            const when = createdAt ? new Date(createdAt).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }) : "agora";
+            const statusLabel = emailVerified ? "E-mail já confirmado" : "Aguardando confirmação de e-mail";
+            const subject = `${BRAND_NAME} — novo cadastro no site`;
+            const text =
+                `Novo cadastro no Marquisa.\n\n` +
+                `E-mail: ${email}\n` +
+                `Idioma: ${preferredLocale}\n` +
+                `Data (Brasília): ${when}\n` +
+                `Status: ${statusLabel}\n` +
+                `User ID: ${userId || "—"}\n`;
+            const html = buildEmailShell({
+                title: "Novo cadastro",
+                intro: "Alguém acabou de criar uma conta no Marquisa.",
+                bodyHtml:
+                    `<p style="margin:0 0 10px;"><strong>E-mail:</strong> ${escapeHtml(email)}</p>` +
+                    `<p style="margin:0 0 10px;"><strong>Idioma:</strong> ${escapeHtml(preferredLocale)}</p>` +
+                    `<p style="margin:0 0 10px;"><strong>Data (Brasília):</strong> ${escapeHtml(when)}</p>` +
+                    `<p style="margin:0 0 10px;"><strong>Status:</strong> ${escapeHtml(statusLabel)}</p>` +
+                    `<p style="margin:0;"><strong>User ID:</strong> ${escapeHtml(userId || "—")}</p>`,
+            });
+
+            return sendEmail({
+                kind: "signup_notification",
+                to: SITE_PROFILE.signupNotifyEmail,
+                subject,
+                text,
+                html,
+                userId,
+                metadata: { signupEmail: email, emailVerified },
+            });
+        },
+
         async sendContactNotificationEmail({ message, contactMessageId = null }) {
             const subject = `${BRAND_NAME} — novo contato do site`;
             const text =
