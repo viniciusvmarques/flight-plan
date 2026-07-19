@@ -1,3 +1,23 @@
+# Bloqueia sondagens comuns (antes do SPA fallback)
+/.env                 /404.html  404!
+/.env.*               /404.html  404!
+/.git                 /404.html  404!
+/.git/*               /404.html  404!
+/.ssh                 /404.html  404!
+/.ssh/*               /404.html  404!
+/.claude.json         /404.html  404!
+/.claude/*            /404.html  404!
+/server.key           /404.html  404!
+/firebase-config.json /404.html  404!
+/config/.env          /404.html  404!
+/config/.env.*        /404.html  404!
+/wp-admin             /404.html  404!
+/wp-admin/*           /404.html  404!
+/wp-login.php         /404.html  404!
+/xmlrpc.php           /404.html  404!
+/*.php                /404.html  404!
+
+# SPA routes (React Router)
 /verify-email   /index.html   200
 /reset-password /index.html   200
 /login          /index.html   200
