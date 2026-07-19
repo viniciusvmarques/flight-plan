@@ -21,7 +21,15 @@ import Quiz from "./pages/Quiz";
 import SeoLanding from "./pages/SeoLanding";
 import ExamResultShare from "./pages/ExamResultShare";
 import ModeloLab from "./pages/ModeloLab";
+import ModeloLabAPlus from "./pages/ModeloLabAPlus";
 import ModeloLabB from "./pages/ModeloLabB";
+import ModeloLabC from "./pages/ModeloLabC";
+import ModeloLabD from "./pages/ModeloLabD";
+import ModeloLabE from "./pages/ModeloLabE";
+import ModeloLabF from "./pages/ModeloLabF";
+import ModeloLabG from "./pages/ModeloLabG";
+import ModeloLabH from "./pages/ModeloLabH";
+import ModeloLabI from "./pages/ModeloLabI";
 
 import RequireAuth from "./auth/RequireAuth";
 
@@ -33,7 +41,15 @@ export default function App() {
             <Route path="/" element={<HomeEntry />} />
             <Route path="/briefing" element={<HomeEntry />} />
             <Route path="/modelo" element={<ModeloLab />} />
+            <Route path="/modelo-a-plus" element={<ModeloLabAPlus />} />
             <Route path="/modelo-b" element={<ModeloLabB />} />
+            <Route path="/modelo-c" element={<ModeloLabC />} />
+            <Route path="/modelo-d" element={<ModeloLabD />} />
+            <Route path="/modelo-e" element={<ModeloLabE />} />
+            <Route path="/modelo-f" element={<ModeloLabF />} />
+            <Route path="/modelo-g" element={<ModeloLabG />} />
+            <Route path="/modelo-h" element={<ModeloLabH />} />
+            <Route path="/modelo-i" element={<ModeloLabI />} />
             <Route path="/weather" element={<Weather />} />
             <Route
                 path="/tools"
