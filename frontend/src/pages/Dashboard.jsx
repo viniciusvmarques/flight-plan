@@ -442,7 +442,7 @@ export default function Dashboard() {
             title={t("appHeader.briefing")}
             subtitle={t("sidebar.caption")}
         >
-            <div className="ck-dash-grid">
+            <div className="ck-dash-stack">
                 <OpsRoutePanel
                     onBrief={handleBrief}
                     onClear={() => {
@@ -460,109 +460,73 @@ export default function Dashboard() {
                     loading={loading}
                 />
 
-                <div className="ck-dash-main">
-                    {base?.origin?.icao ? (
-                        <section className="ck-route-summary" aria-label={t("dashboard.routeBarLabel")}>
-                            <div className="ck-strip">
-                                <span className="ck-strip-code">A</span>
+                {loading && <Card title={t("common.loading")}>{t("dashboard.loadingBrief")}</Card>}
+                {error && <Card title={t("common.error")}>{error}</Card>}
+
+                {!base && !loading && !error && (
+                    <Card title={t("dashboard.startTitle")}>
+                        <p className="page-caption">{t("dashboard.startSentence")}</p>
+                        <p className="page-caption">{t("dashboard.sidebarHint")}</p>
+                    </Card>
+                )}
+
+                {base ? (
+                    <>
+                        <div ref={briefingRef} id="briefing-workspace" className="dashboard-briefing-anchor">
+                            <DashboardBriefingWorkspace
+                                base={base}
+                                counts={counts}
+                                loading={loading}
+                                user={user}
+                                selectedIcao={selectedIcao}
+                                selectedStation={selectedStation}
+                                airportInfo={airportInfo}
+                                airportInfoLoading={airportInfoLoading}
+                                markers={markers}
+                                plannerSummary={plannerSummary}
+                                onSelectStation={openDetails}
+                                onCloseDetails={closeDetails}
+                                onRefresh={refreshBriefing}
+                                onSave={saveBriefing}
+                                onPrint={() => window.print()}
+                                onToggleFav={toggleFavorite}
+                                isFavorite={isFavorite}
+                                t={t}
+                                locale={locale}
+                            />
+                        </div>
+
+                        <section className="dashboard-planner-section" aria-labelledby="dashboard-planner-heading">
+                            <div className="dashboard-section-head">
                                 <div>
-                                    <span>{t("common.origin")}</span>
-                                    <strong>{base.origin.icao}</strong>
+                                    <span className="dashboard-section-kicker">{t("dashboard.plannerKicker")}</span>
+                                    <h2 id="dashboard-planner-heading" className="dashboard-section-title">
+                                        {t("dashboard.plannerSectionTitle")}
+                                    </h2>
                                 </div>
                             </div>
-                            <div className="ck-strip">
-                                <span className="ck-strip-code">B</span>
-                                <div>
-                                    <span>{t("common.destination")}</span>
-                                    <strong>{base?.dest?.icao || "—"}</strong>
-                                </div>
+                            <div className="dashboard-planner-shell">
+                                <FlightPlanStack base={base} plan={base.plan || plannerSeed} onPlanChange={updatePlan} />
                             </div>
-                            <div className="ck-strip">
-                                <span className="ck-strip-code">C</span>
-                                <div>
-                                    <span>{t("common.alternate")}</span>
-                                    <strong>{base?.alternate?.icao || "—"}</strong>
-                                </div>
-                            </div>
-                            <button
-                                type="button"
-                                className="secondary"
-                                onClick={refreshBriefing}
-                                disabled={loading}
-                            >
-                                {loading ? t("dashboard.refreshing") : t("dashboard.refreshBriefingFull")}
-                            </button>
                         </section>
-                    ) : null}
+                    </>
+                ) : null}
 
-                    {loading && <Card title={t("common.loading")}>{t("dashboard.loadingBrief")}</Card>}
-                    {error && <Card title={t("common.error")}>{error}</Card>}
+                <HomeHub />
 
-                    {!base && !loading && !error && (
-                        <Card title={t("dashboard.startTitle")}>
-                            <p className="page-caption">{t("dashboard.startSentence")}</p>
-                            <p className="page-caption">{t("dashboard.sidebarHint")}</p>
-                        </Card>
-                    )}
-
-                    {base ? (
-                        <>
-                            <div ref={briefingRef} id="briefing-workspace" className="dashboard-briefing-anchor">
-                                <DashboardBriefingWorkspace
-                                    base={base}
-                                    counts={counts}
-                                    loading={loading}
-                                    user={user}
-                                    selectedIcao={selectedIcao}
-                                    selectedStation={selectedStation}
-                                    airportInfo={airportInfo}
-                                    airportInfoLoading={airportInfoLoading}
-                                    markers={markers}
-                                    plannerSummary={plannerSummary}
-                                    onSelectStation={openDetails}
-                                    onCloseDetails={closeDetails}
-                                    onRefresh={refreshBriefing}
-                                    onSave={saveBriefing}
-                                    onPrint={() => window.print()}
-                                    onToggleFav={toggleFavorite}
-                                    isFavorite={isFavorite}
-                                    t={t}
-                                    locale={locale}
-                                />
+                <section id="simulados" ref={simuladosRef} className="dashboard-anchor-section">
+                    <Card title={t("dashboard.examsTitle")}>
+                        <div className="dashboard-sim-card">
+                            <div>
+                                <strong>{t("dashboard.examsLead")}</strong>
+                                <p>{t("dashboard.examsCopy")}</p>
                             </div>
-
-                            <section className="dashboard-planner-section" aria-labelledby="dashboard-planner-heading">
-                                <div className="dashboard-section-head">
-                                    <div>
-                                        <span className="dashboard-section-kicker">{t("dashboard.plannerKicker")}</span>
-                                        <h2 id="dashboard-planner-heading" className="dashboard-section-title">
-                                            {t("dashboard.plannerSectionTitle")}
-                                        </h2>
-                                    </div>
-                                </div>
-                                <div className="dashboard-planner-shell">
-                                    <FlightPlanStack base={base} plan={base.plan || plannerSeed} onPlanChange={updatePlan} />
-                                </div>
-                            </section>
-                        </>
-                    ) : null}
-
-                    <HomeHub />
-
-                    <section id="simulados" ref={simuladosRef} className="dashboard-anchor-section">
-                        <Card title={t("dashboard.examsTitle")}>
-                            <div className="dashboard-sim-card">
-                                <div>
-                                    <strong>{t("dashboard.examsLead")}</strong>
-                                    <p>{t("dashboard.examsCopy")}</p>
-                                </div>
-                                <button className="primary" type="button" onClick={() => nav(user ? "/simulados" : "/register")}>
-                                    {user ? t("dashboard.openExams") : t("dashboard.createFreeAccount")}
-                                </button>
-                            </div>
-                        </Card>
-                    </section>
-                </div>
+                            <button className="primary" type="button" onClick={() => nav(user ? "/simulados" : "/register")}>
+                                {user ? t("dashboard.openExams") : t("dashboard.createFreeAccount")}
+                            </button>
+                        </div>
+                    </Card>
+                </section>
             </div>
         </AviationShell>
     );

@@ -928,10 +928,20 @@ pre.metar,
   display: none !important;
 }
 
-/* ===== Dashboard unificado (sem sidebar quebrada) ===== */
+/* ===== Dashboard unificado — barra superior + conteúdo central ===== */
+.ck-dash-stack {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  align-items: stretch;
+  justify-items: stretch;
+}
+
 .ck-dash-grid {
   display: grid;
-  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  grid-template-columns: 1fr;
   gap: 14px;
   align-items: start;
   width: 100%;
@@ -946,16 +956,29 @@ pre.metar,
   justify-items: stretch;
 }
 
+.ck-ops-bar,
 .ck-ops-panel {
-  position: sticky;
-  top: 12px;
+  position: static;
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
 }
 
+.ck-ops-bar-inner {
+  display: grid;
+  gap: 14px;
+}
+
+.ck-ops-bar-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 18px;
+}
+
 .ck-ops-title {
-  margin: 8px 0 6px;
+  margin: 6px 0 4px;
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -963,7 +986,8 @@ pre.metar,
 }
 
 .ck-ops-lead {
-  margin: 0 0 14px;
+  margin: 0;
+  max-width: 54ch;
   color: var(--ck-muted);
   font-size: 0.92rem;
   line-height: 1.4;
@@ -974,9 +998,17 @@ pre.metar,
   gap: 12px;
 }
 
+.ck-ops-form--bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(220px, 0.95fr);
+  gap: 12px;
+  align-items: end;
+}
+
 .ck-ops-field {
   display: grid;
   gap: 6px;
+  min-width: 0;
 }
 
 .ck-ops-field span {
@@ -1009,6 +1041,9 @@ pre.metar,
   letter-spacing: 0.16em;
   text-transform: uppercase;
   padding: 12px !important;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .ck-ops-submit {
@@ -1023,9 +1058,40 @@ pre.metar,
   margin-top: 4px;
 }
 
+.ck-ops-form-actions--bar {
+  display: grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: 8px;
+  margin-top: 0;
+  width: 100%;
+}
+
+.ck-ops-form-actions--bar .ck-ops-submit,
+.ck-ops-form-actions--bar .ck-ops-clear {
+  width: 100%;
+  margin-top: 0;
+  min-height: 48px;
+}
+
 .ck-ops-clear {
   width: 100%;
   min-height: 42px;
+}
+
+.ck-ops-account--inline {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+  justify-items: end;
+  text-align: right;
+}
+
+.ck-ops-account--inline .ck-ops-account-row {
+  justify-content: flex-end;
+}
+
+.ck-ops-account--inline .ck-ops-account-actions {
+  justify-content: flex-end;
 }
 
 .ck-ops-logout {
@@ -1240,7 +1306,8 @@ button.secondary,
     grid-template-columns: 1fr;
   }
 
-  .ck-ops-panel {
+  .ck-ops-panel,
+  .ck-ops-bar {
     position: static;
   }
 
@@ -1688,11 +1755,14 @@ button.danger-action:hover:not(:disabled) {
 }
 
 /* ===== Briefing: alinhamento + visual Modelo B ===== */
+.av-page--wide .ck-dash-stack,
 .av-page--wide .ck-dash-grid,
 .av-page--wide .ck-dash-main,
+.av-page--wide .ck-ops-bar,
 .av-page--wide .dash-briefing-workspace,
 .av-page--wide .dashboard-planner-shell,
-.av-page--wide .plan-stack {
+.av-page--wide .plan-stack,
+.av-page--wide .home-hub {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -1781,9 +1851,13 @@ button.danger-action:hover:not(:disabled) {
 }
 
 @media (max-width: 1180px) {
-  .ck-dash-grid {
-    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
-    gap: 12px;
+  .ck-ops-form--bar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ck-ops-form-actions--bar {
+    grid-column: 1 / -1;
+    grid-template-columns: 1.2fr 0.8fr;
   }
 
   .plan-stack--anac .plan-phase-grid,
@@ -1795,8 +1869,23 @@ button.danger-action:hover:not(:disabled) {
 }
 
 @media (max-width: 980px) {
-  .ck-dash-grid {
+  .ck-ops-form--bar {
     grid-template-columns: 1fr;
+  }
+
+  .ck-ops-form-actions--bar {
+    grid-template-columns: 1fr;
+  }
+
+  .ck-ops-account--inline {
+    justify-items: start;
+    text-align: left;
+    width: 100%;
+  }
+
+  .ck-ops-account--inline .ck-ops-account-row,
+  .ck-ops-account--inline .ck-ops-account-actions {
+    justify-content: flex-start;
   }
 
   .plan-stack--anac .plan-phase-grid,
@@ -1809,16 +1898,8 @@ button.danger-action:hover:not(:disabled) {
     grid-template-columns: 1fr !important;
   }
 
-  .ck-route-summary {
-    grid-template-columns: 1fr !important;
-  }
-
-  .ck-route-summary > .secondary,
   .dash-briefing-actions {
     width: 100%;
-  }
-
-  .dash-briefing-actions {
     display: grid;
     grid-template-columns: 1fr;
     gap: 8px;

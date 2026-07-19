@@ -4,7 +4,7 @@ import { useAuth } from "../auth/AuthContext";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
 /**
- * Painel de rota A-B-C no estilo glass cockpit (substitui a sidebar antiga).
+ * Barra superior de rota A-B-C (Modelo B) — sem sidebar.
  */
 export default function OpsRoutePanel({ onBrief, onClear, loading = false }) {
     const { user, logout } = useAuth();
@@ -47,13 +47,39 @@ export default function OpsRoutePanel({ onBrief, onClear, loading = false }) {
     const plan = user?.plan ? String(user.plan).toUpperCase() : "FREE";
 
     return (
-        <section className="ck-ops-panel card fp-card">
-            <div className="card-body">
-                <span className="av-kicker exam-kicker">{t("sidebar.eyebrow")}</span>
-                <h2 className="ck-ops-title">{t("sidebar.title")}</h2>
-                <p className="ck-ops-lead">{t("sidebar.lead")}</p>
+        <section className="ck-ops-bar card fp-card" aria-label={t("sidebar.title")}>
+            <div className="ck-ops-bar-inner">
+                <header className="ck-ops-bar-head">
+                    <div>
+                        <span className="av-kicker exam-kicker">{t("sidebar.eyebrow")}</span>
+                        <h2 className="ck-ops-title">{t("sidebar.title")}</h2>
+                        <p className="ck-ops-lead">{t("sidebar.lead")}</p>
+                    </div>
+                    {user ? (
+                        <div className="ck-ops-account ck-ops-account--inline">
+                            <div className="ck-ops-account-row">
+                                <span title={user.email}>{user.email}</span>
+                                <span className={`ck-tag${plan === "PRO" ? " ck-tag--amber" : ""}`}>{plan}</span>
+                            </div>
+                            <div className="ck-ops-account-actions">
+                                <Link to="/perfil">{t("sidebar.profile")}</Link>
+                                <Link to="/assinatura">{t("sidebar.billing")}</Link>
+                                <button
+                                    type="button"
+                                    className="ck-ops-logout"
+                                    onClick={() => {
+                                        logout();
+                                        nav("/");
+                                    }}
+                                >
+                                    {t("sidebar.logout")}
+                                </button>
+                            </div>
+                        </div>
+                    ) : null}
+                </header>
 
-                <form className="ck-ops-form" onSubmit={onSubmit}>
+                <form className="ck-ops-form ck-ops-form--bar" onSubmit={onSubmit}>
                     <label className="ck-ops-field">
                         <span>
                             <em>A</em> {t("sidebar.originLabel")}
@@ -94,7 +120,7 @@ export default function OpsRoutePanel({ onBrief, onClear, loading = false }) {
                             spellCheck={false}
                         />
                     </label>
-                    <div className="ck-ops-form-actions">
+                    <div className="ck-ops-form-actions ck-ops-form-actions--bar">
                         <button type="submit" className="primary ck-ops-submit" disabled={loading}>
                             {loading ? t("common.loading") : t("sidebar.submit")}
                         </button>
@@ -103,29 +129,6 @@ export default function OpsRoutePanel({ onBrief, onClear, loading = false }) {
                         </button>
                     </div>
                 </form>
-
-                {user ? (
-                    <div className="ck-ops-account">
-                        <div className="ck-ops-account-row">
-                            <span title={user.email}>{user.email}</span>
-                            <span className={`ck-tag${plan === "PRO" ? " ck-tag--amber" : ""}`}>{plan}</span>
-                        </div>
-                        <div className="ck-ops-account-actions">
-                            <Link to="/perfil">{t("sidebar.profile")}</Link>
-                            <Link to="/assinatura">{t("sidebar.billing")}</Link>
-                            <button
-                                type="button"
-                                className="ck-ops-logout"
-                                onClick={() => {
-                                    logout();
-                                    nav("/");
-                                }}
-                            >
-                                {t("sidebar.logout")}
-                            </button>
-                        </div>
-                    </div>
-                ) : null}
             </div>
         </section>
     );
