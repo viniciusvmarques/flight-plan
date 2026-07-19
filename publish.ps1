@@ -17,7 +17,7 @@ git status -sb
 Write-Host ""
 
 $msg = @"
-Publish glass cockpit redesign: METAR live on home, auth gate, production API wiring.
+Modelo B glass cockpit: home METAR ao vivo, dashboard unificado, tema EFIS em todas as paginas.
 "@
 
 git add -A
