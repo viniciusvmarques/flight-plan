@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import Sidebar from "../components/Sidebar";
 import Card from "../components/Card";
 import DashboardBriefingWorkspace from "../components/DashboardBriefingWorkspace";
 import FlightPlanStack from "../components/FlightPlanStack";
@@ -19,9 +18,9 @@ import {
 } from "../utils/plannerEngine";
 
 import { useAuth } from "../auth/AuthContext";
-import AppHeader from "../components/AppHeader";
+import AviationShell from "../components/AviationShell";
+import OpsRoutePanel from "../components/OpsRoutePanel";
 import HomeHub from "../components/HomeHub";
-import UtcBar from "../components/UtcBar";
 import { useNotify } from "../ui/NotifyContext.jsx";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
@@ -437,141 +436,119 @@ export default function Dashboard() {
     }, [base]);
 
     return (
-        <div className="app av-shell">
-            <div className="av-dashboard-top">
-                <UtcBar />
-            </div>
-            <Sidebar onBrief={handleBrief} />
+        <AviationShell
+            wide
+            kicker="OPS"
+            title={t("appHeader.briefing")}
+            subtitle={t("sidebar.caption")}
+        >
+            <div className="ck-dash-grid">
+                <OpsRoutePanel onBrief={handleBrief} loading={loading} />
 
-            <div className="main-shell">
-                <AppHeader compact hideMobileMenu />
-                <div className="main-scroll">
-                    <div className="page-shell dashboard-page-shell av-page av-page--wide">
-                        <section className="dashboard-route-bar" aria-label={t("dashboard.routeBarLabel")}>
-                            <div className="dashboard-route-bar-row">
-                                <div className="dashboard-route-strip">
-                                    <div className="dashboard-route-pill">
-                                        <span className="dashboard-route-code">A</span>
-                                        <div className="dashboard-route-meta">
-                                            <span className="dashboard-route-label">{t("common.origin")}</span>
-                                            <strong className="dashboard-route-value">{base?.origin?.icao || t("dashboard.pendingRoute")}</strong>
-                                        </div>
-                                    </div>
-                                    <div className="dashboard-route-pill">
-                                        <span className="dashboard-route-code">B</span>
-                                        <div className="dashboard-route-meta">
-                                            <span className="dashboard-route-label">{t("common.destination")}</span>
-                                            <strong className="dashboard-route-value">{base?.dest?.icao || t("dashboard.optionalField")}</strong>
-                                        </div>
-                                    </div>
-                                    <div className="dashboard-route-pill">
-                                        <span className="dashboard-route-code">C</span>
-                                        <div className="dashboard-route-meta">
-                                            <span className="dashboard-route-label">{t("common.alternate")}</span>
-                                            <strong className="dashboard-route-value">{base?.alternate?.icao || t("dashboard.optionalField")}</strong>
-                                        </div>
-                                    </div>
+                <div className="ck-dash-main">
+                    {base?.origin?.icao ? (
+                        <section className="ck-route-summary" aria-label={t("dashboard.routeBarLabel")}>
+                            <div className="ck-strip">
+                                <span className="ck-strip-code">A</span>
+                                <div>
+                                    <span>{t("common.origin")}</span>
+                                    <strong>{base.origin.icao}</strong>
                                 </div>
-                                {base?.origin?.icao ? (
-                                    <button
-                                        type="button"
-                                        className="secondary dashboard-route-refresh"
-                                        onClick={refreshBriefing}
-                                        disabled={loading}
-                                        title={t("dashboard.refreshBriefingHint")}
-                                    >
-                                        {loading ? t("dashboard.refreshing") : t("dashboard.refreshBriefingFull")}
-                                    </button>
-                                ) : null}
                             </div>
-                            <p className="dashboard-route-hint muted">{t("dashboard.sidebarHint")}</p>
+                            <div className="ck-strip">
+                                <span className="ck-strip-code">B</span>
+                                <div>
+                                    <span>{t("common.destination")}</span>
+                                    <strong>{base?.dest?.icao || "—"}</strong>
+                                </div>
+                            </div>
+                            <div className="ck-strip">
+                                <span className="ck-strip-code">C</span>
+                                <div>
+                                    <span>{t("common.alternate")}</span>
+                                    <strong>{base?.alternate?.icao || "—"}</strong>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                className="secondary"
+                                onClick={refreshBriefing}
+                                disabled={loading}
+                            >
+                                {loading ? t("dashboard.refreshing") : t("dashboard.refreshBriefingFull")}
+                            </button>
                         </section>
+                    ) : null}
 
-                        {loading && <Card title={t("common.loading")}>{t("dashboard.loadingBrief")}</Card>}
-                        {error && <Card title={t("common.error")}>{error}</Card>}
+                    {loading && <Card title={t("common.loading")}>{t("dashboard.loadingBrief")}</Card>}
+                    {error && <Card title={t("common.error")}>{error}</Card>}
 
-                        {!base && !loading && !error && (
-                            <Card title={t("dashboard.startTitle")}>
-                                <div className="empty-note route-start-note">
-                                    <span>{t("dashboard.startSentence")}</span>
-                                    <div className="route-start-list" aria-label={t("dashboard.routeFieldsLabel")}>
-                                        <span className="route-start-item">
-                                            <strong>A</strong>
-                                            <span>{t("dashboard.originRequired")}</span>
-                                        </span>
-                                        <span className="route-start-item">
-                                            <strong>B</strong>
-                                            <span>{t("dashboard.destinationOptional")}</span>
-                                        </span>
-                                        <span className="route-start-item">
-                                            <strong>C</strong>
-                                            <span>{t("dashboard.alternateOptional")}</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </Card>
-                        )}
+                    {!base && !loading && !error && (
+                        <Card title={t("dashboard.startTitle")}>
+                            <p className="page-caption">{t("dashboard.startSentence")}</p>
+                            <p className="page-caption">{t("dashboard.sidebarHint")}</p>
+                        </Card>
+                    )}
 
-                        {base ? (
-                            <>
-                                <div ref={briefingRef} id="briefing-workspace" className="dashboard-briefing-anchor">
-                                    <DashboardBriefingWorkspace
-                                        base={base}
-                                        counts={counts}
-                                        loading={loading}
-                                        user={user}
-                                        selectedIcao={selectedIcao}
-                                        selectedStation={selectedStation}
-                                        airportInfo={airportInfo}
-                                        airportInfoLoading={airportInfoLoading}
-                                        markers={markers}
-                                        plannerSummary={plannerSummary}
-                                        onSelectStation={openDetails}
-                                        onCloseDetails={closeDetails}
-                                        onRefresh={refreshBriefing}
-                                        onSave={saveBriefing}
-                                        onPrint={() => window.print()}
-                                        onToggleFav={toggleFavorite}
-                                        isFavorite={isFavorite}
-                                        t={t}
-                                        locale={locale}
-                                    />
-                                </div>
+                    {base ? (
+                        <>
+                            <div ref={briefingRef} id="briefing-workspace" className="dashboard-briefing-anchor">
+                                <DashboardBriefingWorkspace
+                                    base={base}
+                                    counts={counts}
+                                    loading={loading}
+                                    user={user}
+                                    selectedIcao={selectedIcao}
+                                    selectedStation={selectedStation}
+                                    airportInfo={airportInfo}
+                                    airportInfoLoading={airportInfoLoading}
+                                    markers={markers}
+                                    plannerSummary={plannerSummary}
+                                    onSelectStation={openDetails}
+                                    onCloseDetails={closeDetails}
+                                    onRefresh={refreshBriefing}
+                                    onSave={saveBriefing}
+                                    onPrint={() => window.print()}
+                                    onToggleFav={toggleFavorite}
+                                    isFavorite={isFavorite}
+                                    t={t}
+                                    locale={locale}
+                                />
+                            </div>
 
-                                <section className="dashboard-planner-section" aria-labelledby="dashboard-planner-heading">
-                                    <div className="dashboard-section-head">
-                                        <div>
-                                            <span className="dashboard-section-kicker">{t("dashboard.plannerKicker")}</span>
-                                            <h2 id="dashboard-planner-heading" className="dashboard-section-title">
-                                                {t("dashboard.plannerSectionTitle")}
-                                            </h2>
-                                        </div>
-                                    </div>
-                                    <div className="dashboard-planner-shell">
-                                        <FlightPlanStack base={base} plan={base.plan || plannerSeed} onPlanChange={updatePlan} />
-                                    </div>
-                                </section>
-                            </>
-                        ) : null}
-
-                        <HomeHub />
-
-                        <section id="simulados" ref={simuladosRef} className="dashboard-anchor-section">
-                            <Card title={t("dashboard.examsTitle")}>
-                                <div className="dashboard-sim-card">
+                            <section className="dashboard-planner-section" aria-labelledby="dashboard-planner-heading">
+                                <div className="dashboard-section-head">
                                     <div>
-                                        <strong>{t("dashboard.examsLead")}</strong>
-                                        <p>{t("dashboard.examsCopy")}</p>
+                                        <span className="dashboard-section-kicker">{t("dashboard.plannerKicker")}</span>
+                                        <h2 id="dashboard-planner-heading" className="dashboard-section-title">
+                                            {t("dashboard.plannerSectionTitle")}
+                                        </h2>
                                     </div>
-                                    <button className="primary" type="button" onClick={() => nav(user ? "/simulados" : "/register")}>
-                                        {user ? t("dashboard.openExams") : t("dashboard.createFreeAccount")}
-                                    </button>
                                 </div>
-                            </Card>
-                        </section>
-                    </div>
+                                <div className="dashboard-planner-shell">
+                                    <FlightPlanStack base={base} plan={base.plan || plannerSeed} onPlanChange={updatePlan} />
+                                </div>
+                            </section>
+                        </>
+                    ) : null}
+
+                    <HomeHub />
+
+                    <section id="simulados" ref={simuladosRef} className="dashboard-anchor-section">
+                        <Card title={t("dashboard.examsTitle")}>
+                            <div className="dashboard-sim-card">
+                                <div>
+                                    <strong>{t("dashboard.examsLead")}</strong>
+                                    <p>{t("dashboard.examsCopy")}</p>
+                                </div>
+                                <button className="primary" type="button" onClick={() => nav(user ? "/simulados" : "/register")}>
+                                    {user ? t("dashboard.openExams") : t("dashboard.createFreeAccount")}
+                                </button>
+                            </div>
+                        </Card>
+                    </section>
                 </div>
             </div>
-        </div>
+        </AviationShell>
     );
 }
