@@ -712,8 +712,9 @@ label,
   text-transform: uppercase;
 }
 
-.ck-wx-form .primary {
-  width: auto;
+.ck-wx-form .primary,
+.ck-wx-form .secondary {
+  width: 100%;
   min-height: 48px;
   white-space: nowrap;
 }
@@ -745,15 +746,18 @@ label,
 }
 
 .ck-wx-actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-top: 16px;
+  width: 100%;
 }
 
 .ck-wx-actions .primary,
 .ck-wx-actions .secondary {
-  width: auto;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
 }
 
 .ck-wx-panel .card-body {
@@ -1125,16 +1129,19 @@ pre.metar,
 }
 
 .ck-wx-form-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
   align-items: stretch;
 }
 
 .ck-wx-form-actions .primary,
 .ck-wx-form-actions .secondary {
+  width: 100%;
   min-height: 48px;
-  flex: 1 1 140px;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .growth-search-actions {
@@ -1365,15 +1372,18 @@ button.secondary,
   }
 
   .ck-wx-form-actions,
+  .ck-wx-actions,
   .growth-search-actions {
+    grid-template-columns: 1fr;
     width: 100%;
   }
 
   .ck-wx-form-actions .primary,
   .ck-wx-form-actions .secondary,
+  .ck-wx-actions .primary,
+  .ck-wx-actions .secondary,
   .growth-search-actions .growth-search-submit,
   .growth-search-actions .growth-search-reset {
-    flex: 1 1 100%;
     width: 100%;
   }
 
