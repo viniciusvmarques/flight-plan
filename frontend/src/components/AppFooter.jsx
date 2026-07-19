@@ -6,25 +6,25 @@ export default function AppFooter() {
     return (
         <footer className="site-footer" role="contentinfo">
             <div className="site-footer-inner">
-                <div className="site-footer-brand">
-                    <div className="ck-footer-phases" aria-hidden="true">
-                        CLR · TAXI · DEP · ENR · APP · LDG
+                <div className="site-footer-top">
+                    <div className="site-footer-brand">
+                        <span className="ck-footer-phases" aria-hidden="true">
+                            CLR · TAXI · DEP · ENR · APP · LDG
+                        </span>
+                        <span className="ck-footer-badge">{t("footer.slogan")}</span>
                     </div>
-                    <div className="ck-footer-badge">{t("footer.slogan")}</div>
+                    <div className="site-footer-note">
+                        © {new Date().getFullYear()} Marquisa ·{" "}
+                        <Link to="/terms">{t("footer.terms")}</Link>
+                        {" · "}
+                        <Link to="/privacy">{t("footer.privacy")}</Link>
+                        {" · "}
+                        <Link to="/cancellation-policy">{t("footer.cancellation")}</Link>
+                        {" · "}
+                        <Link to="/contact">{t("footer.contact")}</Link>
+                    </div>
                 </div>
-
-                <p className="site-footer-disclaimer">{t("common.operationalDisclaimer")}</p>
-
-                <div className="site-footer-note">
-                    © {new Date().getFullYear()} Marquisa ·{" "}
-                    <Link to="/terms">{t("footer.terms")}</Link>
-                    {" · "}
-                    <Link to="/privacy">{t("footer.privacy")}</Link>
-                    {" · "}
-                    <Link to="/cancellation-policy">{t("footer.cancellation")}</Link>
-                    {" · "}
-                    <Link to="/contact">{t("footer.contact")}</Link>
-                </div>
+                <p className="site-footer-disclaimer">{t("footer.disclaimer")}</p>
             </div>
         </footer>
     );

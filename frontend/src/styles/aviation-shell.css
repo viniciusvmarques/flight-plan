@@ -449,14 +449,29 @@ body {
 .app-footer {
   background: #05090f !important;
   border-top: 1px solid rgba(148, 163, 184, 0.16) !important;
+  padding: 0 !important;
 }
 
 .site-footer-inner {
+  box-sizing: border-box;
+  width: min(var(--ck-page-width), calc(100% - (2 * var(--ck-page-pad))));
+  margin: 0 auto;
+  padding: 10px 0 12px !important;
+  display: grid !important;
+  gap: 8px !important;
   font-family: var(--ck-mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ck-muted);
+}
+
+.site-footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
 }
 
 .site-footer a:hover {
@@ -464,37 +479,41 @@ body {
 }
 
 .site-footer-brand {
-  display: grid;
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
 }
 
 .ck-footer-phases {
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
 }
 
 .ck-footer-badge {
   display: inline-block;
-  margin-top: 0;
+  margin: 0;
   color: var(--ck-green);
   font-weight: 700;
-  letter-spacing: 0.18em;
-  word-spacing: 0.35em;
+  letter-spacing: 0.16em;
+  word-spacing: 0.28em;
 }
 
 .site-footer-disclaimer {
   margin: 0;
-  max-width: 72ch;
+  padding-top: 8px;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
   font-family: var(--ck-font);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   text-transform: none;
-  line-height: 1.55;
-  color: rgba(186, 204, 220, 0.72);
+  line-height: 1.4;
+  color: rgba(186, 204, 220, 0.68);
 }
 
 .site-footer-note {
   letter-spacing: 0.08em;
+  margin: 0;
 }
 
 /* ===== Cards / painéis (bezel) ===== */

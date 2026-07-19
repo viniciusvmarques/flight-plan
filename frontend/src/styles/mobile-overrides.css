@@ -407,9 +407,21 @@
     }
 
     .site-footer-inner {
-        padding: 12px 14px;
+        padding: 10px 0 12px !important;
         font-size: 11px;
-        line-height: 1.45;
+        line-height: 1.4;
+        gap: 8px !important;
+    }
+
+    .site-footer-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .site-footer-brand {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
     }
 
     .fp-sidebar-head {

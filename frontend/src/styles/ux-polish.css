@@ -1355,37 +1355,26 @@
 }
 
 .site-footer-inner {
-    max-width: 1400px;
+    max-width: none;
     margin: 0 auto;
-    padding: 18px 22px 22px;
+    padding: 10px 0 12px;
     display: grid;
-    gap: 12px;
+    gap: 8px;
 }
 
 @media (min-width: 900px) {
     .site-footer-inner {
-        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
-        grid-template-areas:
-            "brand note"
-            "disclaimer disclaimer";
-        align-items: start;
-        column-gap: 28px;
-        row-gap: 12px;
+        grid-template-columns: none;
+        grid-template-areas: none;
     }
 
-    .site-footer-brand {
-        grid-area: brand;
-    }
-
-    .site-footer-disclaimer {
-        grid-area: disclaimer;
-        max-width: none;
-    }
-
+    .site-footer-brand,
+    .site-footer-disclaimer,
     .site-footer-note {
-        grid-area: note;
-        justify-self: end;
-        text-align: right;
+        grid-area: auto;
+        justify-self: auto;
+        text-align: inherit;
+        max-width: none;
     }
 }
 

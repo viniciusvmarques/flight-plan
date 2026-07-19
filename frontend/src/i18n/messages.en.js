@@ -63,6 +63,8 @@ export const en = {
         contact: "Contact",
         cancellation: "Cancellation",
         slogan: "Fly safe  ·  Fly prepared",
+        disclaimer:
+            "Planning support only — does not replace dispatch, NOTAMs, charts, AIS/MET, ANAC/DECEA docs, or pilot-in-command judgment.",
     },
     dashboard: {
         headerKicker: "Operations",

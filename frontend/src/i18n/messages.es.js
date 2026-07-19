@@ -63,6 +63,8 @@ export const es = {
         contact: "Contacto",
         cancellation: "Cancelación",
         slogan: "Vuela seguro  ·  Vuela preparado",
+        disclaimer:
+            "Solo apoyo a la planificación — no sustituye despacho, NOTAM, cartas, AIS/MET, ANAC/DECEA ni el juicio del piloto al mando.",
     },
     dashboard: {
         headerKicker: "Operaciones",
