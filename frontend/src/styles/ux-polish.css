@@ -2149,10 +2149,10 @@ button:focus-visible {
     justify-content: center;
     width: 30px;
     height: 30px;
-    border-radius: 999px;
-    border: 1px solid rgba(96, 165, 250, 0.32);
-    background: rgba(59, 130, 246, 0.14);
-    color: #bfdbfe;
+    border-radius: 4px;
+    border: 1px solid rgba(94, 234, 212, 0.4);
+    background: rgba(94, 234, 212, 0.12);
+    color: #5eead4;
     font-weight: 800;
     font-size: 12px;
 }
@@ -2918,11 +2918,11 @@ button.danger-action:hover:not(:disabled) {
 .dash-briefing-workspace {
     display: grid;
     gap: 16px;
-    padding: 16px;
-    border-radius: 22px;
-    border: 1px solid rgba(96, 165, 250, 0.22);
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(94, 234, 212, 0.22);
     background:
-        radial-gradient(120% 80% at 0% 0%, rgba(37, 99, 235, 0.12), transparent 55%),
+        linear-gradient(180deg, rgba(94, 234, 212, 0.06), transparent 42%),
         rgba(2, 6, 23, 0.42);
 }
 
@@ -2939,7 +2939,7 @@ button.danger-action:hover:not(:disabled) {
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(191, 219, 254, 0.78);
+    color: rgba(94, 234, 212, 0.62);
 }
 
 .dash-briefing-route-title {
@@ -2969,7 +2969,7 @@ button.danger-action:hover:not(:disabled) {
     font-size: 11px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(191, 219, 254, 0.72);
+    color: rgba(94, 234, 212, 0.62);
     margin-right: 4px;
 }
 
@@ -3005,13 +3005,13 @@ button.danger-action:hover:not(:disabled) {
 }
 
 .dash-wx-col:hover {
-    border-color: rgba(96, 165, 250, 0.35);
+    border-color: rgba(94, 234, 212, 0.35);
 }
 
 .dash-wx-col--active {
-    border-color: rgba(96, 165, 250, 0.55);
-    background: rgba(37, 99, 235, 0.12);
-    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.2);
+    border-color: rgba(94, 234, 212, 0.55);
+    background: rgba(94, 234, 212, 0.1);
+    box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.12);
 }
 
 .dash-wx-col-head {

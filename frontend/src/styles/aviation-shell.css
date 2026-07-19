@@ -18,6 +18,8 @@
   --ck-muted: rgba(186, 204, 220, 0.62);
   --ck-font: "Rajdhani", "Plus Jakarta Sans", system-ui, sans-serif;
   --ck-mono: "Share Tech Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ck-page-width: 1280px;
+  --ck-page-pad: clamp(12px, 2.2vw, 22px);
 
   /* Compat com tokens antigos */
   --bg: var(--ck-bg);
@@ -78,14 +80,15 @@ body {
   display: flex !important;
   flex-direction: column !important;
   gap: 16px !important;
-  max-width: 1080px;
+  box-sizing: border-box;
+  max-width: var(--ck-page-width);
   margin: 0 auto;
-  padding: 18px 16px 36px;
+  padding: 18px var(--ck-page-pad) 36px;
   width: 100%;
 }
 
 .av-page--wide {
-  max-width: 1280px;
+  max-width: var(--ck-page-width);
 }
 
 .av-page > * {
@@ -230,7 +233,8 @@ body {
 }
 
 .ck-navbar-inner {
-  width: min(1080px, calc(100% - 24px));
+  box-sizing: border-box;
+  width: min(var(--ck-page-width), calc(100% - (2 * var(--ck-page-pad))));
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -927,20 +931,27 @@ pre.metar,
 /* ===== Dashboard unificado (sem sidebar quebrada) ===== */
 .ck-dash-grid {
   display: grid;
-  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  gap: 14px;
   align-items: start;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ck-dash-main {
   display: grid;
-  gap: 16px;
+  gap: 14px;
   min-width: 0;
+  width: 100%;
+  justify-items: stretch;
 }
 
 .ck-ops-panel {
   position: sticky;
   top: 12px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .ck-ops-title {
@@ -1123,6 +1134,8 @@ pre.metar,
   grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
   gap: 10px;
   align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ck-route-summary .ck-strip {
@@ -1671,5 +1684,147 @@ button.danger-action:hover:not(:disabled) {
 @media (max-width: 900px) {
   .pricing-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Briefing: alinhamento + visual Modelo B ===== */
+.av-page--wide .ck-dash-grid,
+.av-page--wide .ck-dash-main,
+.av-page--wide .dash-briefing-workspace,
+.av-page--wide .dashboard-planner-shell,
+.av-page--wide .plan-stack {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.dash-briefing-workspace {
+  padding: 14px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(94, 234, 212, 0.22) !important;
+  background:
+    linear-gradient(180deg, rgba(94, 234, 212, 0.06), transparent 42%),
+    linear-gradient(180deg, var(--ck-panel-2), var(--ck-panel)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(94, 234, 212, 0.05),
+    0 12px 28px rgba(0, 0, 0, 0.22) !important;
+}
+
+.dash-briefing-kicker,
+.dash-rules-label,
+.dash-wx-role,
+.dashboard-section-kicker {
+  color: var(--ck-cyan-dim) !important;
+  font-family: var(--ck-mono) !important;
+  letter-spacing: 0.12em !important;
+}
+
+.dash-briefing-route-title,
+.dashboard-section-title {
+  font-family: var(--ck-font) !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dash-wx-col {
+  border-radius: 6px !important;
+  border: 1px solid rgba(94, 234, 212, 0.16) !important;
+  background: rgba(6, 11, 19, 0.78) !important;
+}
+
+.dash-wx-col:hover {
+  border-color: rgba(94, 234, 212, 0.4) !important;
+}
+
+.dash-wx-col--active {
+  border-color: rgba(94, 234, 212, 0.55) !important;
+  background: rgba(94, 234, 212, 0.1) !important;
+  box-shadow: inset 0 0 0 1px rgba(94, 234, 212, 0.08) !important;
+}
+
+.plan-step {
+  border-radius: 4px !important;
+  border: 1px solid rgba(94, 234, 212, 0.4) !important;
+  background: rgba(94, 234, 212, 0.12) !important;
+  color: var(--ck-cyan) !important;
+  font-family: var(--ck-mono) !important;
+}
+
+.plan-panel .card-title,
+.plan-mini-panel .card-title {
+  font-family: var(--ck-mono) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase;
+  color: var(--ck-cyan-dim) !important;
+}
+
+.plan-mini-panel,
+.plan-metric,
+.plan-summary-line {
+  overflow: hidden;
+}
+
+.plan-field select.input,
+.plan-field .input,
+.plan-mini-panel .input,
+.plan-mini-panel select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.plan-stack--anac .plan-phase-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 1180px) {
+  .ck-dash-grid {
+    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .plan-stack--anac .plan-phase-grid,
+  .plan-grid--4,
+  .plan-summary-grid--4,
+  .plan-brief-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .ck-dash-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-stack--anac .plan-phase-grid,
+  .plan-grid--4,
+  .plan-grid--3,
+  .plan-grid--2,
+  .plan-summary-grid--4,
+  .plan-brief-grid,
+  .dash-wx-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .ck-route-summary {
+    grid-template-columns: 1fr !important;
+  }
+
+  .ck-route-summary > .secondary,
+  .dash-briefing-actions {
+    width: 100%;
+  }
+
+  .dash-briefing-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .dash-briefing-actions button {
+    width: 100%;
   }
 }
