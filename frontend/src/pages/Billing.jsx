@@ -184,8 +184,8 @@ export default function Billing() {
                         </Card>
                     ) : null}
 
-                    <div className="page-grid">
-                        <div className="page-stack">
+                    <div className="page-stack billing-layout">
+                        <div className="page-grid page-grid--equal">
                             <Card title={t("billing.statusTitle")}>
                                 {loading ? (
                                     <div className="empty-note">{t("billing.loadingStatus")}</div>
@@ -229,86 +229,86 @@ export default function Billing() {
                                     <div className="feature-item">{t("billing.featureBriefings")}</div>
                                     <div className="feature-item">{t("billing.featureFavorites")}</div>
                                     <div className="feature-item">{t("billing.featureHistory")}</div>
-                                            <div className="feature-item">{t("billing.examsIncluded")}</div>
+                                    <div className="feature-item">{t("billing.examsIncluded")}</div>
                                     <div className="feature-item">{t("billing.featureFuture")}</div>
                                 </div>
                             </Card>
                         </div>
 
-                        <div className="page-stack">
-                            <Card title={t("billing.comparisonTitle")}>
-                                <div className="pricing-grid">
-                                    <section className={`pricing-card ${!isProActive ? "pricing-card--current" : ""}`}>
-                                        <div className="pricing-head">
-                                            <div>
-                                                <div className="pricing-name">Free</div>
-                                                <div className="pricing-price">R$ 0</div>
-                                            </div>
-                                            <span className="chip">{isProActive ? t("billing.basePlan") : t("common.current")}</span>
+                        <Card title={t("billing.comparisonTitle")}>
+                            <div className="pricing-grid">
+                                <section className={`pricing-card ${!isProActive ? "pricing-card--current" : ""}`}>
+                                    <div className="pricing-head">
+                                        <div>
+                                            <div className="pricing-name">Free</div>
+                                            <div className="pricing-price">R$ 0</div>
                                         </div>
-                                        <div className="feature-list">
-                                            <div className="feature-item">{t("billing.freeFeatureMetar")}</div>
-                                            <div className="feature-item">{t("billing.freeFeaturePlanner")}</div>
-                                            <div className="feature-item">{t("billing.freeFeatureExam")}</div>
-                                            <div className="feature-item">{t("billing.freeFeatureLocal")}</div>
-                                        </div>
-                                        <button className="secondary" type="button" disabled>
-                                            {isProActive ? t("common.included") : t("billing.currentPlan")}
-                                        </button>
-                                    </section>
+                                        <span className="chip">{isProActive ? t("billing.basePlan") : t("common.current")}</span>
+                                    </div>
+                                    <div className="feature-list">
+                                        <div className="feature-item">{t("billing.freeFeatureMetar")}</div>
+                                        <div className="feature-item">{t("billing.freeFeaturePlanner")}</div>
+                                        <div className="feature-item">{t("billing.freeFeatureExam")}</div>
+                                        <div className="feature-item">{t("billing.freeFeatureLocal")}</div>
+                                    </div>
+                                    <button className="secondary" type="button" disabled>
+                                        {isProActive ? t("common.included") : t("billing.currentPlan")}
+                                    </button>
+                                </section>
 
-                                    <section className={`pricing-card pricing-card--pro ${isProActive ? "pricing-card--active" : ""}`}>
-                                        <div className="pricing-head">
-                                            <div>
-                                                <div className="pricing-name">Pro</div>
-                                                <div className="pricing-price">{localizedPrice.label}</div>
-                                                <div className="pricing-note">{t("billing.localizedPriceNote")}</div>
-                                            </div>
-                                            <span className="chip ok">{isProActive ? "Ativo" : siteProfile.trialLabel}</span>
+                                <section className={`pricing-card pricing-card--pro ${isProActive ? "pricing-card--active" : ""}`}>
+                                    <div className="pricing-head">
+                                        <div>
+                                            <div className="pricing-name">Pro</div>
+                                            <div className="pricing-price">{localizedPrice.label}</div>
+                                            <div className="pricing-note">{t("billing.localizedPriceNote")}</div>
                                         </div>
-                                        <div className="feature-list">
-                                            <div className="feature-item">{t("billing.proFeatureSync")}</div>
-                                            <div className="feature-item">{t("billing.proFeatureReopen")}</div>
-                                            <div className="feature-item">{t("billing.proFeatureExams")}</div>
-                                            <div className="feature-item">{t("billing.proFeatureStripe")}</div>
-                                            <div className="feature-item">{t("billing.proFeatureFuture")}</div>
+                                        <span className="chip ok">{isProActive ? "Ativo" : siteProfile.trialLabel}</span>
+                                    </div>
+                                    <div className="feature-list">
+                                        <div className="feature-item">{t("billing.proFeatureSync")}</div>
+                                        <div className="feature-item">{t("billing.proFeatureReopen")}</div>
+                                        <div className="feature-item">{t("billing.proFeatureExams")}</div>
+                                        <div className="feature-item">{t("billing.proFeatureStripe")}</div>
+                                        <div className="feature-item">{t("billing.proFeatureFuture")}</div>
+                                    </div>
+                                    {isProActive ? (
+                                        <div className="billing-active-note">
+                                            <strong>{t("billing.proActiveTitle")}</strong>
+                                            <span>{planLead}</span>
+                                            <button className="secondary" type="button" onClick={openPortal} disabled={loading}>
+                                                {t("billing.manageSubscription")}
+                                            </button>
                                         </div>
-                                        {isProActive ? (
-                                            <div className="billing-active-note">
-                                                <strong>{t("billing.proActiveTitle")}</strong>
-                                                <span>{planLead}</span>
-                                                <button className="secondary" type="button" onClick={openPortal} disabled={loading}>
-                                                    {t("billing.manageSubscription")}
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div className="billing-acceptance-box">
-                                                <label className="billing-acceptance-check">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={acceptedCommercialTerms}
-                                                        onChange={(event) => setAcceptedCommercialTerms(event.target.checked)}
-                                                    />
-                                                    <span>
-                                                        {t("billing.acceptance")}{" "}
-                                                        <Link to="/terms">{t("common.terms")}</Link> · <Link to="/privacy">{t("common.privacy")}</Link> ·{" "}
-                                                        <Link to="/cancellation-policy">{t("common.cancellationPolicy")}</Link>
-                                                    </span>
-                                                </label>
-                                                <button className="btn-primary" type="button" onClick={startCheckout} disabled={creating || !acceptedCommercialTerms}>
-                                                    {creating ? t("billing.opening") : t("billing.signPro")}
-                                                </button>
-                                            </div>
-                                        )}
-                                    </section>
-                                </div>
+                                    ) : (
+                                        <div className="billing-acceptance-box">
+                                            <label className="billing-acceptance-check">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={acceptedCommercialTerms}
+                                                    onChange={(event) => setAcceptedCommercialTerms(event.target.checked)}
+                                                />
+                                                <span>
+                                                    {t("billing.acceptance")}{" "}
+                                                    <Link to="/terms">{t("common.terms")}</Link> · <Link to="/privacy">{t("common.privacy")}</Link> ·{" "}
+                                                    <Link to="/cancellation-policy">{t("common.cancellationPolicy")}</Link>
+                                                </span>
+                                            </label>
+                                            <button className="btn-primary" type="button" onClick={startCheckout} disabled={creating || !acceptedCommercialTerms}>
+                                                {creating ? t("billing.opening") : t("billing.signPro")}
+                                            </button>
+                                        </div>
+                                    )}
+                                </section>
+                            </div>
 
-                                <p className="page-caption">
-                                    {t("billing.checkoutAndPortal", { email: siteProfile.supportEmail })}{" "}
-                                    <Link to="/cancellation-policy">{t("common.cancellationPolicy")}</Link>.
-                                </p>
-                            </Card>
+                            <p className="page-caption">
+                                {t("billing.checkoutAndPortal", { email: siteProfile.supportEmail })}{" "}
+                                <Link to="/cancellation-policy">{t("common.cancellationPolicy")}</Link>.
+                            </p>
+                        </Card>
 
+                        <div className="page-grid page-grid--equal">
                             <Card title={t("billing.invoiceTitle")}>
                                 <div className="billing-active-note">
                                     <strong>{t("billing.fiscalInfo")}</strong>

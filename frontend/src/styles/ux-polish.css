@@ -1671,7 +1671,7 @@ button:focus-visible {
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(226, 232, 240, 0.68);
+    color: rgba(94, 234, 212, 0.62);
 }
 
 .summary-stat-value,
@@ -1800,8 +1800,10 @@ button:focus-visible {
 .pricing-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
+    align-items: stretch;
     gap: 16px;
+    min-width: 0;
+    width: 100%;
 }
 
 .pricing-card {
@@ -1812,6 +1814,8 @@ button:focus-visible {
     border-radius: 20px;
     border: 1px solid rgba(148, 163, 184, 0.16);
     background: rgba(15, 23, 42, 0.42);
+    min-width: 0;
+    overflow: hidden;
 }
 
 .pricing-card--pro {
@@ -1931,10 +1935,12 @@ button:focus-visible {
 
 .pricing-price {
     margin-top: 6px;
-    font-size: clamp(1.45rem, 3vw, 1.8rem);
+    font-size: clamp(1.35rem, 2.6vw, 1.75rem);
     font-weight: 800;
     color: #f8fafc;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.15;
 }
 
 .pricing-note {
@@ -2122,8 +2128,8 @@ button:focus-visible {
 }
 
 .plan-panel--accent {
-    border-color: rgba(96, 165, 250, 0.28);
-    background: linear-gradient(180deg, rgba(59, 130, 246, 0.12), rgba(15, 23, 42, 0.16));
+    border-color: rgba(94, 234, 212, 0.28);
+    background: linear-gradient(180deg, rgba(94, 234, 212, 0.1), rgba(15, 23, 42, 0.16));
 }
 
 .plan-section-head {
@@ -2296,12 +2302,14 @@ button:focus-visible {
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(226, 232, 240, 0.66);
+    color: rgba(94, 234, 212, 0.62);
 }
 
 .plan-summary-line strong {
     color: #f8fafc;
     line-height: 1.4;
+    font-size: 1.05rem;
+    font-weight: 800;
 }
 
 .plan-check-grid {

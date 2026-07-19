@@ -574,12 +574,19 @@ button.secondary,
 .btn-secondary,
 .auth-back {
   background: transparent !important;
-  border: 1px solid rgba(148, 163, 184, 0.35) !important;
+  border: 1px solid rgba(94, 234, 212, 0.32) !important;
   color: var(--ck-text) !important;
   border-radius: 4px !important;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 700 !important;
+}
+
+button.secondary:hover:not(:disabled),
+.btn-secondary:hover:not(:disabled),
+.auth-back:hover:not(:disabled) {
+  border-color: rgba(94, 234, 212, 0.55) !important;
+  background: rgba(94, 234, 212, 0.08) !important;
 }
 
 /* ===== Inputs ===== */
@@ -1356,4 +1363,161 @@ button.secondary,
 .ck-navbar .language-switcher,
 .av-utc-bar .lang-switch {
   border-color: rgba(94, 234, 212, 0.25) !important;
+}
+
+/* ===== Modelo B — páginas internas alinhadas ===== */
+.billing-layout {
+  gap: 18px;
+}
+
+.pricing-grid {
+  min-width: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.pricing-card,
+.billing-status-item,
+.feature-item,
+.plan-summary-line,
+.plan-metric,
+.plan-check-item,
+.xp-result-tile,
+.plan-mini-panel,
+.plan-context-card {
+  min-width: 0;
+  border-radius: 6px !important;
+  border: 1px solid rgba(94, 234, 212, 0.16) !important;
+  background: rgba(6, 11, 19, 0.78) !important;
+  box-shadow: inset 0 0 0 1px rgba(94, 234, 212, 0.04) !important;
+}
+
+.pricing-card--pro {
+  border-color: rgba(94, 234, 212, 0.42) !important;
+  background:
+    linear-gradient(180deg, rgba(94, 234, 212, 0.1), rgba(6, 11, 19, 0.82)),
+    rgba(6, 11, 19, 0.78) !important;
+}
+
+.pricing-card--active {
+  border-color: rgba(74, 222, 128, 0.4) !important;
+}
+
+.pricing-price {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  font-family: var(--ck-font) !important;
+  color: var(--ck-text) !important;
+}
+
+.pricing-name,
+.billing-status-item span,
+.plan-summary-line span,
+.plan-metric-label,
+.plan-check-item span,
+.xp-result-tile span,
+.summary-stat-label {
+  color: var(--ck-cyan-dim) !important;
+  font-family: var(--ck-mono) !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase;
+}
+
+.billing-status-item strong,
+.plan-summary-line strong,
+.plan-metric-value,
+.xp-result-tile strong,
+.summary-stat-value {
+  font-family: var(--ck-font) !important;
+  font-weight: 700 !important;
+  color: var(--ck-text) !important;
+  letter-spacing: 0.02em;
+}
+
+.plan-panel,
+.plan-panel--dark {
+  border-radius: 8px !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  background: linear-gradient(180deg, var(--ck-panel-2), var(--ck-panel)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(94, 234, 212, 0.05),
+    0 10px 24px rgba(0, 0, 0, 0.22) !important;
+}
+
+.plan-panel--accent {
+  border-color: rgba(94, 234, 212, 0.28) !important;
+  background:
+    linear-gradient(180deg, rgba(94, 234, 212, 0.08), var(--ck-panel)) !important;
+}
+
+.plan-field .input,
+.plan-field select,
+.plan-textarea,
+.aircraft-manager-column--form .plan-field input,
+.aircraft-manager-column--form .plan-field select,
+.aircraft-manager-column--form .plan-field textarea {
+  font-family: var(--ck-mono) !important;
+  border-radius: 4px !important;
+  border: 1px solid rgba(94, 234, 212, 0.28) !important;
+  background: #060b13 !important;
+}
+
+.account-danger-zone {
+  border-radius: 8px !important;
+  border: 1px solid rgba(248, 113, 113, 0.35) !important;
+  background: rgba(127, 29, 29, 0.12) !important;
+  box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.08) !important;
+}
+
+button.danger-action {
+  border-color: rgba(248, 113, 113, 0.5) !important;
+  color: #fecaca !important;
+  background: rgba(127, 29, 29, 0.22) !important;
+}
+
+button.danger-action:hover:not(:disabled) {
+  border-color: rgba(248, 113, 113, 0.75) !important;
+  background: rgba(127, 29, 29, 0.34) !important;
+}
+
+.xp-tool-nav {
+  border-radius: 8px !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  background: linear-gradient(180deg, var(--ck-panel-2), var(--ck-panel)) !important;
+}
+
+.xp-tool-nav--active {
+  border-color: rgba(94, 234, 212, 0.45) !important;
+  background:
+    linear-gradient(145deg, rgba(94, 234, 212, 0.14), rgba(12, 18, 28, 0.92)) !important;
+}
+
+.xp-workbench {
+  border-radius: 8px !important;
+}
+
+.xp-workbench-results {
+  background: linear-gradient(180deg, rgba(94, 234, 212, 0.06), rgba(6, 11, 19, 0.35)) !important;
+}
+
+.growth-field input:focus,
+.xp-field input:focus {
+  border-color: var(--ck-cyan) !important;
+  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.15) !important;
+}
+
+.tools-promo-card .primary,
+.tools-promo-card button.primary {
+  background: var(--ck-cyan) !important;
+  color: #041016 !important;
+  border-color: var(--ck-cyan) !important;
+}
+
+@media (max-width: 900px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
 }
