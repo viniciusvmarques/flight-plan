@@ -62,6 +62,7 @@ export const ptBR = {
         privacy: "Privacidade",
         contact: "Contato",
         cancellation: "Cancelamento",
+        slogan: "Voe seguro  ·  Voe preparado",
     },
     dashboard: {
         headerKicker: "Operações",

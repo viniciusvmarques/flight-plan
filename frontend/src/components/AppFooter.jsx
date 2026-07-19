@@ -6,10 +6,15 @@ export default function AppFooter() {
     return (
         <footer className="site-footer" role="contentinfo">
             <div className="site-footer-inner">
-                <div>
-                    CLR · TAXI · DEP · ENR · APP · LDG
-                    <div className="ck-footer-badge">Voe seguro · Voe preparado</div>
+                <div className="site-footer-brand">
+                    <div className="ck-footer-phases" aria-hidden="true">
+                        CLR · TAXI · DEP · ENR · APP · LDG
+                    </div>
+                    <div className="ck-footer-badge">{t("footer.slogan")}</div>
                 </div>
+
+                <p className="site-footer-disclaimer">{t("common.operationalDisclaimer")}</p>
+
                 <div className="site-footer-note">
                     © {new Date().getFullYear()} Marquisa ·{" "}
                     <Link to="/terms">{t("footer.terms")}</Link>

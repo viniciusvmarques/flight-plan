@@ -62,6 +62,7 @@ export const es = {
         privacy: "Privacidad",
         contact: "Contacto",
         cancellation: "Cancelación",
+        slogan: "Vuela seguro  ·  Vuela preparado",
     },
     dashboard: {
         headerKicker: "Operaciones",

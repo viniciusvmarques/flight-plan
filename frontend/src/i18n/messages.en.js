@@ -62,6 +62,7 @@ export const en = {
         privacy: "Privacy",
         contact: "Contact",
         cancellation: "Cancellation",
+        slogan: "Fly safe  ·  Fly prepared",
     },
     dashboard: {
         headerKicker: "Operations",
