@@ -39,6 +39,10 @@ export default function Sidebar({ onBrief, children }) {
 
     function onSubmit(e) {
         e.preventDefault();
+        if (!user) {
+            nav("/register");
+            return;
+        }
         if (!onBrief) return;
         onBrief(origin, dest, alternate);
     }

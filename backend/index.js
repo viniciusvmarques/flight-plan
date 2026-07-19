@@ -16,6 +16,17 @@ import { PrismaClient } from "@prisma/client";
 import { createEmailService } from "./lib/email-service.js";
 import { AIRCRAFT_PRESETS, getAircraftPresetByKey, serializeAircraftPreset } from "./lib/aircraft-presets.js";
 import { LEGAL_DOC_VERSIONS, SITE_PROFILE, getClientIp, getUserAgent } from "./lib/site-config.js";
+import { oauthConfigured } from "./lib/oauth-providers.js";
+import { loginOrRegisterWithOAuth, resolveOAuthProfile } from "./lib/oauth-auth.js";
+import {
+  consumeUsage,
+  getFreeUsageLimit,
+  getUsageStatus,
+  normalizeVisitorId,
+  resolveUsageSubjectKey,
+  usageLimitPayload,
+  USAGE_FEATURES,
+} from "./lib/usage-quota.js";
 import { EXAM_QUESTIONS, EXAM_SUBJECTS, publicQuestion, resultQuestion } from "./lib/exam-question-bank.js";
 import { EXTRA_EXAM_COURSES, EXTRA_EXAM_QUESTIONS } from "./lib/exam-extra-question-bank.js";
 import { normalizeExamPrompt, withPresentationOptions } from "./lib/exam-bank-core.js";
@@ -51,7 +62,9 @@ app.set("trust proxy", 1);
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin) return callback(null, true);
+      // Sem Origin (curl/health) ou frontend local (Vite) — sempre liberar.
+      if (!origin || isLocalUrl(origin)) return callback(null, true);
+      if (!allowedOrigins.length) return callback(null, true);
       return callback(null, allowedOrigins.includes(origin));
     },
     credentials: true,
@@ -411,6 +424,66 @@ async function requirePro(req,res,next){
   return next();
 }
 
+async function resolveReqUsage(req) {
+  let userId = null;
+  let isPro = false;
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  if (token) {
+    try {
+      const auth = jwt.verify(token, JWT_SECRET);
+      userId = auth.sub;
+      const u = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { plan: true, planStatus: true },
+      });
+      isPro = canAccessProPlan(u?.plan, u?.planStatus);
+    } catch {
+      /* visitante ou token inválido */
+    }
+  }
+  const visitorId = normalizeVisitorId(req.headers["x-visitor-id"]);
+  const subject = resolveUsageSubjectKey({ userId, visitorId, isPro });
+  return { userId, isPro: subject.isPro, subjectKey: subject.key, visitorId };
+}
+
+function getAirportPayload(icao) {
+  const a = AIRPORTS[icao];
+  if (!a) return null;
+  const runways = RUNWAYS_BY_ICAO[icao] || [];
+  const runwaysText = runways.length ? runways.map(formatRunway).join("\n") : "—";
+  return {
+    icao: a.icao,
+    name: a.name,
+    elevationFt: a.elevationFt,
+    municipality: a.municipality,
+    region: a.region,
+    latitude: a.lat,
+    longitude: a.lon,
+    runwaysText,
+    runwaysCount: runways.length,
+    runways: runways.map((rw) => ({
+      leIdent: rw.le_ident || null,
+      heIdent: rw.he_ident || null,
+      leHdg: safeNum(rw.le_heading_degT),
+      heHdg: safeNum(rw.he_heading_degT),
+      lengthFt: safeNum(rw.length_ft),
+      surface: rw.surface || null,
+    })),
+  };
+}
+
+async function buildBriefingStation(icao) {
+  const code = normalizeIcao(icao);
+  const [metar, taf] = await Promise.all([fetchRaw("metar", code), fetchRaw("taf", code)]);
+  return {
+    icao: code,
+    metar: metar || null,
+    taf: taf || null,
+    airport: getAirportPayload(code),
+  };
+}
+
 const EXAM_COURSES = [
   {
     key: "PP-A",
@@ -746,6 +819,13 @@ app.post("/auth/login", async (req,res)=>{
     const user = await prisma.user.findUnique({ where: { email: cleanEmail } });
     if(!user) return res.status(401).json({ error: "E-mail ou senha inválidos." });
 
+    if (!user.password) {
+      return res.status(401).json({
+        error: "Esta conta usa Google ou Apple. Entre por um desses botões.",
+        code: "OAUTH_ONLY",
+      });
+    }
+
     const ok = await bcrypt.compare(String(password), user.password);
     if(!ok) return res.status(401).json({ error: "E-mail ou senha inválidos." });
 
@@ -766,6 +846,61 @@ app.post("/auth/login", async (req,res)=>{
     return res.json({ token, user: safe });
   }catch(e){
     return res.status(500).json({ error: e?.message || "Falha no login." });
+  }
+});
+
+app.get("/auth/oauth/config", (_req, res) => {
+  const cfg = oauthConfigured();
+  return res.json({
+    google: cfg.google,
+    apple: cfg.apple,
+    googleClientId: cfg.google ? String(process.env.GOOGLE_CLIENT_ID || "").trim() : null,
+    appleClientId: cfg.apple ? String(process.env.APPLE_CLIENT_ID || "").trim() : null,
+  });
+});
+
+app.post("/auth/oauth", async (req, res) => {
+  try {
+    const provider = String(req.body?.provider || "").trim().toLowerCase();
+    const idToken = String(req.body?.idToken || req.body?.credential || "").trim();
+    const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
+
+    const profile = await resolveOAuthProfile(provider, idToken);
+    const { user, isNew } = await loginOrRegisterWithOAuth(prisma, {
+      provider,
+      profile,
+      preferredLocale,
+      consent: req.body?.consent,
+      consentVersions: req.body?.consentVersions,
+      req,
+      getClientIp,
+      getUserAgent,
+      legalVersions: LEGAL_DOC_VERSIONS,
+    });
+
+    if (isNew) {
+      await emailService
+        .sendNewSignupNotificationEmail({
+          email: user.email,
+          userId: user.id,
+          preferredLocale,
+          createdAt: user.createdAt,
+          emailVerified: !!user.emailVerifiedAt,
+          viaOAuth: provider,
+        })
+        .catch((err) => console.error("oauth signup notify:", err?.message || err));
+    }
+
+    const safe = buildPublicUser(user);
+    const token = signToken(safe);
+    return res.json({ token, user: safe, isNew });
+  } catch (e) {
+    const status = e?.status || 500;
+    return res.status(status).json({
+      error: e?.message || "Falha no login social.",
+      code: e?.code,
+      email: e?.email,
+    });
   }
 });
 
@@ -1375,33 +1510,9 @@ app.get("/api/airport", (req, res) => {
     const icao = normalizeIcao(req.query.icao);
     if (icao.length !== 4) return res.status(400).json({ error: "ICAO inválido" });
 
-    const a = AIRPORTS[icao];
-    if (!a) return res.status(404).json({ error: "Aeródromo não encontrado" });
-
-    const runways = RUNWAYS_BY_ICAO[icao] || [];
-    const runwaysText = runways.length
-        ? runways.map(formatRunway).join("\n")
-        : "—";
-
-    res.json({
-        icao: a.icao,
-        name: a.name,
-        elevationFt: a.elevationFt,
-        municipality: a.municipality,
-        region: a.region,
-        latitude: a.lat,
-        longitude: a.lon,
-        runwaysText,
-        runwaysCount: runways.length,
-        runways: runways.map((rw) => ({
-            leIdent: rw.le_ident || null,
-            heIdent: rw.he_ident || null,
-            leHdg: safeNum(rw.le_heading_degT),
-            heHdg: safeNum(rw.he_heading_degT),
-            lengthFt: safeNum(rw.length_ft),
-            surface: rw.surface || null,
-        })),
-    });
+    const payload = getAirportPayload(icao);
+    if (!payload) return res.status(404).json({ error: "Aeródromo não encontrado" });
+    res.json(payload);
 });
 
 // ============================
@@ -1446,6 +1557,79 @@ async function fetchRaw(kind, icao) {
 // =========================================================
 // ===== Rotas "novas" (compat com o frontend atual) =====
 // =========================================================
+app.get("/api/usage/status", async (req, res) => {
+  const usage = await resolveReqUsage(req);
+  if (!usage.isPro && !usage.subjectKey) {
+    return res.status(400).json({ error: "Identificador de visitante ausente." });
+  }
+  const status = await getUsageStatus(prisma, usage.subjectKey, usage.isPro);
+  return res.json(status);
+});
+
+app.post("/api/usage/consume", async (req, res) => {
+  const feature = String(req.body?.feature || "").trim().toLowerCase();
+  if (!USAGE_FEATURES.includes(feature)) {
+    return res.status(400).json({ error: "Recurso inválido." });
+  }
+  const usage = await resolveReqUsage(req);
+  if (!usage.isPro && !usage.subjectKey) {
+    return res.status(400).json({ error: "Identificador de visitante ausente." });
+  }
+  const gate = await consumeUsage(prisma, usage.subjectKey, feature, { isPro: usage.isPro });
+  if (!gate.allowed) return res.status(402).json(usageLimitPayload(feature, gate));
+  return res.json({ ok: true, ...gate });
+});
+
+app.post("/api/briefing/generate", requireAuth, async (req, res) => {
+  const o = normalizeIcao(req.body?.origin);
+  const d = normalizeIcao(req.body?.dest || "");
+  const a = normalizeIcao(req.body?.alternate || "");
+  if (o.length !== 4) return res.status(400).json({ error: "Origem inválida." });
+  if (d && d.length !== 4) return res.status(400).json({ error: "Destino inválido." });
+  if (a && a.length !== 4) return res.status(400).json({ error: "Alternativa inválida." });
+
+  try {
+    const origin = await buildBriefingStation(o);
+    const dest = d ? await buildBriefingStation(d) : null;
+    const alternate = a ? await buildBriefingStation(a) : null;
+    return res.json({
+      origin,
+      dest,
+      alternate,
+      mode: d ? "route" : "single",
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e?.message || "Falha ao gerar briefing." });
+  }
+});
+
+/** METAR/TAF públicos — sem cadastro e sem cota. */
+async function weatherMetarHandler(req, res) {
+    const icao = normalizeIcao(req.params?.icao || req.query?.icao);
+    if (icao.length !== 4) return res.status(400).send("ICAO inválido");
+
+    const raw = await fetchRaw("metar", icao);
+    if (!raw) return res.status(404).send("Sem METAR disponível");
+    res.type("text/plain").send(raw);
+}
+
+async function weatherTafHandler(req, res) {
+    const icao = normalizeIcao(req.params?.icao || req.query?.icao);
+    if (icao.length !== 4) return res.status(400).send("ICAO inválido");
+
+    const raw = await fetchRaw("taf", icao);
+    if (!raw) return res.status(404).send("Sem TAF disponível");
+    res.type("text/plain").send(raw);
+}
+
+app.get("/api/weather/station/:icao", async (req, res) => {
+  const icao = normalizeIcao(req.params.icao);
+  if (icao.length !== 4) return res.status(400).json({ error: "ICAO inválido" });
+
+  const station = await buildBriefingStation(icao);
+  return res.json(station);
+});
+
 // O frontend chama:
 //   GET /api/weather/metar/:icao
 //   GET /api/weather/taf/:icao
@@ -1454,41 +1638,10 @@ async function fetchRaw(kind, icao) {
 //   GET /api/taf?icao=
 //
 // Para não quebrar nada, mantemos as rotas antigas E adicionamos as novas.
-app.get("/api/weather/metar/:icao", async (req, res) => {
-    const icao = normalizeIcao(req.params.icao);
-    if (icao.length !== 4) return res.status(400).send("ICAO inválido");
-
-    const raw = await fetchRaw("metar", icao);
-    if (!raw) return res.status(404).send("Sem METAR disponível");
-    res.type("text/plain").send(raw);
-});
-
-app.get("/api/weather/taf/:icao", async (req, res) => {
-    const icao = normalizeIcao(req.params.icao);
-    if (icao.length !== 4) return res.status(400).send("ICAO inválido");
-
-    const raw = await fetchRaw("taf", icao);
-    if (!raw) return res.status(404).send("Sem TAF disponível");
-    res.type("text/plain").send(raw);
-});
-
-app.get("/api/metar", async (req, res) => {
-    const icao = normalizeIcao(req.query.icao);
-    if (icao.length !== 4) return res.status(400).send("ICAO inválido");
-
-    const raw = await fetchRaw("metar", icao);
-    if (!raw) return res.status(404).send("Sem METAR disponível");
-    res.type("text/plain").send(raw);
-});
-
-app.get("/api/taf", async (req, res) => {
-    const icao = normalizeIcao(req.query.icao);
-    if (icao.length !== 4) return res.status(400).send("ICAO inválido");
-
-    const raw = await fetchRaw("taf", icao);
-    if (!raw) return res.status(404).send("Sem TAF disponível");
-    res.type("text/plain").send(raw);
-});
+app.get("/api/weather/metar/:icao", weatherMetarHandler);
+app.get("/api/weather/taf/:icao", weatherTafHandler);
+app.get("/api/metar", weatherMetarHandler);
+app.get("/api/taf", weatherTafHandler);
 
 // ============================
 // ===== PÚBLICO / GROWTH =====
@@ -1506,7 +1659,7 @@ app.get("/api/public/stats", async (req, res) => {
   });
 });
 
-app.get("/api/exams/sample", (req, res) => {
+app.get("/api/exams/sample", requireAuth, async (req, res) => {
   const license = String(req.query.license || "CMS").trim().toUpperCase();
   const locale = examLocale(req);
   const payload = buildFixedSamplePayload(license, locale);
@@ -1570,6 +1723,7 @@ app.get("/api/exams/access", requireAuth, async (req, res) => {
     select: { plan: true, planStatus: true },
   });
   const isPro = canAccessProPlan(user?.plan, user?.planStatus);
+  const freeLimit = getFreeUsageLimit();
   const freeCompleteAttemptsByCourse = {};
   await Promise.all(
     FREE_EXAM_COURSES.map(async (license) => {
@@ -1580,16 +1734,21 @@ app.get("/api/exams/access", requireAuth, async (req, res) => {
   );
   const freeCompleteAttempts = Object.values(freeCompleteAttemptsByCourse).reduce((sum, count) => sum + count, 0);
 
+  const usage = await resolveReqUsage(req);
+  const usageStatus = await getUsageStatus(prisma, usage.subjectKey || `user:${userId}`, isPro);
+
   return res.json({
     isPro,
-    freeCompleteUsed: FREE_EXAM_COURSES.every((license) => (freeCompleteAttemptsByCourse[license] || 0) > 0),
+    freeCompleteUsed: freeCompleteAttempts >= freeLimit,
     freeCompleteUsedByCourse: Object.fromEntries(
       FREE_EXAM_COURSES.map((license) => [license, (freeCompleteAttemptsByCourse[license] || 0) > 0])
     ),
     freeCompleteAttempts,
     freeCompleteAttemptsByCourse,
     freeEligibleCourses: FREE_EXAM_COURSES,
-    freeLimit: FREE_EXAM_COURSES.length,
+    freeLimit,
+    usageLimit: freeLimit,
+    usage: usageStatus,
     priceLabel: "R$ 19,90/mês",
   });
 });
@@ -1636,16 +1795,9 @@ app.post("/api/exams/attempts", requireAuth, async (req, res) => {
   if (!isPro) {
     if (!FREE_EXAM_COURSES.includes(course.key) || mode !== "complete") {
       return res.status(402).json({
-        error: "O cadastro gratuito libera 1 simulado completo de PP Avião e 1 simulado completo de Comissário. PC/IFR e simulados por matéria fazem parte do plano PRO.",
-      });
-    }
-
-    const freeCompleteAttempts = await prisma.examAttempt.count({
-      where: { userId, mode: "complete", license: course.key },
-    });
-    if (freeCompleteAttempts >= 1) {
-      return res.status(402).json({
-        error: "Seu simulado completo gratuito deste curso já foi usado. Assine o PRO para liberar todos os simulados por R$ 19,90/mês.",
+        error: "Simulados completos grátis limitados. Assine o PRO para todos os cursos e modos.",
+        code: "USAGE_LIMIT",
+        upgradePath: "/assinatura",
       });
     }
   }

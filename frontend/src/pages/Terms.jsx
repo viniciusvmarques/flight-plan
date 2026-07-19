@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import UtcBar from "../components/UtcBar";
 import { legalVersions, siteProfile } from "../content/siteProfile";
 import { useI18n } from "../i18n/I18nContext.jsx";
 import { getLegalContent } from "../i18n/legalContent";
@@ -10,7 +11,8 @@ export default function Terms() {
     const hasLegalIdentity = Boolean(siteProfile.legalName && siteProfile.documentId && siteProfile.cityCountry);
 
     return (
-        <div className="auth-wrap">
+        <div className="auth-wrap av-shell">
+            <UtcBar />
             <div className="legal-card legal-card--wide">
                 <div className="legal-back">
                     <button type="button" className="auth-back" onClick={() => nav(-1)}>

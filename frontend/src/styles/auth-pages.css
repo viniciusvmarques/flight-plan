@@ -1,4 +1,4 @@
-/* Páginas de autenticação e textos legais — fundo já vem do global.css */
+/* Páginas de autenticação e textos legais — fundo fotográfico em site-background.css */
 
 .auth-wrap {
     min-height: 100vh;
@@ -344,6 +344,72 @@
 
 .legal-note {
     margin-top: 18px;
+}
+
+.auth-social {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.auth-social-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(226, 232, 240, 0.55);
+    font-size: 0.82rem;
+}
+
+.auth-social-divider::before,
+.auth-social-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-social-buttons {
+    display: grid;
+    gap: 10px;
+}
+
+.auth-social-google {
+    display: flex;
+    justify-content: center;
+}
+
+.auth-social-google--disabled {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.auth-social-apple {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: #000;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.auth-social-apple:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.auth-social-apple span {
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M17.05 20.28c-.98.95-2.05 1.88-3.71 1.88-1.55 0-2.01-.93-3.76-.93-1.75 0-2.29.9-3.76.98-1.54.07-2.72-1.58-3.74-3.12C1.02 15.36.07 11.05 2.4 8.7c1.17-1.14 2.99-1.86 4.74-1.88 1.48-.02 2.88.99 3.76.99.88 0 2.52-1.22 4.25-1.04.72.03 2.75.29 4.05 2.18-3.42 1.87-2.87 6.7.95 8.33-.72 1.86-1.67 3.7-3.14 5.3zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z'/%3E%3C/svg%3E") center / contain no-repeat;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M17.05 20.28c-.98.95-2.05 1.88-3.71 1.88-1.55 0-2.01-.93-3.76-.93-1.75 0-2.29.9-3.76.98-1.54.07-2.72-1.58-3.74-3.12C1.02 15.36.07 11.05 2.4 8.7c1.17-1.14 2.99-1.86 4.74-1.88 1.48-.02 2.88.99 3.76.99.88 0 2.52-1.22 4.25-1.04.72.03 2.75.29 4.05 2.18-3.42 1.87-2.87 6.7.95 8.33-.72 1.86-1.67 3.7-3.14 5.3zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 @media (max-width: 880px) {

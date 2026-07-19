@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import GoogleAnalyticsTracker from "./components/GoogleAnalyticsTracker";
-import Dashboard from "./pages/Dashboard";
+import HomeEntry from "./pages/HomeEntry";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -20,6 +20,8 @@ import FlightComputer from "./pages/FlightComputer";
 import Quiz from "./pages/Quiz";
 import SeoLanding from "./pages/SeoLanding";
 import ExamResultShare from "./pages/ExamResultShare";
+import ModeloLab from "./pages/ModeloLab";
+import ModeloLabB from "./pages/ModeloLabB";
 
 import RequireAuth from "./auth/RequireAuth";
 
@@ -28,12 +30,36 @@ export default function App() {
         <>
             <GoogleAnalyticsTracker />
             <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<HomeEntry />} />
+            <Route path="/briefing" element={<HomeEntry />} />
+            <Route path="/modelo" element={<ModeloLab />} />
+            <Route path="/modelo-b" element={<ModeloLabB />} />
             <Route path="/weather" element={<Weather />} />
-            <Route path="/tools" element={<Tools />} />
-            <Route path="/computador" element={<FlightComputer />} />
+            <Route
+                path="/tools"
+                element={
+                    <RequireAuth>
+                        <Tools />
+                    </RequireAuth>
+                }
+            />
+            <Route
+                path="/computador"
+                element={
+                    <RequireAuth>
+                        <FlightComputer />
+                    </RequireAuth>
+                }
+            />
             <Route path="/flight-computer" element={<Navigate to="/computador" replace />} />
-            <Route path="/quiz" element={<Quiz />} />
+            <Route
+                path="/quiz"
+                element={
+                    <RequireAuth>
+                        <Quiz />
+                    </RequireAuth>
+                }
+            />
             <Route path="/metar-decoder" element={<SeoLanding pageKey="metar" />} />
             <Route path="/flight-planning" element={<SeoLanding pageKey="planning" />} />
             <Route path="/piloto-privado" element={<SeoLanding pageKey="pp" />} />

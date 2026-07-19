@@ -8,14 +8,15 @@ function buildReturnPath(location) {
     return path;
 }
 
+/** Redireciona para cadastro (com next) — prioriza conversão. */
 export default function RequireAuth({ children }) {
     const { user } = useAuth();
     const location = useLocation();
 
     if (!user) {
         const next = buildReturnPath(location);
-        const loginTo = next ? `/login?next=${encodeURIComponent(next)}` : "/login";
-        return <Navigate to={loginTo} replace state={{ from: location }} />;
+        const registerTo = next ? `/register?next=${encodeURIComponent(next)}` : "/register";
+        return <Navigate to={registerTo} replace state={{ from: location }} />;
     }
 
     return children;

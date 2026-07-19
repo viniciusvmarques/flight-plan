@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import AppHeader from "../components/AppHeader";
-import AppFooter from "../components/AppFooter";
+import AviationShell from "../components/AviationShell";
 import Card from "../components/Card";
 import GrowthCtaBar from "../components/GrowthCtaBar";
 import { useI18n } from "../i18n/I18nContext.jsx";
@@ -22,33 +21,29 @@ export default function ExamResultShare() {
     }, [params]);
 
     return (
-        <div className="main-shell">
-            <AppHeader compact />
-            <main className="main-scroll growth-page experience-surface">
-                <Card title={t("share.cardTitle")}>
-                    <div className="exam-share-card exam-share-card--public">
-                        <span className="exam-share-kicker">MARQUISA</span>
-                        <strong className={result.passed ? "exam-pass" : "exam-fail"}>
-                            {result.passed ? t("exams.approved") : t("exams.failed")}
-                        </strong>
-                        <h2>{t("exams.percentScore", { percent: result.percent })}</h2>
-                        <p className="exam-share-course">{result.course}</p>
-                        <small>
-                            {t("exams.correctCount", {
-                                correct: result.correctAnswers,
-                                total: result.totalQuestions,
-                            })}
-                        </small>
-                    </div>
-                </Card>
-                <GrowthCtaBar
-                    secondaryLabel={t("quiz.createAccount")}
-                    primaryLabel={t("hub.quizTitle")}
-                    onSecondary={() => nav("/register")}
-                    onPrimary={() => nav("/quiz")}
-                />
-            </main>
-            <AppFooter />
-        </div>
+        <AviationShell title={t("share.pageTitle")} subtitle={t("share.pageSubtitle")}>
+            <Card title={t("share.cardTitle")}>
+                <div className="exam-share-card exam-share-card--public">
+                    <span className="exam-share-kicker">MARQUISA</span>
+                    <strong className={result.passed ? "exam-pass" : "exam-fail"}>
+                        {result.passed ? t("exams.approved") : t("exams.failed")}
+                    </strong>
+                    <h2>{t("exams.percentScore", { percent: result.percent })}</h2>
+                    <p className="exam-share-course">{result.course}</p>
+                    <small>
+                        {t("exams.correctCount", {
+                            correct: result.correctAnswers,
+                            total: result.totalQuestions,
+                        })}
+                    </small>
+                </div>
+            </Card>
+            <GrowthCtaBar
+                primaryLabel={t("plannerGate.ctaRegister")}
+                onPrimary={() => nav("/register")}
+                secondaryLabel={t("plannerGate.openMetar")}
+                onSecondary={() => nav("/weather")}
+            />
+        </AviationShell>
     );
 }

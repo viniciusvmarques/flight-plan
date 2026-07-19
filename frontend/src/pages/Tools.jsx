@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AppHeader from "../components/AppHeader";
-import AppFooter from "../components/AppFooter";
+import AviationShell from "../components/AviationShell";
 import GrowthCtaBar from "../components/GrowthCtaBar";
 import {
     ExperienceHero,
@@ -61,11 +60,15 @@ export default function Tools() {
         Number(crosswind.head) < 0 ? `${crosswind.head} kt (${t("tools.tailwindShort")})` : `${crosswind.head} kt`;
 
     return (
-        <div className="main-shell">
-            <AppHeader compact />
-            <main className="main-scroll growth-page experience-surface xp-tools-layout">
-                <ExperiencePageStack>
-                <ExperienceHero kicker={t("tools.title")} title={t("tools.heroTitle")} copy={t("tools.heroCopy")} statValue="2" statLabel={t("tools.subtitle")} />
+        <AviationShell>
+            <ExperiencePageStack>
+                <ExperienceHero
+                    kicker={t("tools.title")}
+                    title={t("tools.heroTitle")}
+                    copy={t("tools.heroCopy")}
+                    statValue="2"
+                    statLabel={t("tools.subtitle")}
+                />
 
                 <div className="xp-tool-nav-row">
                     <ToolNavCard
@@ -145,9 +148,7 @@ export default function Tools() {
                     onSecondary={() => nav("/weather")}
                     onPrimary={() => nav("/quiz")}
                 />
-                </ExperiencePageStack>
-            </main>
-            <AppFooter />
-        </div>
+            </ExperiencePageStack>
+        </AviationShell>
     );
 }

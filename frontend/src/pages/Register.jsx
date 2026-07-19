@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import BrandMark from "../components/Brandmark";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import SocialAuthButtons from "../components/SocialAuthButtons";
+import UtcBar from "../components/UtcBar";
 import { getStoredLocale, useI18n } from "../i18n/I18nContext.jsx";
 import { trackSignupConversion } from "../lib/googleAds.js";
 
 export default function Register() {
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
   const { register } = useAuth();
   const { t } = useI18n();
   const [email, setEmail] = useState("");
@@ -16,6 +19,12 @@ export default function Register() {
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const nextPath = useMemo(() => {
+    const raw = searchParams.get("next") || "";
+    if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+    return "/";
+  }, [searchParams]);
 
   const canSubmit = useMemo(() => {
     return email.trim() && password.length >= 6 && password === confirm && agree;
@@ -32,7 +41,7 @@ export default function Register() {
             trackSignupConversion();
             nav("/verify-email", {
                 replace: true,
-                state: { email: response?.email || email },
+                state: { email: response?.email || email, next: nextPath },
             });
     } catch (err) {
       setError(err?.message || "Falha ao criar conta");
@@ -42,7 +51,8 @@ export default function Register() {
   }
 
   return (
-    <div className="auth-wrap">
+    <div className="auth-wrap av-shell">
+      <UtcBar />
       <div className="auth-card auth-card--wide" role="region" aria-label={t("auth.registerTitle")}>
         <div className="auth-head">
           <button type="button" className="auth-back" onClick={() => nav(-1)}>
@@ -58,8 +68,16 @@ export default function Register() {
           <div className="auth-pane">
             <div>
               <h1>{t("auth.registerTitle")}</h1>
-              <p>{t("auth.registerCaption")}</p>
+              <p>{t("plannerGate.copy")}</p>
             </div>
+
+            <SocialAuthButtons
+              mode="register"
+              agree={agree}
+              disabled={loading}
+              onSuccess={() => nav(nextPath, { replace: true })}
+              onError={(err) => setError(err?.message || t("auth.oauthFailed"))}
+            />
 
             <form onSubmit={onSubmit} className="auth-form">
               <label>
@@ -122,10 +140,10 @@ export default function Register() {
           <div className="auth-pane auth-pane--soft">
             <h2>Por que criar conta?</h2>
             <ul className="auth-copy-list">
+              <li>{t("plannerGate.bullets").split("|")[0]}</li>
+              <li>{t("plannerGate.bullets").split("|")[1]}</li>
+              <li>{t("plannerGate.bullets").split("|")[2]}</li>
               <li>{t("billing.featureBriefings")}</li>
-              <li>{t("billing.featureFavorites")}</li>
-              <li>{t("billing.featureHistory")}</li>
-              <li>{t("billing.featureFuture")}</li>
             </ul>
             <div className="auth-chip-row">
               <span className="chip">Briefing</span>

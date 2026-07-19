@@ -2,17 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { useI18n } from "../i18n/I18nContext.jsx";
-import { scrollToSimulados } from "../utils/scrollToSimulados";
+import { getApiBase } from "../services/apiClient";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API = getApiBase();
 const DEFAULT_QUESTIONS_BANK = 6000;
 
 const HUB_ITEMS = [
-    { key: "weather", icon: "WX", path: "/weather", accent: false },
-    { key: "flightComputer", icon: "E6", path: "/computador", accent: false },
-    { key: "tools", icon: "FX", path: "/tools", accent: false },
-    { key: "quiz", icon: "Q5", path: "/quiz", accent: true },
-    { key: "exams", icon: "AN", path: null, accent: true },
+    { key: "weather", icon: "WX", path: "/weather", free: true },
+    { key: "flightComputer", icon: "E6", path: "/computador", free: false },
+    { key: "tools", icon: "FX", path: "/tools", free: false },
+    { key: "quiz", icon: "Q5", path: "/quiz", free: false, accent: true },
+    { key: "exams", icon: "AN", path: "/simulados", free: false, accent: true },
 ];
 
 export default function HomeHub() {
@@ -31,6 +31,14 @@ export default function HomeHub() {
             })
             .catch(() => null);
     }, []);
+
+    function openItem(item) {
+        if (item.free || user) {
+            nav(item.path);
+            return;
+        }
+        nav(`/register?next=${encodeURIComponent(item.path)}`);
+    }
 
     return (
         <section className="home-hub" aria-label={t("hub.title")}>
@@ -54,17 +62,7 @@ export default function HomeHub() {
                         key={item.key}
                         type="button"
                         className={`home-hub-card ${item.accent ? "home-hub-card--accent" : ""}`}
-                        onClick={() => {
-                            if (item.key === "exams") {
-                                if (user) {
-                                    nav("/simulados");
-                                    return;
-                                }
-                                scrollToSimulados(nav);
-                                return;
-                            }
-                            nav(item.path);
-                        }}
+                        onClick={() => openItem(item)}
                     >
                         <span className="home-hub-card-icon" aria-hidden="true">
                             {item.icon}
@@ -74,7 +72,7 @@ export default function HomeHub() {
                             <p>{t(`hub.${item.key}Copy`)}</p>
                         </div>
                         <span className="home-hub-card-tag">
-                            {item.key === "quiz" ? t("hub.noSignup") : item.key === "exams" ? t("hub.examsCta") : t("hub.free")}
+                            {item.free ? t("hub.noSignup") : item.key === "exams" ? t("hub.examsCta") : t("hub.open")}
                         </span>
                         <span className="home-hub-card-arrow" aria-hidden="true">
                             →

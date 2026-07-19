@@ -95,7 +95,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "No briefing pré-voo, a distribuição de posições e saídas de emergência visa:",
+            "No briefing pré-voo, a distribuição de posições e saídas de emergência visa?",
             "Garantir cobertura das áreas de cabine e resposta coordenada em evacuação.",
             [
               "Definir quem realizará a manutenção dos motores em voo.",
@@ -104,7 +104,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Um briefing eficiente de cabine reduz principalmente:",
+            "Um briefing eficiente de cabine reduz principalmente?",
             "Ruído operacional, dúvidas de função e tempo de resposta em situações anormais.",
             [
               "A necessidade de treinamento periódico em emergência.",
@@ -120,7 +120,7 @@ export const CMS_SUBJECTS = [
         "Atendimento e segurança no embarque",
         [
           q(
-            "Durante o embarque, a atenção a passageiros com necessidades especiais visa:",
+            "Durante o embarque, a atenção a passageiros com necessidades especiais visa?",
             "Garantir segurança, acessibilidade, evacuação e cumprimento dos requisitos operacionais.",
             [
               "Aumentar a velocidade de cruzeiro da aeronave.",
@@ -129,7 +129,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A acomodação de bagagem de mão no embarque deve considerar:",
+            "A acomodação de bagagem de mão no embarque deve considerar?",
             "Peso, dimensões, obstrução de corredores e acesso às saídas de emergência.",
             [
               "Apenas a cor e o fabricante da mala do passageiro.",
@@ -138,7 +138,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O passageiro designado para assento em saída de emergência deve:",
+            "O passageiro designado para assento em saída de emergência deve?",
             "Atender aos critérios operacionais, compreender a função e aceitar a responsabilidade.",
             [
               "Ser obrigatoriamente o passageiro mais idoso do voo.",
@@ -147,7 +147,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "No embarque, a verificação de documentação e condição do passageiro contribui para:",
+            "No embarque, a verificação de documentação e condição do passageiro contribui para?",
             "Identificar riscos à segurança do voo e à evacuação antes da decolagem.",
             [
               "Definir a altitude de cruzeiro da aeronave.",
@@ -156,7 +156,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Embarque seguro e organizado evita principalmente:",
+            "Embarque seguro e organizado evita principalmente?",
             "Obstruções de corredor, riscos em evacuação e falhas de atendimento em emergência.",
             [
               "A consulta de NOTAM e condições meteorológicas.",
@@ -172,7 +172,7 @@ export const CMS_SUBJECTS = [
         "Conduta profissional de cabine",
         [
           q(
-            "A disciplina operacional do comissário de voo inclui:",
+            "A disciplina operacional do comissário de voo inclui?",
             "Cumprir normas, reportar anormalidades e manter postura compatível com a segurança de voo.",
             [
               "Dispensar comunicação com a tripulação em situações rotineiras.",
@@ -181,7 +181,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Procedimentos padronizados de cabine são importantes porque:",
+            "Procedimentos padronizados de cabine são importantes porque?",
             "Reduzem variabilidade humana e sustentam respostas previsíveis em emergência.",
             [
               "Substituem a necessidade de treinamento em primeiros socorros.",
@@ -190,7 +190,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Desvio de procedimento sem justificativa operacional pode:",
+            "Desvio de procedimento sem justificativa operacional pode?",
             "Aumentar risco à segurança e expor passageiros, tripulação e operador.",
             [
               "Melhorar automaticamente o tempo de evacuação.",
@@ -199,7 +199,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A conduta profissional do comissário perante passageiros e tripulação deve refletir:",
+            "A conduta profissional do comissário perante passageiros e tripulação deve refletir?",
             "Autoridade técnica de cabine, cortesia e foco na segurança operacional.",
             [
               "Confronto imediato com qualquer dúvida de passageiro em voo.",
@@ -208,7 +208,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Reportar anormalidades e near misses em cabine contribui para:",
+            "Reportar anormalidades e near misses em cabine contribui para?",
             "Aprimorar procedimentos, treinamento e cultura de segurança do operador.",
             [
               "Substituir investigações de acidentes pela ANAC.",
@@ -230,7 +230,7 @@ export const CMS_SUBJECTS = [
         "Procedimentos de evacuação",
         [
           q(
-            "Em uma evacuação de emergência, o comando vocal do comissário deve ser:",
+            "Em uma evacuação de emergência, o comando vocal do comissário deve ser?",
             "Claro, firme e voltado à saída segura e rápida dos passageiros.",
             [
               "Longo e explicativo, detalhando causas técnicas para cada passageiro.",
@@ -239,7 +239,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Antes de abrir uma saída de emergência em evacuação, deve-se verificar:",
+            "Antes de abrir uma saída de emergência em evacuação, deve-se verificar?",
             "Se a área externa está livre de fogo, obstáculos ou risco imediato.",
             [
               "Se todos os passageiros já despacharam bagagem de mão.",
@@ -248,7 +248,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Durante a evacuação, as bagagens de mão devem ser:",
+            "Durante a evacuação, as bagagens de mão devem ser?",
             "Abandonadas para não obstruir corredores e saídas.",
             [
               "Carregadas por todos os passageiros para proteger documentos.",
@@ -257,7 +257,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O fluxo de passageiros em evacuação deve ser orientado para:",
+            "O fluxo de passageiros em evacuação deve ser orientado para?",
             "Utilizar saídas designadas, manter ordem e evitar retorno à cabine.",
             [
               "Buscar pertences antes de deixar o assento.",
@@ -266,7 +266,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Após comando de evacuação, o comissário na saída deve:",
+            "Após comando de evacuação, o comissário na saída deve?",
             "Auxiliar passagem, verificar cabine vazia conforme função e reportar à tripulação.",
             [
               "Retornar imediatamente para servir bebidas aos passageiros lentos.",
@@ -282,7 +282,7 @@ export const CMS_SUBJECTS = [
         "Combate a fogo em cabine",
         [
           q(
-            "Ao identificar fumaça na cabine, a primeira atitude do comissário é:",
+            "Ao identificar fumaça na cabine, a primeira atitude do comissário é?",
             "Comunicar a tripulação, localizar a fonte e aplicar o procedimento de combate a fogo.",
             [
               "Abrir imediatamente todas as portas da aeronave em voo.",
@@ -291,7 +291,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O combate a fogo a bordo exige:",
+            "O combate a fogo a bordo exige?",
             "Uso correto de extintores, proteção das vias respiratórias e monitoramento da reignição.",
             [
               "Desligar todos os sistemas elétricos da aeronave pelo comissário.",
@@ -300,7 +300,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Após extinguir fogo em equipamento de cabine, deve-se:",
+            "Após extinguir fogo em equipamento de cabine, deve-se?",
             "Monitorar reignição, afastar fonte de calor e informar a cabine de comando.",
             [
               "Reenergizar imediatamente o equipamento para testar funcionamento.",
@@ -309,7 +309,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Fumaça proveniente de compartimento de bagagem ou galley exige:",
+            "Fumaça proveniente de compartimento de bagagem ou galley exige?",
             "Isolamento da área, combate conforme treinamento e preparo para possível evacuação.",
             [
               "Continuar serviço de bordo para acalmar passageiros.",
@@ -318,7 +318,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Em incêndio de origem elétrica em cabine, o procedimento adequado inclui:",
+            "Em incêndio de origem elétrica em cabine, o procedimento adequado inclui?",
             "Cortar energia da fonte se possível, usar extintor adequado e evitar reinício prematuro.",
             [
               "Jogar água diretamente em painéis energizados sem desligar circuito.",
@@ -334,7 +334,7 @@ export const CMS_SUBJECTS = [
         "Sobrevivência no mar e selva",
         [
           q(
-            "Em sobrevivência no mar após abandono da aeronave, a prioridade inicial inclui:",
+            "Em sobrevivência no mar após abandono da aeronave, a prioridade inicial inclui?",
             "Reunir sobreviventes, ativar coletes, reduzir hipotermia e sinalizar posição.",
             [
               "Separar todos para nadar em direções diferentes em busca de terra.",
@@ -343,7 +343,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Após pouso forçado em área remota, o grupo deve:",
+            "Após pouso forçado em área remota, o grupo deve?",
             "Organizar liderança, abrigo, inventário de recursos e plano de sinalização.",
             [
               "Dispersar individualmente nas primeiras horas sem comunicação.",
@@ -352,7 +352,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O uso de equipamentos de sinalização em sobrevivência serve para:",
+            "O uso de equipamentos de sinalização em sobrevivência serve para?",
             "Facilitar localização por aeronaves, embarcações ou equipes de busca.",
             [
               "Substituir a necessidade de água potável na primeira noite.",
@@ -361,7 +361,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Em ambiente de selva após acidente, a prioridade de abrigo visa:",
+            "Em ambiente de selva após acidente, a prioridade de abrigo visa?",
             "Proteger contra exposição, animais e perda de calor corporal.",
             [
               "Construir abrigo apenas após percorrer dez quilômetros sem mapa.",
@@ -370,7 +370,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A gestão de água e alimento em sobrevivência prolongada deve:",
+            "A gestão de água e alimento em sobrevivência prolongada deve?",
             "Racionar recursos, priorizar água potável e evitar esforço desnecessário.",
             [
               "Consumir tudo no primeiro dia para ganhar força.",
@@ -386,7 +386,7 @@ export const CMS_SUBJECTS = [
         "Emergências de altitude e oxigênio",
         [
           q(
-            "Em despressurização rápida, a prioridade imediata do comissário é:",
+            "Em despressurização rápida, a prioridade imediata do comissário é?",
             "Garantir uso de oxigênio, cumprir procedimentos e orientar passageiros.",
             [
               "Servir refeições para manter calma sem máscaras.",
@@ -395,7 +395,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "As máscaras de oxigênio de passageiros em cabine devem ser usadas:",
+            "As máscaras de oxigênio de passageiros em cabine devem ser usadas?",
             "Assim que caírem, puxando firmemente e ajustando antes de auxiliar outros.",
             [
               "Somente após a aeronave atingir altitude zero.",
@@ -404,7 +404,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Sinais de hipóxia em passageiros ou tripulantes exigem:",
+            "Sinais de hipóxia em passageiros ou tripulantes exigem?",
             "Oxigênio imediato, descida conforme procedimento e avaliação médica posterior.",
             [
               "Oferta de bebidas alcoólicas para relaxamento.",
@@ -413,7 +413,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Após despressurização, a aeronave normalmente:",
+            "Após despressurização, a aeronave normalmente?",
             "Inicia descida de emergência para altitude onde a respiração é sustentável sem máscara.",
             [
               "Mantém altitude de cruzeiro até o destino programado sem alteração.",
@@ -422,7 +422,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A orientação de passageiros em despressurização deve enfatizar:",
+            "A orientação de passageiros em despressurização deve enfatizar?",
             "Colocar máscara primeiro, cinto afivelado e aguardar comandos da tripulação.",
             [
               "Recolher bagagens de mão antes de qualquer outra ação.",
@@ -444,7 +444,7 @@ export const CMS_SUBJECTS = [
         "Primeiros socorros - avaliação primária",
         [
           q(
-            "Diante de passageiro inconsciente, a avaliação inicial deve verificar:",
+            "Diante de passageiro inconsciente, a avaliação inicial deve verificar?",
             "Segurança da cena, responsividade, respiração e necessidade de acionar apoio.",
             [
               "Preferência alimentar e bebida consumida no embarque apenas.",
@@ -453,7 +453,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A abordagem de primeiros socorros a bordo deve priorizar:",
+            "A abordagem de primeiros socorros a bordo deve priorizar?",
             "Estabilização imediata, proteção da vítima e comunicação objetiva com a tripulação.",
             [
               "Diagnóstico definitivo de doença crônica sem apoio médico.",
@@ -462,7 +462,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Antes de prestar atendimento, o comissário deve observar:",
+            "Antes de prestar atendimento, o comissário deve observar?",
             "Riscos à cena, número de vítimas, mecanismo provável e recursos disponíveis.",
             [
               "Apenas se há fila para o banheiro da cabine.",
@@ -471,7 +471,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Se o passageiro responde mas respira com dificuldade, o próximo passo inclui:",
+            "Se o passageiro responde mas respira com dificuldade, o próximo passo inclui?",
             "Posicionar adequadamente, monitorar e solicitar apoio médico conforme procedimento.",
             [
               "Oferecer refeição completa para elevar glicemia sem avaliação.",
@@ -480,7 +480,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A avaliação primária organiza o atendimento porque:",
+            "A avaliação primária organiza o atendimento porque?",
             "Identifica ameaças imediatas à vida e define prioridades de intervenção.",
             [
               "Substitui a necessidade de treinamento em RCP.",
@@ -496,7 +496,7 @@ export const CMS_SUBJECTS = [
         "Suporte básico de vida",
         [
           q(
-            "Em suspeita de parada cardiorrespiratória a bordo, a ação adequada é:",
+            "Em suspeita de parada cardiorrespiratória a bordo, a ação adequada é?",
             "Acionar ajuda, iniciar RCP conforme treinamento e utilizar DEA quando disponível.",
             [
               "Aguardar obrigatoriamente a chegada ao destino sem compressões.",
@@ -505,7 +505,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O DEA (desfibrilador externo automático) a bordo deve ser utilizado:",
+            "O DEA (desfibrilador externo automático) a bordo deve ser utilizado?",
             "O mais cedo possível, seguindo instruções de voz do aparelho e segurança da cena.",
             [
               "Somente por médico presente entre passageiros, nunca pela tripulação.",
@@ -514,7 +514,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Compressões torácicas eficazes em RCP devem buscar:",
+            "Compressões torácicas eficazes em RCP devem buscar?",
             "Profundidade e frequência adequadas, permitindo retorno completo do tórax.",
             [
               "Compressões superficiais e lentas para evitar lesão.",
@@ -523,7 +523,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Durante RCP a bordo, a coordenação entre comissários deve incluir:",
+            "Durante RCP a bordo, a coordenação entre comissários deve incluir?",
             "Alternância de compressões, manejo do DEA e comunicação com a cabine de comando.",
             [
               "Filmar o atendimento para redes sociais antes de ajudar.",
@@ -532,7 +532,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A RCP precoce associada ao DEA aumenta principalmente:",
+            "A RCP precoce associada ao DEA aumenta principalmente?",
             "A chance de sobrevivência até atendimento médico definitivo em solo.",
             [
               "A velocidade de cruzeiro da aeronave.",
@@ -548,7 +548,7 @@ export const CMS_SUBJECTS = [
         "Emergências clínicas em cabine",
         [
           q(
-            "Em caso de mal súbito, a coleta de informações deve incluir:",
+            "Em caso de mal súbito, a coleta de informações deve incluir?",
             "Sintomas, início, antecedentes, medicações, sinais observados e evolução.",
             [
               "Apenas destino final e programa de entretenimento usado.",
@@ -557,7 +557,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Passageiro com dor torácica intensa deve ser tratado como:",
+            "Passageiro com dor torácica intensa deve ser tratado como?",
             "Possível emergência cardíaca até prova em contrário, com monitoramento e apoio.",
             [
               "Simples indigestão, sem comunicação à tripulação.",
@@ -566,7 +566,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A comunicação de emergência médica à cabine de comando deve conter:",
+            "A comunicação de emergência médica à cabine de comando deve conter?",
             "Idade aparente, sintomas, sinais vitais se aferidos, tratamento iniciado e necessidades.",
             [
               "Rumores de outros passageiros sobre a dieta da vítima apenas.",
@@ -575,7 +575,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Em convulsão de passageiro, a conduta inicial adequada inclui:",
+            "Em convulsão de passageiro, a conduta inicial adequada inclui?",
             "Proteger contra impacto, não restringir movimentos violentos e cronometrar o episódio.",
             [
               "Introduzir objeto na boca para evitar mordida de língua.",
@@ -584,7 +584,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Informações objetivas sobre mal súbito ajudam a operação porque:",
+            "Informações objetivas sobre mal súbito ajudam a operação porque?",
             "Permitem decisão sobre desvio, apoio médico em solo e priorização de recursos.",
             [
               "Substituem a necessidade de primeiros socorros a bordo.",
@@ -600,7 +600,7 @@ export const CMS_SUBJECTS = [
         "Hemorragias e curativos",
         [
           q(
-            "Em sangramento externo significativo, a medida inicial costuma ser:",
+            "Em sangramento externo significativo, a medida inicial costuma ser?",
             "Pressão direta com gaze limpa, elevação se possível e acionamento de apoio.",
             [
               "Remover sempre objetos profundamente encravados no ferimento.",
@@ -609,7 +609,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O uso de luvas no atendimento a feridos serve para:",
+            "O uso de luvas no atendimento a feridos serve para?",
             "Reduzir risco de transmissão de agentes infecciosos entre vítima e socorrista.",
             [
               "Aumentar a temperatura da ferida para cicatrização imediata.",
@@ -618,7 +618,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Ferimento com objeto encravado deve ser tratado por:",
+            "Ferimento com objeto encravado deve ser tratado por?",
             "Estabilizar o objeto, controlar sangramento ao redor e não remover sem aval médica.",
             [
               "Retirar o objeto imediatamente para facilitar curativo.",
@@ -627,7 +627,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Em amputação parcial de dedo com sangramento, além da pressão direta:",
+            "Em amputação parcial de dedo com sangramento, além da pressão direta?",
             "Proteger o segmento amputado conforme treinamento e comunicar urgência médica.",
             [
               "Descartar o segmento se não houver gelo a bordo.",
@@ -636,7 +636,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Controle de sangramento e biossegurança em cabine reduzem:",
+            "Controle de sangramento e biossegurança em cabine reduzem?",
             "Risco à vítima, à tripulação e à continuidade segura do atendimento.",
             [
               "A necessidade de qualquer comunicação com a cabine de comando.",
@@ -658,7 +658,7 @@ export const CMS_SUBJECTS = [
         "AVSEC",
         [
           q(
-            "Conduta suspeita em cabine deve ser tratada com:",
+            "Conduta suspeita em cabine deve ser tratada com?",
             "Discrição, comunicação adequada e cumprimento dos procedimentos de segurança.",
             [
               "Divulgação pública imediata no sistema de áudio para todos os passageiros.",
@@ -667,7 +667,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Em ameaça à segurança da aeronave, o comissário deve:",
+            "Em ameaça à segurança da aeronave, o comissário deve?",
             "Informar a cabine de comando, seguir plano de segurança e evitar escalada desnecessária.",
             [
               "Negociar sozinho a entrega da aeronave a ameaçadores sem comunicar.",
@@ -676,7 +676,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Os procedimentos AVSEC buscam principalmente:",
+            "Os procedimentos AVSEC buscam principalmente?",
             "Prevenir atos de interferência ilícita e proteger aeronave, tripulação e passageiros.",
             [
               "Aumentar a receita de serviços premium a bordo.",
@@ -685,7 +685,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Objeto suspeito abandonado em cabine exige:",
+            "Objeto suspeito abandonado em cabine exige?",
             "Isolar área, evitar manuseio e acionar procedimento de segurança do operador.",
             [
               "Abrir imediatamente para identificar proprietário.",
@@ -694,7 +694,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A prevenção de interferência ilícita inclui:",
+            "A prevenção de interferência ilícita inclui?",
             "Vigilância em embarque e cabine, controle de acesso e coordenação com segurança em solo.",
             [
               "Permitir visita livre à cabine de comando durante o cruzeiro.",
@@ -710,7 +710,7 @@ export const CMS_SUBJECTS = [
         "Transporte aéreo de artigos perigosos",
         [
           q(
-            "Artigos perigosos em bagagem de mão representam risco porque:",
+            "Artigos perigosos em bagagem de mão representam risco porque?",
             "Podem causar fogo, vazamento, explosão, intoxicação ou outro evento grave a bordo.",
             [
               "Aumentam a autonomia de combustível da aeronave.",
@@ -719,7 +719,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Ao suspeitar de item proibido ou não declarado, o comissário deve:",
+            "Ao suspeitar de item proibido ou não declarado, o comissário deve?",
             "Seguir procedimento do operador, comunicar e evitar manuseio arriscado.",
             [
               "Guardar o item no galley sem informar a tripulação.",
@@ -728,7 +728,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "As regras de transporte de artigos perigosos servem para:",
+            "As regras de transporte de artigos perigosos servem para?",
             "Reduzir riscos de incêndio e exposição química em voo pressurizado.",
             [
               "Facilitar comércio de produtos inflamáveis sem restrição.",
@@ -737,7 +737,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Baterias de lítio danificadas ou aquecendo em cabine exigem:",
+            "Baterias de lítio danificadas ou aquecendo em cabine exigem?",
             "Procedimento específico de isolamento, combate a fogo e comunicação imediata.",
             [
               "Carregamento imediato em tomada de passageiro para descarregar.",
@@ -746,7 +746,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Substâncias inflamáveis não autorizadas descobertas antes da decolagem devem:",
+            "Substâncias inflamáveis não autorizadas descobertas antes da decolagem devem?",
             "Ser retiradas da aeronave conforme regulamento e procedimento do operador.",
             [
               "Ser redistribuídas entre passageiros para diluir risco.",
@@ -762,7 +762,7 @@ export const CMS_SUBJECTS = [
         "Gerenciamento de passageiro disruptivo",
         [
           q(
-            "Passageiro indisciplinado deve ser gerenciado com:",
+            "Passageiro indisciplinado deve ser gerenciado com?",
             "Técnicas graduais, comunicação com a tripulação e preservação da segurança.",
             [
               "Exposição pública e humilhação para dissuadir outros.",
@@ -771,7 +771,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O registro de ocorrência envolvendo passageiro disruptivo é importante para:",
+            "O registro de ocorrência envolvendo passageiro disruptivo é importante para?",
             "Documentar fatos, apoiar medidas legais e aprimorar prevenção do operador.",
             [
               "Substituir qualquer investigação posterior.",
@@ -780,7 +780,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Medidas de contenção de passageiro agressivo devem ser consideradas:",
+            "Medidas de contenção de passageiro agressivo devem ser consideradas?",
             "Somente quando graduação verbal falhou e há risco iminente, conforme treinamento e lei.",
             [
               "Como primeira resposta em qualquer reclamação de assento.",
@@ -789,7 +789,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Álcool ou substâncias que alterem comportamento em voo exigem:",
+            "Álcool ou substâncias que alterem comportamento em voo exigem?",
             "Monitoramento, limitação de serviço e intervenção graduada se houver risco.",
             [
               "Servir mais bebidas para acalmar o passageiro.",
@@ -798,7 +798,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O gerenciamento graduado de passageiro disruptivo reduz:",
+            "O gerenciamento graduado de passageiro disruptivo reduz?",
             "Escalada de violência e risco a terceiros na cabine.",
             [
               "A necessidade de qualquer briefing pré-voo.",
@@ -814,7 +814,7 @@ export const CMS_SUBJECTS = [
         "Procedimentos críticos de decolagem e pouso",
         [
           q(
-            "Cabine preparada para decolagem e pouso significa:",
+            "Cabine preparada para decolagem e pouso significa?",
             "Passageiros com cinto, assentos na posição de segurança, bagagens stowadas e saídas desobstruídas.",
             [
               "Serviço de bordo completo até o toque na pista.",
@@ -823,7 +823,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Durante fases críticas de voo, o comissário deve priorizar:",
+            "Durante fases críticas de voo, o comissário deve priorizar?",
             "Vigilância da cabine, posição segura e prontidão para comando de emergência.",
             [
               "Venda de duty free em todo o corredor.",
@@ -832,7 +832,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A verificação de cabine antes do pouso busca:",
+            "A verificação de cabine antes do pouso busca?",
             "Confirmar cintos, assentos, monitores, mesas e compartimentos em condição segura.",
             [
               "Apenas a contagem de refeições não servidas.",
@@ -841,7 +841,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Monitores de entretenimento e mesas de refeição em fase crítica devem estar:",
+            "Monitores de entretenimento e mesas de refeição em fase crítica devem estar?",
             "Recolhidos e travados conforme procedimento do operador.",
             [
               "Totalmente estendidos para ocupar o passageiro.",
@@ -850,7 +850,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Fases críticas exigem tripulação de cabine sentada porque:",
+            "Fases críticas exigem tripulação de cabine sentada porque?",
             "Reduz risco de lesão em turbulência ou frenagem e mantém prontidão para evacuação.",
             [
               "Permite que todos os comissários durmam durante a descida.",
@@ -872,7 +872,7 @@ export const CMS_SUBJECTS = [
         "Conhecimentos gerais de aeronaves",
         [
           q(
-            "A fuselagem de uma aeronave tem como função principal:",
+            "A fuselagem de uma aeronave tem como função principal?",
             "Acomodar tripulação, passageiros e carga, integrando estrutura e sistemas.",
             [
               "Gerar combustível durante o voo de cruzeiro.",
@@ -881,7 +881,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "As superfícies de comando de uma aeronave são usadas para:",
+            "As superfícies de comando de uma aeronave são usadas para?",
             "Controlar atitude e trajetória em voo, mediante deflexão adequada.",
             [
               "Armazenar bagagem de mão dos passageiros.",
@@ -890,7 +890,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Portas e saídas de emergência devem ser conhecidas pelo comissário para:",
+            "Portas e saídas de emergência devem ser conhecidas pelo comissário para?",
             "Orientar passageiros, verificar bloqueios e conduzir evacuação com segurança.",
             [
               "Calibrar altímetros da cabine de comando.",
@@ -899,7 +899,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "As asas de uma aeronave contribuem principalmente para:",
+            "As asas de uma aeronave contribuem principalmente para?",
             "Gerar sustentação aerodinâmica necessária ao voo.",
             [
               "Aumentar a pressão interna da cabine de passageiros.",
@@ -908,7 +908,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O trem de pouso da aeronave relaciona-se à operação de cabine porque:",
+            "O trem de pouso da aeronave relaciona-se à operação de cabine porque?",
             "Sua posição afeta procedimentos de decolagem, pouso e evacuação em emergência.",
             [
               "Define o cardápio de serviço de bordo em voo longo.",
@@ -924,7 +924,7 @@ export const CMS_SUBJECTS = [
         "Operação básica de voo",
         [
           q(
-            "Decolagem e pouso são fases críticas porque:",
+            "Decolagem e pouso são fases críticas porque?",
             "Exigem maior atenção, configuração segura de cabine e resposta rápida a anormalidades.",
             [
               "Permitem serviço de bordo com prioridade absoluta sobre segurança.",
@@ -933,7 +933,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Durante o cruzeiro, a cabine deve permanecer monitorada para:",
+            "Durante o cruzeiro, a cabine deve permanecer monitorada para?",
             "Detectar anormalidades, necessidades médicas e cumprimento de procedimentos.",
             [
               "Permitir que passageiros fumem em lavabos sem vigilância.",
@@ -942,7 +942,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Em turbulência moderada ou severa, o procedimento de cabine deve priorizar:",
+            "Em turbulência moderada ou severa, o procedimento de cabine deve priorizar?",
             "Suspender serviço, afivelar cintos e comunicar passageiros conforme instrução.",
             [
               "Continuar serviço de carrinho no corredor para normalidade.",
@@ -951,7 +951,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A aproximação para pouso implica para a tripulação de cabine:",
+            "A aproximação para pouso implica para a tripulação de cabine?",
             "Verificação final de cabine, comunicação de prontidão e posição segura.",
             [
               "Início de desembarque antes do toque na pista.",
@@ -960,7 +960,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Fases de voo têm procedimentos específicos de cabine porque:",
+            "Fases de voo têm procedimentos específicos de cabine porque?",
             "O risco operacional e a capacidade de resposta variam em cada etapa.",
             [
               "O consumo de combustível é idêntico em todas as fases.",
@@ -976,7 +976,7 @@ export const CMS_SUBJECTS = [
         "Noções de meteorologia aplicada à cabine",
         [
           q(
-            "Turbulência prevista deve ser considerada pela cabine para:",
+            "Turbulência prevista deve ser considerada pela cabine para?",
             "Planejar serviço, circulação, segurança dos passageiros e comunicação adequada.",
             [
               "Alterar a rota da aeronave sem participação da cabine de comando.",
@@ -985,7 +985,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Condições meteorológicas adversas no destino podem afetar:",
+            "Condições meteorológicas adversas no destino podem afetar?",
             "Conforto, atrasos, alternado e procedimentos de pouso com maior atenção.",
             [
               "Apenas a cor da pintura externa da aeronave.",
@@ -994,7 +994,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A orientação de cintos de segurança em turbulência visa:",
+            "A orientação de cintos de segurança em turbulência visa?",
             "Reduzir lesões por movimentação violenta de passageiros e objetos soltos.",
             [
               "Aumentar a velocidade da aeronave em relação ao solo.",
@@ -1003,7 +1003,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Formação de gelo reportada em rota pode implicar para a cabine:",
+            "Formação de gelo reportada em rota pode implicar para a cabine?",
             "Maior atenção a anormalidades comunicadas pela cabine de comando e possível desvio.",
             [
               "Serviço de bebidas quentes obrigatório em todo o voo.",
@@ -1012,7 +1012,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "O comissário utiliza informações meteorológicas principalmente para:",
+            "O comissário utiliza informações meteorológicas principalmente para?",
             "Preparar a cabine, prevenir lesões e alinhar expectativas de serviço e segurança.",
             [
               "Calcular combustível da aeronave sem apoio técnico.",
@@ -1028,7 +1028,7 @@ export const CMS_SUBJECTS = [
         "Comunicação operacional e atendimento",
         [
           q(
-            "Os anúncios de segurança a bordo devem ser:",
+            "Os anúncios de segurança a bordo devem ser?",
             "Claros, objetivos, calmos e adequados ao procedimento e à fase de voo.",
             [
               "Ambíguos para evitar que passageiros compreendam demais.",
@@ -1037,7 +1037,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A comunicação com passageiros em situação anormal deve buscar:",
+            "A comunicação com passageiros em situação anormal deve buscar?",
             "Informar o necessário, reduzir pânico e reforçar cumprimento de instruções.",
             [
               "Detalhar especulações sobre causas sem confirmação da tripulação.",
@@ -1046,7 +1046,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "A informação repassada à cabine de comando deve ser:",
+            "A informação repassada à cabine de comando deve ser?",
             "Objetiva, verificável e limitada aos fatos observados ou relatados com consistência.",
             [
               "Exclusivamente opinião pessoal do comissário sobre culpados.",
@@ -1055,7 +1055,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Comunicação bilíngue em voos internacionais contribui para:",
+            "Comunicação bilíngue em voos internacionais contribui para?",
             "Maior compreensão de instruções de segurança e emergência pelos passageiros.",
             [
               "Eliminar a necessidade de demonstração de cinto e máscara.",
@@ -1064,7 +1064,7 @@ export const CMS_SUBJECTS = [
             ]
           ),
           q(
-            "Comunicação clara em cabine reduz principalmente:",
+            "Comunicação clara em cabine reduz principalmente?",
             "Pânico, desobediência a procedimentos e atraso em respostas coordenadas.",
             [
               "O consumo de combustível em cruzeiro.",

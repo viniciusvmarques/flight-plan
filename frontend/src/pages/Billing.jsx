@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Card from "../components/Card";
-import AppFooter from "../components/AppFooter";
-import AppHeader from "../components/AppHeader";
+import AviationShell from "../components/AviationShell";
 import { useAuth } from "../auth/AuthContext";
 import { apiGet, apiPost } from "../services/apiClient";
 import { siteProfile } from "../content/siteProfile";
@@ -141,14 +140,7 @@ export default function Billing() {
           : t("billing.noCycle");
 
     return (
-        <div className="main-shell">
-            <AppHeader
-                kicker={t("billing.kicker")}
-                title={t("billing.title")}
-                subtitle={t("billing.subtitle")}
-            />
-
-            <div className="main-scroll">
+        <AviationShell kicker={t("billing.kicker")} title={t("billing.title")} subtitle={t("billing.subtitle")}>
                 <div className="page-shell">
                     <section className="page-hero">
                         <div className="page-hero-head">
@@ -345,9 +337,6 @@ export default function Billing() {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <AppFooter />
-        </div>
+        </AviationShell>
     );
 }

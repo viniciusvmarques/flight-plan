@@ -4,7 +4,6 @@ import BrandMark from "./Brandmark";
 import { useAuth } from "../auth/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useI18n } from "../i18n/I18nContext.jsx";
-import { scrollToSimulados } from "../utils/scrollToSimulados";
 
 export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = "", compact = false, hideMobileMenu = false }) {
     const nav = useNavigate();
@@ -13,15 +12,16 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
     const { t } = useI18n();
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const simuladosTarget = user ? "/simulados" : "/#simulados";
+    const simuladosTarget = user ? "/simulados" : "/register?next=/simulados";
 
     const navItems = useMemo(() => {
+        const gate = (path) => (user ? path : `/register?next=${encodeURIComponent(path)}`);
         const items = [
             { key: "briefing", to: "/", label: t("appHeader.briefing") },
-            { key: "weather", to: "/weather", label: t("weather.nav") },
-            { key: "tools", to: "/tools", label: t("appHeader.tools") },
-            { key: "computer", to: "/computador", label: t("flightComputer.nav") },
-            { key: "quiz", to: "/quiz", label: t("quiz.nav"), accent: true },
+            { key: "weather", to: "/weather", label: t("weather.nav"), free: true },
+            { key: "tools", to: gate("/tools"), label: t("appHeader.tools") },
+            { key: "computer", to: gate("/computador"), label: t("flightComputer.nav") },
+            { key: "quiz", to: gate("/quiz"), label: t("quiz.nav"), accent: true },
             { key: "exams", to: simuladosTarget, label: t("exams.nav") },
         ];
         if (user) {
@@ -55,7 +55,7 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
             nav("/simulados");
             return;
         }
-        scrollToSimulados(nav);
+        nav("/register?next=/simulados");
     }
 
     function closeMenu() {
@@ -70,9 +70,9 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
                         <BrandMark size={38} showText={false} compact />
                     </span>
                     <div className={`fp-topbar-titles ${compact ? "fp-topbar-titles--compact" : ""}`}>
-                        <span className="fp-topbar-site-name">{t("appHeader.siteName")}</span>
+                        <span className="fp-topbar-site-name">MARQUISA</span>
                         <div className="fp-topbar-titles-detail">
-                            <span className="fp-topbar-kicker">{kicker}</span>
+                            <span className="fp-topbar-kicker">{kicker || "OPS"}</span>
                             <span className="fp-topbar-title">{title || t("appHeader.defaultTitle")}</span>
                             {subtitle ? <span className="fp-topbar-sub">{subtitle}</span> : null}
                         </div>

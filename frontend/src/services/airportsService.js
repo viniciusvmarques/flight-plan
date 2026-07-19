@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { getApiBase } from "./apiClient";
+
+const API_BASE = getApiBase();
 
 export async function fetchAirport(icao) {
     const code = (icao || "").toUpperCase().trim();

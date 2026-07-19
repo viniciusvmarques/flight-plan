@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AppHeader from "../components/AppHeader";
-import AppFooter from "../components/AppFooter";
+import AviationShell from "../components/AviationShell";
 import GrowthCtaBar from "../components/GrowthCtaBar";
 import { ExperienceHero, ExperiencePageStack, ResultHighlight, WorkbenchCard } from "../components/experience/ExperienceUI";
 import {
@@ -115,10 +114,8 @@ export default function FlightComputer() {
             : `${runwayWind?.headwindKt ?? 0} kt`;
 
     return (
-        <div className="main-shell">
-            <AppHeader compact />
-            <main className="main-scroll growth-page experience-surface flight-computer-page">
-                <ExperiencePageStack>
+        <AviationShell>
+            <ExperiencePageStack>
                 <ExperienceHero
                     kicker={t("flightComputer.kicker")}
                     title={t("flightComputer.heroTitle")}
@@ -367,8 +364,6 @@ export default function FlightComputer() {
                     onPrimary={() => nav("/")}
                 />
                 </ExperiencePageStack>
-            </main>
-            <AppFooter />
-        </div>
+        </AviationShell>
     );
 }

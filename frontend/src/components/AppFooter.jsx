@@ -7,7 +7,11 @@ export default function AppFooter() {
         <footer className="site-footer" role="contentinfo">
             <div className="site-footer-inner">
                 <div>
-                    © {new Date().getFullYear()} Marquisa •{" "}
+                    CLR · TAXI · DEP · ENR · APP · LDG
+                    <div className="ck-footer-badge">Voe seguro · Voe preparado</div>
+                </div>
+                <div className="site-footer-note">
+                    © {new Date().getFullYear()} Marquisa ·{" "}
                     <Link to="/terms">{t("footer.terms")}</Link>
                     {" · "}
                     <Link to="/privacy">{t("footer.privacy")}</Link>
@@ -15,9 +19,6 @@ export default function AppFooter() {
                     <Link to="/cancellation-policy">{t("footer.cancellation")}</Link>
                     {" · "}
                     <Link to="/contact">{t("footer.contact")}</Link>
-                </div>
-                <div className="site-footer-note">
-                    {t("common.operationalDisclaimer")}
                 </div>
             </div>
         </footer>

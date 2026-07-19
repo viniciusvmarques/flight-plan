@@ -1,4 +1,27 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { visitorHeaders } from "../utils/visitorId.js";
+
+/** Vazio = same-origin (Vite proxy em dev). */
+function resolveApiBase() {
+  const raw = import.meta.env.VITE_API_URL;
+  if (raw === "" || raw === "/") return "";
+  if (raw == null) return "http://localhost:3001";
+  return String(raw).replace(/\/$/, "");
+}
+
+const API_BASE = resolveApiBase();
+
+export function getApiBase() {
+  return API_BASE;
+}
+
+export class ApiError extends Error {
+  constructor(message, { status, data } = {}) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.data = data;
+  }
+}
 
 /** Mesma chave que `AuthContext`: JWT como string JSON-stringified no storage. */
 export function getToken() {
@@ -27,7 +50,7 @@ export async function api(path, options = {}) {
         token: tokenOverride,
     } = options;
 
-    const h = { ...(headers || {}) };
+    const h = { ...visitorHeaders(), ...(headers || {}) };
     if (body !== undefined) h["Content-Type"] = "application/json";
 
     const token = tokenOverride !== undefined ? tokenOverride : auth ? getToken() : null;
@@ -52,7 +75,7 @@ export async function api(path, options = {}) {
             (data && typeof data === "object" && (data.error || data.message)) ||
             (typeof data === "string" ? data : null) ||
             `Erro HTTP ${res.status}`;
-        throw new Error(msg);
+        throw new ApiError(msg, { status: res.status, data });
     }
 
     return data;

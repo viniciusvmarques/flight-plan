@@ -1,26 +1,20 @@
 :root{
-    --bg: #0b1220;
-    --panel: rgba(255,255,255,0.06);
-    --panel2: rgba(255,255,255,0.04);
-    --border: rgba(255,255,255,0.10);
-    --text: #e5e7eb;
-    --muted: rgba(229,231,235,0.70);
-    --primary: #3b82f6;
-    --primary2: rgba(59,130,246,0.18);
+    --bg: #05080f;
+    --panel: #0c121c;
+    --panel2: #101826;
+    --border: rgba(148, 163, 184, 0.22);
+    --text: #e8f0f7;
+    --muted: rgba(186, 204, 220, 0.62);
+    --primary: #5eead4;
+    --primary2: rgba(94, 234, 212, 0.16);
 }
 
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
 body{
     margin: 0;
-    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-family: "Rajdhani", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
     color: var(--text);
-
-    /* Fundo sem imagem, só camadas de cor e profundidade */
-    background:
-            linear-gradient(180deg, rgba(8,12,22,0.92) 0%, rgba(11,18,32,0.94) 40%, rgba(11,18,32,0.94) 60%, rgba(8,12,22,0.92) 100%),
-            radial-gradient(1200px 800px at 20% 10%, rgba(59,130,246,0.12), rgba(0,0,0,0));
-    background-attachment: fixed;
 }
 
 a{ color: inherit; text-decoration: none; }

@@ -49,22 +49,22 @@ export const PP_SUBJECTS = [
           ["Apenas o consumo de combustível.", "A declinação magnética da rota.", "A altitude de pressão QNE."]
         ),
         q(
-          "Vento de cauda na perna de cruzeiro tende a:",
+          "Vento de cauda na perna de cruzeiro tende a?",
           "Aumentar a GS e reduzir o tempo até o próximo ponto.",
           ["Reduzir a GS e aumentar o tempo de voo.", "Não alterar ETA nem autonomia.", "Eliminar a necessidade de alternado."]
         ),
         q(
-          "Vento de proa na perna de cruzeiro tende a:",
+          "Vento de proa na perna de cruzeiro tende a?",
           "Reduzir a GS e aumentar o tempo até o próximo ponto.",
           ["Aumentar a GS e antecipar a chegada.", "Manter GS igual à TAS em qualquer condição.", "Dispensar recálculo de combustível."]
         ),
         q(
-          "Erro de estimativa de vento no planejamento pode resultar em:",
+          "Erro de estimativa de vento no planejamento pode resultar em?",
           "Chegada com combustível abaixo do previsto.",
           ["Melhora automática da visibilidade no destino.", "Eliminação da necessidade de alternado.", "Aumento garantido da autonomia."]
         ),
         q(
-          "A velocidade solo (GS) é medida em relação a:",
+          "A velocidade solo (GS) é medida em relação a?",
           "O solo.",
           ["O ar apenas.", "O nível de voo de cruzeiro.", "A estação VOR de referência."]
         ),
@@ -81,17 +81,17 @@ export const PP_SUBJECTS = [
           ["Para dispensar NOTAM.", "Para alterar o tipo de certificado.", "Para ignorar consumo horário."]
         ),
         q(
-          "Distância medida na carta deve ser interpretada conforme:",
+          "Distância medida na carta deve ser interpretada conforme?",
           "A escala e a unidade da carta (NM ou km).",
           ["Apenas a indicação do altímetro.", "A frequência da torre.", "O código transponder."]
         ),
         q(
-          "O ETA de um voo considera, em geral:",
+          "O ETA de um voo considera, em geral?",
           "A soma dos ETEs das pernas mais táxi e margem operacional.",
           ["Somente a hora de decolagem.", "Apenas a visibilidade no destino.", "O peso máximo de decolagem apenas."]
         ),
         q(
-          "A autonomia restante deve ser comparada com:",
+          "A autonomia restante deve ser comparada com?",
           "Tempo até o destino, reserva e alternado.",
           ["Apenas a hora local de pouso.", "Somente a indicação do VSI.", "O número de passageiros a bordo."]
         ),
@@ -103,184 +103,184 @@ export const PP_SUBJECTS = [
           ["Ser invisível para reduzir distração.", "Estar sempre dentro de nuvem.", "Substituir qualquer consulta meteorológica."]
         ),
         q(
-          "No planejamento VFR, as cartas aeronáuticas servem principalmente para:",
+          "No planejamento VFR, as cartas aeronáuticas servem principalmente para?",
           "Medir rumos, distâncias, espaço aéreo e obstáculos.",
           ["Substituir o pré-voo mecânico.", "Eliminar comunicação rádio.", "Autorizar voo IFR."]
         ),
         q(
-          "Pilotagem entre checkpoints ajuda a:",
+          "Pilotagem entre checkpoints ajuda a?",
           "Reduzir erro acumulado de estimativa de vento.",
           ["Voar sem referência visual.", "Ignorar restrições de espaço aéreo.", "Dispensar plano de combustível."]
         ),
         q(
-          "A linha traçada na carta representa, em geral:",
+          "A linha traçada na carta representa, em geral?",
           "O rumo planejado, não necessariamente a proa em voo.",
           ["A proa instantânea com vento desconhecido.", "A altitude de pressão QNE.", "A frequência de emergência."]
         ),
         q(
-          "Revisar espaço aéreo na carta antes do voo evita:",
+          "Revisar espaço aéreo na carta antes do voo evita?",
           "Ingresso não autorizado em áreas controladas ou restritas.",
           ["Consulta de METAR.", "Uso de combustível.", "Verificação de documentos."]
         ),
       ], "Carta e checkpoints estruturam rota visual segura."),
       topic("Subida e descida no planejamento", REF_NAV, [
         q(
-          "No planejamento, a etapa de subida deve estimar:",
+          "No planejamento, a etapa de subida deve estimar?",
           "Distância horizontal até o cruzeiro e combustível da subida.",
           ["Somente a cor da pista.", "Apenas a frequência ATIS.", "O peso do passageiro apenas."]
         ),
         q(
-          "O top of descent pode ser estimado com:",
+          "O top of descent pode ser estimado com?",
           "Altitude a perder, GS e razão de descida planejada.",
           ["Apenas a indicação do horizonte artificial.", "Somente o código squawk.", "A declinação magnética local."]
         ),
         q(
-          "Razão de subida insuficiente para um obstáculo na rota exige:",
+          "Razão de subida insuficiente para um obstáculo na rota exige?",
           "Alterar rota, peso ou ponto de início da subida.",
           ["Continuar sem replanejar.", "Voar IFR sem habilitação.", "Ignorar cartas e NOTAM."]
         ),
         q(
-          "Descida muito tardia em VFR pode causar:",
+          "Descida muito tardia em VFR pode causar?",
           "Aproximação alta e circuito desorganizado.",
           ["Melhora automática da visibilidade.", "Eliminação de vento de superfície.", "Dispensa de combustível de reserva."]
         ),
         q(
-          "A altitude de cruzeiro VFR deve considerar:",
+          "A altitude de cruzeiro VFR deve considerar?",
           "Obstáculos, nuvem, vento e visibilidade.",
           ["Apenas a preferência estética do piloto.", "Somente a hora do briefing.", "O tipo de transponder apenas."]
         ),
       ], "Subida e descida integram planejamento VFR."),
       topic("Combustível e alternado VFR", REF_NAV, [
         q(
-          "A reserva de combustível em VFR existe para:",
+          "A reserva de combustível em VFR existe para?",
           "Imprevistos de vento, espera, desvio ou tráfego.",
           ["Substituir o alternado.", "Voar sem NOTAM.", "Eliminar pré-voo."]
         ),
         q(
-          "Um alternado VFR adequado deve apresentar:",
+          "Um alternado VFR adequado deve apresentar?",
           "Meteorologia aceitável e serviços compatíveis com a aeronave.",
           ["Apenas pista mais longa, sem considerar tempo.", "Somente tráfego intenso.", "Qualquer aeródromo sem consulta."]
         ),
         q(
-          "O consumo horário usado no planejamento deve ser:",
+          "O consumo horário usado no planejamento deve ser?",
           "Conservador em relação ao histórico da aeronave.",
           ["Sempre o menor valor já registrado.", "Igual ao consumo de outra aeronave.", "Ignorado se o voo for curto."]
         ),
         q(
-          "Autonomia calculada menor que o tempo total planejado indica:",
+          "Autonomia calculada menor que o tempo total planejado indica?",
           "Necessidade de reabastecer ou replanejar.",
           ["Que o vento está calmo.", "Que o alternado é opcional.", "Que o VOR está desligado."]
         ),
         q(
-          "Combustível para retorno ou desvio deve ser previsto:",
+          "Combustível para retorno ou desvio deve ser previsto?",
           "Antes da decolagem, no planejamento.",
           ["Somente após o primeiro checkpoint.", "Apenas se a torre solicitar.", "Nunca em voo local."]
         ),
       ], "Combustível e alternado fecham margem da navegação visual."),
       topic("Bússola e orientação", REF_NAV, [
         q(
-          "Erros de aceleração e viragem na bússola magnética ocorrem porque:",
+          "Erros de aceleração e viragem na bússola magnética ocorrem porque?",
           "O campo da aeronave combina com o campo magnético terrestre.",
           ["A bússola mede vento verdadeiro.", "O GPS desliga o magnetismo.", "A declinação é zero em todo o Brasil."]
         ),
         q(
-          "Em voo reto andando, a bússola tende a:",
+          "Em voo reto andando, a bússola tende a?",
           "Indicar rumo magnético com menor erro de viragem.",
           ["Indicar sempre proa verdadeira.", "Substituir cartas.", "Eliminar deriva."]
         ),
         q(
-          "Com declinação magnética leste, a relação correta é:",
+          "Com declinação magnética leste, a relação correta é?",
           "Rumo magnético = rumo verdadeiro + declinação (com sinal da região).",
           ["Rumo verdadeiro = magnético + declinação sempre.", "MV = RV − declinação em qualquer lugar.", "Declinação não afeta planejamento."]
         ),
         q(
-          "Confiar apenas na bússola, sem pilotagem visual, pode:",
+          "Confiar apenas na bússola, sem pilotagem visual, pode?",
           "Acumular erro, especialmente com vento desconhecido.",
           ["Eliminar necessidade de checkpoints.", "Substituir alternado.", "Autorizar voo em IMC."]
         ),
         q(
-          "Orientação por relógio e sol em VFR é:",
+          "Orientação por relógio e sol em VFR é?",
           "Recurso de emergência, não substituto de planejamento.",
           ["Procedimento padrão em todo cruzeiro.", "Obrigatória em CTR.", "Igual a navegação por VOR."]
         ),
       ], "Bússola exige técnica; planejamento reduz improviso."),
       topic("VOR e auxílios em VFR", REF_NAV, [
         q(
-          "Em VFR, o VOR pode auxiliar a:",
+          "Em VFR, o VOR pode auxiliar a?",
           "Confirmar posição quando o checkpoint visual é duvidoso.",
           ["Substituir referências visuais obrigatórias.", "Voar abaixo do mínimo VFR.", "Eliminar plano de combustível."]
         ),
         q(
-          "Antes de usar um radial VOR, o piloto deve:",
+          "Antes de usar um radial VOR, o piloto deve?",
           "Identificar a estação correta.",
           ["Ignorar identificação se o CDI centralizar.", "Desligar transponder.", "Voar apenas por estimativa."]
         ),
         q(
-          "CDI centralizado com OBS no radial TO indica:",
+          "CDI centralizado com OBS no radial TO indica?",
           "Aeronave na semiesfera de afastamento da estação naquele radial.",
           ["Aeronave sempre sobre a estação.", "Falha certa do receptor.", "Autorização automática de IFR."]
         ),
         q(
-          "GNSS portátil em VFR exige:",
+          "GNSS portátil em VFR exige?",
           "Bateria, carta de backup e consciência das limitações.",
           ["Substituir habilitação do piloto.", "Voar sem alternado.", "Ignorar NOTAM."]
         ),
         q(
-          "Auxílio rádio em VFR não elimina:",
+          "Auxílio rádio em VFR não elimina?",
           "A necessidade de manter referências visuais ao solo.",
           ["O uso de combustível.", "A comunicação em emergência.", "A inspeção pré-voo."]
         ),
       ], "Auxílios complementam; VFR mantém referência visual primária."),
       topic("NOTAM e documentação de rota", REF_NAV, [
         q(
-          "NOTAM na preparação VFR informa sobre:",
+          "NOTAM na preparação VFR informa sobre?",
           "Pistas fechadas, auxílios fora e restrições temporárias.",
           ["Apenas preços de combustível.", "Somente horário comercial.", "Substituição do METAR."]
         ),
         q(
-          "ROTAER (ou equivalente) fornece:",
+          "ROTAER (ou equivalente) fornece?",
           "Dados de aeródromos, combustível e procedimentos locais.",
           ["Apenas código ICAO de aeronave.", "Somente fraseologia em inglês.", "Cartas IFR de alta altitude apenas."]
         ),
         q(
-          "Plano de voo VFR, quando exigido, facilita:",
+          "Plano de voo VFR, quando exigido, facilita?",
           "Busca e salvamento e coordenação ATS.",
           ["Voar sem rádio em CTR.", "Ignorar alternado.", "Eliminar reserva de combustível."]
         ),
         q(
-          "Frequências do aeródromo devem ser anotadas:",
+          "Frequências do aeródromo devem ser anotadas?",
           "No planejamento, antes do táxi.",
           ["Somente após a decolagem.", "Apenas se houver passageiro.", "Nunca em voo de instrução."]
         ),
         q(
-          "Cartas desatualizadas podem omitir:",
+          "Cartas desatualizadas podem omitir?",
           "Novos obstáculos ou mudanças de espaço aéreo.",
           ["Apenas a cor da pista.", "Somente o vento de superfície.", "A necessidade de pré-voo."]
         ),
       ], "Documentação atualizada sustenta navegação visual segura."),
       topic("Circuito e navegação local", REF_NAV, [
         q(
-          "No circuito de tráfego, a referência visual de vento ajuda a:",
+          "No circuito de tráfego, a referência visual de vento ajuda a?",
           "Antecipar deriva na base e na final.",
           ["Eliminar comunicação com torre.", "Voar sem combustível de reserva.", "Substituir NOTAM."]
         ),
         q(
-          "A entrada no circuito deve respeitar:",
+          "A entrada no circuito deve respeitar?",
           "Altitude e procedimento publicados do aeródromo.",
           ["Qualquer altitude abaixo de 500 ft AGL em qualquer lugar.", "Somente a preferência do instrutor.", "Procedimento IFR de aproximação."]
         ),
         q(
-          "Navegação local após decolagem exige:",
+          "Navegação local após decolagem exige?",
           "Mapa mental da área e limites de treinamento.",
           ["Voar sem consultar vento.", "Ignorar tráfego no circuito.", "Desligar rádio obrigatoriamente."]
         ),
         q(
-          "Ao perder um checkpoint em área conhecida, o piloto deve:",
+          "Ao perder um checkpoint em área conhecida, o piloto deve?",
           "Parar, identificar posição e não prosseguir incerto.",
           ["Acelerar para compensar erro.", "Voar IFR sem habilitação.", "Ignorar alternado."]
         ),
         q(
-          "Retorno ao aeródromo de origem no planejamento inclui:",
+          "Retorno ao aeródromo de origem no planejamento inclui?",
           "Combustível e meteorologia para a volta.",
           ["Somente a hora de almoço da tripulação.", "Apenas código transponder.", "Dispensa de NOTAM."]
         ),

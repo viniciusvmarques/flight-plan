@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AppFooter from "../components/AppFooter";
-import AppHeader from "../components/AppHeader";
+import AviationShell from "../components/AviationShell";
 import ExamProgressChart from "../components/ExamProgressChart";
 import ExamShareCard from "../components/ExamShareCard";
 import Card from "../components/Card";
@@ -197,9 +196,8 @@ export default function Exams() {
     }
 
     return (
-        <div className="main-shell exams-shell">
-            <AppHeader title={t("exams.title")} subtitle={isPro ? t("exams.subtitlePro") : t("exams.subtitleFree")} />
-            <main className="main-scroll exams-page exam-surface">
+        <AviationShell wide title={t("exams.title")} subtitle={isPro ? t("exams.subtitlePro") : t("exams.subtitleFree")}>
+            <div className="exams-page exam-surface">
                 <section className="exam-hero">
                     <div>
                         <p className="exam-kicker">{t("exams.kicker")}</p>
@@ -515,8 +513,7 @@ export default function Exams() {
                         </Card>
                     </div>
                 )}
-            </main>
-            <AppFooter />
-        </div>
+            </div>
+        </AviationShell>
     );
 }

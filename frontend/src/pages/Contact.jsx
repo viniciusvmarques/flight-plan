@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BrandMark from "../components/Brandmark";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import UtcBar from "../components/UtcBar";
 import { api } from "../services/apiClient";
 import { contactSubjects, siteProfile } from "../content/siteProfile";
 import { useI18n } from "../i18n/I18nContext.jsx";
@@ -45,7 +46,8 @@ export default function Contact() {
     }
 
     return (
-        <div className="auth-wrap">
+        <div className="auth-wrap av-shell">
+            <UtcBar />
             <div className="auth-card auth-card--wide" role="region" aria-label={t("contact.title")}>
                 <div className="auth-head">
                     <button type="button" className="auth-back" onClick={() => nav(-1)}>

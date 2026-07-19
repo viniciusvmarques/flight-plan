@@ -1,15 +1,15 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AppHeader from "../components/AppHeader";
-import AppFooter from "../components/AppFooter";
+import AviationShell from "../components/AviationShell";
 import Card from "../components/Card";
 import GrowthPageHero from "../components/GrowthPageHero";
 import GrowthCtaBar from "../components/GrowthCtaBar";
 import { useI18n } from "../i18n/I18nContext.jsx";
+import { api, getApiBase } from "../services/apiClient";
 
 import { sampleIdsMatch } from "../data/fixedSampleIds";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API = getApiBase();
 
 const COURSES = [
     { key: "CMS", labelKey: "quiz.cms", descKey: "hub.examsCopy" },
@@ -31,15 +31,6 @@ export default function Quiz() {
     const current = questions[index];
     const answeredCount = useMemo(() => Object.keys(answers).length, [answers]);
 
-    async function loadStaticSample() {
-        const res = await fetch("/fixed-sample.json", { cache: "no-store" });
-        if (!res.ok) return null;
-        const bank = await res.json();
-        const pack = bank?.[license];
-        if (!pack?.questions?.length || !sampleIdsMatch(license, pack.questionIds)) return null;
-        return pack;
-    }
-
     async function startSample() {
         setLoading(true);
         setError("");
@@ -47,26 +38,14 @@ export default function Quiz() {
         setAnswers({});
         setIndex(0);
         try {
-            let data = null;
-
-            try {
-                const res = await fetch(
-                    `${API}/api/exams/sample?license=${encodeURIComponent(license)}&locale=${encodeURIComponent(locale)}`
-                );
-                const apiData = await res.json();
-                if (res.ok && sampleIdsMatch(license, apiData.questionIds)) {
-                    data = apiData;
-                }
-            } catch {
-                /* API indisponível ou versão antiga — usa JSON estático */
+            const apiData = await api(
+                `/api/exams/sample?license=${encodeURIComponent(license)}&locale=${encodeURIComponent(locale)}`,
+                { auth: true }
+            );
+            if (!sampleIdsMatch(license, apiData.questionIds)) {
+                throw new Error(t("quiz.loadError"));
             }
-
-            if (!data) {
-                data = await loadStaticSample();
-            }
-
-            if (!data) throw new Error(t("quiz.loadError"));
-            setSession(data);
+            setSession(apiData);
         } catch (e) {
             setError(e?.message || t("quiz.loadError"));
         } finally {
@@ -105,9 +84,7 @@ export default function Quiz() {
     }
 
     return (
-        <div className="main-shell">
-            <AppHeader compact />
-            <main className="main-scroll growth-page experience-surface exam-surface">
+        <AviationShell>
                 <GrowthPageHero
                     kicker={t("quiz.nav")}
                     title={t("quiz.heroTitle")}
@@ -160,9 +137,9 @@ export default function Quiz() {
                         </Card>
                         <GrowthCtaBar
                             secondaryLabel={t("quiz.tryAgain")}
-                            primaryLabel={t("quiz.createAccount")}
+                            primaryLabel={t("dashboard.openExams")}
                             onSecondary={retrySameSample}
-                            onPrimary={() => nav("/register")}
+                            onPrimary={() => nav("/simulados")}
                         />
                     </div>
                 ) : (
@@ -247,8 +224,6 @@ export default function Quiz() {
                         ) : null}
                     </Card>
                 )}
-            </main>
-            <AppFooter />
-        </div>
+        </AviationShell>
     );
 }

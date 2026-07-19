@@ -2885,6 +2885,19 @@ button.danger-action:hover:not(:disabled) {
     background: linear-gradient(180deg, rgba(2, 6, 23, 0.96) 70%, rgba(2, 6, 23, 0));
 }
 
+.dashboard-route-bar-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.dashboard-route-refresh {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
 .dashboard-route-hint {
     margin: 0;
     font-size: 0.88rem;
@@ -3135,4 +3148,63 @@ button.danger-action:hover:not(:disabled) {
     .dash-briefing-actions .secondary {
         flex: 1 1 auto;
     }
+}
+
+.usage-limit-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(2, 6, 23, 0.72);
+    backdrop-filter: blur(4px);
+}
+
+.usage-limit-modal {
+    width: min(440px, 100%);
+    padding: 28px 24px;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    box-shadow: 0 24px 60px rgba(2, 6, 23, 0.55);
+    display: grid;
+    gap: 14px;
+}
+
+.usage-limit-kicker {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fbbf24;
+    font-weight: 700;
+}
+
+.usage-limit-modal h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.25;
+    color: #f8fafc;
+}
+
+.usage-limit-modal p {
+    margin: 0;
+    color: #cbd5e1;
+    line-height: 1.55;
+}
+
+.usage-limit-actions {
+    display: grid;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.usage-limit-inline {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px dashed rgba(251, 191, 36, 0.45);
+    background: rgba(251, 191, 36, 0.08);
+    color: #fde68a;
+    font-size: 0.92rem;
+    line-height: 1.45;
 }

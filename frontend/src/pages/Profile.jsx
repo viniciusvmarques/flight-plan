@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "../components/Card";
-import AppFooter from "../components/AppFooter";
-import AppHeader from "../components/AppHeader";
+import AviationShell from "../components/AviationShell";
 import AircraftProfilesManager from "../components/AircraftProfilesManager";
 import { useAuth } from "../auth/AuthContext";
 import { api } from "../services/apiClient";
@@ -164,14 +163,7 @@ export default function Profile() {
     const plan = String(user.plan || "FREE").toUpperCase();
 
     return (
-        <div className="main-shell">
-            <AppHeader
-                kicker={t("profile.kicker")}
-                title={t("profile.title")}
-                subtitle={t("profile.subtitle")}
-            />
-
-            <div className="main-scroll">
+        <AviationShell kicker={t("profile.kicker")} title={t("profile.title")} subtitle={t("profile.subtitle")}>
                 <div className="page-shell">
                     <section className="page-hero">
                         <div className="page-hero-head">
@@ -348,9 +340,6 @@ export default function Profile() {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <AppFooter />
-        </div>
+        </AviationShell>
     );
 }

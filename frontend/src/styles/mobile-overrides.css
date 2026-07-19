@@ -152,6 +152,10 @@
         grid-template-columns: 1fr;
     }
 
+    .dashboard-route-refresh {
+        width: 100%;
+    }
+
     .dashboard-route-pill {
         min-width: 0;
     }

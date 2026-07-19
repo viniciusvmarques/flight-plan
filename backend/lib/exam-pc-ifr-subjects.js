@@ -327,7 +327,7 @@ export const PC_IFR_SUBJECTS = [
           ["Somente outras aeronaves em espera.", "Apenas falhas de motor em decolagem.", "Exclusivamente turbulência leve."]
         ),
         q(
-          "Continuar abaixo do mínimo sem referência visual exigida é:",
+          "Continuar abaixo do mínimo sem referência visual exigida é?",
           "Inaceitável e exige arremetida.",
           ["Permitido se o piloto estiver IFR recente.", "Aceitável com autorização verbal do controle.", "Recomendado para economizar combustível."]
         ),

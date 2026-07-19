@@ -1,0 +1,8 @@
+/**
+ * Fundo do site — agora controlado pelo glass cockpit (aviation-shell.css).
+ * Mantido para não quebrar imports; só desativa a carta fotográfica antiga.
+ */
+
+:root {
+  --site-bg-photo: none;
+}

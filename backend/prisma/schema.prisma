@@ -11,7 +11,7 @@ datasource db {
 model User {
   id         String   @id @default(uuid())
   email      String   @unique
-  password   String
+  password   String?
   emailVerifiedAt        DateTime?
   emailVerificationToken String?   @unique
   emailVerificationExpires DateTime?
@@ -38,6 +38,28 @@ model User {
   emailLogs EmailLog[]
   aircraftProfiles AircraftProfile[]
   examAttempts ExamAttempt[]
+  oauthAccounts OAuthAccount[]
+}
+
+model OAuthAccount {
+  id                String   @id @default(uuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model FeatureUsage {
+  subjectKey String   @id
+  counts     Json     @default("{}")
+  updatedAt  DateTime @updatedAt
+
+  @@index([updatedAt])
 }
 
 model Briefing {

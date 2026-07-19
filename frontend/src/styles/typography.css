@@ -3,21 +3,20 @@
  */
 
 :root {
-    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    --font-display: "Montserrat", "Plus Jakarta Sans", ui-sans-serif, sans-serif;
-    /* Lora: leitura das provas — serif elegante e confortável */
-    --font-exam: "Lora", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    --font-sans: "Rajdhani", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Rajdhani", "Plus Jakarta Sans", ui-sans-serif, sans-serif;
+    --font-exam: "IBM Plex Mono", "Share Tech Mono", ui-monospace, monospace;
     --font-growth: var(--font-sans);
     --font-growth-title: var(--font-display);
-    --exam-text: #e9e6e0;
-    --exam-text-strong: #f6f4ef;
-    --exam-leading: 1.74;
-    --exam-leading-tight: 1.62;
-    --exam-size-body: 1.07rem;
-    --exam-size-question: 1.2rem;
-    --font-size-base: 15px;
-    --leading-normal: 1.6;
-    --tracking-tight: -0.02em;
+    --exam-text: #e8f0f7;
+    --exam-text-strong: #f8fafc;
+    --exam-leading: 1.65;
+    --exam-leading-tight: 1.5;
+    --exam-size-body: 1.02rem;
+    --exam-size-question: 1.12rem;
+    --font-size-base: 16px;
+    --leading-normal: 1.45;
+    --tracking-tight: 0.02em;
 }
 
 html {

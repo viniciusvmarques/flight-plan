@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import AppHeader from "../components/AppHeader";
-import AppFooter from "../components/AppFooter";
+import AviationShell from "../components/AviationShell";
 import GrowthCtaBar from "../components/GrowthCtaBar";
 import {
     BulletinPanel,
@@ -10,18 +9,20 @@ import {
     ExperiencePageStack,
     WxCategoryPanel,
 } from "../components/experience/ExperienceUI";
-import { fetchMetar, fetchTaf } from "../services/weatherService";
+import { fetchStationWeather } from "../services/weatherService";
 import { fetchAirport } from "../services/airportsService";
 import { decodeMetarSummary } from "../utils/metarDecoder";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
 import { useI18n } from "../i18n/I18nContext.jsx";
 import { useNotify } from "../ui/NotifyContext.jsx";
+import { useAuth } from "../auth/AuthContext";
 
 const QUICK_ICAO = ["SBGR", "SBRJ", "SBSP", "KJFK", "EGLL"];
 
 export default function Weather() {
     const nav = useNavigate();
     const [params, setParams] = useSearchParams();
+    const { user } = useAuth();
     const { t, locale } = useI18n();
     const { toast } = useNotify();
     const [icao, setIcao] = useState((params.get("icao") || "SBGR").toUpperCase());
@@ -41,14 +42,10 @@ export default function Weather() {
         setLoading(true);
         setError("");
         try {
-            const [metarText, tafText, airportData] = await Promise.all([
-                fetchMetar(clean).catch(() => ""),
-                fetchTaf(clean).catch(() => ""),
-                fetchAirport(clean).catch(() => null),
-            ]);
-            setMetar(metarText || "");
-            setTaf(tafText || "");
-            setAirport(airportData);
+            const station = await fetchStationWeather(clean);
+            setMetar(station.metar || "");
+            setTaf(station.taf || "");
+            setAirport(station.airport || (await fetchAirport(clean).catch(() => null)));
             setParams({ icao: clean });
         } catch (e) {
             setError(e?.message || t("weather.loadError"));
@@ -81,10 +78,8 @@ export default function Weather() {
     }
 
     return (
-        <div className="main-shell">
-            <AppHeader compact />
-            <main className="main-scroll growth-page experience-surface">
-                <ExperiencePageStack>
+        <AviationShell>
+            <ExperiencePageStack>
                 <ExperienceHero
                     kicker={t("weather.nav")}
                     title={t("weather.heroTitle")}
@@ -169,15 +164,22 @@ export default function Weather() {
                     </div>
                 ) : null}
 
+                {!user ? (
+                    <div className="av-lock-banner">
+                        <p>{t("plannerGate.bannerCopy")}</p>
+                        <button type="button" className="primary" style={{ width: "auto", marginTop: 0 }} onClick={() => nav("/register")}>
+                            {t("plannerGate.ctaRegister")}
+                        </button>
+                    </div>
+                ) : null}
+
                 <GrowthCtaBar
-                    secondaryLabel={t("hub.quizTitle")}
-                    primaryLabel={t("dashboard.openExams")}
-                    onSecondary={() => nav("/quiz")}
-                    onPrimary={() => nav("/#simulados")}
+                    secondaryLabel={user ? t("appHeader.briefing") : t("common.login")}
+                    primaryLabel={user ? t("dashboard.openExams") : t("plannerGate.ctaRegister")}
+                    onSecondary={() => nav(user ? "/" : "/login?next=/")}
+                    onPrimary={() => nav(user ? "/simulados" : "/register")}
                 />
-                </ExperiencePageStack>
-            </main>
-            <AppFooter />
-        </div>
+            </ExperiencePageStack>
+        </AviationShell>
     );
 }

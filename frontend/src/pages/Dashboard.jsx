@@ -6,10 +6,9 @@ import Card from "../components/Card";
 import DashboardBriefingWorkspace from "../components/DashboardBriefingWorkspace";
 import FlightPlanStack from "../components/FlightPlanStack";
 
-import { fetchMetar, fetchTaf } from "../services/weatherService";
+import { api } from "../services/apiClient";
 import { fetchAirport } from "../services/airportsService";
 import { fetchAircraftPresets, fetchAircraftProfiles } from "../services/aircraftService";
-import { api } from "../services/apiClient";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
 import { haversineNm } from "../utils/distance";
 import {
@@ -21,8 +20,8 @@ import {
 
 import { useAuth } from "../auth/AuthContext";
 import AppHeader from "../components/AppHeader";
-import AppFooter from "../components/AppFooter";
 import HomeHub from "../components/HomeHub";
+import UtcBar from "../components/UtcBar";
 import { useNotify } from "../ui/NotifyContext.jsx";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
@@ -49,17 +48,6 @@ function saveJSON(key, val) {
 
 function hasCoordinates(airport) {
     return Number.isFinite(airport?.latitude) && Number.isFinite(airport?.longitude);
-}
-
-function friendlyWeatherError(kind, value, t) {
-    const fallback = t("dashboard.weatherUnavailable", { kind });
-    const text = String(value || "").trim();
-    const lower = text.toLowerCase();
-
-    if (!text) return fallback;
-    if (lower.includes("body is disturbed") || lower.includes("body is unusable") || lower.includes("locked")) return fallback;
-    if (lower.includes("no data") || lower.includes("not found") || lower.includes("não encontrado") || lower.includes("nao encontrado")) return fallback;
-    return text;
 }
 
 export default function Dashboard() {
@@ -287,43 +275,39 @@ export default function Dashboard() {
         });
     }, [base, plannerSeed]);
 
-    async function briefFor(icao) {
-        const code = icao.toUpperCase().trim();
-        const [metarRes, tafRes, airportRes] = await Promise.allSettled([fetchMetar(code), fetchTaf(code), fetchAirport(code)]);
-
-        return {
-            icao: code,
-            metar: metarRes.status === "fulfilled" ? metarRes.value : null,
-            taf: tafRes.status === "fulfilled" ? tafRes.value : null,
-            metarError: metarRes.status === "rejected" ? friendlyWeatherError("METAR", metarRes.reason?.message, t) : null,
-            tafError: tafRes.status === "rejected" ? friendlyWeatherError("TAF", tafRes.reason?.message, t) : null,
-            airport: airportRes.status === "fulfilled" ? airportRes.value : null,
-                    airportError: airportRes.status === "rejected" ? airportRes.reason?.message || t("dashboard.airportFetchError") : null,
-        };
-    }
-
     async function handleBrief(origin, dest, alt, requestOptions = {}) {
+        if (!user) {
+            nav("/register");
+            return;
+        }
         const o = (origin || "").toUpperCase().trim();
         const d = (dest || "").toUpperCase().trim();
         const a = (alt || "").toUpperCase().trim();
+        const isRefresh = requestOptions?.refresh === true;
 
         setLoading(true);
         setError("");
-        setData(null);
-        setSelectedIcao("");
-        setAirportInfo(null);
-        setAirportInfoLoading(false);
+        if (!isRefresh) {
+            setData(null);
+            setSelectedIcao("");
+            setAirportInfo(null);
+            setAirportInfoLoading(false);
+        }
 
         try {
             if (!isValidIcao(o)) throw new Error(t("dashboard.invalidOrigin"));
             if (d && !isValidIcao(d)) throw new Error(t("dashboard.invalidDestination"));
             if (a && !isValidIcao(a)) throw new Error(t("dashboard.invalidAlternate"));
 
-            const tasks = [briefFor(o)];
-            if (d) tasks.push(briefFor(d));
-            if (a) tasks.push(briefFor(a));
+            const generated = await api("/api/briefing/generate", {
+                method: "POST",
+                auth: true,
+                body: { origin: o, dest: d, alternate: a },
+            });
 
-            const results = await Promise.all(tasks);
+            const results = [generated.origin];
+            if (d) results.push(generated.dest);
+            if (a) results.push(generated.alternate);
 
             let basePlan = requestOptions?.plan || plannerSeed || base?.plan || {};
             if (requestOptions?.aircraftSelection) {
@@ -356,13 +340,17 @@ export default function Dashboard() {
             setLastData(out);
             setPlannerSeed(basePlan);
             localStorage.setItem("fp_last_briefing", JSON.stringify(out));
-            toast(d ? t("dashboard.briefingGeneratedRoute", { origin: o, dest: d }) : t("dashboard.briefingGeneratedSingle", { origin: o }), {
-                variant: "success",
-                title: t("dashboard.briefingGeneratedTitle"),
-            });
-            window.requestAnimationFrame(() => {
-                briefingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-            });
+            if (isRefresh) {
+                toast(t("dashboard.refreshBriefingDone"), { variant: "success", title: t("dashboard.refreshBriefing") });
+            } else {
+                toast(d ? t("dashboard.briefingGeneratedRoute", { origin: o, dest: d }) : t("dashboard.briefingGeneratedSingle", { origin: o }), {
+                    variant: "success",
+                    title: t("dashboard.briefingGeneratedTitle"),
+                });
+                window.requestAnimationFrame(() => {
+                    briefingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+            }
         } catch (e) {
             setError(e?.message || "Erro ao gerar briefing");
         } finally {
@@ -388,6 +376,15 @@ export default function Dashboard() {
         if (base.alternate?.icao === selectedIcao) return base.alternate;
         return null;
     }, [base, selectedIcao]);
+
+    function refreshBriefing() {
+        const origin = base?.origin?.icao;
+        if (!origin || loading) return;
+        handleBrief(origin, base?.dest?.icao || "", base?.alternate?.icao || "", {
+            plan: base?.plan || plannerSeed || null,
+            refresh: true,
+        });
+    }
 
     async function openDetails(icao) {
         setSelectedIcao(icao);
@@ -440,37 +437,52 @@ export default function Dashboard() {
     }, [base]);
 
     return (
-        <div className="app">
+        <div className="app av-shell">
+            <div className="av-dashboard-top">
+                <UtcBar />
+            </div>
             <Sidebar onBrief={handleBrief} />
 
             <div className="main-shell">
                 <AppHeader compact hideMobileMenu />
-
                 <div className="main-scroll">
-                    <div className="page-shell dashboard-page-shell">
+                    <div className="page-shell dashboard-page-shell av-page av-page--wide">
                         <section className="dashboard-route-bar" aria-label={t("dashboard.routeBarLabel")}>
-                            <div className="dashboard-route-strip">
-                                <div className="dashboard-route-pill">
-                                    <span className="dashboard-route-code">A</span>
-                                    <div className="dashboard-route-meta">
-                                        <span className="dashboard-route-label">{t("common.origin")}</span>
-                                        <strong className="dashboard-route-value">{base?.origin?.icao || t("dashboard.pendingRoute")}</strong>
+                            <div className="dashboard-route-bar-row">
+                                <div className="dashboard-route-strip">
+                                    <div className="dashboard-route-pill">
+                                        <span className="dashboard-route-code">A</span>
+                                        <div className="dashboard-route-meta">
+                                            <span className="dashboard-route-label">{t("common.origin")}</span>
+                                            <strong className="dashboard-route-value">{base?.origin?.icao || t("dashboard.pendingRoute")}</strong>
+                                        </div>
+                                    </div>
+                                    <div className="dashboard-route-pill">
+                                        <span className="dashboard-route-code">B</span>
+                                        <div className="dashboard-route-meta">
+                                            <span className="dashboard-route-label">{t("common.destination")}</span>
+                                            <strong className="dashboard-route-value">{base?.dest?.icao || t("dashboard.optionalField")}</strong>
+                                        </div>
+                                    </div>
+                                    <div className="dashboard-route-pill">
+                                        <span className="dashboard-route-code">C</span>
+                                        <div className="dashboard-route-meta">
+                                            <span className="dashboard-route-label">{t("common.alternate")}</span>
+                                            <strong className="dashboard-route-value">{base?.alternate?.icao || t("dashboard.optionalField")}</strong>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="dashboard-route-pill">
-                                    <span className="dashboard-route-code">B</span>
-                                    <div className="dashboard-route-meta">
-                                        <span className="dashboard-route-label">{t("common.destination")}</span>
-                                        <strong className="dashboard-route-value">{base?.dest?.icao || t("dashboard.optionalField")}</strong>
-                                    </div>
-                                </div>
-                                <div className="dashboard-route-pill">
-                                    <span className="dashboard-route-code">C</span>
-                                    <div className="dashboard-route-meta">
-                                        <span className="dashboard-route-label">{t("common.alternate")}</span>
-                                        <strong className="dashboard-route-value">{base?.alternate?.icao || t("dashboard.optionalField")}</strong>
-                                    </div>
-                                </div>
+                                {base?.origin?.icao ? (
+                                    <button
+                                        type="button"
+                                        className="secondary dashboard-route-refresh"
+                                        onClick={refreshBriefing}
+                                        disabled={loading}
+                                        title={t("dashboard.refreshBriefingHint")}
+                                    >
+                                        {loading ? t("dashboard.refreshing") : t("dashboard.refreshBriefingFull")}
+                                    </button>
+                                ) : null}
                             </div>
                             <p className="dashboard-route-hint muted">{t("dashboard.sidebarHint")}</p>
                         </section>
@@ -516,11 +528,7 @@ export default function Dashboard() {
                                         plannerSummary={plannerSummary}
                                         onSelectStation={openDetails}
                                         onCloseDetails={closeDetails}
-                                        onRefresh={() =>
-                                            handleBrief(base.origin?.icao || "", base.dest?.icao || "", base.alternate?.icao || "", {
-                                                plan: base.plan || plannerSeed || null,
-                                            })
-                                        }
+                                        onRefresh={refreshBriefing}
                                         onSave={saveBriefing}
                                         onPrint={() => window.print()}
                                         onToggleFav={toggleFavorite}
@@ -563,8 +571,6 @@ export default function Dashboard() {
                         </section>
                     </div>
                 </div>
-
-                <AppFooter />
             </div>
         </div>
     );

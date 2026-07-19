@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate, useSearchParams } from "react-router-do
 import { useAuth } from "../auth/AuthContext";
 import BrandMark from "../components/Brandmark";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import SocialAuthButtons from "../components/SocialAuthButtons";
+import UtcBar from "../components/UtcBar";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
 export default function Login() {
@@ -55,7 +57,8 @@ export default function Login() {
   }
 
   return (
-    <div className="auth-wrap">
+    <div className="auth-wrap av-shell">
+      <UtcBar />
       <div className="auth-card" role="region" aria-label={t("auth.loginTitle")}>
         <div className="auth-head">
           <button type="button" className="auth-back" onClick={() => nav(-1)}>
@@ -76,6 +79,13 @@ export default function Login() {
               {t("auth.resetSuccess")}
             </div>
           )}
+
+          <SocialAuthButtons
+            mode="login"
+            disabled={loading}
+            onSuccess={() => nav(resolveNextPath(), { replace: true })}
+            onError={(err) => setError(err?.message || t("auth.oauthFailed"))}
+          />
 
           <form onSubmit={onSubmit} className="auth-form">
             <label>

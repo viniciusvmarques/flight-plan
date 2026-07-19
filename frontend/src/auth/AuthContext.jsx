@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { legalVersions } from "../content/siteProfile";
 import { getStoredLocale } from "../i18n/I18nContext.jsx";
+import { getApiBase } from "../services/apiClient";
 
 const AuthContext = createContext(null);
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:3001"; // backend
+const API = getApiBase(); // backend
 const LS_USER = "fp_user";
 const LS_TOKEN = "fp_token";
 
@@ -79,6 +80,27 @@ export function AuthProvider({ children }) {
         return json;
     }
 
+    async function loginWithOAuth({ provider, idToken, accepted, consentVersions, locale }) {
+        const r = await fetch(`${API}/auth/oauth`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                provider,
+                idToken,
+                locale,
+                consent: { accepted: !!accepted },
+                consentVersions: consentVersions || legalVersions,
+            }),
+        });
+
+        const json = await r.json().catch(() => ({}));
+        if (!r.ok) throw buildApiError(json, "Falha no login social.");
+
+        setToken(json.token);
+        setUser(json.user);
+        return json;
+    }
+
     async function refreshMe() {
         if (!token) return;
         const r = await fetch(`${API}/me`, {
@@ -101,7 +123,7 @@ export function AuthProvider({ children }) {
     }
 
     const value = useMemo(
-        () => ({ user, token, register, login, logout, refreshMe, setPlan }),
+        () => ({ user, token, register, login, loginWithOAuth, logout, refreshMe, setPlan }),
         [user, token]
     );
 

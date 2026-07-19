@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BrandMark from "../components/Brandmark";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import UtcBar from "../components/UtcBar";
 import { api } from "../services/apiClient";
 import { getStoredLocale, useI18n } from "../i18n/I18nContext.jsx";
 
@@ -35,7 +36,8 @@ export default function ForgotPassword() {
     }
 
     return (
-        <div className="auth-wrap">
+        <div className="auth-wrap av-shell">
+            <UtcBar />
             <div className="auth-card" role="region" aria-label={t("auth.forgotTitle")}>
                 <div className="auth-head">
                     <button type="button" className="auth-back" onClick={() => nav("/login")}>

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AppHeader from "../components/AppHeader";
-import AppFooter from "../components/AppFooter";
+import AviationShell from "../components/AviationShell";
 import Card from "../components/Card";
 import GrowthPageHero from "../components/GrowthPageHero";
 import GrowthCtaBar from "../components/GrowthCtaBar";
@@ -10,10 +9,10 @@ import { useI18n } from "../i18n/I18nContext.jsx";
 const PAGE_KEYS = ["metar", "planning", "pp", "cms"];
 
 const SEO_ROUTES = {
-    metar: { primary: "/weather?icao=SBGR", secondary: "/tools" },
-    planning: { primary: "/", secondary: "/weather" },
-    pp: { primary: "/quiz", secondary: "/register" },
-    cms: { primary: "/quiz", secondary: "/#simulados" },
+    metar: { primary: "/weather?icao=SBGR", secondary: "/register" },
+    planning: { primary: "/register", secondary: "/weather" },
+    pp: { primary: "/register?next=/quiz", secondary: "/weather" },
+    cms: { primary: "/register?next=/simulados", secondary: "/weather" },
 };
 
 export default function SeoLanding({ pageKey = "metar" }) {
@@ -27,37 +26,29 @@ export default function SeoLanding({ pageKey = "metar" }) {
     }, [key, t]);
 
     return (
-        <div className="main-shell">
-            <AppHeader compact />
-            <main className="main-scroll growth-page experience-surface">
-                <GrowthPageHero
-                    kicker="Marquisa"
-                    title={t(`seo.${key}.heroTitle`)}
-                    copy={t(`seo.${key}.heroCopy`)}
-                />
+        <AviationShell>
+            <GrowthPageHero kicker="Marquisa" title={t(`seo.${key}.heroTitle`)} copy={t(`seo.${key}.heroCopy`)} />
 
-                <Card title={t(`seo.${key}.sectionTitle`)}>
-                    <p className="growth-section-lead">{t(`seo.${key}.sectionCopy`)}</p>
-                    <ul className="growth-feature-list">
-                        {bullets.map((item) => (
-                            <li key={item}>
-                                <span className="growth-feature-check" aria-hidden="true">
-                                    ✓
-                                </span>
-                                <span>{item}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </Card>
+            <Card title={t(`seo.${key}.sectionTitle`)}>
+                <p className="growth-section-lead">{t(`seo.${key}.sectionCopy`)}</p>
+                <ul className="growth-feature-list">
+                    {bullets.map((item) => (
+                        <li key={item}>
+                            <span className="growth-feature-check" aria-hidden="true">
+                                ✓
+                            </span>
+                            <span>{item}</span>
+                        </li>
+                    ))}
+                </ul>
+            </Card>
 
-                <GrowthCtaBar
-                    secondaryLabel={t(`seo.${key}.secondaryCta`)}
-                    primaryLabel={t(`seo.${key}.primaryCta`)}
-                    onSecondary={() => nav(SEO_ROUTES[key].secondary)}
-                    onPrimary={() => nav(SEO_ROUTES[key].primary)}
-                />
-            </main>
-            <AppFooter />
-        </div>
+            <GrowthCtaBar
+                secondaryLabel={t(`seo.${key}.secondaryCta`)}
+                primaryLabel={t(`seo.${key}.primaryCta`)}
+                onSecondary={() => nav(SEO_ROUTES[key].secondary)}
+                onPrimary={() => nav(SEO_ROUTES[key].primary)}
+            />
+        </AviationShell>
     );
 }
