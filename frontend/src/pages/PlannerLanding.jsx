@@ -60,6 +60,15 @@ export default function PlannerLanding() {
         }
     }
 
+    function resetSearch() {
+        setIcao("");
+        setMetar("");
+        setTaf("");
+        setAirportName("");
+        setError("");
+        setLoading(false);
+    }
+
     useEffect(() => {
         load("SBGR");
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,9 +109,14 @@ export default function PlannerLanding() {
                                 aria-label="ICAO"
                             />
                         </label>
-                        <button type="submit" className="primary" disabled={loading}>
-                            {loading ? t("common.loading") : t("plannerWx.consult")}
-                        </button>
+                        <div className="ck-wx-form-actions">
+                            <button type="submit" className="primary" disabled={loading}>
+                                {loading ? t("common.loading") : t("plannerWx.consult")}
+                            </button>
+                            <button type="button" className="secondary" onClick={resetSearch} disabled={loading}>
+                                {t("weather.resetSearch")}
+                            </button>
+                        </div>
                     </form>
 
                     <div className="ck-wx-quick">

@@ -182,6 +182,16 @@ export default function Profile() {
                                 <button className="secondary" type="button" onClick={() => nav("/assinatura")}>
                                     {t("common.billing")}
                                 </button>
+                                <button
+                                    className="secondary"
+                                    type="button"
+                                    onClick={() => {
+                                        logout();
+                                        nav("/");
+                                    }}
+                                >
+                                    {t("common.logout")}
+                                </button>
                             </div>
                         </div>
 

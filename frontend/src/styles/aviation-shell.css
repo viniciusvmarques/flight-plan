@@ -680,7 +680,7 @@ label,
 
 .ck-wx-form {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
   gap: 10px;
   margin-top: 18px;
   align-items: end;
@@ -1006,6 +1006,73 @@ pre.metar,
   min-height: 48px;
 }
 
+.ck-ops-form-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.ck-ops-clear {
+  width: 100%;
+  min-height: 42px;
+}
+
+.ck-ops-logout {
+  border-color: rgba(94, 234, 212, 0.4) !important;
+  color: var(--ck-cyan) !important;
+}
+
+.ck-nav-logout {
+  appearance: none;
+  border: 1px solid rgba(94, 234, 212, 0.35);
+  background: transparent;
+  color: var(--ck-text);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font: 700 0.72rem/1 var(--ck-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.ck-nav-logout:hover {
+  border-color: var(--ck-cyan);
+  color: var(--ck-cyan);
+  background: rgba(94, 234, 212, 0.08);
+}
+
+.ck-nav-logout--mobile {
+  width: 100%;
+  margin: 8px 0 4px;
+  min-height: 44px;
+}
+
+.ck-wx-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.ck-wx-form-actions .primary,
+.ck-wx-form-actions .secondary {
+  min-height: 48px;
+  flex: 1 1 140px;
+}
+
+.growth-search-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.growth-search-actions .growth-search-submit,
+.growth-search-actions .growth-search-reset {
+  min-height: 48px;
+  flex: 1 1 120px;
+}
+
 .ck-ops-account {
   margin-top: 16px;
   padding-top: 14px;
@@ -1033,7 +1100,7 @@ pre.metar,
 .ck-ops-account-actions a,
 .ck-ops-account-actions button {
   appearance: none;
-  border: 1px solid rgba(148, 163, 184, 0.3);
+  border: 1px solid rgba(94, 234, 212, 0.32);
   background: transparent;
   color: var(--ck-text);
   border-radius: 4px;
@@ -1165,14 +1232,99 @@ button.secondary,
   }
 
   .av-utc-bar {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "brand actions"
+      "clock clock";
+    gap: 10px 12px;
+    text-align: left;
+    padding: 10px 12px;
+  }
+
+  .av-utc-brand {
+    grid-area: brand;
+    justify-self: start;
+  }
+
+  .av-utc-clock-wrap {
+    grid-area: clock;
+    justify-self: stretch;
     text-align: center;
   }
 
-  .av-utc-brand,
-  .av-utc-clock-wrap,
   .av-utc-actions {
-    justify-self: center;
+    grid-area: actions;
+    justify-self: end;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .av-utc-actions .av-utc-tag {
+    display: none;
+  }
+
+  .av-utc-brand-sub {
+    display: none;
+  }
+
+  .ck-nav-logout--desktop {
+    display: none;
+  }
+
+  .ck-route-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .ck-route-summary > .secondary {
+    width: 100%;
+  }
+
+  .ck-wx-form {
+    grid-template-columns: 1fr;
+  }
+
+  .ck-wx-form-actions,
+  .growth-search-actions {
+    width: 100%;
+  }
+
+  .ck-wx-form-actions .primary,
+  .ck-wx-form-actions .secondary,
+  .growth-search-actions .growth-search-submit,
+  .growth-search-actions .growth-search-reset {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .page-hero-head,
+  .page-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-actions button {
+    width: 100%;
+  }
+
+  .xp-workbench-body {
+    grid-template-columns: 1fr !important;
+  }
+
+  .xp-workbench-inputs {
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(94, 234, 212, 0.14);
+  }
+
+  .plan-brief-grid,
+  .plan-grid--4,
+  .plan-grid--3,
+  .billing-status-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .aircraft-manager-grid {
+    grid-template-columns: 1fr !important;
   }
 }
 

@@ -443,7 +443,22 @@ export default function Dashboard() {
             subtitle={t("sidebar.caption")}
         >
             <div className="ck-dash-grid">
-                <OpsRoutePanel onBrief={handleBrief} loading={loading} />
+                <OpsRoutePanel
+                    onBrief={handleBrief}
+                    onClear={() => {
+                        setData(null);
+                        setLastData(null);
+                        setSelectedIcao("");
+                        setError("");
+                        setAirportInfo(null);
+                        try {
+                            localStorage.removeItem("fp_last_briefing");
+                        } catch {
+                            /* ignore */
+                        }
+                    }}
+                    loading={loading}
+                />
 
                 <div className="ck-dash-main">
                     {base?.origin?.icao ? (

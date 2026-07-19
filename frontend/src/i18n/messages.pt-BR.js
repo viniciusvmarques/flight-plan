@@ -170,6 +170,7 @@ export const ptBR = {
         billing: "Assinatura",
         logout: "Sair",
         login: "Entrar",
+        clearRoute: "Limpar aeródromos",
     },
     auth: {
         back: "Voltar",
@@ -535,6 +536,7 @@ export const ptBR = {
         copied: "Copiado para a área de transferência.",
         copyFailed: "Não foi possível copiar.",
         copy: "Copiar",
+        resetSearch: "Limpar busca",
     },
     tools: {
         title: "Ferramentas",

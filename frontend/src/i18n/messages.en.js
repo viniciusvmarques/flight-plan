@@ -170,6 +170,7 @@ export const en = {
         billing: "Subscription",
         logout: "Log out",
         login: "Log in",
+        clearRoute: "Clear aerodromes",
     },
     auth: {
         back: "Back",
@@ -535,6 +536,7 @@ export const en = {
         copied: "Copied to clipboard.",
         copyFailed: "Could not copy.",
         copy: "Copy",
+        resetSearch: "Clear search",
     },
     tools: {
         title: "Tools",

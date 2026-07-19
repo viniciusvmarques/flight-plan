@@ -54,6 +54,16 @@ export default function Weather() {
         }
     }
 
+    function resetSearch() {
+        setIcao("");
+        setMetar("");
+        setTaf("");
+        setAirport(null);
+        setError("");
+        setLoading(false);
+        setParams({});
+    }
+
     useEffect(() => {
         const fromUrl = params.get("icao");
         if (fromUrl && fromUrl.length === 4) {
@@ -127,9 +137,14 @@ export default function Weather() {
                                 spellCheck={false}
                             />
                         </label>
-                        <button className="primary growth-search-submit" type="submit" disabled={loading}>
-                            {loading ? t("common.loading") : t("weather.searchButton")}
-                        </button>
+                        <div className="growth-search-actions">
+                            <button className="primary growth-search-submit" type="submit" disabled={loading}>
+                                {loading ? t("common.loading") : t("weather.searchButton")}
+                            </button>
+                            <button className="secondary growth-search-reset" type="button" onClick={resetSearch}>
+                                {t("weather.resetSearch")}
+                            </button>
+                        </div>
                     </form>
                 </ExperienceCommandBar>
 

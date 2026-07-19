@@ -10,7 +10,7 @@ import { useI18n } from "../i18n/I18nContext.jsx";
 export default function AppHeader({ hideMobileMenu = false }) {
     const nav = useNavigate();
     const location = useLocation();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const { t } = useI18n();
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -62,6 +62,12 @@ export default function AppHeader({ hideMobileMenu = false }) {
         setMenuOpen(false);
     }
 
+    function handleLogout() {
+        setMenuOpen(false);
+        logout();
+        nav("/");
+    }
+
     function isActive(to) {
         if (to === "/") return location.pathname === "/" || location.pathname === "/briefing";
         return location.pathname === to || location.pathname.startsWith(`${to}/`);
@@ -100,6 +106,11 @@ export default function AppHeader({ hideMobileMenu = false }) {
                 </nav>
 
                 <div className="ck-navbar-tools">
+                    {user ? (
+                        <button type="button" className="ck-nav-logout ck-nav-logout--desktop" onClick={handleLogout}>
+                            {t("common.logout")}
+                        </button>
+                    ) : null}
                     <LanguageSwitcher compact />
                     {!hideMobileMenu ? (
                         <button
@@ -162,6 +173,11 @@ export default function AppHeader({ hideMobileMenu = false }) {
                                 )
                             )}
                         </nav>
+                        {user ? (
+                            <button type="button" className="ck-nav-logout ck-nav-logout--mobile" onClick={handleLogout}>
+                                {t("common.logout")}
+                            </button>
+                        ) : null}
                         <div className="ck-mobile-nav-lang">
                             <LanguageSwitcher />
                         </div>

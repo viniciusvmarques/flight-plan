@@ -170,6 +170,7 @@ export const es = {
         billing: "Suscripción",
         logout: "Salir",
         login: "Entrar",
+        clearRoute: "Limpiar aeródromos",
     },
     auth: {
         back: "Volver",
@@ -535,6 +536,7 @@ export const es = {
         copied: "Copiado al portapapeles.",
         copyFailed: "No se pudo copiar.",
         copy: "Copiar",
+        resetSearch: "Limpiar búsqueda",
     },
     tools: {
         title: "Herramientas",

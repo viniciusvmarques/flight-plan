@@ -6,7 +6,7 @@ import { useI18n } from "../i18n/I18nContext.jsx";
 /**
  * Painel de rota A-B-C no estilo glass cockpit (substitui a sidebar antiga).
  */
-export default function OpsRoutePanel({ onBrief, loading = false }) {
+export default function OpsRoutePanel({ onBrief, onClear, loading = false }) {
     const { user, logout } = useAuth();
     const nav = useNavigate();
     const { t } = useI18n();
@@ -35,6 +35,13 @@ export default function OpsRoutePanel({ onBrief, loading = false }) {
         }
         if (!onBrief) return;
         onBrief(origin, dest, alternate);
+    }
+
+    function clearFields() {
+        setOrigin("");
+        setDest("");
+        setAlternate("");
+        if (onClear) onClear();
     }
 
     const plan = user?.plan ? String(user.plan).toUpperCase() : "FREE";
@@ -87,9 +94,14 @@ export default function OpsRoutePanel({ onBrief, loading = false }) {
                             spellCheck={false}
                         />
                     </label>
-                    <button type="submit" className="primary ck-ops-submit" disabled={loading}>
-                        {loading ? t("common.loading") : t("sidebar.submit")}
-                    </button>
+                    <div className="ck-ops-form-actions">
+                        <button type="submit" className="primary ck-ops-submit" disabled={loading}>
+                            {loading ? t("common.loading") : t("sidebar.submit")}
+                        </button>
+                        <button type="button" className="secondary ck-ops-clear" onClick={clearFields} disabled={loading}>
+                            {t("sidebar.clearRoute")}
+                        </button>
+                    </div>
                 </form>
 
                 {user ? (
@@ -103,6 +115,7 @@ export default function OpsRoutePanel({ onBrief, loading = false }) {
                             <Link to="/assinatura">{t("sidebar.billing")}</Link>
                             <button
                                 type="button"
+                                className="ck-ops-logout"
                                 onClick={() => {
                                     logout();
                                     nav("/");

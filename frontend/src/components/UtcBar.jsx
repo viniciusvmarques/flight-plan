@@ -12,7 +12,7 @@ function formatUtcClock(date) {
 
 export default function UtcBar({ showAtis = true }) {
     const nav = useNavigate();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const { t } = useI18n();
     const [utc, setUtc] = useState(() => formatUtcClock(new Date()));
 
@@ -20,6 +20,11 @@ export default function UtcBar({ showAtis = true }) {
         const id = window.setInterval(() => setUtc(formatUtcClock(new Date())), 1000);
         return () => window.clearInterval(id);
     }, []);
+
+    function handleLogout() {
+        logout();
+        nav("/");
+    }
 
     return (
         <>
@@ -54,6 +59,9 @@ export default function UtcBar({ showAtis = true }) {
                             <Link className="av-utc-btn av-utc-btn--cyan" to="/assinatura">
                                 PRO
                             </Link>
+                            <button type="button" className="av-utc-btn av-utc-btn--ghost" onClick={handleLogout}>
+                                {t("common.logout")}
+                            </button>
                         </>
                     ) : (
                         <>

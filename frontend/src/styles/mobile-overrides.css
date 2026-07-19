@@ -360,7 +360,15 @@
         width: 100%;
     }
 
-    .growth-search-submit {
+    .growth-search-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .growth-search-submit,
+    .growth-search-reset {
         width: 100%;
         justify-content: center;
     }
