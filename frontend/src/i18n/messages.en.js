@@ -495,7 +495,7 @@ export const en = {
         summaryCopy: "A didactic output: route, rule, speed, level, EET, endurance, alternate, fuel and pending items.",
     },
     hub: {
-        badge: "PT · EN · ES",
+        badge: "Ops hub",
         title: "Tools for pilots and cabin crew",
         subtitle: "Free weather; calculators and exams with an account.",
         statAttempts: "{{count}}+ graded simulators",

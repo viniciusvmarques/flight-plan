@@ -1909,3 +1909,303 @@ button.danger-action:hover:not(:disabled) {
     width: 100%;
   }
 }
+
+/* ===== Hub + empty state Modelo B (substitui layout antigo) ===== */
+.ck-empty-brief {
+  width: 100%;
+}
+
+.ck-empty-brief-inner {
+  display: grid;
+  gap: 10px;
+  padding: 4px 2px 2px;
+}
+
+.ck-empty-brief-title {
+  margin: 0;
+  font-family: var(--ck-font);
+  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ck-text);
+}
+
+.ck-empty-brief-copy {
+  margin: 0;
+  max-width: 54ch;
+  color: var(--ck-muted);
+  line-height: 1.5;
+}
+
+.ck-empty-brief-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.ck-empty-brief-steps span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  border-radius: 4px;
+  background: rgba(6, 11, 19, 0.72);
+  font-family: var(--ck-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ck-cyan-dim);
+}
+
+.ck-empty-brief-steps em {
+  font-style: normal;
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(94, 234, 212, 0.4);
+  background: rgba(94, 234, 212, 0.12);
+  color: var(--ck-cyan);
+  font-weight: 700;
+}
+
+.ck-hub,
+.home-hub.ck-hub {
+  margin: 0 !important;
+  padding: 16px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(94, 234, 212, 0.2) !important;
+  background:
+    linear-gradient(180deg, rgba(94, 234, 212, 0.05), transparent 40%),
+    linear-gradient(180deg, var(--ck-panel-2), var(--ck-panel)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(94, 234, 212, 0.04),
+    0 12px 28px rgba(0, 0, 0, 0.22) !important;
+}
+
+.ck-hub-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px 18px;
+  margin-bottom: 14px;
+}
+
+.ck-hub-title {
+  margin: 6px 0 4px !important;
+  font-family: var(--ck-font) !important;
+  font-size: clamp(1.2rem, 2.4vw, 1.55rem) !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ck-text) !important;
+  line-height: 1.15 !important;
+}
+
+.ck-hub-lead {
+  margin: 0 !important;
+  max-width: 52ch;
+  color: var(--ck-muted) !important;
+  line-height: 1.5 !important;
+}
+
+.ck-hub-metric {
+  min-width: 148px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  background: rgba(6, 11, 19, 0.78);
+  text-align: center;
+}
+
+.ck-hub-metric strong {
+  display: block;
+  font-family: var(--ck-font);
+  font-size: 1.4rem;
+  color: var(--ck-cyan);
+  letter-spacing: 0.04em;
+}
+
+.ck-hub-metric span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--ck-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ck-muted);
+}
+
+.ck-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ck-hub-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  min-height: 112px;
+  padding: 14px 14px 14px 14px;
+  border-radius: 6px !important;
+  border: 1px solid rgba(94, 234, 212, 0.16) !important;
+  background: rgba(6, 11, 19, 0.78) !important;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.ck-hub-card:hover {
+  border-color: rgba(94, 234, 212, 0.45) !important;
+  background: rgba(94, 234, 212, 0.08) !important;
+}
+
+.ck-hub-card-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid rgba(94, 234, 212, 0.35);
+  background: rgba(94, 234, 212, 0.1);
+  color: var(--ck-cyan);
+  font-family: var(--ck-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.ck-hub-card-body {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.ck-hub-card-body strong {
+  font-family: var(--ck-font);
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ck-text);
+}
+
+.ck-hub-card-body p {
+  margin: 0;
+  color: var(--ck-muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.ck-hub-card-tag {
+  justify-self: start;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(94, 234, 212, 0.28);
+  background: rgba(94, 234, 212, 0.08);
+  color: var(--ck-cyan) !important;
+  font-family: var(--ck-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ck-hub-card--free .ck-hub-card-tag {
+  border-color: rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.1);
+  color: var(--ck-green) !important;
+}
+
+.ck-hub-card--accent {
+  border-color: rgba(245, 185, 66, 0.28) !important;
+}
+
+.ck-hub-card--accent .ck-hub-card-icon {
+  border-color: rgba(245, 185, 66, 0.4);
+  background: rgba(245, 185, 66, 0.1);
+  color: var(--ck-amber);
+}
+
+.ck-hub-card-arrow {
+  align-self: center;
+  color: var(--ck-cyan-dim);
+  font-size: 1.05rem;
+}
+
+.dashboard-sim-card {
+  border-radius: 6px !important;
+  border: 1px solid rgba(94, 234, 212, 0.2) !important;
+  background:
+    linear-gradient(180deg, rgba(94, 234, 212, 0.06), transparent 50%),
+    rgba(6, 11, 19, 0.72) !important;
+}
+
+.dashboard-section-head {
+  margin-bottom: 10px;
+}
+
+.dashboard-section-title {
+  margin: 4px 0 0;
+}
+
+/* Sweep: páginas growth / exams / experience ainda azuis */
+.growth-hero,
+.growth-cta-bar,
+.xp-hero,
+.xp-command,
+.xp-workbench,
+.xp-tool-nav,
+.exam-hero,
+.exam-course-card,
+.exam-question-card,
+.exam-actions-panel,
+.exam-result-hero,
+.growth-feature-list li {
+  border-radius: 8px !important;
+  border-color: rgba(94, 234, 212, 0.2) !important;
+}
+
+.growth-hero,
+.xp-hero,
+.exam-hero {
+  background:
+    linear-gradient(180deg, rgba(94, 234, 212, 0.06), transparent 45%),
+    linear-gradient(180deg, var(--ck-panel-2), var(--ck-panel)) !important;
+}
+
+.xp-tool-nav-icon,
+.home-hub-card-icon {
+  border-radius: 4px !important;
+  border-color: rgba(94, 234, 212, 0.35) !important;
+  background: rgba(94, 234, 212, 0.1) !important;
+  color: var(--ck-cyan) !important;
+}
+
+.xp-result-tile,
+.xp-category-panel,
+.xp-bulletin {
+  border-radius: 6px !important;
+  border-color: rgba(94, 234, 212, 0.16) !important;
+}
+
+@media (max-width: 980px) {
+  .ck-hub-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ck-hub-metric {
+    width: 100%;
+  }
+}
+
+@media (min-width: 981px) and (max-width: 1180px) {
+  .ck-hub-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

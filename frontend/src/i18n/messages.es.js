@@ -495,7 +495,7 @@ export const es = {
         summaryCopy: "Salida didáctica: ruta, regla, velocidad, nivel, EET, autonomía, alternativo, combustible y pendientes.",
     },
     hub: {
-        badge: "PT · EN · ES",
+        badge: "Hub operacional",
         title: "Herramientas para pilotos y tripulantes",
         subtitle: "Meteorología gratis; calculadoras y simulados con cuenta.",
         statAttempts: "{{count}}+ simulados corregidos",

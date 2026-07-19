@@ -464,10 +464,18 @@ export default function Dashboard() {
                 {error && <Card title={t("common.error")}>{error}</Card>}
 
                 {!base && !loading && !error && (
-                    <Card title={t("dashboard.startTitle")}>
-                        <p className="page-caption">{t("dashboard.startSentence")}</p>
-                        <p className="page-caption">{t("dashboard.sidebarHint")}</p>
-                    </Card>
+                    <section className="ck-empty-brief card fp-card" aria-label={t("dashboard.startTitle")}>
+                        <div className="ck-empty-brief-inner">
+                            <span className="av-kicker exam-kicker">{t("dashboard.startTitle")}</span>
+                            <h2 className="ck-empty-brief-title">{t("dashboard.startSentence")}</h2>
+                            <p className="ck-empty-brief-copy">{t("dashboard.sidebarHint")}</p>
+                            <div className="ck-empty-brief-steps">
+                                <span><em>A</em> {t("common.origin")}</span>
+                                <span><em>B</em> {t("common.destination")}</span>
+                                <span><em>C</em> {t("common.alternate")}</span>
+                            </div>
+                        </div>
+                    </section>
                 )}
 
                 {base ? (

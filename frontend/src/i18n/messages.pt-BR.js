@@ -495,7 +495,7 @@ export const ptBR = {
         summaryCopy: "Saída didática: rota, regra, velocidade, nível, EET, autonomia, alternado, combustível e pendências.",
     },
     hub: {
-        badge: "PT · EN · ES",
+        badge: "Hub operacional",
         title: "Ferramentas para pilotos e tripulantes",
         subtitle: "Meteorologia grátis; calculadoras e simulados com conta.",
         statAttempts: "{{count}}+ simulados corrigidos",

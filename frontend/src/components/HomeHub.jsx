@@ -41,40 +41,38 @@ export default function HomeHub() {
     }
 
     return (
-        <section className="home-hub" aria-label={t("hub.title")}>
-            <div className="home-hub-head">
-                <div className="home-hub-copy">
-                    <span className="home-hub-badge">{t("hub.badge")}</span>
-                    <h2>{t("hub.title")}</h2>
-                    <p>{t("hub.subtitle")}</p>
+        <section className="home-hub ck-hub" aria-label={t("hub.title")}>
+            <div className="ck-hub-head">
+                <div className="ck-hub-copy">
+                    <span className="av-kicker exam-kicker">{t("hub.badge")}</span>
+                    <h2 className="ck-hub-title">{t("hub.title")}</h2>
+                    <p className="ck-hub-lead">{t("hub.subtitle")}</p>
                 </div>
-                <div className="home-hub-metrics home-hub-metrics--single">
-                    <div className="home-hub-metric">
-                        <strong>{questionsBank.toLocaleString()}</strong>
-                        <span>{t("hub.metricQuestions")}</span>
-                    </div>
+                <div className="ck-hub-metric" aria-label={t("hub.metricQuestions")}>
+                    <strong>{questionsBank.toLocaleString()}</strong>
+                    <span>{t("hub.metricQuestions")}</span>
                 </div>
             </div>
 
-            <div className="home-hub-grid home-hub-grid--5">
+            <div className="ck-hub-grid">
                 {HUB_ITEMS.map((item) => (
                     <button
                         key={item.key}
                         type="button"
-                        className={`home-hub-card ${item.accent ? "home-hub-card--accent" : ""}`}
+                        className={`ck-hub-card${item.accent ? " ck-hub-card--accent" : ""}${item.free ? " ck-hub-card--free" : ""}`}
                         onClick={() => openItem(item)}
                     >
-                        <span className="home-hub-card-icon" aria-hidden="true">
+                        <span className="ck-hub-card-icon" aria-hidden="true">
                             {item.icon}
                         </span>
-                        <div className="home-hub-card-body">
+                        <div className="ck-hub-card-body">
                             <strong>{t(`hub.${item.key}Title`)}</strong>
                             <p>{t(`hub.${item.key}Copy`)}</p>
+                            <span className="ck-hub-card-tag">
+                                {item.free ? t("hub.noSignup") : item.key === "exams" ? t("hub.examsCta") : t("hub.open")}
+                            </span>
                         </div>
-                        <span className="home-hub-card-tag">
-                            {item.free ? t("hub.noSignup") : item.key === "exams" ? t("hub.examsCta") : t("hub.open")}
-                        </span>
-                        <span className="home-hub-card-arrow" aria-hidden="true">
+                        <span className="ck-hub-card-arrow" aria-hidden="true">
                             →
                         </span>
                     </button>
