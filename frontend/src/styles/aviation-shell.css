@@ -806,9 +806,10 @@ label,
   margin: 0;
 }
 
-.ck-wx-panel .card-body {
-  display: grid;
-  gap: 12px;
+.ck-wx-result-anchor,
+.xp-weather-results.ck-wx-result-anchor {
+  scroll-margin-top: 88px;
+  outline: none;
 }
 
 .ck-wx-panel-head {

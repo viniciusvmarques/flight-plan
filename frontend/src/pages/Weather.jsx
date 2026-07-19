@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AviationShell from "../components/AviationShell";
 import GrowthCtaBar from "../components/GrowthCtaBar";
@@ -19,12 +19,22 @@ import { useAuth } from "../auth/AuthContext";
 
 const QUICK_ICAO = ["SBGR", "SBRJ", "SBSP", "KJFK", "EGLL"];
 
+function scrollToResultOnMobile(node) {
+    if (!node || typeof window === "undefined") return;
+    if (!window.matchMedia("(max-width: 900px)").matches) return;
+    window.requestAnimationFrame(() => {
+        node.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+}
+
 export default function Weather() {
     const nav = useNavigate();
     const [params, setParams] = useSearchParams();
     const { user } = useAuth();
     const { t, locale } = useI18n();
     const { toast } = useNotify();
+    const resultRef = useRef(null);
+    const pendingScrollRef = useRef(false);
     const [icao, setIcao] = useState((params.get("icao") || "SBGR").toUpperCase());
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -32,7 +42,7 @@ export default function Weather() {
     const [taf, setTaf] = useState("");
     const [airport, setAirport] = useState(null);
 
-    async function loadWeather(code) {
+    async function loadWeather(code, { scroll = true } = {}) {
         const clean = String(code || "").trim().toUpperCase();
         if (clean.length !== 4) {
             setError(t("weather.invalidIcao"));
@@ -47,8 +57,10 @@ export default function Weather() {
             setTaf(station.taf || "");
             setAirport(station.airport || (await fetchAirport(clean).catch(() => null)));
             setParams({ icao: clean });
+            pendingScrollRef.current = scroll;
         } catch (e) {
             setError(e?.message || t("weather.loadError"));
+            pendingScrollRef.current = false;
         } finally {
             setLoading(false);
         }
@@ -62,13 +74,14 @@ export default function Weather() {
         setError("");
         setLoading(false);
         setParams({});
+        pendingScrollRef.current = false;
     }
 
     useEffect(() => {
         const fromUrl = params.get("icao");
         if (fromUrl && fromUrl.length === 4) {
             setIcao(fromUrl.toUpperCase());
-            loadWeather(fromUrl);
+            loadWeather(fromUrl, { scroll: false });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -76,6 +89,12 @@ export default function Weather() {
     const summary = decodeMetarSummary(metar, locale);
     const category = classifyFromMetar(metar);
     const hasData = !!(metar || taf);
+
+    useEffect(() => {
+        if (!pendingScrollRef.current || !hasData) return;
+        pendingScrollRef.current = false;
+        window.setTimeout(() => scrollToResultOnMobile(resultRef.current), 60);
+    }, [hasData, metar, taf]);
 
     async function copyText(text) {
         if (!text) return;
@@ -149,7 +168,7 @@ export default function Weather() {
                 </ExperienceCommandBar>
 
                 {hasData ? (
-                    <div className="xp-weather-results">
+                    <div ref={resultRef} id="wx-result" className="xp-weather-results ck-wx-result-anchor" tabIndex={-1}>
                         <WxCategoryPanel category={category} categoryLabel={summary.categoryLabel} hints={summary.hints} />
 
                         <div className="xp-bulletin-stack">

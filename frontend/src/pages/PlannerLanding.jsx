@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AviationShell from "../components/AviationShell";
 import Card from "../components/Card";
@@ -26,9 +26,18 @@ function categoryPlain(cat, t) {
     return t("plannerWx.nodataPlain");
 }
 
+function scrollToResultOnMobile(node) {
+    if (!node || typeof window === "undefined") return;
+    if (!window.matchMedia("(max-width: 900px)").matches) return;
+    window.requestAnimationFrame(() => {
+        node.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+}
+
 export default function PlannerLanding() {
     const nav = useNavigate();
     const { t, locale } = useI18n();
+    const resultRef = useRef(null);
     const [icao, setIcao] = useState("SBGR");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -36,7 +45,7 @@ export default function PlannerLanding() {
     const [taf, setTaf] = useState("");
     const [airportName, setAirportName] = useState("");
 
-    async function load(code) {
+    async function load(code, { scroll = true } = {}) {
         const clean = String(code || "").trim().toUpperCase();
         if (clean.length !== 4) {
             setError(t("weather.invalidIcao"));
@@ -50,6 +59,9 @@ export default function PlannerLanding() {
             setMetar(station.metar || "");
             setTaf(station.taf || "");
             setAirportName(station.airport?.name || station.airport?.city || clean);
+            if (scroll) {
+                window.setTimeout(() => scrollToResultOnMobile(resultRef.current), 80);
+            }
         } catch (e) {
             setMetar("");
             setTaf("");
@@ -70,7 +82,7 @@ export default function PlannerLanding() {
     }
 
     useEffect(() => {
-        load("SBGR");
+        load("SBGR", { scroll: false });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -145,6 +157,7 @@ export default function PlannerLanding() {
                 </Card>
 
                 <Card className={`ck-wx-panel ck-wx-panel--${tone}`}>
+                    <div ref={resultRef} id="wx-result" className="ck-wx-result-anchor" tabIndex={-1}>
                     <div className="ck-wx-panel-head">
                         <div>
                             <span className="ck-wx-station">{airportName || icao || "—"}</span>
@@ -175,6 +188,7 @@ export default function PlannerLanding() {
                     <div className="ck-wx-bulletin">
                         <div className="ck-wx-bulletin-label">TAF</div>
                         <pre>{taf || t("weather.tafUnavailable")}</pre>
+                    </div>
                     </div>
                 </Card>
             </section>
