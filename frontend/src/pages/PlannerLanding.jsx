@@ -168,6 +168,10 @@ export default function PlannerLanding() {
             <Card title={t("plannerGate.accountTitle")}>
                 <p className="growth-section-lead">{t("plannerGate.accountCopy")}</p>
                 <div className="av-feature-grid" style={{ marginTop: 14 }}>
+                    <button type="button" className="av-feature-card av-feature-card--free" onClick={() => nav("/weather")}>
+                        <strong>{t("weather.nav")}</strong>
+                        <span>{t("plannerGate.metarHint")}</span>
+                    </button>
                     <button type="button" className="av-feature-card av-feature-card--lock" onClick={() => nav("/register")}>
                         <strong>{t("appHeader.briefing")}</strong>
                         <span>{t("plannerGate.lockBriefing")}</span>

@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import BrandMark from "./Brandmark";
 import { useAuth } from "../auth/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
-export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = "", compact = false, hideMobileMenu = false }) {
+/**
+ * Nav cockpit (Modelo B) — faixa fina sob o ATIS, sem logo duplicado.
+ */
+export default function AppHeader({ hideMobileMenu = false }) {
     const nav = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
@@ -29,8 +31,6 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
                 { key: "account", to: "/perfil", label: t("common.account") },
                 { key: "billing", to: "/assinatura", label: t("common.billing") }
             );
-        } else {
-            items.push({ key: "login", to: "/login", label: t("common.login"), accent: true });
         }
         return items;
     }, [t, user, simuladosTarget]);
@@ -62,107 +62,111 @@ export default function AppHeader({ kicker = "Marquisa", title = "", subtitle = 
         setMenuOpen(false);
     }
 
-    return (
-        <header className={`fp-topbar${hideMobileMenu ? " fp-topbar--no-mobile-menu" : ""}`} role="banner">
-            <div className="fp-topbar-inner">
-                <button type="button" className="fp-topbar-brand" onClick={() => nav("/")} aria-label={t("appHeader.goToBriefing")}>
-                    <span className="fp-topbar-mark" aria-hidden="true">
-                        <BrandMark size={38} showText={false} compact />
-                    </span>
-                    <div className={`fp-topbar-titles ${compact ? "fp-topbar-titles--compact" : ""}`}>
-                        <span className="fp-topbar-site-name">MARQUISA</span>
-                        <div className="fp-topbar-titles-detail">
-                            <span className="fp-topbar-kicker">{kicker || "OPS"}</span>
-                            <span className="fp-topbar-title">{title || t("appHeader.defaultTitle")}</span>
-                            {subtitle ? <span className="fp-topbar-sub">{subtitle}</span> : null}
-                        </div>
-                    </div>
-                </button>
+    function isActive(to) {
+        if (to === "/") return location.pathname === "/" || location.pathname === "/briefing";
+        return location.pathname === to || location.pathname.startsWith(`${to}/`);
+    }
 
-                <nav className="fp-topbar-nav fp-topbar-nav--desktop" aria-label={t("appHeader.navLabel")}>
+    return (
+        <header className={`ck-navbar${hideMobileMenu ? " ck-navbar--no-mobile" : ""}`} role="banner">
+            <div className="ck-navbar-inner">
+                <nav className="ck-nav ck-nav--desktop" aria-label={t("appHeader.navLabel")}>
                     {navItems.map((item) =>
                         item.key === "exams" && !user ? (
-                            <Link key={item.key} className="fp-nav-link" to="/" onClick={goSimulados}>
+                            <Link
+                                key={item.key}
+                                className={`ck-nav-link${item.accent ? " ck-nav-link--accent" : ""}`}
+                                to="/"
+                                onClick={goSimulados}
+                            >
                                 {item.label}
                             </Link>
                         ) : (
                             <Link
                                 key={item.key}
-                                className={["fp-nav-link", item.accent ? "fp-nav-link--accent" : ""].join(" ")}
+                                className={[
+                                    "ck-nav-link",
+                                    item.accent ? "ck-nav-link--accent" : "",
+                                    isActive(item.to) ? "is-active" : "",
+                                ]
+                                    .filter(Boolean)
+                                    .join(" ")}
                                 to={item.to}
                             >
                                 {item.label}
                             </Link>
                         )
                     )}
-                    <LanguageSwitcher compact />
                 </nav>
 
-                {!hideMobileMenu ? (
-                    <button
-                        type="button"
-                        className={`fp-topbar-menu-btn${menuOpen ? " fp-topbar-menu-btn--open" : ""}`}
-                        aria-expanded={menuOpen}
-                        aria-controls="fp-mobile-nav"
-                        onClick={() => setMenuOpen((open) => !open)}
-                    >
-                        <span className="fp-topbar-menu-icon" aria-hidden="true">
-                            <span />
-                            <span />
-                            <span />
-                        </span>
-                        <span className="sr-only">{menuOpen ? t("appHeader.menuClose") : t("appHeader.menuOpen")}</span>
-                    </button>
-                ) : null}
+                <div className="ck-navbar-tools">
+                    <LanguageSwitcher compact />
+                    {!hideMobileMenu ? (
+                        <button
+                            type="button"
+                            className={`ck-nav-burger${menuOpen ? " is-open" : ""}`}
+                            aria-expanded={menuOpen}
+                            aria-controls="ck-mobile-nav"
+                            onClick={() => setMenuOpen((open) => !open)}
+                        >
+                            <span aria-hidden="true" />
+                            <span aria-hidden="true" />
+                            <span aria-hidden="true" />
+                            <span className="sr-only">
+                                {menuOpen ? t("appHeader.menuClose") : t("appHeader.menuOpen")}
+                            </span>
+                        </button>
+                    ) : null}
+                </div>
             </div>
 
             {!hideMobileMenu ? (
-            <div
-                id="fp-mobile-nav"
-                className={`fp-mobile-nav ${menuOpen ? "fp-mobile-nav--open" : ""}`}
-                aria-hidden={!menuOpen}
-            >
-                <button
-                    type="button"
-                    className="fp-mobile-nav-backdrop"
-                    aria-label={t("appHeader.menuClose")}
-                    onClick={closeMenu}
-                />
-                <div className="fp-mobile-nav-panel" role="dialog" aria-modal="true" aria-label={t("appHeader.navLabel")}>
-                    <div className="fp-mobile-nav-head">
-                        <strong>{t("appHeader.menuTitle")}</strong>
-                        <button type="button" className="fp-mobile-nav-close" onClick={closeMenu}>
-                            ×
-                        </button>
-                    </div>
-                    <nav className="fp-mobile-nav-links">
-                        {navItems.map((item) =>
-                            item.key === "exams" && !user ? (
-                                <Link
-                                    key={item.key}
-                                    className={`fp-mobile-nav-link ${item.accent ? "fp-mobile-nav-link--accent" : ""}`}
-                                    to="/"
-                                    onClick={goSimulados}
-                                >
-                                    {item.label}
-                                </Link>
-                            ) : (
-                                <Link
-                                    key={item.key}
-                                    className={`fp-mobile-nav-link ${item.accent ? "fp-mobile-nav-link--accent" : ""}`}
-                                    to={item.to}
-                                    onClick={closeMenu}
-                                >
-                                    {item.label}
-                                </Link>
-                            )
-                        )}
-                    </nav>
-                    <div className="fp-mobile-nav-lang">
-                        <LanguageSwitcher />
+                <div
+                    id="ck-mobile-nav"
+                    className={`ck-mobile-nav${menuOpen ? " is-open" : ""}`}
+                    aria-hidden={!menuOpen}
+                >
+                    <button
+                        type="button"
+                        className="ck-mobile-nav-backdrop"
+                        aria-label={t("appHeader.menuClose")}
+                        onClick={closeMenu}
+                    />
+                    <div className="ck-mobile-nav-panel" role="dialog" aria-modal="true" aria-label={t("appHeader.navLabel")}>
+                        <div className="ck-mobile-nav-head">
+                            <strong>{t("appHeader.menuTitle")}</strong>
+                            <button type="button" className="ck-mobile-nav-close" onClick={closeMenu}>
+                                ×
+                            </button>
+                        </div>
+                        <nav className="ck-mobile-nav-links">
+                            {navItems.map((item) =>
+                                item.key === "exams" && !user ? (
+                                    <Link
+                                        key={item.key}
+                                        className={`ck-mobile-nav-link${item.accent ? " ck-nav-link--accent" : ""}`}
+                                        to="/"
+                                        onClick={goSimulados}
+                                    >
+                                        {item.label}
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        key={item.key}
+                                        className={`ck-mobile-nav-link${item.accent ? " ck-nav-link--accent" : ""}`}
+                                        to={item.to}
+                                        onClick={closeMenu}
+                                    >
+                                        {item.label}
+                                    </Link>
+                                )
+                            )}
+                        </nav>
+                        <div className="ck-mobile-nav-lang">
+                            <LanguageSwitcher />
+                        </div>
                     </div>
                 </div>
-            </div>
             ) : null}
         </header>
     );

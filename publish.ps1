@@ -17,7 +17,7 @@ git status -sb
 Write-Host ""
 
 $msg = @"
-Modelo B glass cockpit: home METAR ao vivo, dashboard unificado, tema EFIS em todas as paginas.
+Modelo B 100%: shell cockpit unificado (UTC + CTAs + nav fina), tema EFIS em todas as paginas.
 "@
 
 git add -A

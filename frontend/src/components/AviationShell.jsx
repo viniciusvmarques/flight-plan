@@ -8,23 +8,13 @@ import AppFooter from "./AppFooter";
 export default function AviationShell({
     children,
     className = "",
-    kicker,
-    title,
-    subtitle,
-    compact = true,
-    hideMobileMenu = false,
     wide = false,
+    hideMobileMenu = false,
 }) {
     return (
         <div className={`main-shell av-shell${className ? ` ${className}` : ""}`}>
             <UtcBar />
-            <AppHeader
-                compact={compact}
-                hideMobileMenu={hideMobileMenu}
-                kicker={kicker}
-                title={title}
-                subtitle={subtitle}
-            />
+            <AppHeader hideMobileMenu={hideMobileMenu} />
             <main className={`main-scroll av-page${wide ? " av-page--wide" : ""}`}>{children}</main>
             <AppFooter />
         </div>

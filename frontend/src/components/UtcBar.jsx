@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import { useI18n } from "../i18n/I18nContext.jsx";
 
 function formatUtcClock(date) {
     const hh = String(date.getUTCHours()).padStart(2, "0");
@@ -8,6 +11,9 @@ function formatUtcClock(date) {
 }
 
 export default function UtcBar({ showAtis = true }) {
+    const nav = useNavigate();
+    const { user } = useAuth();
+    const { t } = useI18n();
     const [utc, setUtc] = useState(() => formatUtcClock(new Date()));
 
     useEffect(() => {
@@ -19,9 +25,14 @@ export default function UtcBar({ showAtis = true }) {
         <>
             <div className="av-utc-bar" aria-live="polite">
                 <div className="av-utc-brand">
-                    <span className="av-utc-badge" aria-hidden="true">
+                    <button
+                        type="button"
+                        className="av-utc-badge"
+                        aria-label="Marquisa"
+                        onClick={() => nav("/")}
+                    >
                         MQ
-                    </span>
+                    </button>
                     <div>
                         <div className="av-utc-brand-name">Marquisa</div>
                         <div className="av-utc-brand-sub">Ops · Glass cockpit</div>
@@ -33,7 +44,28 @@ export default function UtcBar({ showAtis = true }) {
                     </time>
                     <div className="av-utc-label">UTC · Zulu time</div>
                 </div>
-                <div className="av-utc-tag">Station online</div>
+                <div className="av-utc-actions">
+                    {user ? (
+                        <>
+                            <span className="av-utc-tag">Station online</span>
+                            <Link className="av-utc-btn av-utc-btn--ghost" to="/perfil">
+                                {t("common.account")}
+                            </Link>
+                            <Link className="av-utc-btn av-utc-btn--cyan" to="/assinatura">
+                                PRO
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <Link className="av-utc-btn av-utc-btn--ghost" to="/login">
+                                {t("common.login")}
+                            </Link>
+                            <Link className="av-utc-btn av-utc-btn--cyan" to="/register">
+                                {t("common.register")}
+                            </Link>
+                        </>
+                    )}
+                </div>
             </div>
             {showAtis ? (
                 <div className="av-atis-bar" aria-label="ATIS">
