@@ -551,7 +551,19 @@ export const ptBR = {
         copyFailed: "Não foi possível copiar.",
         copy: "Copiar",
         resetSearch: "Limpar busca",
-        runwaySuggestTitle: "Sugestão de pista (METAR)",
+        runwaySuggestTitle: "Sugestão de pista",
+        runwaySuggestModeWind: "Alinhada ao vento",
+        runwaySuggestModeLight: "Vento fraco",
+        runwaySuggestModeCalm: "Vento calmo",
+        runwaySuggestModeVrb: "Vento variável",
+        runwaySuggestWindDetail: "Cabeceira com melhor componente de proa no METAR atual.",
+        runwaySuggestLightDetail:
+            "Vento fraco ({{spd}} kt). Confirme a pista preferencial do aeródromo.",
+        runwaySuggestCalmDetail: "Referência pela maior pista disponível. Confirme a preferencial do aeródromo.",
+        runwaySuggestVrbDetail: "Sem direção estável no METAR. Confirme a pista preferencial do aeródromo.",
+        runwaySuggestHead: "Proa",
+        runwaySuggestCross: "Cruzado",
+        runwaySuggestWindSpd: "Vento",
         runwaySuggestWind:
             "Sugestão por vento: cabeceira {{rwy}} · proa {{head}} kt · cruzado {{cross}} kt.",
         runwaySuggestLight:

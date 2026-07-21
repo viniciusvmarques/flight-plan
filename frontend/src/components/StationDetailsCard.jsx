@@ -2,7 +2,6 @@ import Card from "./Card";
 import StatusDot from "./StatusDot";
 import RunwaySuggestion from "./RunwaySuggestion";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
-import { useI18n } from "../i18n/I18nContext.jsx";
 
 function labelPt(category) {
     if (category === "VFR") return "VFR";
@@ -23,8 +22,6 @@ function weatherMessage(kind, error) {
 }
 
 export default function StationDetailsCard({ station, airportInfo }) {
-    const { t } = useI18n();
-
     if (!station) {
         return (
             <Card title="Detalhes do aeródromo">
@@ -65,7 +62,6 @@ export default function StationDetailsCard({ station, airportInfo }) {
                             <span>{runwaysText}</span>
                         </div>
                         <div className="detail-line detail-line--block">
-                            <span className="detail-label">{t("weather.runwaySuggestTitle")}</span>
                             <RunwaySuggestion runways={airportInfo?.runways || []} metar={station.metar} />
                         </div>
                     </div>
