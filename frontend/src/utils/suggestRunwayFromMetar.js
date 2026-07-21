@@ -52,6 +52,28 @@ export function headingFromIdent(ident) {
     return (n % 36) * 10;
 }
 
+/**
+ * Sugestão só com o número da pista (sem L/R/C).
+ * Evita sugerir uma paralela específica (pouso/decolagem) sem ATIS.
+ * Ex.: "28R" → "28", "09L" → "09", "36C" → "36"
+ */
+export function formatRunwayNumberOnly(ident) {
+    const m = String(ident || "")
+        .trim()
+        .toUpperCase()
+        .match(/^(\d{1,2})/);
+    if (!m) return String(ident || "").trim().toUpperCase() || null;
+    const n = Number(m[1]);
+    if (!Number.isFinite(n) || n < 1 || n > 36) return String(ident || "").trim().toUpperCase() || null;
+    return String(n).padStart(2, "0");
+}
+
+function withNumberOnlyIdent(end) {
+    if (!end) return null;
+    const ident = formatRunwayNumberOnly(end.ident);
+    return ident ? { ...end, ident, identRaw: end.ident } : end;
+}
+
 function collectEnds(runways) {
     const ends = [];
     for (const rw of runways || []) {
@@ -109,9 +131,9 @@ export function suggestRunwayFromMetar(runways, metarRaw) {
         const ref = pickLongestReference(ends);
         return {
             mode: wind.variable ? "vrb" : wind.calm ? "calm" : "light",
-            suggested: ref
-                ? { ident: ref.ident, hdg: ref.hdg, lengthFt: ref.lengthFt, headKt: 0, crossKt: 0 }
-                : null,
+            suggested: withNumberOnlyIdent(
+                ref ? { ident: ref.ident, hdg: ref.hdg, lengthFt: ref.lengthFt, headKt: 0, crossKt: 0 } : null
+            ),
             wind,
             endsAvailable: ends.length,
         };
@@ -129,7 +151,7 @@ export function suggestRunwayFromMetar(runways, metarRaw) {
         }
         return {
             mode: "light",
-            suggested: best,
+            suggested: withNumberOnlyIdent(best),
             wind,
             endsAvailable: ends.length,
         };
@@ -146,7 +168,7 @@ export function suggestRunwayFromMetar(runways, metarRaw) {
 
     return {
         mode: best ? "wind" : "unavailable",
-        suggested: best,
+        suggested: withNumberOnlyIdent(best),
         wind,
         endsAvailable: ends.length,
     };

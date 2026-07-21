@@ -575,7 +575,7 @@ export const ptBR = {
         runwaySuggestUnavailable:
             "Sem dados de cabeceira confiáveis para este aeródromo no momento.",
         runwaySuggestDisclaimer:
-            "Apenas sugestão técnica com base no vento do METAR e nas pistas cadastradas. Não indica a pista oficial em uso (ATC/AIS). Considere NOTAM, cartas, ROTAER e outras fontes oficiais.",
+            "Apenas sugestão técnica com base no vento do METAR (número da pista, sem L/R). Não indica a pista oficial em uso nem paralela específica (ATC/AIS). Considere NOTAM, cartas, ROTAER e outras fontes oficiais.",
     },
     tools: {
         title: "Ferramentas",

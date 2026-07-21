@@ -574,7 +574,7 @@ export const en = {
         runwaySuggestUnavailable:
             "No reliable runway-end data for this aerodrome right now.",
         runwaySuggestDisclaimer:
-            "Technical suggestion only, based on METAR wind and published runway data. It does not indicate the official runway in use (ATC/AIS). Cross-check NOTAMs, charts, AIP and other official sources.",
+            "Technical suggestion only, based on METAR wind (runway number, no L/R). It does not indicate the official runway in use or a specific parallel (ATC/AIS). Cross-check NOTAMs, charts, AIP and other official sources.",
     },
     tools: {
         title: "Tools",
