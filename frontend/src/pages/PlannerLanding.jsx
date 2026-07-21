@@ -6,6 +6,7 @@ import GrowthCtaBar from "../components/GrowthCtaBar";
 import { useI18n } from "../i18n/I18nContext.jsx";
 import { fetchStationWeather } from "../services/weatherService";
 import { decodeMetarSummary } from "../utils/metarDecoder";
+import RunwaySuggestion from "../components/RunwaySuggestion";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
 
 const QUICK = ["SBGR", "SBRJ", "SBSP", "SBGL", "SBCF"];
@@ -44,6 +45,7 @@ export default function PlannerLanding() {
     const [metar, setMetar] = useState("");
     const [taf, setTaf] = useState("");
     const [airportName, setAirportName] = useState("");
+    const [runways, setRunways] = useState([]);
 
     async function load(code, { scroll = true } = {}) {
         const clean = String(code || "").trim().toUpperCase();
@@ -59,6 +61,7 @@ export default function PlannerLanding() {
             setMetar(station.metar || "");
             setTaf(station.taf || "");
             setAirportName(station.airport?.name || station.airport?.city || clean);
+            setRunways(station.airport?.runways || []);
             if (scroll) {
                 window.setTimeout(() => scrollToResultOnMobile(resultRef.current), 80);
             }
@@ -66,6 +69,7 @@ export default function PlannerLanding() {
             setMetar("");
             setTaf("");
             setAirportName("");
+            setRunways([]);
             setError(e?.message || t("weather.loadError"));
         } finally {
             setLoading(false);
@@ -77,6 +81,7 @@ export default function PlannerLanding() {
         setMetar("");
         setTaf("");
         setAirportName("");
+        setRunways([]);
         setError("");
         setLoading(false);
     }
@@ -185,6 +190,7 @@ export default function PlannerLanding() {
                         <div className="ck-wx-bulletin-label">METAR</div>
                         <pre>{metar || t("weather.metarUnavailable")}</pre>
                     </div>
+                    {metar ? <RunwaySuggestion runways={runways} metar={metar} /> : null}
                     <div className="ck-wx-bulletin">
                         <div className="ck-wx-bulletin-label">TAF</div>
                         <pre>{taf || t("weather.tafUnavailable")}</pre>

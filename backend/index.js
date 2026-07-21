@@ -1197,6 +1197,22 @@ app.get("/me", requireAuth, async (req,res)=>{
   return res.json({ user });
 });
 
+app.patch("/me/locale", requireAuth, async (req, res) => {
+  const id = req.auth?.sub;
+  if (!id) return res.status(401).json({ error: "Token inválido." });
+  const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
+  try {
+    const user = await prisma.user.update({
+      where: { id },
+      data: { preferredLocale },
+      select: { id: true, preferredLocale: true },
+    });
+    return res.json({ ok: true, preferredLocale: user.preferredLocale });
+  } catch (e) {
+    return res.status(500).json({ error: e?.message || "Falha ao atualizar idioma." });
+  }
+});
+
 app.delete("/me", requireAuth, async (req, res) => {
   const id = req.auth?.sub;
   if (!id) return res.status(401).json({ error: "Token inválido." });

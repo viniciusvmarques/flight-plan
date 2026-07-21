@@ -13,6 +13,7 @@ import { fetchStationWeather } from "../services/weatherService";
 import { fetchAirport } from "../services/airportsService";
 import { decodeMetarSummary } from "../utils/metarDecoder";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
+import RunwaySuggestion from "../components/RunwaySuggestion";
 import { useI18n } from "../i18n/I18nContext.jsx";
 import { useNotify } from "../ui/NotifyContext.jsx";
 import { useAuth } from "../auth/AuthContext";
@@ -194,6 +195,10 @@ export default function Weather() {
                                 {airport.city ? <span>· {airport.city}</span> : null}
                                 {airport.elevationFt != null ? <span className="chip muted">{airport.elevationFt} ft</span> : null}
                             </div>
+                        ) : null}
+
+                        {metar ? (
+                            <RunwaySuggestion runways={airport?.runways || []} metar={metar} className="ck-rwy-suggest--weather" />
                         ) : null}
                     </div>
                 ) : null}

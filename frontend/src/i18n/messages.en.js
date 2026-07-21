@@ -551,6 +551,19 @@ export const en = {
         copyFailed: "Could not copy.",
         copy: "Copy",
         resetSearch: "Clear search",
+        runwaySuggestTitle: "Suggested runway (METAR)",
+        runwaySuggestWind:
+            "Wind-based suggestion: runway {{rwy}} · headwind {{head}} kt · crosswind {{cross}} kt.",
+        runwaySuggestLight:
+            "Light wind ({{spd}} kt): suggestion {{rwy}} · headwind {{head}} kt · crosswind {{cross}} kt. Confirm the aerodrome preferential runway.",
+        runwaySuggestCalm:
+            "Calm wind: reference {{rwy}} (longest available). Confirm the aerodrome preferential runway.",
+        runwaySuggestVrb:
+            "Variable wind (VRB): reference {{rwy}} (longest). Confirm the aerodrome preferential runway.",
+        runwaySuggestUnavailable:
+            "No reliable runway-end data for this aerodrome right now.",
+        runwaySuggestDisclaimer:
+            "Technical suggestion only, based on METAR wind and published runway data. It does not indicate the official runway in use (ATC/AIS). Cross-check NOTAMs, charts, AIP and other official sources.",
     },
     tools: {
         title: "Tools",

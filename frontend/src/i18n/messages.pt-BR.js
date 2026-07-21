@@ -551,6 +551,19 @@ export const ptBR = {
         copyFailed: "Não foi possível copiar.",
         copy: "Copiar",
         resetSearch: "Limpar busca",
+        runwaySuggestTitle: "Sugestão de pista (METAR)",
+        runwaySuggestWind:
+            "Sugestão por vento: cabeceira {{rwy}} · proa {{head}} kt · cruzado {{cross}} kt.",
+        runwaySuggestLight:
+            "Vento fraco ({{spd}} kt): sugestão {{rwy}} · proa {{head}} kt · cruzado {{cross}} kt. Confirme a pista preferencial do aeródromo.",
+        runwaySuggestCalm:
+            "Vento calmo: referência {{rwy}} (maior comprimento disponível). Confirme a pista preferencial do aeródromo.",
+        runwaySuggestVrb:
+            "Vento variável (VRB): referência {{rwy}} (maior comprimento). Confirme a pista preferencial do aeródromo.",
+        runwaySuggestUnavailable:
+            "Sem dados de cabeceira confiáveis para este aeródromo no momento.",
+        runwaySuggestDisclaimer:
+            "Apenas sugestão técnica com base no vento do METAR e nas pistas cadastradas. Não indica a pista oficial em uso (ATC/AIS). Considere NOTAM, cartas, ROTAER e outras fontes oficiais.",
     },
     tools: {
         title: "Ferramentas",

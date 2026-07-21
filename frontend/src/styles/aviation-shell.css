@@ -2266,3 +2266,40 @@ button.danger-action:hover:not(:disabled) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Sugestão de pista a partir do METAR */
+.ck-rwy-suggest {
+  margin-top: 6px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  background: rgba(251, 191, 36, 0.06);
+}
+
+.ck-rwy-suggest--weather {
+  margin-top: 12px;
+}
+
+.ck-rwy-suggest__title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fbbf24;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.ck-rwy-suggest__lead,
+.ck-rwy-suggest__empty {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ck-text, #e2e8f0);
+}
+
+.ck-rwy-suggest__disclaimer {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(148, 163, 184, 0.95);
+}
