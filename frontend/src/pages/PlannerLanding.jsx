@@ -200,12 +200,12 @@ export default function PlannerLanding() {
                             <pre>{metar || t("weather.metarUnavailable")}</pre>
                         </div>
 
-                        {metar ? <RunwaySuggestion runways={runways} metar={metar} /> : null}
-
                         <div className="ck-wx-bulletin ck-wx-bulletin--grow">
                             <div className="ck-wx-bulletin-label">TAF</div>
                             <pre>{taf || t("weather.tafUnavailable")}</pre>
                         </div>
+
+                        {metar ? <RunwaySuggestion runways={runways} metar={metar} /> : null}
                     </div>
                 </Card>
             </section>

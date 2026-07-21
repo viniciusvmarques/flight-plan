@@ -6,37 +6,30 @@
 export const WEATHER_SCENES = {
     clear: {
         id: "clear",
-        src: "/wx-scenes/clear.svg",
         labelKey: "plannerWx.sceneClear",
     },
     cloudy: {
         id: "cloudy",
-        src: "/wx-scenes/cloudy.svg",
         labelKey: "plannerWx.sceneCloudy",
     },
     overcast: {
         id: "overcast",
-        src: "/wx-scenes/overcast.svg",
         labelKey: "plannerWx.sceneOvercast",
     },
     rain: {
         id: "rain",
-        src: "/wx-scenes/rain.svg",
         labelKey: "plannerWx.sceneRain",
     },
     fog: {
         id: "fog",
-        src: "/wx-scenes/fog.svg",
         labelKey: "plannerWx.sceneFog",
     },
     storm: {
         id: "storm",
-        src: "/wx-scenes/storm.svg",
         labelKey: "plannerWx.sceneStorm",
     },
     idle: {
         id: "idle",
-        src: "/wx-scenes/idle.svg",
         labelKey: "plannerWx.sceneIdle",
     },
 };
