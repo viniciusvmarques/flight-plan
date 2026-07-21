@@ -772,9 +772,11 @@ label,
   width: 100%;
   height: 100%;
   min-height: 200px;
+  object-fit: cover;
 }
 
-.ck-wx-scene__frame > svg.ck-wx-scene__img {
+.ck-wx-scene__frame > svg.ck-wx-scene__img,
+.ck-wx-scene__frame > img.ck-wx-scene__img {
   position: absolute;
   inset: 0;
   width: 100%;

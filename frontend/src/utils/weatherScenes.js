@@ -1,35 +1,43 @@
 /**
  * Banco de cenas climáticas derivadas do METAR.
- * keys batem com arquivos em /wx-scenes/*.svg
+ * Fotos em public/wx-scenes/*.png (bundle estático).
+ * Se a foto não existir, WeatherScene cai no SVG inline.
  */
 
 export const WEATHER_SCENES = {
     clear: {
         id: "clear",
+        src: "/wx-scenes/clear.png",
         labelKey: "plannerWx.sceneClear",
     },
     cloudy: {
         id: "cloudy",
+        src: "/wx-scenes/cloudy.png",
         labelKey: "plannerWx.sceneCloudy",
     },
     overcast: {
         id: "overcast",
+        src: "/wx-scenes/overcast.png",
         labelKey: "plannerWx.sceneOvercast",
     },
     rain: {
         id: "rain",
+        src: "/wx-scenes/rain.png",
         labelKey: "plannerWx.sceneRain",
     },
     fog: {
         id: "fog",
+        src: "/wx-scenes/fog.png",
         labelKey: "plannerWx.sceneFog",
     },
     storm: {
         id: "storm",
+        src: "/wx-scenes/storm.png",
         labelKey: "plannerWx.sceneStorm",
     },
     idle: {
         id: "idle",
+        src: "/wx-scenes/idle.png",
         labelKey: "plannerWx.sceneIdle",
     },
 };
@@ -49,7 +57,6 @@ export function resolveWeatherSceneId(metarRaw) {
     if (/\b(BKN|OVC)\d{3}\b/.test(m)) return "overcast";
     if (/\b(FEW|SCT)\d{3}\b/.test(m)) return "cloudy";
 
-    // Fallback pela categoria de voo aproximada
     if (/\b\d{4}\b/.test(m)) {
         const vis = Number((m.match(/\s(\d{4})\s/) || [])[1]);
         if (Number.isFinite(vis) && vis < 3000) return "fog";
