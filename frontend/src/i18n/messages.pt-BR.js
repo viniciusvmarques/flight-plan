@@ -557,10 +557,16 @@ export const ptBR = {
         runwaySuggestModeCalm: "Vento calmo",
         runwaySuggestModeVrb: "Vento variável",
         runwaySuggestWindDetail: "Cabeceira com melhor componente de proa no METAR atual.",
-        runwaySuggestLightDetail:
-            "Vento fraco ({{spd}} kt). Confirme a pista preferencial do aeródromo.",
-        runwaySuggestCalmDetail: "Referência pela maior pista disponível. Confirme a preferencial do aeródromo.",
-        runwaySuggestVrbDetail: "Sem direção estável no METAR. Confirme a pista preferencial do aeródromo.",
+        runwaySuggestAttentionLabel: "Atenção",
+        runwaySuggestAttentionLight:
+            "Obrigatório confirmar a pista padrão do aeródromo com vento abaixo de 6 kt. Se a indicação acima não for a pista em uso, ignore esta sugestão e use ATIS, ATC ou fontes oficiais.",
+        runwaySuggestAttentionCalm:
+            "Vento calmo: obrigatório confirmar a pista padrão do aeródromo. Esta indicação não substitui a pista em uso (ATIS/ATC).",
+        runwaySuggestAttentionVrb:
+            "Vento variável (VRB): obrigatório confirmar a pista padrão do aeródromo. Esta indicação não substitui a pista em uso (ATIS/ATC).",
+        runwaySuggestLightDetail: "Vento fraco ({{spd}} kt).",
+        runwaySuggestCalmDetail: "Referência pela maior pista disponível no cadastro.",
+        runwaySuggestVrbDetail: "Sem direção estável no METAR.",
         runwaySuggestHead: "Proa",
         runwaySuggestCross: "Cruzado",
         runwaySuggestWindSpd: "Vento",

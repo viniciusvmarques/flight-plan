@@ -43,9 +43,17 @@ export default function RunwaySuggestion({ runways, metar, className = "" }) {
     }
 
     let detail = t("weather.runwaySuggestWindDetail", { head, cross });
-    if (mode === "calm") detail = t("weather.runwaySuggestCalmDetail");
-    else if (mode === "vrb") detail = t("weather.runwaySuggestVrbDetail");
-    else if (mode === "light") detail = t("weather.runwaySuggestLightDetail", { spd: spd ?? "—", head, cross });
+    let attention = null;
+    if (mode === "calm") {
+        detail = t("weather.runwaySuggestCalmDetail");
+        attention = t("weather.runwaySuggestAttentionCalm");
+    } else if (mode === "vrb") {
+        detail = t("weather.runwaySuggestVrbDetail");
+        attention = t("weather.runwaySuggestAttentionVrb");
+    } else if (mode === "light") {
+        detail = t("weather.runwaySuggestLightDetail", { spd: spd ?? "—" });
+        attention = t("weather.runwaySuggestAttentionLight");
+    }
 
     return (
         <aside className={`ck-rwy-suggest ${modeClass} ${className}`.trim()} role="status">
@@ -73,6 +81,13 @@ export default function RunwaySuggestion({ runways, metar, className = "" }) {
 
             <div className="ck-rwy-suggest__body">
                 <p className="ck-rwy-suggest__detail">{detail}</p>
+
+                {attention ? (
+                    <div className="ck-rwy-suggest__alert" role="alert">
+                        <strong className="ck-rwy-suggest__alert-label">{t("weather.runwaySuggestAttentionLabel")}</strong>
+                        <span className="ck-rwy-suggest__alert-text">{attention}</span>
+                    </div>
+                ) : null}
 
                 {mode === "wind" || mode === "light" ? (
                     <div className="ck-rwy-suggest__metrics">

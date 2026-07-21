@@ -1,5 +1,5 @@
-/** Vento ≤ este limiar (kt): trata como fraco e prioriza pista de referência por comprimento. */
-export const LIGHT_WIND_KT = 5;
+/** Vento < este limiar (kt): trata como fraco e exige confirmação da pista padrão. */
+export const LIGHT_WIND_KT = 6;
 
 /**
  * Extrai vento do METAR (direção mag. típica do boletim; heading OurAirports é true).
@@ -126,7 +126,7 @@ export function suggestRunwayFromMetar(runways, metarRaw) {
         return { mode: "unavailable", suggested: null, wind: null, endsAvailable: ends.length };
     }
 
-    const light = wind.calm || (Number.isFinite(wind.spdKt) && wind.spdKt <= LIGHT_WIND_KT);
+    const light = wind.calm || (Number.isFinite(wind.spdKt) && wind.spdKt < LIGHT_WIND_KT);
     if (wind.variable || wind.calm || (light && !Number.isFinite(wind.dirDeg))) {
         const ref = pickLongestReference(ends);
         return {
