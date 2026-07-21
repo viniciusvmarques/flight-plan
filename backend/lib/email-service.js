@@ -77,6 +77,15 @@ function emailCopy(locale) {
             proTitle: "Plano Pro ativado",
             proIntro: "Obrigado por assinar. Seu acesso premium já está disponível.",
             manageSubscription: "Gerenciar assinatura",
+            trialCancelSubject: `${BRAND_NAME} — cancelamento no período de teste`,
+            trialCancelTitle: "Cancelamento no período de teste",
+            trialCancelIntro: "Confirmamos o cancelamento da sua assinatura Pro durante o trial de 7 dias.",
+            scheduledCancelSubject: `${BRAND_NAME} — cancelamento programado`,
+            scheduledCancelTitle: "Cancelamento programado",
+            scheduledCancelIntro: "Recebemos seu pedido de cancelamento após o período de teste.",
+            endedCancelSubject: `${BRAND_NAME} — assinatura encerrada`,
+            endedCancelTitle: "Assinatura encerrada",
+            endedCancelIntro: "Seu ciclo Pro foi finalizado e a conta voltou ao plano FREE.",
         },
         en: {
             passwordResetSubject: `${BRAND_NAME} — password reset`,
@@ -95,6 +104,15 @@ function emailCopy(locale) {
             proTitle: "Pro plan activated",
             proIntro: "Thank you for subscribing. Your premium access is now available.",
             manageSubscription: "Manage subscription",
+            trialCancelSubject: `${BRAND_NAME} — trial cancellation confirmed`,
+            trialCancelTitle: "Trial cancellation confirmed",
+            trialCancelIntro: "We confirmed your Pro subscription cancellation during the 7-day trial.",
+            scheduledCancelSubject: `${BRAND_NAME} — cancellation scheduled`,
+            scheduledCancelTitle: "Cancellation scheduled",
+            scheduledCancelIntro: "We received your cancellation request after the trial period.",
+            endedCancelSubject: `${BRAND_NAME} — subscription ended`,
+            endedCancelTitle: "Subscription ended",
+            endedCancelIntro: "Your Pro cycle has ended and your account is back on the FREE plan.",
         },
         es: {
             passwordResetSubject: `${BRAND_NAME} — redefinir contraseña`,
@@ -113,6 +131,15 @@ function emailCopy(locale) {
             proTitle: "Plan Pro activado",
             proIntro: "Gracias por suscribirte. Tu acceso premium ya está disponible.",
             manageSubscription: "Gestionar suscripción",
+            trialCancelSubject: `${BRAND_NAME} — cancelación en período de prueba`,
+            trialCancelTitle: "Cancelación en período de prueba",
+            trialCancelIntro: "Confirmamos la cancelación de tu suscripción Pro durante el trial de 7 días.",
+            scheduledCancelSubject: `${BRAND_NAME} — cancelación programada`,
+            scheduledCancelTitle: "Cancelación programada",
+            scheduledCancelIntro: "Recibimos tu solicitud de cancelación después del período de prueba.",
+            endedCancelSubject: `${BRAND_NAME} — suscripción finalizada`,
+            endedCancelTitle: "Suscripción finalizada",
+            endedCancelIntro: "Tu ciclo Pro terminó y tu cuenta volvió al plan FREE.",
         },
     };
     return all[lang] || all["pt-BR"];
@@ -206,6 +233,43 @@ export function createEmailService(prisma) {
             });
             throw error;
         }
+    }
+
+    async function sendTrialCancellationEmailImpl({ email, userId = null, providerEventId = null, locale = "pt-BR" }) {
+        const copy = emailCopy(locale);
+        const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
+        const subject = copy.trialCancelSubject;
+        const text =
+            `Olá,\n\n` +
+            `Confirmamos o cancelamento da sua assinatura Pro durante o período de teste de 7 dias.\n` +
+            `Não haverá cobrança do primeiro ciclo.\n` +
+            `Sua conta permanece ativa no plano FREE.\n` +
+            `Suporte: ${SITE_PROFILE.supportEmail}\n` +
+            `Conta: ${appUrl}/assinatura\n`;
+        const html = buildEmailShell({
+            title: copy.trialCancelTitle,
+            intro: copy.trialCancelIntro,
+            bodyHtml:
+                `<p style="margin:0 0 16px;">Como o cancelamento ocorreu <strong>dentro dos 7 dias de teste</strong>, <strong>não haverá cobrança</strong> do plano Pro.</p>` +
+                `<ul style="margin:0 0 16px;padding-left:20px;">` +
+                `<li>assinatura encerrada imediatamente;</li>` +
+                `<li>nenhuma fatura do trial será gerada;</li>` +
+                `<li>sua conta continua no plano FREE.</li>` +
+                `</ul>` +
+                `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.manageSubscription)}</a></p>` +
+                `<p style="margin:0;">Se notar qualquer cobrança indevida, fale com ${escapeHtml(SITE_PROFILE.supportEmail)}.</p>`,
+        });
+
+        return sendEmail({
+            kind: "subscription_canceled_trial",
+            to: email,
+            subject,
+            text,
+            html,
+            userId,
+            providerEventId,
+            metadata: { reason: "trial" },
+        });
     }
 
     return {
@@ -511,48 +575,113 @@ export function createEmailService(prisma) {
             });
         },
 
-        async sendSubscriptionCancellationScheduledEmail({ email, currentPeriodEnd, userId = null, providerEventId = null }) {
-            const endLabel = currentPeriodEnd ? new Date(currentPeriodEnd).toLocaleDateString("pt-BR") : "o fim do ciclo atual";
-            const subject = `${BRAND_NAME} — cancelamento programado`;
-            const text =
-                `Olá,\n\n` +
-                `Seu cancelamento foi registrado. O plano permanece ativo até ${endLabel}.\n` +
-                `Se precisar de suporte, responda para ${SITE_PROFILE.supportEmail}.\n`;
+        async sendSubscriptionCancellationScheduledEmail({
+            email,
+            currentPeriodEnd,
+            userId = null,
+            providerEventId = null,
+            locale = "pt-BR",
+            duringTrial = false,
+        }) {
+            const copy = emailCopy(locale);
+            const dateLocale = normalizeLocale(locale) === "en" ? "en-US" : normalizeLocale(locale) === "es" ? "es-ES" : "pt-BR";
+            const endLabel = currentPeriodEnd
+                ? new Date(currentPeriodEnd).toLocaleDateString(dateLocale)
+                : normalizeLocale(locale) === "en"
+                  ? "the end of the current cycle"
+                  : normalizeLocale(locale) === "es"
+                    ? "el final del ciclo actual"
+                    : "o fim do ciclo atual";
+            const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
+            const subject = duringTrial
+                ? `${BRAND_NAME} — cancelamento no trial confirmado`
+                : copy.scheduledCancelSubject;
+            const title = duringTrial ? copy.trialCancelTitle : copy.scheduledCancelTitle;
+            const intro = duringTrial
+                ? "Confirmamos o cancelamento durante o período de teste. Não haverá cobrança ao final do trial."
+                : copy.scheduledCancelIntro;
+            const text = duringTrial
+                ? `Olá,\n\nConfirmamos o cancelamento da assinatura Pro durante o trial.\n` +
+                  `Seu acesso segue até ${endLabel}. Depois disso, a conta volta ao FREE e não haverá cobrança.\n` +
+                  `Suporte: ${SITE_PROFILE.supportEmail}\n`
+                : `Olá,\n\nSeu cancelamento foi registrado após o período de teste.\n` +
+                  `O plano Pro permanece ativo até ${endLabel}. Depois disso, não haverá renovação nem nova cobrança.\n` +
+                  `Suporte: ${SITE_PROFILE.supportEmail}\n`;
             const html = buildEmailShell({
-                title: "Cancelamento programado",
-                intro: "Recebemos seu pedido de cancelamento.",
-                bodyHtml:
-                    `<p style="margin:0 0 16px;">Seu acesso permanece ativo até <strong>${escapeHtml(endLabel)}</strong>.</p>` +
-                    `<p style="margin:0;">Se precisar de ajuda, fale com ${escapeHtml(SITE_PROFILE.supportEmail)}.</p>`,
+                title,
+                intro,
+                bodyHtml: duringTrial
+                    ? `<p style="margin:0 0 16px;">Cancelamento registrado <strong>dentro dos 7 dias de teste</strong>.</p>` +
+                      `<ul style="margin:0 0 16px;padding-left:20px;">` +
+                      `<li>acesso Pro até <strong>${escapeHtml(endLabel)}</strong>;</li>` +
+                      `<li><strong>sem cobrança</strong> ao fim do trial;</li>` +
+                      `<li>depois disso, a conta segue no plano FREE.</li>` +
+                      `</ul>` +
+                      `<p style="margin:0;">Dúvidas: ${escapeHtml(SITE_PROFILE.supportEmail)}.</p>`
+                    : `<p style="margin:0 0 16px;">Como o pedido foi feito <strong>depois dos 7 dias de teste</strong>, o acesso Pro segue até <strong>${escapeHtml(endLabel)}</strong>.</p>` +
+                      `<ul style="margin:0 0 16px;padding-left:20px;">` +
+                      `<li>não haverá renovação automática após essa data;</li>` +
+                      `<li>não geramos nova cobrança no próximo ciclo;</li>` +
+                      `<li>sua conta permanece disponível no plano FREE.</li>` +
+                      `</ul>` +
+                      `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.manageSubscription)}</a></p>` +
+                      `<p style="margin:0;">Dúvidas ou pedido de reembolso: ${escapeHtml(SITE_PROFILE.supportEmail)}.</p>`,
             });
 
             return sendEmail({
-                kind: "subscription_cancellation_scheduled",
+                kind: duringTrial ? "subscription_cancellation_scheduled_trial" : "subscription_cancellation_scheduled",
                 to: email,
                 subject,
                 text,
                 html,
                 userId,
                 providerEventId,
-                metadata: { currentPeriodEnd: endLabel },
+                metadata: { currentPeriodEnd: endLabel, reason: duringTrial ? "trial_scheduled" : "after_trial" },
             });
         },
 
-        async sendSubscriptionCanceledEmail({ email, userId = null, providerEventId = null }) {
-            const subject = `${BRAND_NAME} — assinatura encerrada`;
+        async sendSubscriptionCanceledEmail({ email, userId = null, providerEventId = null, locale = "pt-BR", reason = "ended" }) {
+            if (reason === "trial") {
+                return sendTrialCancellationEmailImpl({ email, userId, providerEventId, locale });
+            }
+
+            const copy = emailCopy(locale);
+            const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
+            const subject = copy.endedCancelSubject;
             const text =
                 `Olá,\n\n` +
-                `Sua assinatura foi encerrada e sua conta retornou ao plano FREE.\n` +
-                `Você pode contratar novamente quando quiser pela área de assinatura.\n`;
+                `Sua assinatura Pro foi encerrada e a conta retornou ao plano FREE.\n` +
+                `Você pode assinar novamente quando quiser pela área de assinatura.\n` +
+                `Suporte: ${SITE_PROFILE.supportEmail}\n` +
+                `Conta: ${appUrl}/assinatura\n`;
             const html = buildEmailShell({
-                title: "Assinatura encerrada",
-                intro: "Seu ciclo premium foi finalizado.",
+                title: copy.endedCancelTitle,
+                intro: copy.endedCancelIntro,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">Sua conta foi revertida para o plano <strong>FREE</strong>.</p>` +
-                    `<p style="margin:0;">Você pode voltar ao plano Pro a qualquer momento pela área comercial do produto.</p>`,
+                    `<p style="margin:0 0 16px;">O ciclo premium terminou. Sua conta agora está no plano <strong>FREE</strong>.</p>` +
+                    `<ul style="margin:0 0 16px;padding-left:20px;">` +
+                    `<li>não haverá novas cobranças desta assinatura;</li>` +
+                    `<li>briefings locais e ferramentas básicas seguem disponíveis;</li>` +
+                    `<li>você pode reativar o Pro a qualquer momento.</li>` +
+                    `</ul>` +
+                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.manageSubscription)}</a></p>` +
+                    `<p style="margin:0;">Suporte: ${escapeHtml(SITE_PROFILE.supportEmail)}.</p>`,
             });
 
-            return sendEmail({ kind: "subscription_canceled", to: email, subject, text, html, userId, providerEventId });
+            return sendEmail({
+                kind: "subscription_canceled",
+                to: email,
+                subject,
+                text,
+                html,
+                userId,
+                providerEventId,
+                metadata: { reason: "ended" },
+            });
+        },
+
+        async sendTrialCancellationEmail(args) {
+            return sendTrialCancellationEmailImpl(args);
         },
 
         async sendPasswordChangedEmail({ email, userId = null }) {

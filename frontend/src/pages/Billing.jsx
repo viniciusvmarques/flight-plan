@@ -7,20 +7,17 @@ import { apiGet, apiPost } from "../services/apiClient";
 import { siteProfile } from "../content/siteProfile";
 import { getStoredLocale, useI18n } from "../i18n/I18nContext.jsx";
 import { trackPurchaseConversion } from "../lib/googleAds.js";
-import { useNotify } from "../ui/NotifyContext.jsx";
 
 export default function Billing() {
     const nav = useNavigate();
     const { user, token, refreshMe } = useAuth();
     const [searchParams] = useSearchParams();
     const { t, localizedPrice, locale } = useI18n();
-    const { toast, confirm } = useNotify();
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [status, setStatus] = useState(null);
     const [creating, setCreating] = useState(false);
-    const [canceling, setCanceling] = useState(false);
     const [acceptedCommercialTerms, setAcceptedCommercialTerms] = useState(false);
 
     const email = useMemo(() => user?.email || "", [user]);
@@ -93,34 +90,6 @@ export default function Billing() {
             else throw new Error(t("billing.portalMissing"));
         } catch (e) {
             setError(e?.message || "Falha ao abrir portal");
-        }
-    }
-
-    async function cancelSubscription() {
-        setError("");
-        const isTrial = !!status?.trialing;
-        const ok = await confirm({
-            title: t("billing.cancelConfirmTitle"),
-            message: isTrial ? t("billing.cancelConfirmTrial") : t("billing.cancelConfirmActive"),
-            confirmLabel: t("billing.cancelConfirmLabel"),
-            cancelLabel: t("common.cancel"),
-            danger: true,
-        });
-        if (!ok) return;
-
-        setCanceling(true);
-        try {
-            const res = await apiPost("/api/stripe/cancel", { immediate: isTrial }, token);
-            await refresh();
-            toast(
-                res?.canceledNow ? t("billing.cancelDoneNow") : t("billing.cancelDoneScheduled"),
-                { variant: "success", title: t("billing.cancelDoneTitle") }
-            );
-        } catch (e) {
-            setError(e?.message || t("billing.cancelFailed"));
-            toast(e?.message || t("billing.cancelFailed"), { variant: "error", title: t("common.error") });
-        } finally {
-            setCanceling(false);
         }
     }
 
@@ -244,22 +213,12 @@ export default function Billing() {
                                                   : t("billing.freeUpsell")}
                                         </p>
                                         <div className="page-actions">
-                                            <button className="secondary" type="button" onClick={refresh} disabled={loading || canceling}>
+                                            <button className="secondary" type="button" onClick={refresh} disabled={loading}>
                                                 {t("billing.updateStatus")}
                                             </button>
-                                            <button className="secondary" type="button" onClick={openPortal} disabled={loading || canceling}>
+                                            <button className="secondary" type="button" onClick={openPortal} disabled={loading}>
                                                 {t("billing.manageSubscription")}
                                             </button>
-                                            {isProActive && !status?.cancelAtPeriodEnd ? (
-                                                <button
-                                                    className="secondary danger-action"
-                                                    type="button"
-                                                    onClick={cancelSubscription}
-                                                    disabled={loading || canceling}
-                                                >
-                                                    {canceling ? t("common.loading") : t("billing.cancelSubscription")}
-                                                </button>
-                                            ) : null}
                                         </div>
                                     </div>
                                 )}
@@ -317,21 +276,9 @@ export default function Billing() {
                                         <div className="billing-active-note">
                                             <strong>{t("billing.proActiveTitle")}</strong>
                                             <span>{planLead}</span>
-                                            <div className="page-actions">
-                                                <button className="secondary" type="button" onClick={openPortal} disabled={loading || canceling}>
-                                                    {t("billing.manageSubscription")}
-                                                </button>
-                                                {!status?.cancelAtPeriodEnd ? (
-                                                    <button
-                                                        className="secondary danger-action"
-                                                        type="button"
-                                                        onClick={cancelSubscription}
-                                                        disabled={loading || canceling}
-                                                    >
-                                                        {canceling ? t("common.loading") : t("billing.cancelSubscription")}
-                                                    </button>
-                                                ) : null}
-                                            </div>
+                                            <button className="secondary" type="button" onClick={openPortal} disabled={loading}>
+                                                {t("billing.manageSubscription")}
+                                            </button>
                                         </div>
                                     ) : (
                                         <div className="billing-acceptance-box">

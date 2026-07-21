@@ -241,14 +241,16 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
           const patch = buildBillingPatchFromSubscription(sub);
           await setUserPlanById(u.id, patch);
 
+          // Cancelamento agendado (acesso até o fim do ciclo / trial)
           if (!previous.cancel_at_period_end && sub.cancel_at_period_end) {
             await emailService
               .sendSubscriptionCancellationScheduledEmail({
                 email: u.email,
-                currentPeriodEnd: patch.currentPeriodEnd,
+                currentPeriodEnd: patch.currentPeriodEnd || patch.trialEndsAt,
                 userId: u.id,
                 providerEventId: event.id,
                 locale: u.preferredLocale,
+                duringTrial: normalizeBillingStatus(sub.status) === "trialing",
               })
               .catch((err) => console.error("sendSubscriptionCancellationScheduledEmail:", err?.message || err));
           }
@@ -271,9 +273,18 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
             cancelAtPeriodEnd: false,
             canceledAt: sub?.canceled_at ? new Date(sub.canceled_at * 1000) : new Date(),
           });
+          const reason = wasCanceledDuringTrial(sub) ? "trial" : "ended";
           await emailService
-            .sendSubscriptionCanceledEmail({ email: u.email, userId: u.id, providerEventId: event.id, locale: u.preferredLocale })
+            .sendSubscriptionCanceledEmail({
+              email: u.email,
+              userId: u.id,
+              providerEventId: event.id,
+              locale: u.preferredLocale,
+              reason,
+            })
             .catch((err) => console.error("sendSubscriptionCanceledEmail:", err?.message || err));
+        } else {
+          console.warn("subscription.deleted: usuário não encontrado para customer", customerId);
         }
       }
     }
@@ -337,6 +348,14 @@ function buildBillingPatchFromSubscription(subscription) {
     cancelAtPeriodEnd,
     canceledAt,
   };
+}
+
+/** true se o cancelamento ocorreu ainda dentro do trial de 7 dias */
+function wasCanceledDuringTrial(subscription) {
+  const trialEndSec = Number(subscription?.trial_end || 0);
+  if (!trialEndSec) return false;
+  const canceledAtSec = Number(subscription?.canceled_at || 0) || Math.floor(Date.now() / 1000);
+  return canceledAtSec <= trialEndSec;
 }
 
 /**
@@ -1190,6 +1209,8 @@ app.delete("/me", requireAuth, async (req, res) => {
         email: true,
         plan: true,
         planStatus: true,
+        preferredLocale: true,
+        trialEndsAt: true,
         stripeSubscriptionId: true,
         stripeCustomerId: true,
         cancelAtPeriodEnd: true,
@@ -1206,7 +1227,21 @@ app.delete("/me", requireAuth, async (req, res) => {
     // Sempre encerra cobrança no Stripe antes de apagar (trial = cancel imediato, sem 1ª fatura).
     if (user.stripeSubscriptionId && stripe) {
       try {
-        await cancelStripeSubscriptionForUser(user, { immediate: true });
+        const cancelResult = await cancelStripeSubscriptionForUser(user, { immediate: true });
+        const reason =
+          String(user.planStatus || "").toLowerCase() === "trialing" ||
+          (user.trialEndsAt && new Date(user.trialEndsAt).getTime() >= Date.now())
+            ? "trial"
+            : "ended";
+        await emailService
+          .sendSubscriptionCanceledEmail({
+            email: user.email,
+            userId: user.id,
+            locale: user.preferredLocale || "pt-BR",
+            reason,
+          })
+          .catch((err) => console.error("delete /me cancel email:", err?.message || err));
+        void cancelResult;
       } catch (e) {
         console.error("delete /me stripe cancel failed", e?.message || e);
         return res.status(502).json({
@@ -2093,20 +2128,30 @@ app.post("/api/stripe/cancel", requireAuth, async (req, res) => {
     });
 
     if (result.canceledNow) {
+      const reason =
+        String(u.planStatus || "").toLowerCase() === "trialing" ||
+        result.subscription?.status === "trialing" ||
+        wasCanceledDuringTrial(result.subscription)
+          ? "trial"
+          : "ended";
       await emailService
         .sendSubscriptionCanceledEmail({
           email: u.email,
           userId: u.id,
+          locale: u.preferredLocale || "pt-BR",
+          reason,
         })
-        .catch(() => null);
+        .catch((err) => console.error("stripe cancel email:", err?.message || err));
     } else if (fresh?.cancelAtPeriodEnd) {
       await emailService
         .sendSubscriptionCancellationScheduledEmail({
           email: u.email,
           userId: u.id,
           currentPeriodEnd: fresh.currentPeriodEnd || fresh.trialEndsAt,
+          locale: u.preferredLocale || "pt-BR",
+          duringTrial: String(u.planStatus || "").toLowerCase() === "trialing",
         })
-        .catch(() => null);
+        .catch((err) => console.error("stripe cancel scheduled email:", err?.message || err));
     }
 
     return res.json({
