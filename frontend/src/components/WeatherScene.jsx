@@ -46,7 +46,6 @@ export default function WeatherScene({ metar, icao = "", airport = null, classNa
                 )}
                 <div className="ck-wx-scene__veil" aria-hidden />
                 <figcaption className="ck-wx-scene__caption">
-                    <span className="ck-wx-scene__eyebrow">{t("plannerWx.sceneTitle")}</span>
                     <strong className="ck-wx-scene__label">{weatherLabel}</strong>
                     <span className="ck-wx-scene__period">{periodLabel}</span>
                     {icao ? <span className="ck-wx-scene__icao">{icao}</span> : null}
