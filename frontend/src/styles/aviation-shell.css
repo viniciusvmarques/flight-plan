@@ -720,12 +720,88 @@ label,
   border-color: rgba(245, 185, 66, 0.35) !important;
 }
 
-/* Landing WX ao vivo (substitui PFD falso) */
+/* Landing WX ao vivo — colunas com mesma altura */
 .ck-landing-hero {
   display: grid;
   grid-template-columns: 1fr 1.05fr;
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
+}
+
+.ck-landing-hero > .card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ck-landing-hero > .card > .card-body,
+.ck-landing-hero > .card > .xp-card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.ck-landing-search-stack,
+.ck-landing-result-stack {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  gap: 0;
+}
+
+.ck-landing-search-top {
+  flex: 0 0 auto;
+}
+
+.ck-wx-sidebrief {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(94, 234, 212, 0.18);
+  background:
+    linear-gradient(160deg, rgba(10, 18, 30, 0.95) 0%, rgba(6, 12, 20, 0.92) 100%);
+}
+
+.ck-wx-sidebrief__fill {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 12px;
+}
+
+.ck-wx-sidebrief__main {
+  flex: 0 0 auto;
+}
+
+.ck-wx-bulletin--grow {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+}
+
+.ck-wx-bulletin--grow pre {
+  flex: 1 1 auto;
+  margin: 0;
+  min-height: 88px;
+}
+
+.ck-landing-result-stack .ck-rwy-suggest {
+  flex: 0 0 auto;
+}
+
+.ck-landing-result-stack > .ck-wx-bulletin--grow {
+  margin-top: 12px;
 }
 
 .ck-wx-form {
@@ -804,15 +880,6 @@ label,
   width: 100%;
   min-height: 48px;
   margin: 0;
-}
-
-.ck-wx-sidebrief {
-  margin-top: 18px;
-  padding: 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(94, 234, 212, 0.18);
-  background:
-    linear-gradient(160deg, rgba(10, 18, 30, 0.95) 0%, rgba(6, 12, 20, 0.92) 100%);
 }
 
 .ck-wx-sidebrief__head {
@@ -929,6 +996,10 @@ label,
   font-size: 0.8rem;
   line-height: 1.4;
   color: var(--ck-muted);
+}
+
+.ck-wx-sidebrief__idle {
+  flex: 1 1 auto;
 }
 
 .ck-wx-sidebrief__idle p {

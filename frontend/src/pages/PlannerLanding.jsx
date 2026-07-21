@@ -101,152 +101,148 @@ export default function PlannerLanding() {
     return (
         <AviationShell>
             <section className="ck-landing-hero">
-                <Card>
-                    <span className="av-kicker exam-kicker">{t("plannerGate.kicker")}</span>
-                    <h1 className="page-title" style={{ marginTop: 8 }}>
-                        {t("plannerGate.homeTitle")}
-                    </h1>
-                    <p className="page-caption" style={{ maxWidth: "46ch" }}>
-                        {t("plannerGate.homeCopy")}
-                    </p>
+                <Card className="ck-landing-search">
+                    <div className="ck-landing-search-stack">
+                        <div className="ck-landing-search-top">
+                            <span className="av-kicker exam-kicker">{t("plannerGate.kicker")}</span>
+                            <h1 className="page-title" style={{ marginTop: 8 }}>
+                                {t("plannerGate.homeTitle")}
+                            </h1>
+                            <p className="page-caption" style={{ maxWidth: "46ch" }}>
+                                {t("plannerGate.homeCopy")}
+                            </p>
 
-                    <form
-                        className="ck-wx-form"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            load(icao);
-                        }}
-                    >
-                        <label className="ck-wx-field">
-                            <span>{t("plannerWx.icaoLabel")}</span>
-                            <input
-                                value={icao}
-                                onChange={(e) => setIcao(e.target.value.toUpperCase().slice(0, 4))}
-                                maxLength={4}
-                                placeholder="SBGR"
-                                autoComplete="off"
-                                spellCheck={false}
-                                aria-label="ICAO"
-                            />
-                        </label>
-                        <div className="ck-wx-form-actions">
-                            <button type="submit" className="primary" disabled={loading}>
-                                {loading ? t("common.loading") : t("plannerWx.consult")}
-                            </button>
-                            <button type="button" className="secondary" onClick={resetSearch} disabled={loading}>
-                                {t("weather.resetSearch")}
-                            </button>
-                        </div>
-                    </form>
-
-                    <div className="ck-wx-quick">
-                        {QUICK.map((code) => (
-                            <button
-                                key={code}
-                                type="button"
-                                className={`ck-wx-chip${icao === code ? " is-active" : ""}`}
-                                onClick={() => load(code)}
+                            <form
+                                className="ck-wx-form"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    load(icao);
+                                }}
                             >
-                                {code}
-                            </button>
-                        ))}
-                    </div>
+                                <label className="ck-wx-field">
+                                    <span>{t("plannerWx.icaoLabel")}</span>
+                                    <input
+                                        value={icao}
+                                        onChange={(e) => setIcao(e.target.value.toUpperCase().slice(0, 4))}
+                                        maxLength={4}
+                                        placeholder="SBGR"
+                                        autoComplete="off"
+                                        spellCheck={false}
+                                        aria-label="ICAO"
+                                    />
+                                </label>
+                                <div className="ck-wx-form-actions">
+                                    <button type="submit" className="primary" disabled={loading}>
+                                        {loading ? t("common.loading") : t("plannerWx.consult")}
+                                    </button>
+                                    <button type="button" className="secondary" onClick={resetSearch} disabled={loading}>
+                                        {t("weather.resetSearch")}
+                                    </button>
+                                </div>
+                            </form>
 
-                    {error ? <div className="form-error" style={{ marginTop: 12 }}>{error}</div> : null}
+                            <div className="ck-wx-quick">
+                                {QUICK.map((code) => (
+                                    <button
+                                        key={code}
+                                        type="button"
+                                        className={`ck-wx-chip${icao === code ? " is-active" : ""}`}
+                                        onClick={() => load(code)}
+                                    >
+                                        {code}
+                                    </button>
+                                ))}
+                            </div>
 
-                    <div className="ck-wx-actions">
-                        <button type="button" className="secondary" onClick={() => nav("/weather")}>
-                            {t("plannerWx.openFull")}
-                        </button>
-                        <button type="button" className="primary" onClick={() => nav("/register")}>
-                            {t("plannerGate.ctaRegister")}
-                        </button>
-                    </div>
+                            {error ? <div className="form-error" style={{ marginTop: 12 }}>{error}</div> : null}
 
-                    <div className={`ck-wx-sidebrief ck-wx-sidebrief--${tone}`}>
-                        <div className="ck-wx-sidebrief__head">
-                            <span className="ck-wx-sidebrief__eyebrow">{t("plannerWx.sideBriefTitle")}</span>
+                            <div className="ck-wx-actions">
+                                <button type="button" className="secondary" onClick={() => nav("/weather")}>
+                                    {t("plannerWx.openFull")}
+                                </button>
+                                <button type="button" className="primary" onClick={() => nav("/register")}>
+                                    {t("plannerGate.ctaRegister")}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className={`ck-wx-sidebrief ck-wx-sidebrief--${tone}`}>
+                            <div className="ck-wx-sidebrief__head">
+                                <span className="ck-wx-sidebrief__eyebrow">{t("plannerWx.sideBriefTitle")}</span>
+                                <strong className="ck-wx-sidebrief__icao">{hasBulletin ? icao : "----"}</strong>
+                            </div>
+
                             {hasBulletin ? (
-                                <strong className="ck-wx-sidebrief__icao">{icao}</strong>
+                                <div className="ck-wx-sidebrief__fill">
+                                    <div className="ck-wx-sidebrief__main">
+                                        <div className={`ck-wx-sidebrief__cat ck-wx-sidebrief__cat--${tone}`}>
+                                            <span className="ck-wx-sidebrief__cat-code">
+                                                {category === "NO_DATA" || category === "UNKNOWN" ? "—" : category}
+                                            </span>
+                                            <span className="ck-wx-sidebrief__cat-plain">{categoryPlain(category, t)}</span>
+                                        </div>
+
+                                        {summary.hints?.length ? (
+                                            <ul className="ck-wx-sidebrief__hints">
+                                                {summary.hints.slice(0, 4).map((hint) => (
+                                                    <li key={hint}>{hint}</li>
+                                                ))}
+                                            </ul>
+                                        ) : null}
+
+                                        {runwayHint?.suggested?.ident ? (
+                                            <div className="ck-wx-sidebrief__rwy">
+                                                <span className="ck-wx-sidebrief__rwy-label">{t("plannerWx.sideBriefRunway")}</span>
+                                                <strong className="ck-wx-sidebrief__rwy-ident">{runwayHint.suggested.ident}</strong>
+                                                <span className="ck-wx-sidebrief__rwy-note">{t("plannerWx.sideBriefRunwayNote")}</span>
+                                            </div>
+                                        ) : null}
+                                    </div>
+
+                                    <div className="ck-wx-bulletin ck-wx-bulletin--grow">
+                                        <div className="ck-wx-bulletin-label">METAR</div>
+                                        <pre>{metar || t("weather.metarUnavailable")}</pre>
+                                    </div>
+                                </div>
                             ) : (
-                                <strong className="ck-wx-sidebrief__icao">----</strong>
+                                <div className="ck-wx-sidebrief__idle">
+                                    <p>{loading ? t("common.loading") : t("plannerWx.sideBriefIdle")}</p>
+                                    <ul>
+                                        <li>{t("plannerWx.sideBriefIdle1")}</li>
+                                        <li>{t("plannerWx.sideBriefIdle2")}</li>
+                                        <li>{t("plannerWx.sideBriefIdle3")}</li>
+                                    </ul>
+                                </div>
                             )}
                         </div>
-
-                        {hasBulletin ? (
-                            <>
-                                <div className={`ck-wx-sidebrief__cat ck-wx-sidebrief__cat--${tone}`}>
-                                    <span className="ck-wx-sidebrief__cat-code">
-                                        {category === "NO_DATA" || category === "UNKNOWN" ? "—" : category}
-                                    </span>
-                                    <span className="ck-wx-sidebrief__cat-plain">{categoryPlain(category, t)}</span>
-                                </div>
-
-                                {summary.hints?.length ? (
-                                    <ul className="ck-wx-sidebrief__hints">
-                                        {summary.hints.slice(0, 4).map((hint) => (
-                                            <li key={hint}>{hint}</li>
-                                        ))}
-                                    </ul>
-                                ) : null}
-
-                                {runwayHint?.suggested?.ident ? (
-                                    <div className="ck-wx-sidebrief__rwy">
-                                        <span className="ck-wx-sidebrief__rwy-label">{t("plannerWx.sideBriefRunway")}</span>
-                                        <strong className="ck-wx-sidebrief__rwy-ident">{runwayHint.suggested.ident}</strong>
-                                        <span className="ck-wx-sidebrief__rwy-note">{t("plannerWx.sideBriefRunwayNote")}</span>
-                                    </div>
-                                ) : null}
-
-                                <p className="ck-wx-sidebrief__tip">{t("plannerWx.sideBriefTip")}</p>
-                            </>
-                        ) : (
-                            <div className="ck-wx-sidebrief__idle">
-                                <p>{loading ? t("common.loading") : t("plannerWx.sideBriefIdle")}</p>
-                                <ul>
-                                    <li>{t("plannerWx.sideBriefIdle1")}</li>
-                                    <li>{t("plannerWx.sideBriefIdle2")}</li>
-                                    <li>{t("plannerWx.sideBriefIdle3")}</li>
-                                </ul>
-                            </div>
-                        )}
                     </div>
                 </Card>
 
-                <Card className={`ck-wx-panel ck-wx-panel--${tone}`}>
-                    <div ref={resultRef} id="wx-result" className="ck-wx-result-anchor" tabIndex={-1}>
-                    <div className="ck-wx-panel-head">
-                        <div>
-                            <span className="ck-wx-station">{airportName || icao || "—"}</span>
-                            <strong className="ck-wx-icao">{icao || "----"}</strong>
+                <Card className={`ck-wx-panel ck-landing-result ck-wx-panel--${tone}`}>
+                    <div ref={resultRef} id="wx-result" className="ck-wx-result-anchor ck-landing-result-stack" tabIndex={-1}>
+                        <div className="ck-wx-panel-head">
+                            <div>
+                                <span className="ck-wx-station">{airportName || icao || "—"}</span>
+                                <strong className="ck-wx-icao">{icao || "----"}</strong>
+                            </div>
+                            <div className={`ck-wx-cat ck-wx-cat--${tone}`} aria-live="polite">
+                                <span className="ck-wx-cat-code">
+                                    {category === "NO_DATA" || category === "UNKNOWN" ? "—" : category}
+                                </span>
+                                <span className="ck-wx-cat-plain">{categoryPlain(category, t)}</span>
+                            </div>
                         </div>
-                        <div className={`ck-wx-cat ck-wx-cat--${tone}`} aria-live="polite">
-                            <span className="ck-wx-cat-code">{category === "NO_DATA" || category === "UNKNOWN" ? "—" : category}</span>
-                            <span className="ck-wx-cat-plain">{categoryPlain(category, t)}</span>
+
+                        <p className="ck-wx-readout">
+                            {summary.categoryLabel || (loading ? t("common.loading") : t("plannerWx.waitHint"))}
+                        </p>
+
+                        {metar ? <RunwaySuggestion runways={runways} metar={metar} /> : null}
+
+                        <div className="ck-wx-bulletin ck-wx-bulletin--grow">
+                            <div className="ck-wx-bulletin-label">TAF</div>
+                            <pre>{taf || t("weather.tafUnavailable")}</pre>
                         </div>
-                    </div>
-
-                    <p className="ck-wx-readout">{summary.categoryLabel}</p>
-
-                    {summary.hints?.length ? (
-                        <ul className="ck-wx-hints">
-                            {summary.hints.map((hint) => (
-                                <li key={hint}>{hint}</li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p className="ck-wx-empty">{loading ? t("common.loading") : t("plannerWx.waitHint")}</p>
-                    )}
-
-                    <div className="ck-wx-bulletin">
-                        <div className="ck-wx-bulletin-label">METAR</div>
-                        <pre>{metar || t("weather.metarUnavailable")}</pre>
-                    </div>
-                    {metar ? <RunwaySuggestion runways={runways} metar={metar} /> : null}
-                    <div className="ck-wx-bulletin">
-                        <div className="ck-wx-bulletin-label">TAF</div>
-                        <pre>{taf || t("weather.tafUnavailable")}</pre>
-                    </div>
                     </div>
                 </Card>
             </section>
