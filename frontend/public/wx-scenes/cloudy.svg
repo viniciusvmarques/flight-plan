@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="Parcialmente nublado">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#0b1220"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#sky)"/>
+  <circle cx="470" cy="100" r="36" fill="#fcd34d" opacity=".85"/>
+  <g fill="#94a3b8" opacity=".9">
+    <ellipse cx="210" cy="140" rx="90" ry="36"/>
+    <ellipse cx="260" cy="128" rx="70" ry="30"/>
+    <ellipse cx="170" cy="128" rx="56" ry="24"/>
+  </g>
+  <g fill="#cbd5e1" opacity=".75">
+    <ellipse cx="420" cy="180" rx="110" ry="40"/>
+    <ellipse cx="480" cy="168" rx="78" ry="32"/>
+    <ellipse cx="370" cy="168" rx="60" ry="26"/>
+  </g>
+  <path d="M0 310 C150 280 260 340 390 305 C500 278 580 330 640 300 L640 420 L0 420 Z" fill="#0f172a"/>
+  <rect x="268" y="258" width="104" height="18" rx="2" fill="#334155"/>
+  <rect x="286" y="276" width="68" height="52" fill="#1e293b"/>
+  <path d="M286 276 L320 246 L354 276 Z" fill="#475569"/>
+</svg>

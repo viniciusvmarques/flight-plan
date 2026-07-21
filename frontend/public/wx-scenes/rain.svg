@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="Chuva">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#sky)"/>
+  <g fill="#475569">
+    <ellipse cx="180" cy="100" rx="120" ry="42"/>
+    <ellipse cx="280" cy="88" rx="90" ry="36"/>
+    <ellipse cx="420" cy="104" rx="130" ry="46"/>
+    <ellipse cx="540" cy="90" rx="90" ry="34"/>
+  </g>
+  <g stroke="#38bdf8" stroke-width="3" stroke-linecap="round" opacity=".75">
+    <line x1="120" y1="170" x2="100" y2="230"/>
+    <line x1="170" y1="165" x2="150" y2="240"/>
+    <line x1="230" y1="175" x2="210" y2="250"/>
+    <line x1="290" y1="168" x2="270" y2="245"/>
+    <line x1="350" y1="180" x2="330" y2="255"/>
+    <line x1="410" y1="170" x2="390" y2="248"/>
+    <line x1="470" y1="178" x2="450" y2="252"/>
+    <line x1="530" y1="166" x2="510" y2="242"/>
+  </g>
+  <path d="M0 330 C150 310 280 360 420 328 C530 304 590 350 640 325 L640 420 L0 420 Z" fill="#020617"/>
+  <rect x="268" y="278" width="104" height="18" rx="2" fill="#1e293b"/>
+  <rect x="286" y="296" width="68" height="48" fill="#0f172a"/>
+  <path d="M286 296 L320 268 L354 296 Z" fill="#334155"/>
+</svg>

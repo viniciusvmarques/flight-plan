@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import AviationShell from "../components/AviationShell";
 import Card from "../components/Card";
 import GrowthCtaBar from "../components/GrowthCtaBar";
+import WeatherScene from "../components/WeatherScene";
+import RunwaySuggestion from "../components/RunwaySuggestion";
 import { useI18n } from "../i18n/I18nContext.jsx";
 import { fetchStationWeather } from "../services/weatherService";
 import { decodeMetarSummary } from "../utils/metarDecoder";
-import RunwaySuggestion from "../components/RunwaySuggestion";
-import { suggestRunwayFromMetar } from "../utils/suggestRunwayFromMetar";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
 
 const QUICK = ["SBGR", "SBRJ", "SBSP", "SBGL", "SBCF"];
@@ -95,8 +95,6 @@ export default function PlannerLanding() {
     const category = classifyFromMetar(metar);
     const summary = decodeMetarSummary(metar, locale);
     const tone = categoryTone(category);
-    const runwayHint = metar ? suggestRunwayFromMetar(runways, metar) : null;
-    const hasBulletin = !!(metar || taf);
 
     return (
         <AviationShell>
@@ -166,55 +164,7 @@ export default function PlannerLanding() {
                             </div>
                         </div>
 
-                        <div className={`ck-wx-sidebrief ck-wx-sidebrief--${tone}`}>
-                            <div className="ck-wx-sidebrief__head">
-                                <span className="ck-wx-sidebrief__eyebrow">{t("plannerWx.sideBriefTitle")}</span>
-                                <strong className="ck-wx-sidebrief__icao">{hasBulletin ? icao : "----"}</strong>
-                            </div>
-
-                            {hasBulletin ? (
-                                <div className="ck-wx-sidebrief__fill">
-                                    <div className="ck-wx-sidebrief__main">
-                                        <div className={`ck-wx-sidebrief__cat ck-wx-sidebrief__cat--${tone}`}>
-                                            <span className="ck-wx-sidebrief__cat-code">
-                                                {category === "NO_DATA" || category === "UNKNOWN" ? "—" : category}
-                                            </span>
-                                            <span className="ck-wx-sidebrief__cat-plain">{categoryPlain(category, t)}</span>
-                                        </div>
-
-                                        {summary.hints?.length ? (
-                                            <ul className="ck-wx-sidebrief__hints">
-                                                {summary.hints.slice(0, 4).map((hint) => (
-                                                    <li key={hint}>{hint}</li>
-                                                ))}
-                                            </ul>
-                                        ) : null}
-
-                                        {runwayHint?.suggested?.ident ? (
-                                            <div className="ck-wx-sidebrief__rwy">
-                                                <span className="ck-wx-sidebrief__rwy-label">{t("plannerWx.sideBriefRunway")}</span>
-                                                <strong className="ck-wx-sidebrief__rwy-ident">{runwayHint.suggested.ident}</strong>
-                                                <span className="ck-wx-sidebrief__rwy-note">{t("plannerWx.sideBriefRunwayNote")}</span>
-                                            </div>
-                                        ) : null}
-                                    </div>
-
-                                    <div className="ck-wx-bulletin ck-wx-bulletin--grow">
-                                        <div className="ck-wx-bulletin-label">METAR</div>
-                                        <pre>{metar || t("weather.metarUnavailable")}</pre>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="ck-wx-sidebrief__idle">
-                                    <p>{loading ? t("common.loading") : t("plannerWx.sideBriefIdle")}</p>
-                                    <ul>
-                                        <li>{t("plannerWx.sideBriefIdle1")}</li>
-                                        <li>{t("plannerWx.sideBriefIdle2")}</li>
-                                        <li>{t("plannerWx.sideBriefIdle3")}</li>
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
+                        <WeatherScene metar={metar} icao={icao} className="ck-wx-scene--fill" />
                     </div>
                 </Card>
 
@@ -236,6 +186,19 @@ export default function PlannerLanding() {
                         <p className="ck-wx-readout">
                             {summary.categoryLabel || (loading ? t("common.loading") : t("plannerWx.waitHint"))}
                         </p>
+
+                        {summary.hints?.length ? (
+                            <ul className="ck-wx-hints">
+                                {summary.hints.map((hint) => (
+                                    <li key={hint}>{hint}</li>
+                                ))}
+                            </ul>
+                        ) : null}
+
+                        <div className="ck-wx-bulletin">
+                            <div className="ck-wx-bulletin-label">METAR</div>
+                            <pre>{metar || t("weather.metarUnavailable")}</pre>
+                        </div>
 
                         {metar ? <RunwaySuggestion runways={runways} metar={metar} /> : null}
 

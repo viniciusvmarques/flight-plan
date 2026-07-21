@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="Céu limpo">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="55%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#082f49"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="72%" cy="28%" r="28%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="45%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="rgba(251,191,36,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#sky)"/>
+  <circle cx="460" cy="118" r="118" fill="url(#sun)"/>
+  <circle cx="460" cy="118" r="42" fill="#fde68a"/>
+  <path d="M0 300 C120 270 220 330 320 300 C420 270 520 320 640 290 L640 420 L0 420 Z" fill="#0b1220" opacity=".88"/>
+  <path d="M0 318 C140 298 240 348 360 318 C470 292 560 340 640 312 L640 420 L0 420 Z" fill="#111827" opacity=".7"/>
+  <rect x="268" y="248" width="104" height="18" rx="2" fill="#334155"/>
+  <rect x="286" y="266" width="68" height="52" fill="#1e293b"/>
+  <path d="M286 266 L320 236 L354 266 Z" fill="#475569"/>
+</svg>

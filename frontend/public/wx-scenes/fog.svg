@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="Névoa">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="55%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#sky)"/>
+  <g fill="#e2e8f0" opacity=".28">
+    <ellipse cx="160" cy="180" rx="180" ry="28"/>
+    <ellipse cx="420" cy="210" rx="220" ry="32"/>
+    <ellipse cx="280" cy="250" rx="240" ry="30"/>
+    <ellipse cx="480" cy="290" rx="200" ry="26"/>
+    <ellipse cx="200" cy="320" rx="210" ry="24"/>
+  </g>
+  <rect x="268" y="268" width="104" height="18" rx="2" fill="#475569" opacity=".55"/>
+  <rect x="286" y="286" width="68" height="52" fill="#334155" opacity=".45"/>
+  <path d="M286 286 L320 256 L354 286 Z" fill="#64748b" opacity=".4"/>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="Tempestade">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#sky)"/>
+  <g fill="#1f2937">
+    <ellipse cx="200" cy="110" rx="130" ry="48"/>
+    <ellipse cx="320" cy="92" rx="120" ry="46"/>
+    <ellipse cx="460" cy="108" rx="140" ry="52"/>
+  </g>
+  <g fill="#374151">
+    <ellipse cx="240" cy="150" rx="110" ry="36"/>
+    <ellipse cx="420" cy="160" rx="130" ry="40"/>
+  </g>
+  <path d="M340 168 L300 250 L328 250 L290 330 L390 230 L350 230 L390 168 Z" fill="#fbbf24"/>
+  <g stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" opacity=".55">
+    <line x1="150" y1="200" x2="135" y2="260"/>
+    <line x1="200" y1="210" x2="185" y2="275"/>
+    <line x1="480" y1="205" x2="465" y2="270"/>
+    <line x1="530" y1="198" x2="515" y2="262"/>
+  </g>
+  <path d="M0 330 C160 310 300 365 450 330 C540 308 600 350 640 328 L640 420 L0 420 Z" fill="#000"/>
+  <rect x="268" y="278" width="104" height="18" rx="2" fill="#1e293b"/>
+  <rect x="286" y="296" width="68" height="48" fill="#0f172a"/>
+  <path d="M286 296 L320 268 L354 296 Z" fill="#334155"/>
+</svg>

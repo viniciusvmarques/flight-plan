@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="Nublado">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0b1220"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#sky)"/>
+  <g fill="#64748b">
+    <ellipse cx="120" cy="110" rx="120" ry="44"/>
+    <ellipse cx="240" cy="96" rx="100" ry="40"/>
+    <ellipse cx="380" cy="108" rx="130" ry="48"/>
+    <ellipse cx="520" cy="92" rx="110" ry="42"/>
+    <ellipse cx="200" cy="160" rx="140" ry="46"/>
+    <ellipse cx="420" cy="170" rx="150" ry="50"/>
+  </g>
+  <g fill="#475569" opacity=".85">
+    <ellipse cx="160" cy="200" rx="110" ry="36"/>
+    <ellipse cx="360" cy="210" rx="130" ry="40"/>
+    <ellipse cx="540" cy="198" rx="100" ry="34"/>
+  </g>
+  <path d="M0 320 C160 300 280 350 420 318 C520 296 590 340 640 315 L640 420 L0 420 Z" fill="#020617"/>
+  <rect x="268" y="268" width="104" height="18" rx="2" fill="#1e293b"/>
+  <rect x="286" y="286" width="68" height="52" fill="#0f172a"/>
+  <path d="M286 286 L320 256 L354 286 Z" fill="#334155"/>
+</svg>
