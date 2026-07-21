@@ -40,7 +40,7 @@ export const en = {
         refundWindowNotice:
             "For online purchases, withdrawal requests within 7 calendar days of subscription will be reviewed with priority by support.",
         subscriptionDeletionNotice:
-            "Deleting the account does not replace subscription cancellation. To avoid future charges, cancel first through the subscription portal.",
+            "When you delete the account, the Stripe subscription is canceled automatically to prevent further charges. During trial (7 days), cancellation is immediate and does not create the first invoice.",
         dataRetentionNotice:
             "After account deletion, briefings, favorites and user-linked aircraft profiles are removed. Minimum consent, security, support, billing and transactional email records may be retained as needed.",
     },
@@ -230,6 +230,17 @@ export const en = {
         charge: "Billing",
         updateStatus: "Update status",
         manageSubscription: "Manage subscription",
+        cancelSubscription: "Cancel subscription",
+        cancelConfirmTitle: "Cancel subscription",
+        cancelConfirmTrial:
+            "You are in the trial period. Cancellation is immediate and you will not be charged. Confirm?",
+        cancelConfirmActive:
+            "Pro access continues until the end of the paid cycle. After that, renewal stops and there is no new charge. Confirm?",
+        cancelConfirmLabel: "Cancel subscription",
+        cancelDoneTitle: "Subscription",
+        cancelDoneNow: "Subscription ended. You will not be charged for the trial cycle.",
+        cancelDoneScheduled: "Cancellation scheduled. There will be no renewal on the next cycle.",
+        cancelFailed: "Could not cancel the subscription right now.",
         featuresTitle: "What Pro unlocks",
         featureBriefings: "Save unlimited briefings and reopen routes quickly.",
         featureFavorites: "Sync favorites and preferences across sessions.",
@@ -441,7 +452,7 @@ export const en = {
         deleteAccountDone: "Your account was deleted.",
         deleteAccountDoneTitle: "Account deleted",
         deleteAccountError:
-            "Could not delete the account now. If you have an active subscription, cancel it in billing first.",
+            "Could not delete the account now. Try again, or contact support if the Stripe subscription does not cancel.",
         deleteAccountErrorTitle: "Account deletion error",
         doneTitle: "Done",
         errorTitle: "Error",

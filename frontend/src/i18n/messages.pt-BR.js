@@ -40,7 +40,7 @@ export const ptBR = {
         refundWindowNotice:
             "Para compras realizadas pela internet, solicitações de arrependimento dentro de 7 dias corridos da contratação serão avaliadas com prioridade pelo suporte.",
         subscriptionDeletionNotice:
-            "Excluir a conta não substitui o cancelamento da assinatura. Para evitar novas cobranças, cancele primeiro pelo portal de assinatura.",
+            "Ao excluir a conta, a assinatura Stripe é cancelada automaticamente para evitar novas cobranças. Em trial (7 dias), o cancelamento é imediato e não gera a primeira fatura.",
         dataRetentionNotice:
             "Após exclusão da conta, briefings, favoritos e perfis vinculados ao usuário são removidos. Registros mínimos de consentimento, segurança, suporte, cobrança e e-mails transacionais podem ser mantidos pelo prazo necessário.",
     },
@@ -230,6 +230,17 @@ export const ptBR = {
         charge: "Cobrança",
         updateStatus: "Atualizar status",
         manageSubscription: "Gerenciar assinatura",
+        cancelSubscription: "Cancelar assinatura",
+        cancelConfirmTitle: "Cancelar assinatura",
+        cancelConfirmTrial:
+            "Você está no período de teste. O cancelamento é imediato e não gera a cobrança dos R$ 19,90. Confirma?",
+        cancelConfirmActive:
+            "O acesso Pro segue até o fim do ciclo já pago. Depois disso a renovação para e não há nova cobrança. Confirma?",
+        cancelConfirmLabel: "Cancelar assinatura",
+        cancelDoneTitle: "Assinatura",
+        cancelDoneNow: "Assinatura encerrada. Não haverá cobrança do ciclo de teste.",
+        cancelDoneScheduled: "Cancelamento agendado. Não haverá renovação no próximo ciclo.",
+        cancelFailed: "Não foi possível cancelar a assinatura agora.",
         featuresTitle: "O que o Pro libera",
         featureBriefings: "Salvar briefings ilimitados e reabrir rotas rapidamente.",
         featureFavorites: "Sincronizar favoritos e preferências entre sessões.",
@@ -441,7 +452,7 @@ export const ptBR = {
         deleteAccountDone: "Sua conta foi excluída.",
         deleteAccountDoneTitle: "Conta excluída",
         deleteAccountError:
-            "Não foi possível excluir a conta agora. Se houver assinatura ativa, cancele primeiro na área de assinatura.",
+            "Não foi possível excluir a conta agora. Tente de novo ou fale com o suporte se a assinatura não cancelar no Stripe.",
         deleteAccountErrorTitle: "Erro ao excluir conta",
         doneTitle: "Concluído",
         errorTitle: "Erro",

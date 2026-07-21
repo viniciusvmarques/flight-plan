@@ -40,7 +40,7 @@ export const es = {
         refundWindowNotice:
             "Para compras por internet, solicitudes de arrepentimiento dentro de 7 días corridos de la contratación serán analizadas con prioridad por soporte.",
         subscriptionDeletionNotice:
-            "Eliminar la cuenta no sustituye la cancelación de la suscripción. Para evitar nuevos cobros, cancela primero en el portal de suscripción.",
+            "Al eliminar la cuenta, la suscripción de Stripe se cancela automáticamente para evitar nuevos cobros. En trial (7 días), la cancelación es inmediata y no genera la primera factura.",
         dataRetentionNotice:
             "Después de eliminar la cuenta, se eliminan briefings, favoritos y perfiles de aeronave vinculados al usuario. Registros mínimos de consentimiento, seguridad, soporte, cobro y emails transaccionales pueden conservarse cuando sea necesario.",
     },
@@ -230,6 +230,17 @@ export const es = {
         charge: "Cobro",
         updateStatus: "Actualizar estado",
         manageSubscription: "Gestionar suscripción",
+        cancelSubscription: "Cancelar suscripción",
+        cancelConfirmTitle: "Cancelar suscripción",
+        cancelConfirmTrial:
+            "Estás en el período de prueba. La cancelación es inmediata y no se cobrará. ¿Confirmas?",
+        cancelConfirmActive:
+            "El acceso Pro continúa hasta el final del ciclo ya pagado. Después, la renovación se detiene y no hay nuevo cobro. ¿Confirmas?",
+        cancelConfirmLabel: "Cancelar suscripción",
+        cancelDoneTitle: "Suscripción",
+        cancelDoneNow: "Suscripción finalizada. No se cobrará el ciclo de prueba.",
+        cancelDoneScheduled: "Cancelación programada. No habrá renovación en el próximo ciclo.",
+        cancelFailed: "No se pudo cancelar la suscripción ahora.",
         featuresTitle: "Qué libera Pro",
         featureBriefings: "Guardar briefings ilimitados y reabrir rutas rápidamente.",
         featureFavorites: "Sincronizar favoritos y preferencias entre sesiones.",
@@ -441,7 +452,7 @@ export const es = {
         deleteAccountDone: "Tu cuenta fue eliminada.",
         deleteAccountDoneTitle: "Cuenta eliminada",
         deleteAccountError:
-            "No se pudo eliminar la cuenta ahora. Si tienes una suscripción activa, cancélala primero en facturación.",
+            "No se pudo eliminar la cuenta ahora. Inténtalo de nuevo o contacta soporte si la suscripción de Stripe no se cancela.",
         deleteAccountErrorTitle: "Error al eliminar cuenta",
         doneTitle: "Listo",
         errorTitle: "Error",

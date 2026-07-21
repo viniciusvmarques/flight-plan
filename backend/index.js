@@ -339,6 +339,68 @@ function buildBillingPatchFromSubscription(subscription) {
   };
 }
 
+/**
+ * Cancela assinatura Stripe.
+ * - Em trial / past_due / unpaid: cancela imediatamente (evita cobrança do 1º ciclo).
+ * - Em active pago: cancela ao fim do período (padrão) ou imediatamente se immediate=true.
+ */
+async function cancelStripeSubscription(subscriptionId, { immediate = false } = {}) {
+  if (!stripe || !subscriptionId) {
+    return { ok: false, reason: "missing_stripe_or_subscription" };
+  }
+
+  const sub = await stripe.subscriptions.retrieve(subscriptionId);
+  const status = normalizeBillingStatus(sub?.status);
+  const shouldCancelNow =
+    immediate ||
+    status === "trialing" ||
+    status === "past_due" ||
+    status === "unpaid" ||
+    status === "incomplete" ||
+    status === "incomplete_expired";
+
+  let updated;
+  if (shouldCancelNow) {
+    updated = await stripe.subscriptions.cancel(subscriptionId, {
+      invoice_now: false,
+      prorate: false,
+    });
+  } else if (sub.cancel_at_period_end) {
+    updated = sub;
+  } else {
+    updated = await stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: true,
+    });
+  }
+
+  return {
+    ok: true,
+    subscription: updated,
+    canceledNow: shouldCancelNow || normalizeBillingStatus(updated?.status) === "canceled",
+    patch: buildBillingPatchFromSubscription(updated),
+  };
+}
+
+async function cancelStripeSubscriptionForUser(user, { immediate = false } = {}) {
+  if (!user?.stripeSubscriptionId) {
+    return { ok: true, skipped: true, patch: null };
+  }
+  try {
+    const result = await cancelStripeSubscription(user.stripeSubscriptionId, { immediate });
+    if (result.ok && result.patch && user.id) {
+      await setUserPlanById(user.id, result.patch).catch(() => null);
+    }
+    return result;
+  } catch (e) {
+    const code = e?.code || e?.raw?.code;
+    // Já cancelada / inexistente: segue
+    if (code === "resource_missing") {
+      return { ok: true, skipped: true, patch: { plan: "FREE", planStatus: "canceled", stripeSubscriptionId: null, cancelAtPeriodEnd: false } };
+    }
+    throw e;
+  }
+}
+
 function buildVerificationUrl(token) {
   const base = String(APP_URL || "http://localhost:5173").replace(/\/$/, "");
   return `${base}/verify-email?token=${encodeURIComponent(token)}`;
@@ -1129,6 +1191,7 @@ app.delete("/me", requireAuth, async (req, res) => {
         plan: true,
         planStatus: true,
         stripeSubscriptionId: true,
+        stripeCustomerId: true,
         cancelAtPeriodEnd: true,
       },
     });
@@ -1140,15 +1203,22 @@ app.delete("/me", requireAuth, async (req, res) => {
       return res.status(400).json({ error: "Confirme o e-mail da conta para excluir." });
     }
 
-    if (canAccessProPlan(user.plan, user.planStatus) && user.stripeSubscriptionId && !user.cancelAtPeriodEnd) {
-      return res.status(409).json({
-        error: "Cancele a assinatura antes de excluir a conta para evitar novas cobranças.",
-        code: "ACTIVE_SUBSCRIPTION",
-      });
+    // Sempre encerra cobrança no Stripe antes de apagar (trial = cancel imediato, sem 1ª fatura).
+    if (user.stripeSubscriptionId && stripe) {
+      try {
+        await cancelStripeSubscriptionForUser(user, { immediate: true });
+      } catch (e) {
+        console.error("delete /me stripe cancel failed", e?.message || e);
+        return res.status(502).json({
+          error:
+            "Não foi possível cancelar a assinatura no Stripe antes de excluir a conta. Tente cancelar em Assinatura e depois exclua de novo, ou fale com o suporte.",
+          code: "STRIPE_CANCEL_FAILED",
+        });
+      }
     }
 
     await prisma.user.delete({ where: { id: user.id } });
-    return res.json({ ok: true });
+    return res.json({ ok: true, subscriptionCanceled: !!user.stripeSubscriptionId });
   } catch (e) {
     return res.status(500).json({ error: e?.message || "Falha ao excluir conta." });
   }
@@ -1968,6 +2038,11 @@ app.post("/api/stripe/checkout", requireAuth, async (req, res) => {
     line_items: [{ price: priceId, quantity: 1 }],
     subscription_data: {
       trial_period_days: 7,
+      trial_settings: {
+        end_behavior: {
+          missing_payment_method: "cancel",
+        },
+      },
       metadata: { userId: u.id, locale: u.preferredLocale || preferredLocale },
     },
     success_url: successUrl,
@@ -1976,6 +2051,73 @@ app.post("/api/stripe/checkout", requireAuth, async (req, res) => {
   });
 
   return res.json({ url: session.url });
+});
+
+// Cancelar assinatura (trial = imediato / sem cobrança; active = fim do ciclo)
+app.post("/api/stripe/cancel", requireAuth, async (req, res) => {
+  const userId = req.auth?.sub;
+  if (!userId) return res.status(401).json({ error: "Não autenticado." });
+  if (!stripe) return res.status(400).json({ error: "Stripe não configurado." });
+
+  const immediate = !!req.body?.immediate;
+  const u = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      preferredLocale: true,
+      stripeSubscriptionId: true,
+      plan: true,
+      planStatus: true,
+      cancelAtPeriodEnd: true,
+    },
+  });
+  if (!u) return res.status(404).json({ error: "Usuário não encontrado." });
+  if (!u.stripeSubscriptionId) {
+    return res.status(400).json({ error: "Nenhuma assinatura Stripe encontrada para esta conta." });
+  }
+
+  try {
+    const result = await cancelStripeSubscriptionForUser(u, { immediate });
+    const fresh = await prisma.user.findUnique({
+      where: { id: u.id },
+      select: {
+        plan: true,
+        planStatus: true,
+        currentPeriodEnd: true,
+        trialEndsAt: true,
+        cancelAtPeriodEnd: true,
+        canceledAt: true,
+        stripeSubscriptionId: true,
+      },
+    });
+
+    if (result.canceledNow) {
+      await emailService
+        .sendSubscriptionCanceledEmail({
+          email: u.email,
+          userId: u.id,
+        })
+        .catch(() => null);
+    } else if (fresh?.cancelAtPeriodEnd) {
+      await emailService
+        .sendSubscriptionCancellationScheduledEmail({
+          email: u.email,
+          userId: u.id,
+          currentPeriodEnd: fresh.currentPeriodEnd || fresh.trialEndsAt,
+        })
+        .catch(() => null);
+    }
+
+    return res.json({
+      ok: true,
+      canceledNow: !!result.canceledNow,
+      user: fresh,
+    });
+  } catch (e) {
+    console.error("stripe cancel failed", e?.message || e);
+    return res.status(502).json({ error: e?.message || "Falha ao cancelar assinatura no Stripe." });
+  }
 });
 
 // Customer Portal (cancelar/gerenciar)
