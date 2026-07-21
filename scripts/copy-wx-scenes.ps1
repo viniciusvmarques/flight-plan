@@ -1,5 +1,5 @@
-# Copia cenas climáticas geradas para o frontend (public/wx-scenes).
-# Rode na pasta do projeto ou de qualquer lugar.
+# Copia cenas climáticas (clima × período) para frontend/public/wx-scenes.
+# Fonte: imagens geradas em ~/.cursor/projects/empty-window/assets
 
 $ErrorActionPreference = "Stop"
 
@@ -12,25 +12,45 @@ if (-not (Test-Path $srcDir)) {
 
 New-Item -ItemType Directory -Force -Path $dstDir | Out-Null
 
-$map = @{
-    "wx-clear.png"    = "clear.png"
-    "wx-cloudy.png"   = "cloudy.png"
-    "wx-overcast.png" = "overcast.png"
-    "wx-rain.png"     = "rain.png"
-    "wx-fog.png"      = "fog.png"
-    "wx-storm.png"    = "storm.png"
-    "wx-idle.png"     = "idle.png"
-}
+$weathers = @("clear", "cloudy", "overcast", "rain", "fog", "storm")
+$periods = @("dawn", "day", "dusk", "night", "late")
 
-foreach ($pair in $map.GetEnumerator()) {
-    $from = Join-Path $srcDir $pair.Key
-    $to = Join-Path $dstDir $pair.Value
-    if (-not (Test-Path $from)) {
-        Write-Warning "Faltando: $from"
-        continue
+$copied = 0
+$missing = 0
+
+foreach ($w in $weathers) {
+    foreach ($p in $periods) {
+        $from = Join-Path $srcDir "wx-$w-$p.png"
+        $to = Join-Path $dstDir "$w-$p.png"
+        if (-not (Test-Path $from)) {
+            Write-Warning "Faltando: $from"
+            $missing++
+            continue
+        }
+        Copy-Item $from $to -Force
+        Write-Host "OK $w-$p.png"
+        $copied++
     }
-    Copy-Item $from $to -Force
-    Write-Host "OK $($pair.Value) ($((Get-Item $to).Length) bytes)"
 }
 
-Write-Host "`nPronto. Arquivos em: $dstDir"
+# idle + legado (dia) se existirem
+foreach ($extra in @(
+    @{ From = "wx-idle.png"; To = "idle.png" },
+    @{ From = "wx-clear.png"; To = "clear.png" },
+    @{ From = "wx-cloudy.png"; To = "cloudy.png" },
+    @{ From = "wx-overcast.png"; To = "overcast.png" },
+    @{ From = "wx-rain.png"; To = "rain.png" },
+    @{ From = "wx-fog.png"; To = "fog.png" },
+    @{ From = "wx-storm.png"; To = "storm.png" }
+)) {
+    $from = Join-Path $srcDir $extra.From
+    $to = Join-Path $dstDir $extra.To
+    if (Test-Path $from) {
+        Copy-Item $from $to -Force
+        Write-Host "OK $($extra.To)"
+        $copied++
+    }
+}
+
+Write-Host "`nCopiados: $copied | Faltando: $missing"
+Write-Host "Destino: $dstDir"

@@ -46,6 +46,7 @@ export default function PlannerLanding() {
     const [metar, setMetar] = useState("");
     const [taf, setTaf] = useState("");
     const [airportName, setAirportName] = useState("");
+    const [airportMeta, setAirportMeta] = useState(null);
     const [runways, setRunways] = useState([]);
 
     async function load(code, { scroll = true } = {}) {
@@ -62,6 +63,7 @@ export default function PlannerLanding() {
             setMetar(station.metar || "");
             setTaf(station.taf || "");
             setAirportName(station.airport?.name || station.airport?.city || clean);
+            setAirportMeta(station.airport || null);
             setRunways(station.airport?.runways || []);
             if (scroll) {
                 window.setTimeout(() => scrollToResultOnMobile(resultRef.current), 80);
@@ -70,6 +72,7 @@ export default function PlannerLanding() {
             setMetar("");
             setTaf("");
             setAirportName("");
+            setAirportMeta(null);
             setRunways([]);
             setError(e?.message || t("weather.loadError"));
         } finally {
@@ -82,6 +85,7 @@ export default function PlannerLanding() {
         setMetar("");
         setTaf("");
         setAirportName("");
+        setAirportMeta(null);
         setRunways([]);
         setError("");
         setLoading(false);
@@ -164,7 +168,7 @@ export default function PlannerLanding() {
                             </div>
                         </div>
 
-                        <WeatherScene metar={metar} icao={icao} className="ck-wx-scene--fill" />
+                        <WeatherScene metar={metar} icao={icao} airport={airportMeta} className="ck-wx-scene--fill" />
                     </div>
                 </Card>
 

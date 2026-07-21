@@ -826,7 +826,12 @@ export const es = {
         sceneFog: "Niebla / visibilidad reducida",
         sceneStorm: "Tormenta / CB",
         sceneIdle: "Esperando METAR",
-        sceneDisclaimer: "Ilustración automática a partir del METAR — no sustituye la lectura del boletín oficial.",
+        sceneDisclaimer: "Ilustración automática a partir del METAR y la hora local aproximada del aeródromo — no sustituye la lectura del boletín oficial.",
+        periodDawn: "Amanecer",
+        periodDay: "Día",
+        periodDusk: "Atardecer",
+        periodNight: "Noche",
+        periodLate: "Madrugada",
     },
     share: {
         pageTitle: "Resultado compartido",

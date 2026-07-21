@@ -826,6 +826,14 @@ label,
   letter-spacing: 0.02em;
 }
 
+.ck-wx-scene__period {
+  font-size: 0.82rem;
+  color: var(--ck-cyan);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
 .ck-wx-scene__icao {
   font-family: var(--ck-mono);
   font-size: 0.85rem;

@@ -825,7 +825,12 @@ export const en = {
         sceneFog: "Fog / reduced visibility",
         sceneStorm: "Thunderstorm / CB",
         sceneIdle: "Waiting for METAR",
-        sceneDisclaimer: "Automatic illustration from the METAR — it does not replace reading the official bulletin.",
+        sceneDisclaimer: "Automatic illustration from the METAR and approximate local aerodrome time — it does not replace reading the official bulletin.",
+        periodDawn: "Dawn",
+        periodDay: "Day",
+        periodDusk: "Dusk",
+        periodNight: "Night",
+        periodLate: "Late night",
     },
     share: {
         pageTitle: "Shared result",
