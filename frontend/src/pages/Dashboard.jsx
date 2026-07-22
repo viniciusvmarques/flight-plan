@@ -16,6 +16,9 @@ import {
     calculatePlanner,
     resolveAircraftSelection,
 } from "../utils/plannerEngine";
+import { buildBriefingDocumentModel, briefingFileName } from "../utils/briefingDocument";
+import { downloadBriefingPdf } from "../utils/briefingPdf";
+import { openBriefingPrintWindow } from "../utils/briefingPrint";
 
 import { useAuth } from "../auth/AuthContext";
 import AviationShell from "../components/AviationShell";
@@ -182,6 +185,89 @@ export default function Dashboard() {
         const exists = favs.includes(icao);
         const next = exists ? favs.filter((x) => x !== icao) : [icao, ...favs];
         saveJSON(favKey, next);
+    }
+
+    function requireProForExport() {
+        if (!base?.origin?.icao) {
+            toast(t("dashboard.saveOriginRequired"), {
+                variant: "warning",
+                title: t("dashboard.saveOriginRequiredTitle"),
+            });
+            return false;
+        }
+        if (!user) {
+            toast(t("dashboard.loginRequired"), { variant: "info", title: t("dashboard.loginRequiredTitle") });
+            nav("/login");
+            return false;
+        }
+        const plan = String(user?.plan || "FREE").toUpperCase();
+        if (plan !== "PRO") {
+            toast(t("dashboard.proRequired"), {
+                variant: "warning",
+                title: t("dashboard.proRequiredTitle"),
+            });
+            nav("/assinatura");
+            return false;
+        }
+        return true;
+    }
+
+    function exportLabels() {
+        return {
+            generated: t("dashboard.exportGeneratedLabel"),
+            nav: t("dashboard.exportNavLabel"),
+            fuel: t("dashboard.exportFuelLabel"),
+            weather: t("dashboard.exportWeatherLabel"),
+            warnings: t("dashboard.exportWarningsLabel"),
+            stripTitle: t("dashboard.exportStripTitle"),
+            print: t("dashboard.exportPrintAction"),
+            close: t("dashboard.exportCloseAction"),
+        };
+    }
+
+    function buildExportModel() {
+        return buildBriefingDocumentModel({
+            base,
+            planner: plannerSummary,
+            locale,
+            brand: "MARQUISA",
+        });
+    }
+
+    function handleSavePdf() {
+        if (!requireProForExport()) return;
+        try {
+            const model = buildExportModel();
+            downloadBriefingPdf(model, briefingFileName(model), exportLabels());
+            toast(t("dashboard.exportPdfOk"), {
+                variant: "success",
+                title: t("dashboard.exportPdfOkTitle"),
+            });
+        } catch (e) {
+            toast(e?.message || t("dashboard.exportPdfError"), {
+                variant: "error",
+                title: t("dashboard.exportPdfErrorTitle"),
+            });
+        }
+    }
+
+    function handlePrintStrip() {
+        if (!requireProForExport()) return;
+        try {
+            openBriefingPrintWindow(buildExportModel(), exportLabels());
+        } catch (e) {
+            if (String(e?.message || e) === "POPUP_BLOCKED") {
+                toast(t("dashboard.printPopupBlocked"), {
+                    variant: "warning",
+                    title: t("dashboard.printPopupBlockedTitle"),
+                });
+                return;
+            }
+            toast(e?.message || t("dashboard.exportPdfError"), {
+                variant: "error",
+                title: t("dashboard.exportPdfErrorTitle"),
+            });
+        }
     }
 
     function saveBriefing() {
@@ -496,7 +582,8 @@ export default function Dashboard() {
                                 onCloseDetails={closeDetails}
                                 onRefresh={refreshBriefing}
                                 onSave={saveBriefing}
-                                onPrint={() => window.print()}
+                                onSavePdf={handleSavePdf}
+                                onPrint={handlePrintStrip}
                                 onToggleFav={toggleFavorite}
                                 isFavorite={isFavorite}
                                 t={t}
