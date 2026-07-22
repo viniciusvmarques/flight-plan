@@ -1,5 +1,24 @@
 /** Vento < este limiar (kt): trata como fraco e exige confirmação da pista padrão. */
 export const LIGHT_WIND_KT = 6;
+/** Vento >= este limiar (kt): forte. */
+export const STRONG_WIND_KT = 20;
+
+/**
+ * Faixa visual do vento para badge/cores.
+ * @returns {'light'|'moderate'|'strong'|'strong-gust'}
+ */
+export function resolveWindBand(wind) {
+    if (!wind) return "light";
+    const spd = Number.isFinite(wind.spdKt) ? wind.spdKt : 0;
+    const gust = Number.isFinite(wind.gustKt) ? wind.gustKt : null;
+    const hasGust = gust != null;
+    const peak = hasGust ? Math.max(spd, gust) : spd;
+
+    if (peak >= STRONG_WIND_KT) return hasGust ? "strong-gust" : "strong";
+    if (hasGust && gust - spd >= 10 && gust >= 18) return "strong-gust";
+    if (spd >= LIGHT_WIND_KT) return "moderate";
+    return "light";
+}
 
 /**
  * Extrai vento do METAR (direção mag. típica do boletim; heading OurAirports é true).
@@ -117,13 +136,14 @@ function pickLongestReference(ends) {
 export function suggestRunwayFromMetar(runways, metarRaw) {
     const ends = collectEnds(runways);
     const wind = parseWindFromMetar(metarRaw);
+    const band = resolveWindBand(wind);
 
     if (!ends.length) {
-        return { mode: "unavailable", suggested: null, wind, endsAvailable: 0 };
+        return { mode: "unavailable", suggested: null, wind, windBand: band, endsAvailable: 0 };
     }
 
     if (!wind) {
-        return { mode: "unavailable", suggested: null, wind: null, endsAvailable: ends.length };
+        return { mode: "unavailable", suggested: null, wind: null, windBand: "light", endsAvailable: ends.length };
     }
 
     const light = wind.calm || (Number.isFinite(wind.spdKt) && wind.spdKt < LIGHT_WIND_KT);
@@ -135,6 +155,7 @@ export function suggestRunwayFromMetar(runways, metarRaw) {
                 ref ? { ident: ref.ident, hdg: ref.hdg, lengthFt: ref.lengthFt, headKt: 0, crossKt: 0 } : null
             ),
             wind,
+            windBand: band,
             endsAvailable: ends.length,
         };
     }
@@ -153,6 +174,7 @@ export function suggestRunwayFromMetar(runways, metarRaw) {
             mode: "light",
             suggested: withNumberOnlyIdent(best),
             wind,
+            windBand: band,
             endsAvailable: ends.length,
         };
     }
@@ -170,6 +192,7 @@ export function suggestRunwayFromMetar(runways, metarRaw) {
         mode: best ? "wind" : "unavailable",
         suggested: withNumberOnlyIdent(best),
         wind,
+        windBand: band,
         endsAvailable: ends.length,
     };
 }

@@ -170,7 +170,16 @@ export default function Weather() {
 
                 {hasData ? (
                     <div ref={resultRef} id="wx-result" className="xp-weather-results ck-wx-result-anchor" tabIndex={-1}>
-                        <WxCategoryPanel category={category} categoryLabel={summary.categoryLabel} hints={summary.hints} />
+                        <WxCategoryPanel
+                            category={category}
+                            categoryLabel={summary.categoryLabel}
+                            hints={summary.hints}
+                            icao={icao}
+                            airportName={airport?.name || ""}
+                            aerodromeLabel={t("weather.aerodromeLabel")}
+                            conditionsLabel={t("weather.conditionsLabel")}
+                            factsLabel={t("weather.bulletinFactsLabel")}
+                        />
 
                         <div className="xp-bulletin-stack">
                             <BulletinPanel
@@ -191,8 +200,7 @@ export default function Weather() {
 
                         {airport ? (
                             <div className="xp-airport-strip">
-                                <strong>{airport.name || icao}</strong>
-                                {airport.city ? <span>· {airport.city}</span> : null}
+                                {airport.city ? <span>{airport.city}</span> : null}
                                 {airport.elevationFt != null ? <span className="chip muted">{airport.elevationFt} ft</span> : null}
                             </div>
                         ) : null}

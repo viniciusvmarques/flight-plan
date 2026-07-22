@@ -556,17 +556,25 @@ export const en = {
         runwaySuggestModeLight: "Light wind",
         runwaySuggestModeCalm: "Calm wind",
         runwaySuggestModeVrb: "Variable wind",
+        runwaySuggestModeModerate: "Moderate wind",
+        runwaySuggestModeStrong: "Strong wind",
+        runwaySuggestModeStrongGust: "Strong wind · gusts",
         runwaySuggestWindDetail: "Runway end with the best headwind component from the current METAR.",
         runwaySuggestAttentionLabel: "Attention",
+        runwaySuggestAttention:
+            "You must confirm the aerodrome preferential runway. If the indication above is not the runway in use, ignore this suggestion and use ATIS, ATC or official sources.",
         runwaySuggestAttentionLight:
-            "You must confirm the aerodrome preferential runway when wind is below 6 kt. If the indication above is not the runway in use, ignore this suggestion and use ATIS, ATC or official sources.",
+            "You must confirm the aerodrome preferential runway. If the indication above is not the runway in use, ignore this suggestion and use ATIS, ATC or official sources.",
         runwaySuggestAttentionCalm:
-            "Calm wind: you must confirm the aerodrome preferential runway. This indication does not replace the runway in use (ATIS/ATC).",
+            "You must confirm the aerodrome preferential runway. If the indication above is not the runway in use, ignore this suggestion and use ATIS, ATC or official sources.",
         runwaySuggestAttentionVrb:
-            "Variable wind (VRB): you must confirm the aerodrome preferential runway. This indication does not replace the runway in use (ATIS/ATC).",
+            "You must confirm the aerodrome preferential runway. If the indication above is not the runway in use, ignore this suggestion and use ATIS, ATC or official sources.",
         runwaySuggestLightDetail: "Light wind ({{spd}} kt).",
-        runwaySuggestCalmDetail: "Reference is the longest runway in the published data.",
-        runwaySuggestVrbDetail: "No stable METAR direction.",
+        runwaySuggestCalmDetail: "Calm wind (0 kt).",
+        runwaySuggestVrbDetail: "Variable wind — no stable METAR direction.",
+        runwaySuggestModerateDetail: "Moderate wind ({{spd}} kt).",
+        runwaySuggestStrongDetail: "Strong wind ({{spd}} kt).",
+        runwaySuggestStrongGustDetail: "Strong wind with gusts ({{spd}}G{{gust}} kt).",
         runwaySuggestHead: "Head",
         runwaySuggestCross: "Cross",
         runwaySuggestWindSpd: "Wind",
@@ -582,6 +590,9 @@ export const en = {
             "No reliable runway-end data for this aerodrome right now.",
         runwaySuggestDisclaimer:
             "Technical suggestion only, based on METAR wind (runway number, no L/R). It does not indicate the official runway in use or a specific parallel (ATC/AIS). Cross-check NOTAMs, charts, AIP and other official sources.",
+        aerodromeLabel: "Aerodrome",
+        conditionsLabel: "Conditions",
+        bulletinFactsLabel: "Bulletin highlights",
     },
     tools: {
         title: "Tools",

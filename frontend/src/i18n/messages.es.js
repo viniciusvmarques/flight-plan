@@ -556,17 +556,25 @@ export const es = {
         runwaySuggestModeLight: "Viento débil",
         runwaySuggestModeCalm: "Viento en calma",
         runwaySuggestModeVrb: "Viento variable",
+        runwaySuggestModeModerate: "Viento moderado",
+        runwaySuggestModeStrong: "Viento fuerte",
+        runwaySuggestModeStrongGust: "Viento fuerte · ráfagas",
         runwaySuggestWindDetail: "Cabecera con mejor componente de proa según el METAR actual.",
         runwaySuggestAttentionLabel: "Atención",
+        runwaySuggestAttention:
+            "Es obligatorio confirmar la pista preferente del aeródromo. Si la indicación de arriba no es la pista en uso, ignora esta sugerencia y usa ATIS, ATC o fuentes oficiales.",
         runwaySuggestAttentionLight:
-            "Es obligatorio confirmar la pista preferente del aeródromo con viento por debajo de 6 kt. Si la indicación de arriba no es la pista en uso, ignora esta sugerencia y usa ATIS, ATC o fuentes oficiales.",
+            "Es obligatorio confirmar la pista preferente del aeródromo. Si la indicación de arriba no es la pista en uso, ignora esta sugerencia y usa ATIS, ATC o fuentes oficiales.",
         runwaySuggestAttentionCalm:
-            "Viento en calma: es obligatorio confirmar la pista preferente del aeródromo. Esta indicación no sustituye la pista en uso (ATIS/ATC).",
+            "Es obligatorio confirmar la pista preferente del aeródromo. Si la indicación de arriba no es la pista en uso, ignora esta sugerencia y usa ATIS, ATC o fuentes oficiales.",
         runwaySuggestAttentionVrb:
-            "Viento variable (VRB): es obligatorio confirmar la pista preferente del aeródromo. Esta indicación no sustituye la pista en uso (ATIS/ATC).",
+            "Es obligatorio confirmar la pista preferente del aeródromo. Si la indicación de arriba no es la pista en uso, ignora esta sugerencia y usa ATIS, ATC o fuentes oficiales.",
         runwaySuggestLightDetail: "Viento débil ({{spd}} kt).",
-        runwaySuggestCalmDetail: "Referencia por la pista más larga del registro.",
-        runwaySuggestVrbDetail: "Sin dirección estable en el METAR.",
+        runwaySuggestCalmDetail: "Viento en calma (0 kt).",
+        runwaySuggestVrbDetail: "Viento variable — sin dirección estable en el METAR.",
+        runwaySuggestModerateDetail: "Viento moderado ({{spd}} kt).",
+        runwaySuggestStrongDetail: "Viento fuerte ({{spd}} kt).",
+        runwaySuggestStrongGustDetail: "Viento fuerte con ráfagas ({{spd}}G{{gust}} kt).",
         runwaySuggestHead: "Proa",
         runwaySuggestCross: "Cruzado",
         runwaySuggestWindSpd: "Viento",
@@ -582,6 +590,9 @@ export const es = {
             "Sin datos de cabecera confiables para este aeródromo por ahora.",
         runwaySuggestDisclaimer:
             "Solo sugerencia técnica basada en el viento del METAR (número de pista, sin L/R). No indica la pista oficial en uso ni una paralela específica (ATC/AIS). Considere NOTAM, cartas, AIP y otras fuentes oficiales.",
+        aerodromeLabel: "Aeródromo",
+        conditionsLabel: "Condiciones",
+        bulletinFactsLabel: "Destacados del boletín",
     },
     tools: {
         title: "Herramientas",

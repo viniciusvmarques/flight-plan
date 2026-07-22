@@ -556,17 +556,25 @@ export const ptBR = {
         runwaySuggestModeLight: "Vento fraco",
         runwaySuggestModeCalm: "Vento calmo",
         runwaySuggestModeVrb: "Vento variável",
+        runwaySuggestModeModerate: "Vento moderado",
+        runwaySuggestModeStrong: "Vento forte",
+        runwaySuggestModeStrongGust: "Vento forte · rajada",
         runwaySuggestWindDetail: "Cabeceira com melhor componente de proa no METAR atual.",
         runwaySuggestAttentionLabel: "Atenção",
+        runwaySuggestAttention:
+            "Obrigatório confirmar a pista padrão do aeródromo. Se a indicação acima não for a pista em uso, ignore esta sugestão e use ATIS, ATC ou fontes oficiais.",
         runwaySuggestAttentionLight:
-            "Obrigatório confirmar a pista padrão do aeródromo com vento abaixo de 6 kt. Se a indicação acima não for a pista em uso, ignore esta sugestão e use ATIS, ATC ou fontes oficiais.",
+            "Obrigatório confirmar a pista padrão do aeródromo. Se a indicação acima não for a pista em uso, ignore esta sugestão e use ATIS, ATC ou fontes oficiais.",
         runwaySuggestAttentionCalm:
-            "Vento calmo: obrigatório confirmar a pista padrão do aeródromo. Esta indicação não substitui a pista em uso (ATIS/ATC).",
+            "Obrigatório confirmar a pista padrão do aeródromo. Se a indicação acima não for a pista em uso, ignore esta sugestão e use ATIS, ATC ou fontes oficiais.",
         runwaySuggestAttentionVrb:
-            "Vento variável (VRB): obrigatório confirmar a pista padrão do aeródromo. Esta indicação não substitui a pista em uso (ATIS/ATC).",
+            "Obrigatório confirmar a pista padrão do aeródromo. Se a indicação acima não for a pista em uso, ignore esta sugestão e use ATIS, ATC ou fontes oficiais.",
         runwaySuggestLightDetail: "Vento fraco ({{spd}} kt).",
-        runwaySuggestCalmDetail: "Referência pela maior pista disponível no cadastro.",
-        runwaySuggestVrbDetail: "Sem direção estável no METAR.",
+        runwaySuggestCalmDetail: "Vento calmo (0 kt).",
+        runwaySuggestVrbDetail: "Vento variável — sem direção estável no METAR.",
+        runwaySuggestModerateDetail: "Vento moderado ({{spd}} kt).",
+        runwaySuggestStrongDetail: "Vento forte ({{spd}} kt).",
+        runwaySuggestStrongGustDetail: "Vento forte com rajada ({{spd}}G{{gust}} kt).",
         runwaySuggestHead: "Proa",
         runwaySuggestCross: "Cruzado",
         runwaySuggestWindSpd: "Vento",
@@ -582,6 +590,9 @@ export const ptBR = {
             "Sem dados de cabeceira confiáveis para este aeródromo no momento.",
         runwaySuggestDisclaimer:
             "Apenas sugestão técnica com base no vento do METAR (número da pista, sem L/R). Não indica a pista oficial em uso nem paralela específica (ATC/AIS). Considere NOTAM, cartas, ROTAER e outras fontes oficiais.",
+        aerodromeLabel: "Aeródromo",
+        conditionsLabel: "Condições",
+        bulletinFactsLabel: "Destaques do boletim",
     },
     tools: {
         title: "Ferramentas",

@@ -175,11 +175,13 @@ export default function PlannerLanding() {
                 <Card className={`ck-wx-panel ck-landing-result ck-wx-panel--${tone}`}>
                     <div ref={resultRef} id="wx-result" className="ck-wx-result-anchor ck-landing-result-stack" tabIndex={-1}>
                         <div className="ck-wx-panel-head">
-                            <div>
-                                <span className="ck-wx-station">{airportName || icao || "—"}</span>
+                            <div className="ck-wx-ident">
+                                <span className="ck-wx-ident__label">{t("weather.aerodromeLabel")}</span>
                                 <strong className="ck-wx-icao">{icao || "----"}</strong>
+                                <span className="ck-wx-station">{airportName || t("plannerWx.waitHint")}</span>
                             </div>
                             <div className={`ck-wx-cat ck-wx-cat--${tone}`} aria-live="polite">
+                                <span className="ck-wx-cat__label">{t("weather.conditionsLabel")}</span>
                                 <span className="ck-wx-cat-code">
                                     {category === "NO_DATA" || category === "UNKNOWN" ? "—" : category}
                                 </span>
@@ -187,17 +189,25 @@ export default function PlannerLanding() {
                             </div>
                         </div>
 
-                        <p className="ck-wx-readout">
-                            {summary.categoryLabel || (loading ? t("common.loading") : t("plannerWx.waitHint"))}
-                        </p>
+                        <div className="ck-wx-facts">
+                            <p className="ck-wx-readout">
+                                {summary.categoryLabel || (loading ? t("common.loading") : t("plannerWx.waitHint"))}
+                            </p>
 
-                        {summary.hints?.length ? (
-                            <ul className="ck-wx-hints">
-                                {summary.hints.map((hint) => (
-                                    <li key={hint}>{hint}</li>
-                                ))}
-                            </ul>
-                        ) : null}
+                            {summary.hints?.length ? (
+                                <div className="ck-wx-facts__block">
+                                    <span className="ck-wx-facts__label">{t("weather.bulletinFactsLabel")}</span>
+                                    <ul className="ck-wx-hints">
+                                        {summary.hints.map((hint) => (
+                                            <li key={hint}>
+                                                <span className="ck-wx-hints__mark" aria-hidden />
+                                                <span>{hint}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ) : null}
+                        </div>
 
                         <div className="ck-wx-bulletin">
                             <div className="ck-wx-bulletin-label">METAR</div>

@@ -37,20 +37,31 @@ export function ExperienceCommandBar({ children, footer }) {
     );
 }
 
-export function WxCategoryPanel({ category, categoryLabel, hints }) {
+export function WxCategoryPanel({ category, categoryLabel, hints, icao = "", airportName = "", aerodromeLabel = "Aerodrome", conditionsLabel = "Conditions", factsLabel = "Highlights" }) {
     const tone = category === "VFR" ? "vfr" : category === "MVFR" ? "mvfr" : category === "IFR" ? "ifr" : "nodata";
     return (
         <section className={`xp-category-panel xp-category-panel--${tone.toLowerCase()}`} aria-label={categoryLabel}>
-            <div className="xp-category-panel-main">
-                <span className={flightCategoryChipClass(category)}>{category}</span>
-                <p>{categoryLabel}</p>
+            <div className="xp-category-panel-top">
+                <div className="xp-category-panel-ident">
+                    <span className="xp-category-panel-kicker">{aerodromeLabel}</span>
+                    {icao ? <strong className="xp-category-panel-icao">{icao}</strong> : null}
+                    {airportName ? <span className="xp-category-panel-name">{airportName}</span> : null}
+                </div>
+                <div className="xp-category-panel-main">
+                    <span className="xp-category-panel-kicker">{conditionsLabel}</span>
+                    <span className={flightCategoryChipClass(category)}>{category}</span>
+                    <p>{categoryLabel}</p>
+                </div>
             </div>
             {hints?.length ? (
-                <ul className="xp-hint-list">
-                    {hints.map((hint) => (
-                        <li key={hint}>{hint}</li>
-                    ))}
-                </ul>
+                <div className="xp-category-panel-facts">
+                    <span className="xp-category-panel-kicker">{factsLabel}</span>
+                    <ul className="xp-hint-list">
+                        {hints.map((hint) => (
+                            <li key={hint}>{hint}</li>
+                        ))}
+                    </ul>
+                </div>
             ) : null}
         </section>
     );
