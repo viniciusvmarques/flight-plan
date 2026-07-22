@@ -1030,7 +1030,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                             {calc.totalFuelL.toFixed(1)} <span>L</span>
                         </div>
                         <div className="plan-total-sub">
-                            Estimativa didática baseada em táxi, trip, alternado, contingência, reserva final e extra. Não substitui ROTAER, NOTAM, cartas, manual da aeronave ou julgamento do piloto.
+                            Estimativa didática com táxi, trip, alternativa, contingência, reserva final e extra. Não substitui ROTAER, NOTAM, cartas, manual da aeronave nem o julgamento do piloto.
                         </div>
                     </div>
                 </section>

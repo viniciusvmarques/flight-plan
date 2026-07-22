@@ -15,7 +15,7 @@ export const siteProfile = {
     monthlyPrice: "R$ 19,90/mês",
     trialLabel: "7 dias grátis",
     operationalDisclaimer:
-        "A Marquisa é uma ferramenta de apoio à decisão e planejamento. Ela não substitui despacho operacional, NOTAMs, cartas, AIS/MET, documentação ANAC/DECEA ou julgamento do piloto em comando.",
+        "A Marquisa apoia o planejamento. Não substitui despacho, NOTAM, cartas, AIS/MET, normas ANAC/DECEA nem o julgamento do piloto em comando.",
     refundSummary:
         "O usuário pode solicitar cancelamento a qualquer momento pelo portal de assinatura. Pedidos de arrependimento, reembolso, cobrança duplicada, falha técnica relevante ou cobrança indevida devem ser enviados ao suporte e serão analisados conforme o Código de Defesa do Consumidor, a política comercial vigente, o uso efetivo do serviço, as regras do provedor de pagamento e a legislação aplicável.",
     refundWindowNotice:

@@ -268,7 +268,7 @@ export default function Profile() {
                                                 <option value="PC">PC</option>
                                                 <option value="IFR">IFR</option>
                                                 <option value="PLA">PLA</option>
-                                                <option value="Aluno">Aluno</option>
+                                                <option value="Aluno">{t("profile.trackFormacao")}</option>
                                             </select>
                                         </label>
                                     </div>
