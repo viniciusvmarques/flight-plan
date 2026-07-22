@@ -9,7 +9,7 @@ export default function AppFooter() {
                 <div className="site-footer-top">
                     <div className="site-footer-brand">
                         <span className="ck-footer-mark" aria-hidden="true">
-                            <img src="/marquisa-mark.png" alt="" width="18" height="18" style={{ borderRadius: 4 }} />
+                            <img src="/marquisa-mark.png?v=20260722b" alt="" width="18" height="18" style={{ borderRadius: 4 }} />
                         </span>
                         <span className="ck-footer-phases" aria-hidden="true">
                             CLR · TAXI · DEP · ENR · APP · LDG

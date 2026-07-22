@@ -1,6 +1,13 @@
 /**
- * Marca oficial Marquisa — PNG do Canva (sempre o mesmo arquivo).
+ * Marca oficial Marquisa — PNG do Canva.
+ * ?v= evita cache do Netlify/navegador após troca de arte.
  */
+const MARK_SRC = "/marquisa-mark.png?v=20260722b";
+const ICON_SRC = "/marquisa-icon.png?v=20260722b";
+const WORDMARK_SRC = "/marquisa-wordmark.png?v=20260722b";
+
+export { MARK_SRC, ICON_SRC, WORDMARK_SRC };
+
 export default function MarquisaMark({
     size = 28,
     className = "",
@@ -11,7 +18,7 @@ export default function MarquisaMark({
     return (
         <img
             className={`mq-mark-icon ${className}`.trim()}
-            src="/marquisa-mark.png"
+            src={MARK_SRC}
             width={s}
             height={s}
             alt={decorative ? "" : title}
