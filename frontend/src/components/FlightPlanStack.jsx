@@ -8,6 +8,28 @@ function profileDisplayName(user) {
     return [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
 }
 
+function resolveElevationFt(airport) {
+    const raw =
+        airport?.elevationFt ??
+        airport?.elevation_ft ??
+        airport?.elev_ft ??
+        airport?.elevation ??
+        null;
+    const n = Number(raw);
+    return Number.isFinite(n) ? Math.round(n) : null;
+}
+
+function resolveSuggestedRunway(airport, metar) {
+    const runways = airport?.runways || [];
+    if (!runways.length) return "";
+    const sug = suggestRunwayFromMetar(runways, metar);
+    return sug?.suggested?.ident || "";
+}
+
+function formatElevationLabel(ft) {
+    return Number.isFinite(ft) ? String(ft) : "";
+}
+
 function formatBriefingDate(locale) {
     try {
         return new Intl.DateTimeFormat(locale || "pt-BR", {
@@ -275,12 +297,10 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                 <div>
                     <strong>{t("planner.navLogTitle")}</strong>
                     <p className="plan-section-copy">{t("planner.navLogCopy")}</p>
-                    <p className="plan-section-copy plan-nav-build-tag">Inclui VI e consumo por perna</p>
                 </div>
-            </div>
-
-            <div className="plan-nav-origin chip ok">
-                {t("planner.originPoint")}: <strong>{originIcao || "----"}</strong>
+                <div className="plan-nav-origin chip ok">
+                    {t("planner.originPoint")}: <strong>{originIcao || "----"}</strong>
+                </div>
             </div>
 
             <div className="plan-nav-legs">
@@ -289,9 +309,10 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                     const toHint = legToLabel(leg, t);
                     const namePlaceholder = index === 0 ? "TOC" : t("planner.nextFix");
                     const calcLeg = calcLegs?.[index];
-                    const tasAuto = calcLeg?.tasKt > 0 ? `${calcLeg.tasKt.toFixed(0)} kt` : "—";
-                    const gsAuto = calcLeg?.gsKt > 0 ? `${calcLeg.gsKt.toFixed(0)} kt` : "—";
-                    const fuelAuto = calcLeg?.fuelL > 0 ? `${calcLeg.fuelL.toFixed(1)} L` : "—";
+                    const tasAuto = calcLeg?.tasKt > 0 ? `${Number(calcLeg.tasKt).toFixed(0)} kt` : "—";
+                    const gsAuto = calcLeg?.gsKt > 0 ? `${Number(calcLeg.gsKt).toFixed(0)} kt` : "—";
+                    const eteAuto = Number(calcLeg?.eteMin) > 0 ? fmtMinutes(calcLeg.eteMin) : "—";
+                    const fuelAuto = Number(calcLeg?.fuelL) > 0 ? `${Number(calcLeg.fuelL).toFixed(1)} L` : "—";
                     return (
                         <div key={leg.id || `leg-${index}`} className="plan-nav-leg-card">
                             <div className="plan-nav-leg-toolbar">
@@ -309,8 +330,9 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                                     ) : null}
                                 </div>
                             </div>
-                            <div className="plan-grid plan-grid--4">
-                                <Field label={t("planner.waypointName")}>
+
+                            <div className="plan-nav-leg-grid">
+                                <Field className="nav-leg-cell" label={t("planner.waypointName")}>
                                     <input
                                         className="input"
                                         value={leg.name ?? ""}
@@ -318,21 +340,39 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                                         placeholder={namePlaceholder}
                                     />
                                 </Field>
-                                <Field label={t("planner.legDistance")}>
-                                    <input className="input" value={leg.distanceNm ?? ""} onChange={(e) => updateLeg(index, "distanceNm", e.target.value)} placeholder="42" />
+                                <Field className="nav-leg-cell" label={t("planner.legDistance")}>
+                                    <input
+                                        className="input"
+                                        value={leg.distanceNm ?? ""}
+                                        onChange={(e) => updateLeg(index, "distanceNm", e.target.value)}
+                                        placeholder="42"
+                                    />
                                 </Field>
-                                <Field label={t("planner.legCourse")}>
-                                    <input className="input" value={leg.trueCourseDeg ?? ""} onChange={(e) => updateLeg(index, "trueCourseDeg", e.target.value)} placeholder="092" />
+                                <Field className="nav-leg-cell" label={t("planner.legCourse")}>
+                                    <input
+                                        className="input"
+                                        value={leg.trueCourseDeg ?? ""}
+                                        onChange={(e) => updateLeg(index, "trueCourseDeg", e.target.value)}
+                                        placeholder="092"
+                                    />
                                 </Field>
-                                <Field label={t("planner.legWindDir")}>
-                                    <input className="input" value={leg.windDirectionDeg ?? ""} onChange={(e) => updateLeg(index, "windDirectionDeg", e.target.value)} placeholder="140" />
+                                <Field className="nav-leg-cell" label={t("planner.legWindDir")}>
+                                    <input
+                                        className="input"
+                                        value={leg.windDirectionDeg ?? ""}
+                                        onChange={(e) => updateLeg(index, "windDirectionDeg", e.target.value)}
+                                        placeholder="140"
+                                    />
                                 </Field>
-                            </div>
-                            <div className="plan-grid plan-grid--4">
-                                <Field label="Vento (kt)">
-                                    <input className="input" value={leg.windSpeedKt ?? ""} onChange={(e) => updateLeg(index, "windSpeedKt", e.target.value)} placeholder="12" />
+                                <Field className="nav-leg-cell" label={t("planner.legWindSpeed")}>
+                                    <input
+                                        className="input"
+                                        value={leg.windSpeedKt ?? ""}
+                                        onChange={(e) => updateLeg(index, "windSpeedKt", e.target.value)}
+                                        placeholder="12"
+                                    />
                                 </Field>
-                                <Field label="VI (kt)" hint="Calcula TAS pela altitude/FL e GS com o vento.">
+                                <Field className="nav-leg-cell" label={t("planner.legIas")}>
                                     <input
                                         className="input"
                                         value={leg.iasKt ?? ""}
@@ -341,7 +381,7 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                                         data-testid="leg-ias"
                                     />
                                 </Field>
-                                <Field label="Consumo (L/h)" hint="Entra no combustível do resumo.">
+                                <Field className="nav-leg-cell" label={t("planner.legFuelFlow")}>
                                     <input
                                         className="input"
                                         value={leg.fuelFlowLph ?? ""}
@@ -350,17 +390,13 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                                         data-testid="leg-fuel-flow"
                                     />
                                 </Field>
-                                <div className="plan-nav-leg-hint">
-                                    {index === 0
-                                        ? t("planner.firstLegHint", { icao: originIcao || "ORIG" })
-                                        : t("planner.nextLegHint")}
-                                </div>
                             </div>
-                            <div className="plan-summary-grid plan-summary-grid--4">
-                                <MetricBox label="TAS (auto)" value={tasAuto} tone="ok" />
-                                <MetricBox label="GS (auto)" value={gsAuto} tone="ok" />
-                                <MetricBox label="ETE" value={fmtMinutes(calcLeg?.eteMin)} />
-                                <MetricBox label="Comb. perna" value={fuelAuto} tone="warn" />
+
+                            <div className="plan-nav-leg-metrics">
+                                <MetricBox label="TAS" value={tasAuto} tone="ok" />
+                                <MetricBox label="GS" value={gsAuto} tone="ok" />
+                                <MetricBox label="ETE" value={eteAuto} />
+                                <MetricBox label={t("planner.legFuel")} value={fuelAuto} tone="warn" />
                             </div>
                         </div>
                     );
@@ -411,36 +447,75 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
     useEffect(() => {
         if (!onPlanChange) return;
         const patches = {};
+
+        const originIcaoNow = String(base?.origin?.icao || "").toUpperCase();
+        const destIcaoNow = String(base?.dest?.icao || "").toUpperCase();
+        const altnIcaoNow = String(base?.alternate?.icao || "").toUpperCase();
         const originAirport = base?.origin?.airport;
         const destAirport = base?.dest?.airport;
+        const altnAirport = base?.alternate?.airport;
 
-        if (originAirport) {
-            if ((p.depAltFt == null || p.depAltFt === "") && originAirport.elevationFt != null) {
-                patches.depAltFt = String(originAirport.elevationFt);
-            }
-            if (p.depRwy == null || p.depRwy === "") {
-                const sug = suggestRunwayFromMetar(originAirport.runways || [], base?.origin?.metar);
-                if (sug?.suggested?.ident) patches.depRwy = sug.suggested.ident;
+        if (originIcaoNow && originIcaoNow !== "A") {
+            const elev = resolveElevationFt(originAirport);
+            const syncKey = `${originIcaoNow}:${elev ?? "na"}`;
+            if (p.depAutoKey !== syncKey) {
+                const rwy = resolveSuggestedRunway(originAirport, base?.origin?.metar);
+                patches.depAutoKey = syncKey;
+                patches.depAutoIcao = originIcaoNow;
+                if (elev != null) patches.depAltFt = formatElevationLabel(elev);
+                if (rwy) patches.depRwy = rwy;
+            } else if (originAirport) {
+                if ((p.depRwy == null || p.depRwy === "") && originAirport.runways?.length) {
+                    const rwy = resolveSuggestedRunway(originAirport, base?.origin?.metar);
+                    if (rwy) patches.depRwy = rwy;
+                }
             }
         }
 
-        if (destAirport) {
-            if ((p.arrAltFt == null || p.arrAltFt === "") && destAirport.elevationFt != null) {
-                patches.arrAltFt = String(destAirport.elevationFt);
-            }
-            if (p.arrRwy == null || p.arrRwy === "") {
-                const sug = suggestRunwayFromMetar(destAirport.runways || [], base?.dest?.metar);
-                if (sug?.suggested?.ident) patches.arrRwy = sug.suggested.ident;
+        if (destIcaoNow) {
+            const elev = resolveElevationFt(destAirport);
+            const syncKey = `${destIcaoNow}:${elev ?? "na"}`;
+            if (p.arrAutoKey !== syncKey) {
+                const rwy = resolveSuggestedRunway(destAirport, base?.dest?.metar);
+                patches.arrAutoKey = syncKey;
+                patches.arrAutoIcao = destIcaoNow;
+                if (elev != null) patches.arrAltFt = formatElevationLabel(elev);
+                if (rwy) patches.arrRwy = rwy;
+            } else if (destAirport) {
+                if ((p.arrRwy == null || p.arrRwy === "") && destAirport.runways?.length) {
+                    const rwy = resolveSuggestedRunway(destAirport, base?.dest?.metar);
+                    if (rwy) patches.arrRwy = rwy;
+                }
             }
         }
 
-        if (altnIcao && (p.altnIcao == null || p.altnIcao === "")) {
-            patches.altnIcao = altnIcao;
+        if (altnIcaoNow) {
+            const elev = resolveElevationFt(altnAirport);
+            const syncKey = `${altnIcaoNow}:${elev ?? "na"}`;
+            if (p.altnAutoKey !== syncKey) {
+                const rwy = resolveSuggestedRunway(altnAirport, base?.alternate?.metar);
+                patches.altnAutoKey = syncKey;
+                patches.altnAutoIcao = altnIcaoNow;
+                patches.altnIcao = altnIcaoNow;
+                if (elev != null) patches.altnAltFt = formatElevationLabel(elev);
+                if (rwy) patches.altnRwy = rwy;
+            } else if (altnAirport) {
+                if ((p.altnRwy == null || p.altnRwy === "") && altnAirport.runways?.length) {
+                    const rwy = resolveSuggestedRunway(altnAirport, base?.alternate?.metar);
+                    if (rwy) patches.altnRwy = rwy;
+                }
+                if (!p.altnIcao) patches.altnIcao = altnIcaoNow;
+            }
+        } else if (p.altnAutoKey || p.altnAutoIcao) {
+            patches.altnAutoKey = "";
+            patches.altnAutoIcao = "";
+            patches.altnIcao = "";
+            patches.altnRwy = "";
+            patches.altnAltFt = "";
         }
 
         if (!Object.keys(patches).length) return;
         onPlanChange({ ...p, routeMode: "checkpoints", navLegs: navLegsDraft, ...patches });
-        // Autofill only when route/METAR context changes and fields are still empty.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         base?.origin?.icao,
@@ -448,8 +523,13 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
         base?.alternate?.icao,
         base?.origin?.metar,
         base?.dest?.metar,
+        base?.alternate?.metar,
         base?.origin?.airport?.elevationFt,
         base?.dest?.airport?.elevationFt,
+        base?.alternate?.airport?.elevationFt,
+        base?.origin?.airport?.runways?.length,
+        base?.dest?.airport?.runways?.length,
+        base?.alternate?.airport?.runways?.length,
     ]);
 
     function setField(key, value) {
@@ -569,6 +649,9 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                         </div>
 
                         <div className="briefing-line briefing-line--ops">
+                            <Field className="briefing-cell" label={t("planner.depAirport")}>
+                                <input className="input" value={originIcao === "A" ? "" : originIcao} readOnly placeholder="ICAO" />
+                            </Field>
                             <Field className="briefing-cell" label={t("planner.depRwy")}>
                                 <input className="input" value={p.depRwy ?? ""} onChange={(e) => setField("depRwy", e.target.value.toUpperCase())} placeholder="09" />
                             </Field>
@@ -581,6 +664,9 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                         </div>
 
                         <div className="briefing-line briefing-line--ops">
+                            <Field className="briefing-cell" label={t("planner.arrAirport")}>
+                                <input className="input" value={destIcao} readOnly placeholder="ICAO" />
+                            </Field>
                             <Field className="briefing-cell" label={t("planner.arrRwy")}>
                                 <input className="input" value={p.arrRwy ?? ""} onChange={(e) => setField("arrRwy", e.target.value.toUpperCase())} placeholder="27" />
                             </Field>
@@ -593,7 +679,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                         </div>
 
                         <div className="briefing-line briefing-line--ops">
-                            <Field className="briefing-cell" label={t("common.alternate")}>
+                            <Field className="briefing-cell" label={t("planner.altnAirport")}>
                                 <input
                                     className="input"
                                     value={p.altnIcao ?? altnIcao}
@@ -603,6 +689,9 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                             </Field>
                             <Field className="briefing-cell" label={t("planner.altnRwy")}>
                                 <input className="input" value={p.altnRwy ?? ""} onChange={(e) => setField("altnRwy", e.target.value.toUpperCase())} placeholder="—" />
+                            </Field>
+                            <Field className="briefing-cell" label={t("planner.altnAlt")}>
+                                <input className="input" value={p.altnAltFt ?? ""} onChange={(e) => setField("altnAltFt", e.target.value)} placeholder="ft" />
                             </Field>
                             <Field className="briefing-cell" label={t("planner.altnNotes")}>
                                 <input className="input" value={p.altnNotes ?? ""} onChange={(e) => setField("altnNotes", e.target.value)} placeholder={t("planner.notesPlaceholder")} />

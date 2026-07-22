@@ -244,13 +244,14 @@ function resolvePressureAltFt(working = {}) {
     const alt = clampPositive(working.cruiseAltFt || working.defaultCruiseAltFt);
     if (alt > 0) return alt;
     const level = String(working.cruiseLevel || "").trim().toUpperCase();
-    const fl = level.match(/(?:FL|A)?\s*(\d{2,3})$/);
+    if (!level) return 0;
+    const fl = level.match(/^(?:FL|A)?\s*(\d{2,3})$/);
     if (fl) {
         const n = Number(fl[1]);
         if (!Number.isFinite(n) || n <= 0) return 0;
-        // FL085 / A065 → centenas de pés; A065 já é altitude em 100 ft.
+        // "090", "FL090", "A065" → centenas de pés
         if (level.startsWith("A") && n < 500) return n * 100;
-        if (level.startsWith("FL") || n <= 450) return n * 100;
+        if (level.startsWith("FL") || /^\d{2,3}$/.test(level) || n <= 450) return n * 100;
         return n;
     }
     return 0;
@@ -274,7 +275,6 @@ export function buildNavLegs(working, context = {}, defaults = {}) {
     const defaultTas = clampPositive(defaults.tasKt);
     const defaultIas = clampPositive(defaults.iasKt);
     const defaultFlow = clampPositive(defaults.fuelFlowCruiseLph);
-    const defaultGsFallback = hasFilledValue(defaults.groundSpeedKt) ? clampPositive(defaults.groundSpeedKt) : null;
     const magVariationDeg = toNumber(defaults.magVariationDeg ?? working.magVariationDeg, 0);
     const pressureAltFt = resolvePressureAltFt({ ...working, ...defaults });
 
@@ -297,7 +297,8 @@ export function buildNavLegs(working, context = {}, defaults = {}) {
         };
 
         const iasKt = hasFilledValue(item?.iasKt) ? clampPositive(item.iasKt) : defaultIas;
-        const hasTasOverride = hasFilledValue(item?.tasKt);
+        // VI preenchida tem prioridade sobre TAS antigo/salvo na perna.
+        const hasTasOverride = hasFilledValue(item?.tasKt) && !hasFilledValue(item?.iasKt);
         let tasKt = hasTasOverride ? clampPositive(item.tasKt) : defaultTas;
         let tasFromIas = false;
         if (!hasTasOverride && iasKt > 0) {
@@ -306,10 +307,10 @@ export function buildNavLegs(working, context = {}, defaults = {}) {
         }
 
         const hasGsOverride = hasFilledValue(item?.groundSpeedKt);
-        const fallbackGs = hasGsOverride ? clampPositive(item.groundSpeedKt) : defaultGsFallback;
+        const fallbackGs = hasGsOverride ? clampPositive(item.groundSpeedKt) : null;
         const nav = calculateWindNavigation(legWorking, tasKt, fallbackGs);
         const gsKt = hasGsOverride ? clampPositive(item.groundSpeedKt) : nav.groundSpeedKt;
-        const eteMin = gsKt > 0 ? (distanceNm / gsKt) * 60 : 0;
+        const eteMin = gsKt > 0 && distanceNm > 0 ? (distanceNm / gsKt) * 60 : 0;
         const fuelFlowLph = hasFilledValue(item?.fuelFlowLph) ? clampPositive(item.fuelFlowLph) : defaultFlow;
         const fuelL = fuelFlowLph > 0 ? (eteMin / 60) * fuelFlowLph : 0;
         cumulativeNm += distanceNm;
