@@ -1,4 +1,5 @@
 import { haversineNm } from "./distance.js";
+import { computeTrueAirspeed } from "./flightComputer.js";
 
 export function hasFilledValue(value) {
     return value !== undefined && value !== null && String(value).trim() !== "";
@@ -239,6 +240,22 @@ function calculateWindNavigation(working, tasKt, fallbackGsKt) {
     };
 }
 
+function resolvePressureAltFt(working = {}) {
+    const alt = clampPositive(working.cruiseAltFt || working.defaultCruiseAltFt);
+    if (alt > 0) return alt;
+    const level = String(working.cruiseLevel || "").trim().toUpperCase();
+    const fl = level.match(/(?:FL|A)?\s*(\d{2,3})$/);
+    if (fl) {
+        const n = Number(fl[1]);
+        if (!Number.isFinite(n) || n <= 0) return 0;
+        // FL085 / A065 → centenas de pés; A065 já é altitude em 100 ft.
+        if (level.startsWith("A") && n < 500) return n * 100;
+        if (level.startsWith("FL") || n <= 450) return n * 100;
+        return n;
+    }
+    return 0;
+}
+
 function rawNavLegSource(working) {
     if (Array.isArray(working.navLegs) && working.navLegs.length) return working.navLegs;
     if (Array.isArray(working.vfrCheckpoints) && working.vfrCheckpoints.length) return working.vfrCheckpoints;
@@ -248,17 +265,22 @@ function rawNavLegSource(working) {
 /**
  * Log multi-trecho (Bianch): pontos após a origem; último ponto = destino.
  * Campos vazios herdam defaults globais do plano (seção 2).
+ * VI (IAS) → TAS automático pela altitude; vento → GS; consumo → combustível da perna.
  */
 export function buildNavLegs(working, context = {}, defaults = {}) {
     const raw = rawNavLegSource(working);
     const originIcao = context.originIcao || "A";
     const destIcao = context.destIcao || "B";
     const defaultTas = clampPositive(defaults.tasKt);
+    const defaultIas = clampPositive(defaults.iasKt);
+    const defaultFlow = clampPositive(defaults.fuelFlowCruiseLph);
     const defaultGsFallback = hasFilledValue(defaults.groundSpeedKt) ? clampPositive(defaults.groundSpeedKt) : null;
     const magVariationDeg = toNumber(defaults.magVariationDeg ?? working.magVariationDeg, 0);
+    const pressureAltFt = resolvePressureAltFt({ ...working, ...defaults });
 
     let cumulativeNm = 0;
     let cumulativeEteMin = 0;
+    let totalFuelL = 0;
     const legs = [];
 
     raw.forEach((item, index) => {
@@ -273,15 +295,26 @@ export function buildNavLegs(working, context = {}, defaults = {}) {
             windSpeedKt: hasFilledValue(item?.windSpeedKt) ? item.windSpeedKt : defaults.windSpeedKt,
             windCompKt: defaults.windCompKt,
         };
-        const tasKt = hasFilledValue(item?.tasKt) ? clampPositive(item.tasKt) : defaultTas;
+
+        const iasKt = hasFilledValue(item?.iasKt) ? clampPositive(item.iasKt) : defaultIas;
+        const hasTasOverride = hasFilledValue(item?.tasKt);
+        let tasKt = hasTasOverride ? clampPositive(item.tasKt) : defaultTas;
+        let tasFromIas = false;
+        if (!hasTasOverride && iasKt > 0) {
+            tasKt = computeTrueAirspeed({ ias: iasKt, pressureAltFt }).tas;
+            tasFromIas = true;
+        }
+
         const hasGsOverride = hasFilledValue(item?.groundSpeedKt);
         const fallbackGs = hasGsOverride ? clampPositive(item.groundSpeedKt) : defaultGsFallback;
         const nav = calculateWindNavigation(legWorking, tasKt, fallbackGs);
-        // GS manual na perna tem prioridade sobre o vento estimado (override explícito).
         const gsKt = hasGsOverride ? clampPositive(item.groundSpeedKt) : nav.groundSpeedKt;
         const eteMin = gsKt > 0 ? (distanceNm / gsKt) * 60 : 0;
+        const fuelFlowLph = hasFilledValue(item?.fuelFlowLph) ? clampPositive(item.fuelFlowLph) : defaultFlow;
+        const fuelL = fuelFlowLph > 0 ? (eteMin / 60) * fuelFlowLph : 0;
         cumulativeNm += distanceNm;
         cumulativeEteMin += eteMin;
+        totalFuelL += fuelL;
 
         legs.push({
             id: item?.id || `leg-${index}`,
@@ -300,8 +333,12 @@ export function buildNavLegs(working, context = {}, defaults = {}) {
             crosswindKt: nav.crosswindKt,
             windDirectionDeg: nav.windDirectionDeg,
             windSpeedKt: nav.windSpeedKt,
+            iasKt,
             tasKt,
+            tasFromIas,
             gsKt,
+            fuelFlowLph,
+            fuelL,
             eteMin,
             cumulativeNm,
             cumulativeEteMin,
@@ -315,15 +352,14 @@ export function buildNavLegs(working, context = {}, defaults = {}) {
         totalDistanceNm > 0
             ? legs.reduce((sum, leg) => sum + leg.gsKt * leg.distanceNm, 0) / totalDistanceNm
             : defaults.groundSpeedKt || defaultTas || 0;
-    // Média harmônica: GS efetiva que reproduz o ETE total (correto com vento misto por perna).
     const harmonicGsKt = totalEteMin > 0 && totalDistanceNm > 0 ? totalDistanceNm / (totalEteMin / 60) : weightedGs;
-
     const routeLabel = [originIcao, ...legs.map((leg) => leg.name)].filter(Boolean).join(" → ");
 
     return {
         legs,
         totalDistanceNm,
         totalEteMin,
+        totalFuelL,
         weightedGsKt: weightedGs,
         harmonicGsKt,
         routeLabel,
@@ -408,11 +444,16 @@ export function calculatePlanner(plan, context = {}) {
     const nav = calculateWindNavigation(working, tasKt, fallbackGsKt);
     const windCompKt = -nav.headwindKt;
 
+    const fuelFlowCruiseLphEarly = clampPositive(working.fuelFlowCruiseLph);
     const navLog = buildNavLegs(
         working,
         context,
         {
             tasKt,
+            iasKt: working.iasKt,
+            fuelFlowCruiseLph: fuelFlowCruiseLphEarly,
+            cruiseAltFt: working.cruiseAltFt || working.defaultCruiseAltFt,
+            cruiseLevel: working.cruiseLevel,
             groundSpeedKt: fallbackGsKt ?? nav.groundSpeedKt,
             trueCourseDeg: working.trueCourseDeg,
             magVariationDeg: working.magVariationDeg,
@@ -440,7 +481,7 @@ export function calculatePlanner(plan, context = {}) {
     const usableFuelL = clampPositive(working.usableFuelL);
     const fuelOnBoardL = clampPositive(working.fuelOnBoardL || usableFuelL);
     const desiredLandingFuelL = clampPositive(working.desiredLandingFuelL);
-    const fuelFlowCruiseLph = clampPositive(working.fuelFlowCruiseLph);
+    const fuelFlowCruiseLph = fuelFlowCruiseLphEarly;
     const taxiFuelL = clampPositive(working.taxiFuelL);
     const climbTimeMin = clampPositive(working.climbTimeMin);
     const climbFuelL = clampPositive(working.climbFuelL);
@@ -467,7 +508,13 @@ export function calculatePlanner(plan, context = {}) {
     );
     const cruiseTimeMinAuto = cruiseGsKt > 0 ? (cruiseDistNm / cruiseGsKt) * 60 : 0;
     const cruiseTimeMin = cruiseMode === "auto" ? cruiseTimeMinAuto : clampPositive(working.cruiseTimeMin);
-    const cruiseFuelLAuto = fuelFlowCruiseLph > 0 ? (cruiseTimeMin / 60) * fuelFlowCruiseLph : 0;
+    // Com pernas: combustível de cruzeiro = soma (ETE × consumo) de cada perna.
+    const cruiseFuelLAuto =
+        useNavLegs && navLog.totalFuelL > 0
+            ? navLog.totalFuelL
+            : fuelFlowCruiseLph > 0
+              ? (cruiseTimeMin / 60) * fuelFlowCruiseLph
+              : 0;
     const cruiseFuelL = cruiseMode === "auto" ? cruiseFuelLAuto : clampPositive(working.cruiseFuelL);
 
     const toc = {

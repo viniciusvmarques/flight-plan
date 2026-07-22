@@ -115,8 +115,10 @@ function emptyNavLeg(name = "") {
         trueCourseDeg: "",
         windDirectionDeg: "",
         windSpeedKt: "",
+        iasKt: "",
         tasKt: "",
         groundSpeedKt: "",
+        fuelFlowLph: "",
     };
 }
 
@@ -130,7 +132,9 @@ function migrateLegacyCheckpoints(plan, destIcao) {
         windDirectionDeg: item?.windDirectionDeg ?? "",
         windSpeedKt: item?.windSpeedKt ?? "",
         tasKt: item?.tasKt ?? "",
+        iasKt: item?.iasKt ?? "",
         groundSpeedKt: item?.groundSpeedKt ?? "",
+        fuelFlowLph: item?.fuelFlowLph ?? "",
     }));
 }
 
@@ -157,8 +161,10 @@ function resolveEditableNavLegs(plan, destIcao) {
             trueCourseDeg: "",
             windDirectionDeg: "",
             windSpeedKt: "",
+            iasKt: "",
             tasKt: "",
             groundSpeedKt: "",
+            fuelFlowLph: "",
         },
     ];
 }
@@ -210,14 +216,13 @@ function NavLegsTable({ legs }) {
     );
 }
 
-function NavLegsEditor({ legs, originIcao, onChange, t }) {
+function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
     function updateLeg(index, key, value) {
         const next = legs.map((leg, i) => (i === index ? { ...leg, [key]: value } : leg));
         onChange(next);
     }
 
     function addLeg() {
-        // Cresce para baixo: nova perna vazia no final ("próximo ponto").
         onChange([...legs, emptyNavLeg("")]);
     }
 
@@ -247,13 +252,15 @@ function NavLegsEditor({ legs, originIcao, onChange, t }) {
                     const from = legFromLabel(legs, index, originIcao);
                     const toHint = legToLabel(leg, t);
                     const namePlaceholder = index === 0 ? "TOC" : t("planner.nextFix");
+                    const calcLeg = calcLegs?.[index];
+                    const tasAuto = calcLeg?.tasKt > 0 ? `${calcLeg.tasKt.toFixed(0)} kt` : "—";
+                    const gsAuto = calcLeg?.gsKt > 0 ? `${calcLeg.gsKt.toFixed(0)} kt` : "—";
+                    const fuelAuto = calcLeg?.fuelL > 0 ? `${calcLeg.fuelL.toFixed(1)} L` : "—";
                     return (
                         <div key={leg.id || `leg-${index}`} className="plan-nav-leg-card">
                             <div className="plan-nav-leg-toolbar">
                                 <div className="plan-nav-leg-title">
-                                    <span className="plan-leg-code">
-                                        {t("planner.legNumber", { n: index + 1 })}
-                                    </span>
+                                    <span className="plan-leg-code">{t("planner.legNumber", { n: index + 1 })}</span>
                                     <strong className="plan-nav-leg-route">
                                         {from} → {toHint}
                                     </strong>
@@ -289,17 +296,23 @@ function NavLegsEditor({ legs, originIcao, onChange, t }) {
                                 <Field label={t("planner.legWindSpeed")}>
                                     <input className="input" value={leg.windSpeedKt ?? ""} onChange={(e) => updateLeg(index, "windSpeedKt", e.target.value)} placeholder="12" />
                                 </Field>
-                                <Field label="TAS (kt)">
-                                    <input className="input" value={leg.tasKt ?? ""} onChange={(e) => updateLeg(index, "tasKt", e.target.value)} placeholder="122" />
+                                <Field label={t("planner.legIas")} hint={t("planner.legIasHint")}>
+                                    <input className="input" value={leg.iasKt ?? ""} onChange={(e) => updateLeg(index, "iasKt", e.target.value)} placeholder="105" />
                                 </Field>
-                                <Field label="GS (kt)">
-                                    <input className="input" value={leg.groundSpeedKt ?? ""} onChange={(e) => updateLeg(index, "groundSpeedKt", e.target.value)} placeholder="115" />
+                                <Field label={t("planner.legFuelFlow")} hint={t("planner.legFuelFlowHint")}>
+                                    <input className="input" value={leg.fuelFlowLph ?? ""} onChange={(e) => updateLeg(index, "fuelFlowLph", e.target.value)} placeholder="34" />
                                 </Field>
                                 <div className="plan-nav-leg-hint">
                                     {index === 0
                                         ? t("planner.firstLegHint", { icao: originIcao || "ORIG" })
                                         : t("planner.nextLegHint")}
                                 </div>
+                            </div>
+                            <div className="plan-summary-grid plan-summary-grid--4">
+                                <MetricBox label="TAS" value={tasAuto} tone="ok" />
+                                <MetricBox label="GS" value={gsAuto} tone="ok" />
+                                <MetricBox label="ETE" value={fmtMinutes(calcLeg?.eteMin)} />
+                                <MetricBox label={t("planner.legFuel")} value={fuelAuto} tone="warn" />
                             </div>
                         </div>
                     );
@@ -457,6 +470,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
 
                     <NavLegsEditor
                         legs={navLegsDraft}
+                        calcLegs={calc.navLegs}
                         originIcao={originIcao}
                         onChange={setNavLegs}
                         t={t}
@@ -536,7 +550,16 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                                         { value: "manual", label: "Manual" },
                                     ]}
                                 />
-                                <Field label="Distância cruzeiro (NM)" hint={String(p.cruiseMode ?? "auto") === "auto" ? `Auto: ${calc.cruiseDistAutoNm.toFixed(0)} NM (rota − subida − descida)` : null}>
+                                <Field
+                                    label="Distância cruzeiro (NM)"
+                                    hint={
+                                        calc.useNavLegs
+                                            ? `Comb. pernas: ${calc.cruiseFuelLAuto.toFixed(1)} L (VI × vento × consumo)`
+                                            : String(p.cruiseMode ?? "auto") === "auto"
+                                              ? `Auto: ${calc.cruiseDistAutoNm.toFixed(0)} NM (rota − subida − descida)`
+                                              : null
+                                    }
+                                >
                                     <input className="input" value={p.cruiseDistNm ?? ""} onChange={(e) => setField("cruiseDistNm", e.target.value)} placeholder={String(calc.cruiseDistAutoNm.toFixed(0))} />
                                 </Field>
                                 {String(p.cruiseMode ?? "auto") === "manual" ? (
