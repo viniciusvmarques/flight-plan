@@ -57,11 +57,16 @@ export default function Register() {
                 state: { email: response?.email || email, next: nextPath },
             });
     } catch (err) {
-      setError(err?.message || "Falha ao criar conta");
+      setError(err?.message || t("auth.registerFailed"));
     } finally {
       setLoading(false);
     }
   }
+
+  const whyBullets = [
+    ...(t("plannerGate.bullets") || "").split("|").filter(Boolean).slice(0, 3),
+    t("billing.featureBriefings"),
+  ];
 
   return (
     <div className="auth-wrap av-shell">
@@ -137,7 +142,7 @@ export default function Register() {
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="seuemail@exemplo.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   type="email"
                   autoComplete="email"
                   required
@@ -149,7 +154,7 @@ export default function Register() {
                 <input
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="mín. 6 caracteres"
+                  placeholder={t("auth.passwordPlaceholder")}
                   type="password"
                   autoComplete="new-password"
                   required
@@ -161,7 +166,7 @@ export default function Register() {
                 <input
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
-                  placeholder="repita a senha"
+                  placeholder={t("auth.confirmPasswordPlaceholder")}
                   type="password"
                   autoComplete="new-password"
                   required
@@ -185,24 +190,26 @@ export default function Register() {
                 <Link to="/login">{t("auth.alreadyHaveAccount")} • {t("auth.loginButton")}</Link>
               </div>
 
-              <div className="auth-hint">Após o cadastro, enviaremos um link para ativar sua conta.</div>
+              <div className="auth-hint">{t("auth.registerVerifyHint")}</div>
             </form>
           </div>
 
-          <div className="auth-pane auth-pane--soft">
-            <h2>Por que criar conta?</h2>
+          <div className="auth-pane auth-pane--soft auth-pane--chart">
+            <div className="auth-chart-hero" aria-hidden="true">
+              <img src="/marquisa-chart-art.svg" alt="" />
+            </div>
+            <h2>{t("auth.registerWhyTitle")}</h2>
             <ul className="auth-copy-list">
-              <li>{t("plannerGate.bullets").split("|")[0]}</li>
-              <li>{t("plannerGate.bullets").split("|")[1]}</li>
-              <li>{t("plannerGate.bullets").split("|")[2]}</li>
-              <li>{t("billing.featureBriefings")}</li>
+              {whyBullets.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
             <div className="auth-chip-row">
-              <span className="chip">Briefing</span>
-              <span className="chip">Planejamento</span>
-              <span className="chip">Histórico</span>
+              <span className="chip">{t("auth.chipBriefing")}</span>
+              <span className="chip">{t("auth.chipPlanning")}</span>
+              <span className="chip">{t("auth.chipHistory")}</span>
             </div>
-            <p className="muted">Sem spam. Você controla seus dados.</p>
+            <p className="muted">{t("auth.registerWhyHint")}</p>
           </div>
         </div>
       </div>

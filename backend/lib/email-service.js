@@ -17,9 +17,13 @@ function nl2br(value) {
 function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransactional }) {
     const appUrl = String(process.env.APP_URL || process.env.FRONTEND_URL || "https://marquisa.com.br").replace(/\/$/, "");
     const markUrl = `${appUrl}/marquisa-email-avatar.svg`;
+    const bannerUrl = `${appUrl}/marquisa-email-banner.svg`;
     return `
         <div style="background:#0b1220;padding:24px;font-family:Arial,sans-serif;color:#e5e7eb;">
             <div style="max-width:640px;margin:0 auto;background:rgba(15,23,42,0.94);border:1px solid rgba(148,163,184,0.2);border-radius:18px;overflow:hidden;">
+                <div style="padding:0;line-height:0;background:#0b1a2e;">
+                    <img src="${escapeHtml(bannerUrl)}" width="640" alt="" style="display:block;width:100%;max-width:640px;height:auto;border:0;" />
+                </div>
                 <div style="padding:20px 24px;border-bottom:1px solid rgba(148,163,184,0.16);">
                     <div style="display:flex;align-items:center;gap:10px;">
                         <img src="${escapeHtml(markUrl)}" width="28" height="28" alt="" style="display:block;border-radius:6px;" />
@@ -38,6 +42,19 @@ function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransaction
             </div>
         </div>
     `;
+}
+
+function cleanFirstName(value) {
+    const name = String(value || "").trim();
+    if (!name) return "";
+    // Evita usar e-mail ou lixo como "nome"
+    if (name.includes("@") || name.length > 40) return "";
+    return name.split(/\s+/)[0];
+}
+
+function greetingLine(copy, firstName) {
+    const name = cleanFirstName(firstName);
+    return name ? copy.helloNamed(name) : copy.hello;
 }
 
 function buildTransporter() {
@@ -75,6 +92,7 @@ function emailCopy(locale) {
     const all = {
         "pt-BR": {
             hello: "Olá,",
+            helloNamed: (name) => `Olá, ${name},`,
             footerTransactional: "Mensagem transacional enviada para suporte da sua operação.",
             nextCycleFallback: "o próximo ciclo da assinatura",
             endOfCurrentCycle: "o fim do ciclo atual",
@@ -213,14 +231,18 @@ function emailCopy(locale) {
 
             contactConfirmSubject: `${BRAND_NAME} — recebemos sua mensagem`,
             contactConfirmTitle: "Mensagem recebida",
-            contactConfirmIntro: (name) => `Olá ${name || ""}, recebemos sua solicitação.`,
-            contactConfirmText: (name, subjectLabel) =>
-                `Olá ${name || ""},\n\nRecebemos sua mensagem sobre "${subjectLabel}".\nNossa equipe analisará o pedido e responderá pelo canal informado.\n\nSuporte: ${support}\n`,
+            contactConfirmIntro: (name) =>
+                cleanFirstName(name) ? `Olá, ${cleanFirstName(name)}, recebemos sua solicitação.` : "Olá, recebemos sua solicitação.",
+            contactConfirmText: (name, subjectLabel) => {
+                const greet = cleanFirstName(name) ? `Olá, ${cleanFirstName(name)},` : "Olá,";
+                return `${greet}\n\nRecebemos sua mensagem sobre "${subjectLabel}".\nNossa equipe analisará o pedido e responderá pelo canal informado.\n\nSuporte: ${support}\n`;
+            },
             contactConfirmSubjectLabel: "Assunto:",
             contactConfirmReturn: "Nossa equipe retornará pelo e-mail informado assim que possível.",
         },
         en: {
             hello: "Hello,",
+            helloNamed: (name) => `Hello, ${name},`,
             footerTransactional: "Transactional message sent to support your account.",
             nextCycleFallback: "the next billing cycle",
             endOfCurrentCycle: "the end of the current cycle",
@@ -356,14 +378,18 @@ function emailCopy(locale) {
 
             contactConfirmSubject: `${BRAND_NAME} — we received your message`,
             contactConfirmTitle: "Message received",
-            contactConfirmIntro: (name) => `Hello ${name || ""}, we received your request.`,
-            contactConfirmText: (name, subjectLabel) =>
-                `Hello ${name || ""},\n\nWe received your message about "${subjectLabel}".\nOur team will review the request and reply through the channel you provided.\n\nSupport: ${support}\n`,
+            contactConfirmIntro: (name) =>
+                cleanFirstName(name) ? `Hello, ${cleanFirstName(name)}, we received your request.` : "Hello, we received your request.",
+            contactConfirmText: (name, subjectLabel) => {
+                const greet = cleanFirstName(name) ? `Hello, ${cleanFirstName(name)},` : "Hello,";
+                return `${greet}\n\nWe received your message about "${subjectLabel}".\nOur team will review the request and reply through the channel you provided.\n\nSupport: ${support}\n`;
+            },
             contactConfirmSubjectLabel: "Subject:",
             contactConfirmReturn: "Our team will reply to the email you provided as soon as possible.",
         },
         es: {
             hello: "Hola,",
+            helloNamed: (name) => `Hola, ${name},`,
             footerTransactional: "Mensaje transaccional enviado para el soporte de tu cuenta.",
             nextCycleFallback: "el próximo ciclo de la suscripción",
             endOfCurrentCycle: "el final del ciclo actual",
@@ -500,9 +526,12 @@ function emailCopy(locale) {
 
             contactConfirmSubject: `${BRAND_NAME} — recibimos tu mensaje`,
             contactConfirmTitle: "Mensaje recibido",
-            contactConfirmIntro: (name) => `Hola ${name || ""}, recibimos tu solicitud.`,
-            contactConfirmText: (name, subjectLabel) =>
-                `Hola ${name || ""},\n\nRecibimos tu mensaje sobre "${subjectLabel}".\nNuestro equipo analizará la solicitud y responderá por el canal informado.\n\nSoporte: ${support}\n`,
+            contactConfirmIntro: (name) =>
+                cleanFirstName(name) ? `Hola, ${cleanFirstName(name)}, recibimos tu solicitud.` : "Hola, recibimos tu solicitud.",
+            contactConfirmText: (name, subjectLabel) => {
+                const greet = cleanFirstName(name) ? `Hola, ${cleanFirstName(name)},` : "Hola,";
+                return `${greet}\n\nRecibimos tu mensaje sobre "${subjectLabel}".\nNuestro equipo analizará la solicitud y responderá por el canal informado.\n\nSoporte: ${support}\n`;
+            },
             contactConfirmSubjectLabel: "Asunto:",
             contactConfirmReturn: "Nuestro equipo responderá al email informado lo antes posible.",
         },
@@ -513,6 +542,21 @@ function emailCopy(locale) {
 export function createEmailService(prisma) {
     const transporter = buildTransporter();
     const from = process.env.MAIL_FROM || `${BRAND_NAME} <contato@marquisa.com.br>`;
+
+    async function resolveFirstName(userId, firstName) {
+        const direct = cleanFirstName(firstName);
+        if (direct) return direct;
+        if (!userId || !prisma?.user?.findUnique) return "";
+        try {
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { firstName: true },
+            });
+            return cleanFirstName(user?.firstName);
+        } catch {
+            return "";
+        }
+    }
 
     async function logEmail(entry) {
         try {
@@ -600,12 +644,13 @@ export function createEmailService(prisma) {
         }
     }
 
-    async function sendTrialCancellationEmailImpl({ email, userId = null, providerEventId = null, locale = "pt-BR" }) {
+    async function sendTrialCancellationEmailImpl({ email, userId = null, providerEventId = null, locale = "pt-BR", firstName = null }) {
         const copy = emailCopy(locale);
+        const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
         const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
         const subject = copy.trialCancelSubject;
         const text =
-            `${copy.hello}\n\n` +
+            `${greet}\n\n` +
             `${copy.trialCancelTextConfirm}\n` +
             `${copy.trialCancelTextNoCharge}\n` +
             `${copy.trialCancelTextFree}\n` +
@@ -613,9 +658,10 @@ export function createEmailService(prisma) {
             `${copy.accountLabel} ${appUrl}/assinatura\n`;
         const html = buildEmailShell({
             title: copy.trialCancelTitle,
-            intro: copy.trialCancelIntro,
+            intro: greet,
             footerTransactional: copy.footerTransactional,
             bodyHtml:
+                `<p style="margin:0 0 16px;">${escapeHtml(copy.trialCancelIntro)}</p>` +
                 `<p style="margin:0 0 16px;">${copy.trialCancelHtmlLead}</p>` +
                 `<ul style="margin:0 0 16px;padding-left:20px;">` +
                 `<li>${escapeHtml(copy.trialCancelBullet1)}</li>` +
@@ -639,18 +685,20 @@ export function createEmailService(prisma) {
     }
 
     return {
-        async sendPasswordResetEmail({ email, resetUrl, userId = null, locale = "pt-BR" }) {
+        async sendPasswordResetEmail({ email, resetUrl, userId = null, locale = "pt-BR", firstName = null }) {
             const copy = emailCopy(locale);
+            const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
             const subject = copy.passwordResetSubject;
             const text =
-                `${copy.hello}\n\n` +
+                `${greet}\n\n` +
                 `${copy.passwordResetTextBody}\n${resetUrl}\n\n` +
                 `${copy.passwordResetIgnore}\n`;
             const html = buildEmailShell({
                 title: copy.passwordResetTitle,
-                intro: copy.passwordResetIntro,
+                intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
+                    `<p style="margin:0 0 16px;">${escapeHtml(copy.passwordResetIntro)}</p>` +
                     `<p style="margin:0 0 16px;">${escapeHtml(copy.passwordResetUseLink)}</p>` +
                     `<p style="margin:0 0 18px;"><a href="${escapeHtml(resetUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.passwordResetButton)}</a></p>` +
                     `<p style="margin:0 0 8px;">${escapeHtml(copy.copyPasteLink)}</p>` +
@@ -668,18 +716,20 @@ export function createEmailService(prisma) {
             });
         },
 
-        async sendEmailVerificationEmail({ email, verifyUrl, userId = null, locale = "pt-BR" }) {
+        async sendEmailVerificationEmail({ email, verifyUrl, userId = null, locale = "pt-BR", firstName = null }) {
             const copy = emailCopy(locale);
+            const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
             const subject = copy.verifySubject;
             const text =
-                `${copy.hello}\n\n` +
+                `${greet}\n\n` +
                 `${copy.verifyTextBody}\n${verifyUrl}\n\n` +
                 `${copy.verifyIgnore}\n`;
             const html = buildEmailShell({
                 title: copy.verifyTitle,
-                intro: copy.verifyIntro,
+                intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
+                    `<p style="margin:0 0 16px;">${escapeHtml(copy.verifyIntro)}</p>` +
                     `<p style="margin:0 0 16px;">${escapeHtml(copy.verifyClick)}</p>` +
                     `<p style="margin:0 0 18px;"><a href="${escapeHtml(verifyUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.verifyButton)}</a></p>` +
                     `<p style="margin:0 0 8px;">${escapeHtml(copy.copyPasteLink)}</p>` +
@@ -697,12 +747,13 @@ export function createEmailService(prisma) {
             });
         },
 
-        async sendWelcomeEmail({ email, userId = null, locale = "pt-BR" }) {
+        async sendWelcomeEmail({ email, userId = null, locale = "pt-BR", firstName = null }) {
             const copy = emailCopy(locale);
+            const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
             const subject = copy.welcomeSubject;
             const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
             const text =
-                `${copy.hello}\n\n` +
+                `${greet}\n\n` +
                 `${copy.welcomeLead}\n\n` +
                 `${copy.welcomeReady}\n` +
                 `${copy.welcomeFeaturesText}\n\n` +
@@ -711,9 +762,10 @@ export function createEmailService(prisma) {
                 `${copy.supportLabel}\n`;
             const html = buildEmailShell({
                 title: copy.welcomeTitle,
-                intro: copy.welcomeIntro,
+                intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
+                    `<p style="margin:0 0 16px;">${escapeHtml(copy.welcomeIntro)}</p>` +
                     `<p style="margin:0 0 16px;">${escapeHtml(copy.welcomeCanUse)}</p>` +
                     `<ul style="margin:0 0 16px;padding-left:20px;">` +
                     `<li>${escapeHtml(copy.welcomeBulletMetar)}</li>` +
@@ -731,8 +783,9 @@ export function createEmailService(prisma) {
             return sendEmail({ kind: "welcome", to: email, subject, text, html, userId, metadata: { appUrl } });
         },
 
-        async sendSubscriptionActivatedEmail({ email, currentPeriodEnd, userId = null, providerEventId = null, locale = "pt-BR" }) {
+        async sendSubscriptionActivatedEmail({ email, currentPeriodEnd, userId = null, providerEventId = null, locale = "pt-BR", firstName = null }) {
             const copy = emailCopy(locale);
+            const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
             const recent = await prisma.emailLog.findFirst({
                 where: {
                     kind: "purchase_success",
@@ -750,7 +803,7 @@ export function createEmailService(prisma) {
             const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
             const subject = copy.proSubject;
             const text =
-                `${copy.hello}\n\n` +
+                `${greet}\n\n` +
                 `${copy.proThanksText}\n\n` +
                 `${copy.proActivatedText}\n` +
                 `${copy.nextMilestone} ${endLabel}.\n\n` +
@@ -759,9 +812,10 @@ export function createEmailService(prisma) {
                 `${copy.supportLabel}\n`;
             const html = buildEmailShell({
                 title: copy.proTitle,
-                intro: copy.proIntro,
+                intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
+                    `<p style="margin:0 0 16px;">${escapeHtml(copy.proIntro)}</p>` +
                     `<p style="margin:0 0 16px;">${copy.proActivatedHtml}</p>` +
                     `<ul style="margin:0 0 16px;padding-left:20px;">` +
                     `<li>${escapeHtml(copy.proBulletSync)}</li>` +
@@ -787,21 +841,23 @@ export function createEmailService(prisma) {
             });
         },
 
-        async sendSubscriptionRenewedEmail({ email, currentPeriodEnd, userId = null, providerEventId = null, locale = "pt-BR" }) {
+        async sendSubscriptionRenewedEmail({ email, currentPeriodEnd, userId = null, providerEventId = null, locale = "pt-BR", firstName = null }) {
             const copy = emailCopy(locale);
+            const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
             const endLabel = currentPeriodEnd
                 ? new Date(currentPeriodEnd).toLocaleDateString(dateLocaleFor(locale))
                 : copy.nextCycleFallback;
             const subject = copy.renewedSubject;
             const text =
-                `${copy.hello}\n\n` +
+                `${greet}\n\n` +
                 `${copy.renewedText}\n` +
                 `${copy.nextMilestone} ${endLabel}.\n`;
             const html = buildEmailShell({
                 title: copy.renewedTitle,
-                intro: copy.renewedIntro,
+                intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
+                    `<p style="margin:0 0 16px;">${escapeHtml(copy.renewedIntro)}</p>` +
                     `<p style="margin:0 0 16px;">${copy.renewedActiveHtml}</p>` +
                     `<p style="margin:0;">${escapeHtml(copy.nextMilestone)} <strong>${escapeHtml(endLabel)}</strong>.</p>`,
             });
@@ -818,19 +874,21 @@ export function createEmailService(prisma) {
             });
         },
 
-        async sendPaymentFailedEmail({ email, hostedInvoiceUrl = null, userId = null, providerEventId = null, locale = "pt-BR" }) {
+        async sendPaymentFailedEmail({ email, hostedInvoiceUrl = null, userId = null, providerEventId = null, locale = "pt-BR", firstName = null }) {
             const copy = emailCopy(locale);
+            const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
             const subject = copy.paymentFailedSubject;
             const text =
-                `${copy.hello}\n\n` +
+                `${greet}\n\n` +
                 `${copy.paymentFailedText}\n` +
                 `${hostedInvoiceUrl ? `${copy.paymentFailedReviewLink} ${hostedInvoiceUrl}\n` : ""}` +
                 `${copy.supportHelp}\n`;
             const html = buildEmailShell({
                 title: copy.paymentFailedTitle,
-                intro: copy.paymentFailedIntro,
+                intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
+                    `<p style="margin:0 0 16px;">${escapeHtml(copy.paymentFailedIntro)}</p>` +
                     `<p style="margin:0 0 16px;">${escapeHtml(copy.paymentFailedBody)}</p>` +
                     (hostedInvoiceUrl
                         ? `<p style="margin:0 0 18px;"><a href="${escapeHtml(hostedInvoiceUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.paymentFailedReviewButton)}</a></p>`
@@ -958,43 +1016,47 @@ export function createEmailService(prisma) {
             providerEventId = null,
             locale = "pt-BR",
             duringTrial = false,
+            firstName = null,
         }) {
             const copy = emailCopy(locale);
+            const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
             const endLabel = currentPeriodEnd
                 ? new Date(currentPeriodEnd).toLocaleDateString(dateLocaleFor(locale))
                 : copy.endOfCurrentCycle;
             const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
             const subject = duringTrial ? copy.scheduledCancelTrialSubject : copy.scheduledCancelSubject;
             const title = duringTrial ? copy.trialCancelTitle : copy.scheduledCancelTitle;
-            const intro = duringTrial ? copy.scheduledCancelTrialIntro : copy.scheduledCancelIntro;
+            const introBody = duringTrial ? copy.scheduledCancelTrialIntro : copy.scheduledCancelIntro;
             const text = duringTrial
-                ? `${copy.hello}\n\n${copy.scheduledCancelTrialText}\n` +
+                ? `${greet}\n\n${copy.scheduledCancelTrialText}\n` +
                   `${copy.scheduledCancelTrialAccess(endLabel)}\n` +
                   `${copy.supportLabel}\n`
-                : `${copy.hello}\n\n${copy.scheduledCancelAfterText}\n` +
+                : `${greet}\n\n${copy.scheduledCancelAfterText}\n` +
                   `${copy.scheduledCancelAfterAccess(endLabel)}\n` +
                   `${copy.supportLabel}\n`;
             const escapedEnd = escapeHtml(endLabel);
             const html = buildEmailShell({
                 title,
-                intro,
+                intro: greet,
                 footerTransactional: copy.footerTransactional,
-                bodyHtml: duringTrial
-                    ? `<p style="margin:0 0 16px;">${copy.scheduledCancelTrialHtmlLead}</p>` +
-                      `<ul style="margin:0 0 16px;padding-left:20px;">` +
-                      `<li>${copy.scheduledCancelTrialBullet1(escapedEnd)}</li>` +
-                      `<li>${copy.scheduledCancelTrialBullet2}</li>` +
-                      `<li>${escapeHtml(copy.scheduledCancelTrialBullet3)}</li>` +
-                      `</ul>` +
-                      `<p style="margin:0;">${escapeHtml(copy.doubts)}</p>`
-                    : `<p style="margin:0 0 16px;">${copy.scheduledCancelAfterHtmlLead(escapedEnd)}</p>` +
-                      `<ul style="margin:0 0 16px;padding-left:20px;">` +
-                      `<li>${escapeHtml(copy.scheduledCancelAfterBullet1)}</li>` +
-                      `<li>${escapeHtml(copy.scheduledCancelAfterBullet2)}</li>` +
-                      `<li>${escapeHtml(copy.scheduledCancelAfterBullet3)}</li>` +
-                      `</ul>` +
-                      `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.manageSubscription)}</a></p>` +
-                      `<p style="margin:0;">${escapeHtml(copy.scheduledCancelRefund)}</p>`,
+                bodyHtml:
+                    `<p style="margin:0 0 16px;">${escapeHtml(introBody)}</p>` +
+                    (duringTrial
+                        ? `<p style="margin:0 0 16px;">${copy.scheduledCancelTrialHtmlLead}</p>` +
+                          `<ul style="margin:0 0 16px;padding-left:20px;">` +
+                          `<li>${copy.scheduledCancelTrialBullet1(escapedEnd)}</li>` +
+                          `<li>${copy.scheduledCancelTrialBullet2}</li>` +
+                          `<li>${escapeHtml(copy.scheduledCancelTrialBullet3)}</li>` +
+                          `</ul>` +
+                          `<p style="margin:0;">${escapeHtml(copy.doubts)}</p>`
+                        : `<p style="margin:0 0 16px;">${copy.scheduledCancelAfterHtmlLead(escapedEnd)}</p>` +
+                          `<ul style="margin:0 0 16px;padding-left:20px;">` +
+                          `<li>${escapeHtml(copy.scheduledCancelAfterBullet1)}</li>` +
+                          `<li>${escapeHtml(copy.scheduledCancelAfterBullet2)}</li>` +
+                          `<li>${escapeHtml(copy.scheduledCancelAfterBullet3)}</li>` +
+                          `</ul>` +
+                          `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.manageSubscription)}</a></p>` +
+                          `<p style="margin:0;">${escapeHtml(copy.scheduledCancelRefund)}</p>`),
             });
 
             return sendEmail({
@@ -1009,25 +1071,27 @@ export function createEmailService(prisma) {
             });
         },
 
-        async sendSubscriptionCanceledEmail({ email, userId = null, providerEventId = null, locale = "pt-BR", reason = "ended" }) {
+        async sendSubscriptionCanceledEmail({ email, userId = null, providerEventId = null, locale = "pt-BR", reason = "ended", firstName = null }) {
             if (reason === "trial") {
-                return sendTrialCancellationEmailImpl({ email, userId, providerEventId, locale });
+                return sendTrialCancellationEmailImpl({ email, userId, providerEventId, locale, firstName });
             }
 
             const copy = emailCopy(locale);
+            const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
             const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
             const subject = copy.endedCancelSubject;
             const text =
-                `${copy.hello}\n\n` +
+                `${greet}\n\n` +
                 `${copy.endedCancelText}\n` +
                 `${copy.endedCancelResubscribe}\n` +
                 `${copy.supportLabel}\n` +
                 `${copy.accountLabel} ${appUrl}/assinatura\n`;
             const html = buildEmailShell({
                 title: copy.endedCancelTitle,
-                intro: copy.endedCancelIntro,
+                intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
+                    `<p style="margin:0 0 16px;">${escapeHtml(copy.endedCancelIntro)}</p>` +
                     `<p style="margin:0 0 16px;">${copy.endedCancelHtmlLead}</p>` +
                     `<ul style="margin:0 0 16px;padding-left:20px;">` +
                     `<li>${escapeHtml(copy.endedCancelBullet1)}</li>` +
@@ -1054,18 +1118,20 @@ export function createEmailService(prisma) {
             return sendTrialCancellationEmailImpl(args);
         },
 
-        async sendPasswordChangedEmail({ email, userId = null, locale = "pt-BR" }) {
+        async sendPasswordChangedEmail({ email, userId = null, locale = "pt-BR", firstName = null }) {
             const copy = emailCopy(locale);
+            const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
             const subject = copy.passwordChangedSubject;
             const text =
-                `${copy.hello}\n\n` +
+                `${greet}\n\n` +
                 `${copy.passwordChangedText}\n` +
                 `${copy.passwordChangedWarn}\n`;
             const html = buildEmailShell({
                 title: copy.passwordChangedTitle,
-                intro: copy.passwordChangedIntro,
+                intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
+                    `<p style="margin:0 0 16px;">${escapeHtml(copy.passwordChangedIntro)}</p>` +
                     `<p style="margin:0 0 16px;">${escapeHtml(copy.passwordChangedBody)}</p>` +
                     `<p style="margin:0;">${escapeHtml(copy.supportOnly)}</p>`,
             });

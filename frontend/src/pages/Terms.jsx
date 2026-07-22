@@ -28,7 +28,9 @@ export default function Terms() {
                 <div className="auth-info legal-note">{t("common.operationalDisclaimer")}</div>
                 <h2>{t("legal.use")}</h2>
                 <ul>
-                    {copy.use.map((item) => <li key={item}>{item}</li>)}
+                    {copy.use.map((item) => (
+                        <li key={item}>{item}</li>
+                    ))}
                 </ul>
                 <h2>{t("legal.account")}</h2>
                 <p>{copy.account}</p>
@@ -38,10 +40,8 @@ export default function Terms() {
                 <p>{t("common.refundSummary")}</p>
                 <p>{t("common.refundWindowNotice")}</p>
                 <h2>{t("legal.invoice")}</h2>
-                <p>{siteProfile.invoiceNotice}</p>
-                <p>
-                    {t("billing.invoiceNeed", { email: siteProfile.supportEmail })}
-                </p>
+                <p>{copy.invoiceNotice}</p>
+                <p>{t("billing.invoiceNeed", { email: siteProfile.supportEmail })}</p>
                 <h2>{t("legal.liability")}</h2>
                 <p>{copy.liability}</p>
                 <h2>{t("legal.intellectual")}</h2>
@@ -49,7 +49,12 @@ export default function Terms() {
                 <h2>{t("legal.contactIdentity")}</h2>
                 {hasLegalIdentity ? (
                     <p>
-                        Operação identificada como <strong>{siteProfile.legalName}</strong>, documento <strong>{siteProfile.documentId}</strong>, base em <strong>{siteProfile.cityCountry}</strong>. Contato principal: <strong>{siteProfile.supportEmail}</strong>.
+                        {copy.operationIdentity(
+                            siteProfile.legalName,
+                            siteProfile.documentId,
+                            siteProfile.cityCountry,
+                            siteProfile.supportEmail
+                        )}
                     </p>
                 ) : (
                     <p>
@@ -57,7 +62,7 @@ export default function Terms() {
                     </p>
                 )}
                 <h2>{t("legal.changes")}</h2>
-                <p>{locale === "en" ? "We may update these terms; continued use after changes means acceptance." : locale === "es" ? "Podemos actualizar estos términos; el uso continuado después de cambios constituye aceptación." : "Podemos atualizar estes termos; o uso continuado após mudanças constitui aceitação."}</p>
+                <p>{copy.changes}</p>
             </div>
         </div>
     );

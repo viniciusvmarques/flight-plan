@@ -42,6 +42,29 @@ export const legalContent = {
             "Cobrança duplicada, erro operacional, falha técnica relevante ou cobrança após cancelamento devem ser enviados ao suporte com comprovante.",
             "Quando aprovado, o reembolso é processado pelo provedor de pagamento e pode depender de prazos bancários/cartão.",
         ],
+        invoiceNotice:
+            "No momento, a contratação da Marquisa é realizada com disponibilização de comprovante/recibo de pagamento. A emissão de Nota Fiscal de Serviço ainda não está disponível.",
+        companyNotice:
+            "Para solicitações institucionais, comerciais ou relacionadas à LGPD, utilize os canais oficiais publicados nesta página.",
+        operationIdentity: (legalName, documentId, cityCountry, supportEmail) =>
+            `Operação identificada como ${legalName}, documento ${documentId}, base em ${cityCountry}. Contato principal: ${supportEmail}.`,
+        controllerIdentity: (legalName, documentId, cityCountry) =>
+            `Controlador identificado como ${legalName}, documento ${documentId}, base em ${cityCountry}.`,
+        privacyRequests: (email) =>
+            `Solicitações relacionadas à privacidade, LGPD e dados pessoais devem ser encaminhadas para ${email}.`,
+        storage:
+            "Informações ficam em servidores protegidos. Senhas são armazenadas com hash; não armazenamos senha em texto puro.",
+        changes: "Podemos atualizar estes termos; o uso continuado após mudanças constitui aceitação.",
+        planTrial: (trialLabel) =>
+            `O plano Pro é comercializado em cobrança recorrente, com condição promocional inicial de ${trialLabel}, sujeita às regras da plataforma de pagamento e à política comercial vigente.`,
+        recurring:
+            "Ao contratar o plano Pro, a assinatura é renovada automaticamente ao fim de cada ciclo, salvo cancelamento prévio realizado pelo próprio usuário na área de assinatura ou no portal da cobrança.",
+        paymentFailures:
+            "Em caso de falha de cobrança, a assinatura pode entrar em estado pendente ou vencido. Nessa situação, recursos premium podem ser restringidos até a regularização financeira.",
+        commercialContact: (email) =>
+            `Para pedidos de suporte, cancelamento, direitos do consumidor ou dúvidas sobre cobrança, utilize o canal ${email}.`,
+        commercialNote:
+            "Cancelamentos, dúvidas sobre assinatura e tratativas comerciais são centralizados pelo canal oficial de suporte.",
     },
     en: {
         termsIntro:
@@ -86,6 +109,29 @@ export const legalContent = {
             "Duplicate charges, operational error, relevant technical failure or charge after cancellation must be sent to support with proof.",
             "When approved, refunds are processed by the payment provider and may depend on bank/card deadlines.",
         ],
+        invoiceNotice:
+            "At this time, Marquisa subscriptions include a payment receipt. Service invoice (Nota Fiscal) issuance is not yet available.",
+        companyNotice:
+            "For institutional, commercial or privacy requests, use the official channels published on this page.",
+        operationIdentity: (legalName, documentId, cityCountry, supportEmail) =>
+            `Operation identified as ${legalName}, document ${documentId}, based in ${cityCountry}. Main contact: ${supportEmail}.`,
+        controllerIdentity: (legalName, documentId, cityCountry) =>
+            `Controller identified as ${legalName}, document ${documentId}, based in ${cityCountry}.`,
+        privacyRequests: (email) =>
+            `Privacy, data-protection and personal-data requests should be sent to ${email}.`,
+        storage:
+            "Information is stored on protected servers. Passwords are stored with hashing; we do not store plain-text passwords.",
+        changes: "We may update these terms; continued use after changes means acceptance.",
+        planTrial: (trialLabel) =>
+            `The Pro plan is sold with recurring billing and an initial promotional condition of ${trialLabel}, subject to payment-platform rules and the current commercial policy.`,
+        recurring:
+            "When subscribing to Pro, the subscription renews automatically at the end of each cycle unless cancelled beforehand in the subscription area or billing portal.",
+        paymentFailures:
+            "If payment fails, the subscription may become pending or past due. Premium resources may be restricted until the payment is resolved.",
+        commercialContact: (email) =>
+            `For support, cancellation, consumer-rights requests or billing questions, use ${email}.`,
+        commercialNote:
+            "Cancellations, subscription questions and commercial follow-up are handled through the official support channel.",
     },
     es: {
         termsIntro:
@@ -130,9 +176,35 @@ export const legalContent = {
             "Cobro duplicado, error operacional, falla técnica relevante o cobro después de cancelación deben enviarse al soporte con comprobante.",
             "Cuando se aprueba, el reembolso es procesado por el proveedor de pago y puede depender de plazos bancarios/tarjeta.",
         ],
+        invoiceNotice:
+            "Por ahora, la contratación de Marquisa incluye comprobante/recibo de pago. La emisión de factura fiscal aún no está disponible.",
+        companyNotice:
+            "Para solicitudes institucionales, comerciales o de privacidad, use los canales oficiales publicados en esta página.",
+        operationIdentity: (legalName, documentId, cityCountry, supportEmail) =>
+            `Operación identificada como ${legalName}, documento ${documentId}, con base en ${cityCountry}. Contacto principal: ${supportEmail}.`,
+        controllerIdentity: (legalName, documentId, cityCountry) =>
+            `Controlador identificado como ${legalName}, documento ${documentId}, con base en ${cityCountry}.`,
+        privacyRequests: (email) =>
+            `Las solicitudes de privacidad y datos personales deben enviarse a ${email}.`,
+        storage:
+            "La información se almacena en servidores protegidos. Las contraseñas se guardan con hash; no almacenamos contraseñas en texto plano.",
+        changes: "Podemos actualizar estos términos; el uso continuado después de cambios constituye aceptación.",
+        planTrial: (trialLabel) =>
+            `El plan Pro se comercializa con cobro recurrente y una condición promocional inicial de ${trialLabel}, sujeta a las reglas de la plataforma de pago y la política comercial vigente.`,
+        recurring:
+            "Al contratar Pro, la suscripción se renueva automáticamente al final de cada ciclo salvo cancelación previa en el área de suscripción o portal de cobro.",
+        paymentFailures:
+            "En caso de falla de pago, la suscripción puede quedar pendiente o vencida. Los recursos premium pueden restringirse hasta la regularización.",
+        commercialContact: (email) =>
+            `Para soporte, cancelación, derechos del consumidor o dudas de cobro, utilice ${email}.`,
+        commercialNote:
+            "Cancelaciones, dudas de suscripción y gestiones comerciales se centralizan en el canal oficial de soporte.",
     },
 };
 
 export function getLegalContent(locale) {
-    return legalContent[locale] || legalContent["pt-BR"];
+    const raw = String(locale || "").toLowerCase();
+    if (raw.startsWith("en")) return legalContent.en;
+    if (raw.startsWith("es")) return legalContent.es;
+    return legalContent["pt-BR"];
 }

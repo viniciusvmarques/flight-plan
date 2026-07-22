@@ -119,7 +119,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
       if (userId) {
         const byId = await prisma.user.findUnique({
           where: { id: userId },
-          select: { id: true, email: true, preferredLocale: true },
+          select: { id: true, email: true, preferredLocale: true, firstName: true },
         }).catch(() => null);
         if (byId) return byId;
       }
@@ -128,7 +128,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
       if (!cleanEmail) return null;
       return prisma.user.findUnique({
         where: { email: cleanEmail },
-        select: { id: true, email: true, preferredLocale: true },
+        select: { id: true, email: true, preferredLocale: true, firstName: true },
       }).catch(() => null);
     }
 
@@ -874,6 +874,7 @@ app.post("/auth/register", async (req,res)=>{
         verifyUrl: buildVerificationUrl(verificationToken),
         userId: user.id,
         locale: preferredLocale,
+        firstName: user.firstName,
       }),
       emailService.sendNewSignupNotificationEmail({
         email: user.email,
@@ -1061,6 +1062,7 @@ app.post("/auth/verify-email", async (req, res) => {
         preferredLocale: true,
         emailVerifiedAt: true,
         createdAt: true,
+        firstName: true,
       },
     });
     if (!user) {
@@ -1084,6 +1086,7 @@ app.post("/auth/verify-email", async (req, res) => {
         preferredLocale: true,
         emailVerifiedAt: true,
         createdAt: true,
+        firstName: true,
       },
     });
 
@@ -1093,7 +1096,12 @@ app.post("/auth/verify-email", async (req, res) => {
     }
 
     await emailService
-      .sendWelcomeEmail({ email: updated.email, userId: updated.id, locale: updated.preferredLocale || preferredLocale })
+      .sendWelcomeEmail({
+        email: updated.email,
+        userId: updated.id,
+        locale: updated.preferredLocale || preferredLocale,
+        firstName: updated.firstName,
+      })
       .catch((err) => console.error("sendWelcomeEmail after verify:", err?.message || err));
 
     return res.json({

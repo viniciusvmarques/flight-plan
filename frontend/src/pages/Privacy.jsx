@@ -27,18 +27,14 @@ export default function Privacy() {
                 <p>{copy.privacyIntro}</p>
                 <h2>{t("legal.dataCollected")}</h2>
                 <ul>
-                    {copy.data.map((item) => <li key={item}>{item}</li>)}
+                    {copy.data.map((item) => (
+                        <li key={item}>{item}</li>
+                    ))}
                 </ul>
                 <h2>{t("legal.use")}</h2>
                 <p>{copy.usePrivacy}</p>
                 <h2>{t("legal.storage")}</h2>
-                <p>
-                    {locale === "en"
-                        ? "Information is stored on protected servers. Passwords are stored with hashing; we do not store plain-text passwords."
-                        : locale === "es"
-                          ? "La información se almacena en servidores protegidos. Las contraseñas se guardan con hash; no almacenamos contraseñas en texto plano."
-                          : "Informações ficam em servidores protegidos. Senhas são armazenadas com hash; não armazenamos senha em texto puro."}
-                </p>
+                <p>{copy.storage}</p>
                 <p>{t("common.dataRetentionNotice")}</p>
                 <h2>{t("legal.sharing")}</h2>
                 <p>{copy.sharing}</p>
@@ -46,15 +42,11 @@ export default function Privacy() {
                 <p>{copy.rights}</p>
                 <h2>{t("legal.controller")}</h2>
                 {hasLegalIdentity ? (
-                    <p>
-                        Controlador identificado como <strong>{siteProfile.legalName}</strong>, documento <strong>{siteProfile.documentId}</strong>, base em <strong>{siteProfile.cityCountry}</strong>.
-                    </p>
+                    <p>{copy.controllerIdentity(siteProfile.legalName, siteProfile.documentId, siteProfile.cityCountry)}</p>
                 ) : (
-                    <p>
-                        Solicitações relacionadas à privacidade, LGPD e dados pessoais devem ser encaminhadas para <strong>{siteProfile.privacyEmail}</strong>.
-                    </p>
+                    <p>{copy.privacyRequests(siteProfile.privacyEmail)}</p>
                 )}
-                <div className="auth-info legal-note">{siteProfile.companyNotice}</div>
+                <div className="auth-info legal-note">{copy.companyNotice}</div>
             </div>
         </div>
     );
