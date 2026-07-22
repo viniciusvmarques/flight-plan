@@ -264,7 +264,7 @@ function modelToLines(model, labels) {
 
     if (model.useNavLegs && model.navLegs?.length) {
         lines.push("__GAP__");
-        lines.push({ text: L.navLog || "LOG MULTI-TRECHO", size: 10, bold: true, wrap: true });
+        lines.push({ text: L.navLog || "PERNAS DA ROTA", size: 10, bold: true, wrap: true });
         for (const leg of model.navLegs) {
             lines.push({ text: leg.line || `${leg.label} ${leg.distanceNm}`, size: 8, wrap: true });
         }

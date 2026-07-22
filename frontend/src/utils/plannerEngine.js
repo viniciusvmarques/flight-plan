@@ -563,7 +563,7 @@ export function calculatePlanner(plan, context = {}) {
 
     const warnings = [];
     if (routeMode === "checkpoints" && !navLog.hasValidLegs) {
-        warnings.push("Modo checkpoints: adicione waypoints com distância para montar o log de navegação.");
+        warnings.push("Informe a distância de cada perna para fechar a navegação.");
     }
     if (
         useNavLegs &&
@@ -571,7 +571,7 @@ export function calculatePlanner(plan, context = {}) {
         Math.abs(navLog.totalDistanceNm - suggestedRouteDistNm) > Math.max(5, suggestedRouteDistNm * 0.08)
     ) {
         warnings.push(
-            `Soma das pernas (${navLog.totalDistanceNm.toFixed(0)} NM) difere da distância direta A-B sugerida (${suggestedRouteDistNm} NM).`
+            `Soma das pernas (${navLog.totalDistanceNm.toFixed(0)} NM) difere da distância direta origem-destino (${suggestedRouteDistNm} NM).`
         );
     }
     if (!useNavLegs && !hasAnyFilled(working.trueCourseDeg, working.cruiseGsKt, working.groundSpeedKt, working.windCompKt)) {

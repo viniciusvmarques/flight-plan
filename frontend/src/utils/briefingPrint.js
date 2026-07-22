@@ -29,7 +29,7 @@ export function openBriefingPrintWindow(model, labels = {}) {
 
     const navLegsHtml =
         model.useNavLegs && model.navLegs?.length
-            ? `<div class="section-title">${escapeHtml(L.navLog || "LOG MULTI-TRECHO")}</div>
+            ? `<div class="section-title">${escapeHtml(L.navLog || "PERNAS DA ROTA")}</div>
                <div class="nav-log">
                  ${model.navLegs
                      .map((leg) => `<div class="nav-log-line">${escapeHtml(leg.line || `${leg.label} ${leg.distanceNm}`)}</div>`)

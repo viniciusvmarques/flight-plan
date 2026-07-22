@@ -136,10 +136,30 @@ function migrateLegacyCheckpoints(plan, destIcao) {
 
 function resolveEditableNavLegs(plan, destIcao) {
     if (Array.isArray(plan?.navLegs) && plan.navLegs.length) return plan.navLegs;
-    return migrateLegacyCheckpoints(plan, destIcao);
+    const legacy = migrateLegacyCheckpoints(plan, destIcao);
+    if (legacy?.length) return legacy;
+    // ID estável até o usuário editar (evita remount a cada render).
+    return [
+        {
+            id: "leg-initial",
+            name: destIcao || "",
+            distanceNm: "",
+            trueCourseDeg: "",
+            windDirectionDeg: "",
+            windSpeedKt: "",
+            tasKt: "",
+            groundSpeedKt: "",
+        },
+    ];
 }
 
-function NavLogTable({ legs }) {
+function legFromLabel(legs, index, originIcao) {
+    if (index <= 0) return originIcao || "ORIG";
+    const prev = String(legs[index - 1]?.name || "").trim();
+    return prev || `Ponto ${index}`;
+}
+
+function NavLegsTable({ legs }) {
     if (!legs?.length) return null;
     return (
         <div className="plan-nav-table-wrap">
@@ -181,36 +201,17 @@ function NavLegsEditor({ legs, originIcao, destIcao, onChange, t }) {
         onChange(next);
     }
 
-    function addWaypoint() {
-        const next = [...legs];
-        if (!next.length) {
-            onChange([emptyNavLeg(""), emptyNavLeg(destIcao || "")]);
-            return;
-        }
-        const insertAt = Math.max(0, next.length - 1);
-        next.splice(insertAt, 0, emptyNavLeg(""));
-        const last = next[next.length - 1];
-        if (destIcao && (!last.name || last.name === destIcao)) {
-            next[next.length - 1] = { ...last, name: destIcao };
-        }
-        onChange(next);
+    function addLeg() {
+        // Cresce para baixo: nova perna no final da lista.
+        onChange([...legs, emptyNavLeg(destIcao || "")]);
     }
 
     function removeLeg(index) {
         if (legs.length <= 1) {
-            onChange([]);
+            onChange([emptyNavLeg(destIcao || "")]);
             return;
         }
         onChange(legs.filter((_, i) => i !== index));
-    }
-
-    function moveLeg(index, delta) {
-        const target = index + delta;
-        if (target < 0 || target >= legs.length) return;
-        const next = [...legs];
-        const [item] = next.splice(index, 1);
-        next.splice(target, 0, item);
-        onChange(next);
     }
 
     return (
@@ -220,36 +221,33 @@ function NavLegsEditor({ legs, originIcao, destIcao, onChange, t }) {
                     <strong>{t("planner.navLogTitle")}</strong>
                     <p className="plan-section-copy">{t("planner.navLogCopy")}</p>
                 </div>
-                <button type="button" className="btn btn-secondary plan-nav-add" onClick={addWaypoint}>
-                    {t("planner.addWaypoint")}
-                </button>
             </div>
 
             <div className="plan-nav-origin chip ok">
-                {t("planner.originPoint")}: <strong>{originIcao || "A"}</strong>
+                {t("planner.originPoint")}: <strong>{originIcao || "----"}</strong>
             </div>
-
-            {!legs.length ? (
-                <p className="plan-section-copy">{t("planner.navLogCopy")}</p>
-            ) : null}
 
             <div className="plan-nav-legs">
                 {legs.map((leg, index) => {
-                    const isLast = index === legs.length - 1;
+                    const from = legFromLabel(legs, index, originIcao);
+                    const toHint = String(leg.name || "").trim() || (index === legs.length - 1 ? destIcao || t("planner.fixPoint") : t("planner.nextFix"));
                     return (
                         <div key={leg.id || `leg-${index}`} className="plan-nav-leg-card">
                             <div className="plan-nav-leg-toolbar">
-                                <span className="plan-leg-code">{isLast ? "DEST" : `WP${index + 1}`}</span>
+                                <div className="plan-nav-leg-title">
+                                    <span className="plan-leg-code">
+                                        {t("planner.legNumber", { n: index + 1 })}
+                                    </span>
+                                    <strong className="plan-nav-leg-route">
+                                        {from} → {toHint}
+                                    </strong>
+                                </div>
                                 <div className="plan-nav-leg-actions">
-                                    <button type="button" className="btn btn-ghost" disabled={index === 0} onClick={() => moveLeg(index, -1)} aria-label="Subir">
-                                        ↑
-                                    </button>
-                                    <button type="button" className="btn btn-ghost" disabled={isLast} onClick={() => moveLeg(index, 1)} aria-label="Descer">
-                                        ↓
-                                    </button>
-                                    <button type="button" className="btn btn-ghost" onClick={() => removeLeg(index)} aria-label={t("planner.removeWaypoint")}>
-                                        {t("planner.removeWaypoint")}
-                                    </button>
+                                    {legs.length > 1 ? (
+                                        <button type="button" className="btn btn-ghost" onClick={() => removeLeg(index)}>
+                                            {t("planner.removeWaypoint")}
+                                        </button>
+                                    ) : null}
                                 </div>
                             </div>
                             <div className="plan-grid plan-grid--4">
@@ -258,34 +256,44 @@ function NavLegsEditor({ legs, originIcao, destIcao, onChange, t }) {
                                         className="input"
                                         value={leg.name ?? ""}
                                         onChange={(e) => updateLeg(index, "name", e.target.value)}
-                                        placeholder={isLast ? destIcao || "Destino" : "Rio / cidade / ref. visual"}
+                                        placeholder={index === legs.length - 1 ? destIcao || "SBXX" : "Rio / cidade / VOR"}
                                     />
                                 </Field>
                                 <Field label={t("planner.legDistance")}>
                                     <input className="input" value={leg.distanceNm ?? ""} onChange={(e) => updateLeg(index, "distanceNm", e.target.value)} placeholder="42" />
                                 </Field>
                                 <Field label={t("planner.legCourse")}>
-                                    <input className="input" value={leg.trueCourseDeg ?? ""} onChange={(e) => updateLeg(index, "trueCourseDeg", e.target.value)} placeholder={t("planner.inheritDefault")} />
+                                    <input className="input" value={leg.trueCourseDeg ?? ""} onChange={(e) => updateLeg(index, "trueCourseDeg", e.target.value)} placeholder="092" />
                                 </Field>
                                 <Field label={t("planner.legWindDir")}>
-                                    <input className="input" value={leg.windDirectionDeg ?? ""} onChange={(e) => updateLeg(index, "windDirectionDeg", e.target.value)} placeholder={t("planner.inheritDefault")} />
+                                    <input className="input" value={leg.windDirectionDeg ?? ""} onChange={(e) => updateLeg(index, "windDirectionDeg", e.target.value)} placeholder="140" />
                                 </Field>
                             </div>
                             <div className="plan-grid plan-grid--4">
                                 <Field label={t("planner.legWindSpeed")}>
-                                    <input className="input" value={leg.windSpeedKt ?? ""} onChange={(e) => updateLeg(index, "windSpeedKt", e.target.value)} placeholder={t("planner.inheritDefault")} />
+                                    <input className="input" value={leg.windSpeedKt ?? ""} onChange={(e) => updateLeg(index, "windSpeedKt", e.target.value)} placeholder="12" />
                                 </Field>
                                 <Field label="TAS (kt)">
-                                    <input className="input" value={leg.tasKt ?? ""} onChange={(e) => updateLeg(index, "tasKt", e.target.value)} placeholder={t("planner.inheritDefault")} />
+                                    <input className="input" value={leg.tasKt ?? ""} onChange={(e) => updateLeg(index, "tasKt", e.target.value)} placeholder="122" />
                                 </Field>
                                 <Field label="GS (kt)">
-                                    <input className="input" value={leg.groundSpeedKt ?? ""} onChange={(e) => updateLeg(index, "groundSpeedKt", e.target.value)} placeholder={t("planner.inheritDefault")} />
+                                    <input className="input" value={leg.groundSpeedKt ?? ""} onChange={(e) => updateLeg(index, "groundSpeedKt", e.target.value)} placeholder="115" />
                                 </Field>
-                                <div className="plan-nav-leg-hint">{isLast ? t("planner.lastLegHint") : t("planner.waypointHint")}</div>
+                                <div className="plan-nav-leg-hint">
+                                    {index === 0
+                                        ? t("planner.firstLegHint", { icao: originIcao || "ORIG" })
+                                        : t("planner.nextLegHint")}
+                                </div>
                             </div>
                         </div>
                     );
                 })}
+            </div>
+
+            <div className="plan-nav-add-row">
+                <button type="button" className="btn btn-secondary plan-nav-add" onClick={addLeg}>
+                    {t("planner.addWaypoint")}
+                </button>
             </div>
         </div>
     );
@@ -294,22 +302,25 @@ function NavLegsEditor({ legs, originIcao, destIcao, onChange, t }) {
 export default function FlightPlanStack({ base, plan, onPlanChange }) {
     const p = plan || {};
     const { t } = useI18n();
-    const calc = calculatePlanner(p, {
+    const originIcao = base?.origin?.icao || "A";
+    const destIcao = base?.dest?.icao || "";
+    const navLegsDraft = resolveEditableNavLegs(p, destIcao);
+    const workingPlan = { ...p, routeMode: "checkpoints", navLegs: navLegsDraft };
+
+    const calc = calculatePlanner(workingPlan, {
         originAirport: base?.origin?.airport || null,
         destAirport: base?.dest?.airport || null,
         alternateAirport: base?.alternate?.airport || null,
         originStation: base?.origin || null,
         destStation: base?.dest || null,
         alternateStation: base?.alternate || null,
-        originIcao: base?.origin?.icao || "A",
-        destIcao: base?.dest?.icao || "",
+        originIcao,
+        destIcao,
         alternateIcao: base?.alternate?.icao || "",
     });
-    const isCheckpoints = String(p.routeMode || "direct") === "checkpoints";
-    const navLegsDraft = isCheckpoints ? resolveEditableNavLegs(p, base?.dest?.icao || "") || [] : [];
 
     function setField(key, value) {
-        const next = { ...p, [key]: value };
+        const next = { ...p, routeMode: "checkpoints", navLegs: navLegsDraft, [key]: value };
         if (key === "flightRule" && value === "IFR" && !next.reserveRule) {
             next.reserveRule = "IFR 45 min";
             next.finalReserveMin = next.finalReserveMin || 45;
@@ -318,40 +329,11 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
             next.reserveRule = "VFR 30 min";
             next.finalReserveMin = next.finalReserveMin || 30;
         }
-        if (key === "routeMode" && value === "checkpoints") {
-            const existing = resolveEditableNavLegs(next, base?.dest?.icao || "");
-            if (existing?.length) {
-                next.navLegs = existing;
-            } else if (!(Array.isArray(next.navLegs) && next.navLegs.length)) {
-                next.navLegs = [emptyNavLeg(""), emptyNavLeg(base?.dest?.icao || "")];
-            }
-        }
         onPlanChange?.(next);
     }
 
     function setNavLegs(nextLegs) {
         onPlanChange?.({ ...p, navLegs: nextLegs, routeMode: "checkpoints" });
-    }
-
-    function enableMultiLegAndAdd() {
-        const destIcao = base?.dest?.icao || "";
-        const existing = resolveEditableNavLegs(p, destIcao);
-        let next;
-        if (existing?.length) {
-            next = [...existing];
-            next.splice(Math.max(0, next.length - 1), 0, emptyNavLeg(""));
-            const last = next[next.length - 1];
-            if (destIcao && !String(last.name || "").trim()) {
-                next[next.length - 1] = { ...last, name: destIcao };
-            }
-        } else {
-            const firstDist = p.routeDistNm ?? "";
-            next = [
-                emptyNavLeg(""),
-                { ...emptyNavLeg(destIcao), distanceNm: firstDist },
-            ];
-        }
-        onPlanChange?.({ ...p, routeMode: "checkpoints", navLegs: next });
     }
 
     return (
@@ -389,28 +371,18 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                             ]}
                             hint="Use IFR quando houver rota/procedimento por instrumentos."
                         />
-                        <SelectField
-                            label={t("planner.routeType")}
-                            value={p.routeMode || "direct"}
-                            onChange={(value) => setField("routeMode", value)}
-                            options={[
-                                { value: "direct", label: t("planner.routeDirect") },
-                                { value: "manual", label: t("planner.routeManual") },
-                                { value: "checkpoints", label: t("planner.routeCheckpoints") },
-                            ]}
-                        />
                         <Field label="Callsign / identificação">
                             <input className="input" value={p.callsign ?? ""} onChange={(e) => setField("callsign", e.target.value.toUpperCase())} placeholder="PP-ABC / MARQUISA 01" />
                         </Field>
                         <Field label="Registration">
                             <input className="input" value={p.registration ?? ""} onChange={(e) => setField("registration", e.target.value.toUpperCase())} placeholder="PT-ABC" />
                         </Field>
-                    </div>
-
-                    <div className="plan-grid plan-grid--4">
                         <Field label="Altitude (ft)">
                             <input className="input" value={p.cruiseAltFt ?? p.defaultCruiseAltFt ?? ""} onChange={(e) => setField("cruiseAltFt", e.target.value)} placeholder="6500" />
                         </Field>
+                    </div>
+
+                    <div className="plan-grid plan-grid--4">
                         <Field label="Nível / FL">
                             <input className="input" value={p.cruiseLevel ?? ""} onChange={(e) => setField("cruiseLevel", e.target.value.toUpperCase())} placeholder="FL090 / A065" />
                         </Field>
@@ -425,38 +397,23 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
 
                 <section className="plan-panel">
                     <SectionHead step="2" title={t("planner.navigation")}>
-                        {isCheckpoints ? t("planner.navigationCopyCheckpoints") : t("planner.navigationCopy")}
+                        {t("planner.navigationCopyCheckpoints")}
                     </SectionHead>
-
-                    <div className="plan-nav-cta">
-                        <button type="button" className="btn primary plan-nav-cta-btn" onClick={enableMultiLegAndAdd}>
-                            {t("planner.addLegCta")}
-                        </button>
-                        {!isCheckpoints ? <p className="plan-section-copy">{t("planner.addLegHint")}</p> : null}
-                    </div>
 
                     <div className="plan-grid plan-grid--4">
                         <Field
-                            label={isCheckpoints ? t("planner.defaultsLabel") : "Distância A-B (NM)"}
+                            label={t("planner.defaultsLabel")}
                             hint={
-                                isCheckpoints
-                                    ? calc.useNavLegs
-                                        ? `${t("planner.routeSum")}: ${calc.routeDistNm.toFixed(0)} NM`
-                                        : calc.suggestedRouteDistNm > 0
-                                          ? `Sugestão A-B: ${calc.suggestedRouteDistNm} NM`
-                                          : null
+                                calc.useNavLegs
+                                    ? `${t("planner.routeSum")}: ${calc.routeDistNm.toFixed(0)} NM`
                                     : calc.suggestedRouteDistNm > 0
-                                      ? `Sugestão: ${calc.suggestedRouteDistNm} NM`
+                                      ? `Direto A-B: ${calc.suggestedRouteDistNm} NM`
                                       : null
                             }
                         >
-                            {isCheckpoints ? (
-                                <input className="input" value={calc.routeDistNm ? calc.routeDistNm.toFixed(0) : ""} readOnly placeholder="soma das pernas" />
-                            ) : (
-                                <input className="input" value={p.routeDistNm ?? ""} onChange={(e) => setField("routeDistNm", e.target.value)} placeholder="165" />
-                            )}
+                            <input className="input" value={calc.routeDistNm ? calc.routeDistNm.toFixed(0) : ""} readOnly placeholder="soma das pernas" />
                         </Field>
-                        <Field label="Rumo verdadeiro (°)" hint={isCheckpoints ? t("planner.defaultHint") : null}>
+                        <Field label="Rumo verdadeiro (°)">
                             <input className="input" value={p.trueCourseDeg ?? ""} onChange={(e) => setField("trueCourseDeg", e.target.value)} placeholder="092" />
                         </Field>
                         <Field label="Declinação (E + / W -)">
@@ -474,31 +431,27 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         <Field label="Vento (kt)">
                             <input className="input" value={p.windSpeedKt ?? ""} onChange={(e) => setField("windSpeedKt", e.target.value)} placeholder="12" />
                         </Field>
-                        <Field label="GS manual (kt)" hint="Use se preferir informar GS direto.">
+                        <Field label="GS (kt)">
                             <input className="input" value={p.groundSpeedKt ?? ""} onChange={(e) => setField("groundSpeedKt", e.target.value)} placeholder="115" />
                         </Field>
-                        <Field label="EET manual (min)">
-                            <input className="input" value={p.eetMinutes ?? ""} onChange={(e) => setField("eetMinutes", e.target.value)} placeholder="vazio = automático" />
+                        <Field label="EET (min)">
+                            <input className="input" value={p.eetMinutes ?? ""} onChange={(e) => setField("eetMinutes", e.target.value)} placeholder="auto" />
                         </Field>
                     </div>
 
-                    {isCheckpoints ? (
-                        <>
-                            <NavLegsEditor
-                                legs={navLegsDraft}
-                                originIcao={base?.origin?.icao || "A"}
-                                destIcao={base?.dest?.icao || ""}
-                                onChange={setNavLegs}
-                                t={t}
-                            />
-                            <NavLogTable legs={calc.navLegs} />
-                        </>
-                    ) : null}
+                    <NavLegsEditor
+                        legs={navLegsDraft}
+                        originIcao={originIcao}
+                        destIcao={destIcao}
+                        onChange={setNavLegs}
+                        t={t}
+                    />
+                    <NavLegsTable legs={calc.navLegs} />
 
                     <div className="plan-summary-grid plan-summary-grid--4">
                         <MetricBox label="Rumo magnético" value={fmtDeg(calc.magCourseDeg)} />
-                        <MetricBox label="Proa corrigida" value={fmtDeg(calc.headingDeg)} tone="ok" />
-                        <MetricBox label="GS estimado" value={calc.groundSpeedKt ? `${calc.groundSpeedKt.toFixed(0)} kt` : "—"} tone="ok" />
+                        <MetricBox label="Proa" value={fmtDeg(calc.headingDeg)} tone="ok" />
+                        <MetricBox label="GS" value={calc.groundSpeedKt ? `${calc.groundSpeedKt.toFixed(0)} kt` : "—"} tone="ok" />
                         <MetricBox label="EET" value={fmtMinutes(calc.eetMinutes)} />
                     </div>
 
@@ -634,7 +587,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                             <textarea className="input plan-textarea" value={p.ifrProcedureNotes ?? ""} onChange={(e) => setField("ifrProcedureNotes", e.target.value)} placeholder="SID, rota, STAR, IAC, mínimos, RMK..." />
                         </Field>
                         <Field label="Observações VFR / navegação">
-                            <textarea className="input plan-textarea" value={p.notes ?? ""} onChange={(e) => setField("notes", e.target.value)} placeholder="Referências visuais, checkpoints, restrições, NOTAM/ROTAER a verificar..." />
+                            <textarea className="input plan-textarea" value={p.notes ?? ""} onChange={(e) => setField("notes", e.target.value)} placeholder="Referências visuais, restrições, NOTAM/ROTAER..." />
                         </Field>
                     </div>
                 </section>
@@ -647,12 +600,8 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                     {calc.useNavLegs ? (
                         <div className="plan-chip-row">
                             <span className="chip ok plan-route-chip">{calc.navLog.routeLabel}</span>
-                            <span className="chip">
-                                TOC {calc.toc.distanceFromOriginNm.toFixed(0)} NM
-                            </span>
-                            <span className="chip">
-                                TOD {calc.tod.distanceFromOriginNm.toFixed(0)} NM
-                            </span>
+                            <span className="chip">TOC {calc.toc.distanceFromOriginNm.toFixed(0)} NM</span>
+                            <span className="chip">TOD {calc.tod.distanceFromOriginNm.toFixed(0)} NM</span>
                         </div>
                     ) : null}
 
@@ -687,7 +636,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         <StationContext letter="C" title="Alternativa" station={base?.alternate} />
                     </div>
 
-                    {calc.useNavLegs ? <NavLogTable legs={calc.navLegs} /> : null}
+                    {calc.useNavLegs ? <NavLegsTable legs={calc.navLegs} /> : null}
 
                     {calc.legs.length ? (
                         <div className="plan-leg-list">
