@@ -1,31 +1,32 @@
-ASSUNTO: Novidade: indicação de pista pelo METAR
-PRÉ-HEADER: Proa, cruzado e sugestão de cabeceira — além do computador e das conversões.
+ASSUNTO: Novidade: indicação de pista + cenas do período do dia
+PRÉ-HEADER: Proa, cruzado, sugestão de cabeceira e imagens que mudam com o horário.
 
 ---
+MARQUISA — Atualização de produto
 
-Novidade no briefing
+Novidades no briefing
 
-Indicação de pista com base no METAR
+Indicação de pista e cenas do período do dia
 
-No briefing, a Marquisa agora sugere a cabeceira com melhor componente de proa, mostra vento de proa e cruzado, e avisa quando o vento está fraco, calmo, variável ou forte.
+O briefing ficou mais visual e mais operacional: sugestão de cabeceira pelo METAR e imagens de aviação que mudam conforme o horário local do aeródromo.
 
+01 · Indicação de pista
+Cabeceira sugerida com proa e cruzado.
 Exemplo: RWY 09 · proa +8 kt · cruzado 4 kt · vento 270/12
-(Sugestão técnica — confirme sempre com ATIS/ATC.)
+
+02 · Imagens por período do dia
+Amanhecer, dia, entardecer, noite e madrugada.
+
+03 · O que mais mudou
+• Computador de voo
+• Ferramentas (vento na pista, combustível, conversões)
+• Pro: salvar briefing e PDF
 
 Ver no briefing: https://marquisa.com.br
-
-O que mais mudou
-1. Computador de voo — PV/VS, RV, vento, VA com OAT
-2. Ferramentas — vento na pista, combustível e conversões
-3. Pro — salvar briefing e baixar PDF
-
-Acesse: https://marquisa.com.br
 
 —
 Marquisa · contato@marquisa.com.br
 A indicação de pista é sugestão técnica. Sempre confirme com ATIS, ATC, NOTAM e fontes oficiais.
 
 Não quer mais receber estes e-mails?
-Responda esta mensagem com o assunto SAIR ou escreva para contato@marquisa.com.br pedindo a remoção da lista.
-
-Você recebe este e-mail porque tem conta na Marquisa.
+Responda com o assunto SAIR ou escreva para contato@marquisa.com.br pedindo remoção da lista.

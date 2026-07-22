@@ -1,5 +1,5 @@
 /**
- * Marca oficial Marquisa — jato azul (nova identidade).
+ * Marca oficial Marquisa — PNG do Canva (sempre o mesmo arquivo).
  */
 export default function MarquisaMark({
     size = 28,
@@ -10,15 +10,15 @@ export default function MarquisaMark({
     const s = Number(size) || 28;
     return (
         <img
-            className={`mq-mark-icon mq-mark-svg ${className}`.trim()}
-            src="/marquisa-icon.svg"
+            className={`mq-mark-icon ${className}`.trim()}
+            src="/marquisa-mark.png"
             width={s}
             height={s}
             alt={decorative ? "" : title}
             role={decorative ? "presentation" : "img"}
             aria-hidden={decorative ? true : undefined}
             draggable={false}
-            style={{ width: s, height: s, objectFit: "contain" }}
+            style={{ width: s, height: s, objectFit: "contain", borderRadius: Math.round(s * 0.18) }}
         />
     );
 }

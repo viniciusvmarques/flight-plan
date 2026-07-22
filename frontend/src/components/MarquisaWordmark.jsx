@@ -1,22 +1,26 @@
 /**
- * Wordmark Marquisa: MARQUISA + jato azul com rastros (nova identidade).
- * Layout alinhado ao logo: avião acima da direita do nome.
+ * Wordmark Marquisa — PNG oficial do Canva.
  */
 export function MarquisaWordmark({ scale = 40, compact = false, markOnly = false }) {
-    const height = Math.max(28, Math.round(scale * (compact ? 0.95 : 1.05)));
-    const width = Math.round(height * (markOnly ? 1 : 3.6));
+    const height = Math.max(28, Math.round(scale * (compact ? 0.95 : 1.15)));
+    const width = Math.round(height * (markOnly ? 1 : 4.2));
 
     if (markOnly) {
         return (
             <div className={`mq-logo mq-logo--mark-only${compact ? " mq-logo--compact" : ""}`} aria-label="Marquisa">
                 <img
                     className="mq-mark-icon"
-                    src="/marquisa-icon.svg"
+                    src="/marquisa-mark.png"
                     width={height}
                     height={height}
                     alt=""
                     draggable={false}
-                    style={{ width: height, height, objectFit: "contain" }}
+                    style={{
+                        width: height,
+                        height,
+                        objectFit: "contain",
+                        borderRadius: Math.round(height * 0.18),
+                    }}
                 />
             </div>
         );
@@ -26,7 +30,7 @@ export function MarquisaWordmark({ scale = 40, compact = false, markOnly = false
         <div className={`mq-logo mq-logo--lockup${compact ? " mq-logo--compact" : ""}`} aria-label="Marquisa">
             <img
                 className="mq-wordmark-img"
-                src="/marquisa-wordmark.svg"
+                src="/marquisa-wordmark.png"
                 width={width}
                 height={height}
                 alt="Marquisa"
