@@ -1,16 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Marquisa">
-  <rect width="64" height="64" rx="14" fill="#0a0f18"/>
-  <circle cx="32" cy="32" r="22" fill="none" stroke="#94a3b8" stroke-width="1.35" opacity="0.85"/>
-  <path d="M32 8.5V55.5M8.5 32H55.5" stroke="#f8fafc" stroke-width="1.2" stroke-linecap="round" opacity="0.92"/>
-  <path d="M16.2 16.2l4.2 4.2M43.6 16.2l-4.2 4.2M16.2 47.8l4.2-4.2M43.6 47.8l-4.2-4.2" stroke="#7dd3fc" stroke-width="1.15" stroke-linecap="round" opacity="0.9"/>
-  <path fill="#f8fafc" d="M32 11.2 35.1 28.2 32 26.4 28.9 28.2Z"/>
-  <path fill="#f8fafc" d="M52.8 32 35.8 35.1 37.6 32 35.8 28.9Z"/>
-  <path fill="#f8fafc" d="M32 52.8 28.9 35.8 32 37.6 35.1 35.8Z"/>
-  <path fill="#f8fafc" d="M11.2 32 28.2 28.9 26.4 32 28.2 35.1Z"/>
-  <path fill="#94a3b8" d="M44.8 19.2 36.6 30.2 35.2 28.8 33.8 30.2Z" opacity="0.95"/>
-  <path fill="#94a3b8" d="M44.8 44.8 33.8 33.8 35.2 35.2 36.6 33.8Z" opacity="0.95"/>
-  <path fill="#94a3b8" d="M19.2 44.8 30.2 33.8 28.8 35.2 30.2 36.6Z" opacity="0.95"/>
-  <path fill="#94a3b8" d="M19.2 19.2 30.2 30.2 28.8 28.8 30.2 27.4Z" opacity="0.95"/>
-  <circle cx="32" cy="32" r="4.2" fill="#0a0f18" stroke="#f8fafc" stroke-width="1.35"/>
-  <circle cx="32" cy="32" r="1.55" fill="#38bdf8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Marquisa">
+  <rect width="128" height="128" rx="28" fill="#0B1220"/>
+  <g transform="translate(8 8) scale(0.875)">
+    <g transform="translate(64 64) rotate(-38) translate(-64 -64)">
+      <ellipse cx="70" cy="64" rx="34" ry="11" fill="#3B82F6"/>
+      <path fill="#60A5FA" d="M96 64c0-5.5-3-10-8.5-11.2C98 54 108 56.5 112 64c-4 7.5-14 10-24.5 11.2C93 74 96 69.5 96 64Z"/>
+      <path fill="#2563EB" d="M62 64 28 28c-2-2-1.2-5.2 1.5-6.2l10-3.5c2.4-.8 4.9.6 5.6 3L72 60 62 64Z"/>
+      <path fill="#1D4ED8" d="M62 64 28 100c-2 2-1.2 5.2 1.5 6.2l10 3.5c2.4.8 4.9-.6 5.6-3L72 68 62 64Z"/>
+      <path fill="#3B82F6" d="M64 62 40 34c-1.2-1.4-.4-3.5 1.4-4l7.2-2.2c1.8-.5 3.6.6 4 2.4L74 60 64 62Z"/>
+      <path fill="#2563EB" d="M64 66 40 94c-1.2 1.4-.4 3.5 1.4 4l7.2 2.2c1.8.5 3.6-.6 4-2.4L74 68 64 66Z"/>
+      <rect x="46" y="48" width="14" height="6" rx="3" fill="#1E3A8A" transform="rotate(-40 53 51)"/>
+      <rect x="46" y="74" width="14" height="6" rx="3" fill="#1E3A8A" transform="rotate(40 53 77)"/>
+      <path fill="#60A5FA" d="M40 64 18 48c-1.6-1.2-1.3-3.6.6-4.2l8-2.4c1.6-.5 3.3.4 3.7 2L44 62 40 64Z"/>
+      <path fill="#93C5FD" d="M40 64 18 80c-1.6 1.2-1.3 3.6.6 4.2l8 2.4c1.6.5 3.3-.4 3.7-2L44 66 40 64Z"/>
+      <circle cx="88" cy="64" r="2" fill="#DBEAFE"/>
+      <circle cx="80" cy="64" r="1.7" fill="#DBEAFE"/>
+      <circle cx="73" cy="64" r="1.5" fill="#DBEAFE"/>
+    </g>
+  </g>
 </svg>

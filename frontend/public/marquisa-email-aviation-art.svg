@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 240" role="img" aria-label="Rota e pista">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1a2e"/>
+      <stop offset="55%" stop-color="#12304f"/>
+      <stop offset="100%" stop-color="#0a1628"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="rgba(56,189,248,0.28)"/>
+      <stop offset="100%" stop-color="rgba(56,189,248,0)"/>
+    </linearGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0V28" fill="none" stroke="rgba(148,197,255,0.12)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="560" height="240" rx="16" fill="url(#sky)"/>
+  <rect width="560" height="240" rx="16" fill="url(#glow)"/>
+  <rect width="560" height="240" rx="16" fill="url(#grid)"/>
+
+  <!-- Airway -->
+  <path d="M40 170 C120 110 180 190 260 130 C340 70 400 150 520 90" fill="none" stroke="rgba(248,250,252,0.55)" stroke-width="2.2" stroke-dasharray="8 6"/>
+  <path d="M50 190 C130 140 200 210 280 160 C360 110 430 170 530 120" fill="none" stroke="rgba(125,211,252,0.28)" stroke-width="1.5"/>
+
+  <!-- Waypoints -->
+  <g fill="#38bdf8">
+    <circle cx="120" cy="138" r="4.5"/>
+    <circle cx="260" cy="130" r="4.5"/>
+    <circle cx="400" cy="118" r="4.5"/>
+    <circle cx="520" cy="90" r="4.5"/>
+  </g>
+  <g fill="#e2e8f0" font-family="ui-monospace,Menlo,monospace" font-size="10" letter-spacing="0.06em">
+    <text x="130" y="132">ORIG</text>
+    <text x="270" y="124">ROTA</text>
+    <text x="410" y="112">ALT</text>
+    <text x="470" y="82">DEST</text>
+  </g>
+
+  <!-- Runway -->
+  <g transform="translate(300 175) rotate(-12)">
+    <rect x="-88" y="-9" width="176" height="18" rx="3" fill="#0b1220" stroke="#f8fafc" stroke-width="1.6"/>
+    <path d="M-66 0H66" stroke="#f8fafc" stroke-width="1.4" stroke-dasharray="9 7"/>
+    <text x="-78" y="4" fill="#94a3b8" font-family="ui-monospace,monospace" font-size="9">09</text>
+    <text x="64" y="4" fill="#94a3b8" font-family="ui-monospace,monospace" font-size="9">27</text>
+  </g>
+
+  <!-- Wind arrow -->
+  <g transform="translate(90 70)">
+    <circle r="28" fill="rgba(11,18,32,0.55)" stroke="#7dd3fc" stroke-width="1.6"/>
+    <path d="M0 -22V22M-22 0H22" stroke="rgba(248,250,252,0.45)" stroke-width="1"/>
+    <path d="M0 -18L3 -4 0 -6 -3 -4Z" fill="#f8fafc"/>
+    <circle r="3.2" fill="#0b1220" stroke="#f8fafc" stroke-width="1.1"/>
+    <circle r="1.3" fill="#38bdf8"/>
+  </g>
+
+  <text x="24" y="28" fill="#93c5fd" font-family="Arial,Helvetica,sans-serif" font-size="11" letter-spacing="0.2em" font-weight="700">MARQUISA</text>
+  <text x="24" y="50" fill="#f8fafc" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700">Indicação de pista · rota</text>
+</svg>

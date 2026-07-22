@@ -43,8 +43,14 @@
     gap: 6px;
 }
 
-.mq-logo--mark-only {
+.mq-logo--lockup {
     gap: 0;
+}
+
+.mq-wordmark-img {
+    display: block;
+    max-width: 100%;
+    height: auto;
 }
 
 .mq-plane-icon,

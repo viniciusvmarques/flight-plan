@@ -1,30 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" fill="none" role="img" aria-label="Marquisa">
-  <text
-    x="20"
-    y="142"
-    fill="#FFFFFF"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="96"
-    font-weight="800"
-    letter-spacing="8"
-  >MARQUISA</text>
-
-  <!-- contrails -->
-  <path d="M468 72 C510 62, 545 58, 585 66" stroke="#60A5FA" stroke-width="2.6" stroke-linecap="round"/>
-  <path d="M474 84 C518 76, 552 74, 590 84" stroke="#3B82F6" stroke-width="2.4" stroke-linecap="round"/>
-  <path d="M480 96 C522 90, 556 90, 594 100" stroke="#93C5FD" stroke-width="2.2" stroke-linecap="round"/>
-
-  <!-- plane -->
-  <g transform="translate(575 48) rotate(-32) scale(0.55)">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Marquisa">
+  <!-- Ícone flat: jato azul visto de cima, proa à direita/cima -->
+  <g transform="translate(64 64) rotate(-38) translate(-64 -64)">
+    <!-- fuselage -->
     <ellipse cx="70" cy="64" rx="34" ry="11" fill="#3B82F6"/>
     <path fill="#60A5FA" d="M96 64c0-5.5-3-10-8.5-11.2C98 54 108 56.5 112 64c-4 7.5-14 10-24.5 11.2C93 74 96 69.5 96 64Z"/>
+    <!-- wings -->
     <path fill="#2563EB" d="M62 64 28 28c-2-2-1.2-5.2 1.5-6.2l10-3.5c2.4-.8 4.9.6 5.6 3L72 60 62 64Z"/>
     <path fill="#1D4ED8" d="M62 64 28 100c-2 2-1.2 5.2 1.5 6.2l10 3.5c2.4.8 4.9-.6 5.6-3L72 68 62 64Z"/>
+    <!-- wing tops lighter -->
     <path fill="#3B82F6" d="M64 62 40 34c-1.2-1.4-.4-3.5 1.4-4l7.2-2.2c1.8-.5 3.6.6 4 2.4L74 60 64 62Z"/>
     <path fill="#2563EB" d="M64 66 40 94c-1.2 1.4-.4 3.5 1.4 4l7.2 2.2c1.8.5 3.6-.6 4-2.4L74 68 64 66Z"/>
+    <!-- engines -->
     <rect x="46" y="48" width="14" height="6" rx="3" fill="#1E3A8A" transform="rotate(-40 53 51)"/>
     <rect x="46" y="74" width="14" height="6" rx="3" fill="#1E3A8A" transform="rotate(40 53 77)"/>
+    <!-- tail -->
     <path fill="#60A5FA" d="M40 64 18 48c-1.6-1.2-1.3-3.6.6-4.2l8-2.4c1.6-.5 3.3.4 3.7 2L44 62 40 64Z"/>
     <path fill="#93C5FD" d="M40 64 18 80c-1.6 1.2-1.3 3.6.6 4.2l8 2.4c1.6.5 3.3-.4 3.7-2L44 66 40 64Z"/>
+    <!-- windows -->
+    <circle cx="88" cy="64" r="2" fill="#DBEAFE"/>
+    <circle cx="80" cy="64" r="1.7" fill="#DBEAFE"/>
+    <circle cx="73" cy="64" r="1.5" fill="#DBEAFE"/>
   </g>
 </svg>

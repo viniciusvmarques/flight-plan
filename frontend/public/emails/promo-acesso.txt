@@ -1,18 +1,31 @@
-ASSUNTO: Marquisa — seu briefing te espera
-PRÉ-HEADER: METAR, rota, combustível e computador — acesse em 1 clique.
+ASSUNTO: Novidade: indicação de pista pelo METAR
+PRÉ-HEADER: Proa, cruzado e sugestão de cabeceira — além do computador e das conversões.
 
 ---
 
-Olá,
+Novidade no briefing
 
-A Marquisa está pronta para a próxima perna: briefing, METAR/TAF, combustível e computador de voo.
+Indicação de pista com base no METAR
 
-• Briefing completo origem → destino → alternativa
-• Computador de voo (vento, VA, combustível, conversões)
-• Pro: salvar briefing e baixar PDF
+No briefing, a Marquisa agora sugere a cabeceira com melhor componente de proa, mostra vento de proa e cruzado, e avisa quando o vento está fraco, calmo, variável ou forte.
 
-Acesse agora: https://marquisa.com.br
+Exemplo: RWY 09 · proa +8 kt · cruzado 4 kt · vento 270/12
+(Sugestão técnica — confirme sempre com ATIS/ATC.)
+
+Ver no briefing: https://marquisa.com.br
+
+O que mais mudou
+1. Computador de voo — PV/VS, RV, vento, VA com OAT
+2. Ferramentas — vento na pista, combustível e conversões
+3. Pro — salvar briefing e baixar PDF
+
+Acesse: https://marquisa.com.br
 
 —
 Marquisa · contato@marquisa.com.br
+A indicação de pista é sugestão técnica. Sempre confirme com ATIS, ATC, NOTAM e fontes oficiais.
+
+Não quer mais receber estes e-mails?
+Responda esta mensagem com o assunto SAIR ou escreva para contato@marquisa.com.br pedindo a remoção da lista.
+
 Você recebe este e-mail porque tem conta na Marquisa.

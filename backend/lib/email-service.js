@@ -99,7 +99,7 @@ function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransaction
     const appUrl = publicBaseUrl();
     const logoSrc = fs.existsSync(EMAIL_LOGO_PATH)
         ? "cid:marquisa-logo"
-        : `${appUrl}/marquisa-email-logo.png`;
+        : `${appUrl}/marquisa-mark.svg`;
     const support = SITE_PROFILE.supportEmail;
     const year = new Date().getFullYear();
 
@@ -284,7 +284,7 @@ function emailCopy(locale) {
             promoBulletComputer: "Computador de voo (vento, VA, combustível, conversões)",
             promoBulletPro: "Pro: salvar briefing e baixar PDF",
             promoCta: "Acessar a Marquisa",
-            promoFooter: "Você recebe este e-mail porque tem conta na Marquisa.",
+            promoFooter: "Não quer mais receber estes e-mails? Responda com o assunto SAIR ou escreva para o suporte pedindo remoção da lista.",
 
             proSubject: `${BRAND_NAME} — plano Pro ativado`,
             proTitle: "Plano Pro ativado",
@@ -442,7 +442,7 @@ function emailCopy(locale) {
             promoBulletComputer: "Flight computer (wind, TAS, fuel, conversions)",
             promoBulletPro: "Pro: save briefings and download PDF",
             promoCta: "Open Marquisa",
-            promoFooter: "You receive this email because you have a Marquisa account.",
+            promoFooter: "Don't want these emails anymore? Reply with subject UNSUBSCRIBE or write to support asking to be removed.",
 
             proSubject: `${BRAND_NAME} — Pro plan activated`,
             proTitle: "Pro plan activated",
@@ -599,7 +599,7 @@ function emailCopy(locale) {
             promoBulletComputer: "Computador de vuelo (viento, VA, combustible, conversiones)",
             promoBulletPro: "Pro: guardar briefing y descargar PDF",
             promoCta: "Abrir Marquisa",
-            promoFooter: "Recibes este email porque tienes cuenta en Marquisa.",
+            promoFooter: "¿No quieres recibir más estos emails? Responde con el asunto SALIR o escribe al soporte pidiendo la baja.",
 
             proSubject: `${BRAND_NAME} — plan Pro activado`,
             proTitle: "Plan Pro activado",
