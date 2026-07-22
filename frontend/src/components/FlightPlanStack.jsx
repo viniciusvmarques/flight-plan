@@ -135,14 +135,24 @@ function migrateLegacyCheckpoints(plan, destIcao) {
 }
 
 function resolveEditableNavLegs(plan, destIcao) {
-    if (Array.isArray(plan?.navLegs) && plan.navLegs.length) return plan.navLegs;
+    if (Array.isArray(plan?.navLegs) && plan.navLegs.length) {
+        // Migra rascunho antigo: única perna com nome = ICAO destino → TOC.
+        if (plan.navLegs.length === 1 && destIcao) {
+            const only = plan.navLegs[0];
+            const name = String(only?.name || "").trim().toUpperCase();
+            if (name === String(destIcao).toUpperCase()) {
+                return [{ ...only, name: "TOC" }];
+            }
+        }
+        return plan.navLegs;
+    }
     const legacy = migrateLegacyCheckpoints(plan, destIcao);
     if (legacy?.length) return legacy;
-    // ID estável até o usuário editar (evita remount a cada render).
+    // 1ª perna: origem → TOC (não o destino final).
     return [
         {
             id: "leg-initial",
-            name: destIcao || "",
+            name: "TOC",
             distanceNm: "",
             trueCourseDeg: "",
             windDirectionDeg: "",
@@ -157,6 +167,11 @@ function legFromLabel(legs, index, originIcao) {
     if (index <= 0) return originIcao || "ORIG";
     const prev = String(legs[index - 1]?.name || "").trim();
     return prev || `Ponto ${index}`;
+}
+
+function legToLabel(leg, t) {
+    const name = String(leg?.name || "").trim();
+    return name || t("planner.nextFix");
 }
 
 function NavLegsTable({ legs }) {
@@ -195,20 +210,20 @@ function NavLegsTable({ legs }) {
     );
 }
 
-function NavLegsEditor({ legs, originIcao, destIcao, onChange, t }) {
+function NavLegsEditor({ legs, originIcao, onChange, t }) {
     function updateLeg(index, key, value) {
         const next = legs.map((leg, i) => (i === index ? { ...leg, [key]: value } : leg));
         onChange(next);
     }
 
     function addLeg() {
-        // Cresce para baixo: nova perna no final da lista.
-        onChange([...legs, emptyNavLeg(destIcao || "")]);
+        // Cresce para baixo: nova perna vazia no final ("próximo ponto").
+        onChange([...legs, emptyNavLeg("")]);
     }
 
     function removeLeg(index) {
         if (legs.length <= 1) {
-            onChange([emptyNavLeg(destIcao || "")]);
+            onChange([{ ...emptyNavLeg("TOC"), id: "leg-initial" }]);
             return;
         }
         onChange(legs.filter((_, i) => i !== index));
@@ -230,7 +245,8 @@ function NavLegsEditor({ legs, originIcao, destIcao, onChange, t }) {
             <div className="plan-nav-legs">
                 {legs.map((leg, index) => {
                     const from = legFromLabel(legs, index, originIcao);
-                    const toHint = String(leg.name || "").trim() || (index === legs.length - 1 ? destIcao || t("planner.fixPoint") : t("planner.nextFix"));
+                    const toHint = legToLabel(leg, t);
+                    const namePlaceholder = index === 0 ? "TOC" : t("planner.nextFix");
                     return (
                         <div key={leg.id || `leg-${index}`} className="plan-nav-leg-card">
                             <div className="plan-nav-leg-toolbar">
@@ -256,7 +272,7 @@ function NavLegsEditor({ legs, originIcao, destIcao, onChange, t }) {
                                         className="input"
                                         value={leg.name ?? ""}
                                         onChange={(e) => updateLeg(index, "name", e.target.value)}
-                                        placeholder={index === legs.length - 1 ? destIcao || "SBXX" : "Rio / cidade / VOR"}
+                                        placeholder={namePlaceholder}
                                     />
                                 </Field>
                                 <Field label={t("planner.legDistance")}>
@@ -442,7 +458,6 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                     <NavLegsEditor
                         legs={navLegsDraft}
                         originIcao={originIcao}
-                        destIcao={destIcao}
                         onChange={setNavLegs}
                         t={t}
                     />
