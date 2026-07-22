@@ -14,34 +14,161 @@ function nl2br(value) {
     return escapeHtml(value).replace(/\n/g, "<br />");
 }
 
-function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransactional }) {
-    const appUrl = String(process.env.APP_URL || process.env.FRONTEND_URL || "https://marquisa.com.br").replace(/\/$/, "");
-    const markUrl = `${appUrl}/marquisa-email-avatar.svg`;
-    const bannerUrl = `${appUrl}/marquisa-email-banner.svg`;
+/** Base pública do frontend (imagens e links do app). */
+function publicBaseUrl() {
+    const raw = process.env.APP_URL || process.env.FRONTEND_URL || "https://marquisa.com.br";
+    return String(raw).replace(/\/$/, "");
+}
+
+function emailCta(href, label, variant = "primary") {
+    const bg = variant === "accent" ? "#5eead4" : "#0ea5e9";
+    const color = variant === "accent" ? "#041016" : "#ffffff";
     return `
-        <div style="background:#0b1220;padding:24px;font-family:Arial,sans-serif;color:#e5e7eb;">
-            <div style="max-width:640px;margin:0 auto;background:rgba(15,23,42,0.94);border:1px solid rgba(148,163,184,0.2);border-radius:18px;overflow:hidden;">
-                <div style="padding:0;line-height:0;background:#0b1a2e;">
-                    <img src="${escapeHtml(bannerUrl)}" width="640" alt="" style="display:block;width:100%;max-width:640px;height:auto;border:0;" />
-                </div>
-                <div style="padding:20px 24px;border-bottom:1px solid rgba(148,163,184,0.16);">
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <img src="${escapeHtml(markUrl)}" width="28" height="28" alt="" style="display:block;border-radius:6px;" />
-                        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#93c5fd;font-weight:700;">${BRAND_NAME}</div>
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;">
+        <tr>
+          <td align="center" bgcolor="${bg}" style="border-radius:10px;background-color:${bg};">
+            <a href="${escapeHtml(href)}"
+               style="display:inline-block;padding:14px 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;line-height:1.2;color:${color};text-decoration:none;border-radius:10px;">
+              ${escapeHtml(label)}
+            </a>
+          </td>
+        </tr>
+      </table>`;
+}
+
+function emailLinkFallback(url, label) {
+    if (!url) return "";
+    return `
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;">
+        <tr>
+          <td style="padding:12px 14px;border:1px solid #334155;border-radius:10px;background-color:#111827;">
+            <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#94a3b8;">
+              ${escapeHtml(label)}
+            </p>
+            <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;word-break:break-all;">
+              <a href="${escapeHtml(url)}" style="color:#7dd3fc;text-decoration:underline;">${escapeHtml(url)}</a>
+            </p>
+          </td>
+        </tr>
+      </table>`;
+}
+
+function emailBullets(items) {
+    const rows = (items || [])
+        .filter(Boolean)
+        .map(
+            (item) =>
+                `<tr>
+          <td valign="top" style="padding:0 8px 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#5eead4;">&#10003;</td>
+          <td style="padding:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#e2e8f0;">${item}</td>
+        </tr>`
+        )
+        .join("");
+    return `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;">${rows}</table>`;
+}
+
+function emailNote(htmlInner) {
+    return `
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;">
+        <tr>
+          <td style="padding:12px 14px;border:1px solid #1e3a5f;border-radius:10px;background-color:#0f2744;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#cbd5e1;">
+            ${htmlInner}
+          </td>
+        </tr>
+      </table>`;
+}
+
+function emailParagraph(text, { muted = false, last = false } = {}) {
+    const color = muted ? "#94a3b8" : "#e2e8f0";
+    const margin = last ? "0" : "0 0 16px";
+    return `<p style="margin:${margin};font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.7;color:${color};">${text}</p>`;
+}
+
+/**
+ * Shell de e-mail em tabelas (Gmail/Outlook).
+ * Sem flex/gap/overflow — evita conteúdo cortado.
+ * Marca 100% HTML (sem SVG/PNG obrigatório) — arte externa falha em muitos clientes.
+ */
+function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransactional }) {
+    const appUrl = publicBaseUrl();
+    const support = SITE_PROFILE.supportEmail;
+    const year = new Date().getFullYear();
+
+    return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>${escapeHtml(title)}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#071018;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#071018;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;background-color:#0f172a;border:1px solid #1e293b;">
+
+          <tr>
+            <td bgcolor="#0d2744" style="background-color:#0d2744;padding:28px 28px 22px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td width="48" height="48" bgcolor="#5eead4" valign="middle" align="center"
+                      style="width:48px;height:48px;background-color:#5eead4;border-radius:12px;font-family:Arial,Helvetica,sans-serif;font-size:22px;font-weight:700;color:#041016;line-height:48px;">
+                    M
+                  </td>
+                  <td width="14" style="width:14px;font-size:0;line-height:0;">&nbsp;</td>
+                  <td valign="middle">
+                    <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;letter-spacing:0.22em;text-transform:uppercase;color:#5eead4;font-weight:700;">
+                      ${BRAND_NAME}
                     </div>
-                    <h1 style="margin:10px 0 0;font-size:24px;line-height:1.25;color:#f8fafc;">${escapeHtml(title)}</h1>
-                </div>
-                <div style="padding:24px;line-height:1.7;font-size:15px;color:#e2e8f0;">
-                    <p style="margin:0 0 16px;">${escapeHtml(intro)}</p>
-                    ${bodyHtml}
-                </div>
-                <div style="padding:18px 24px;border-top:1px solid rgba(148,163,184,0.16);font-size:13px;line-height:1.6;color:#94a3b8;">
-                    <p style="margin:0 0 8px;">${escapeHtml(footerNote || `${BRAND_NAME} · ${SITE_PROFILE.supportEmail}`)}</p>
-                    <p style="margin:0;">${escapeHtml(footerTransactional || "Mensagem transacional enviada para suporte da sua operação.")}</p>
-                </div>
-            </div>
-        </div>
-    `;
+                    <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#94a3b8;margin-top:4px;">
+                      Briefing &middot; METAR &middot; navega&ccedil;&atilde;o
+                    </div>
+                  </td>
+                </tr>
+              </table>
+              <div style="height:18px;line-height:18px;font-size:0;">&nbsp;</div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#7dd3fc;font-weight:700;">
+                Operacional
+              </div>
+              <h1 style="margin:8px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.3;color:#f8fafc;font-weight:700;">
+                ${escapeHtml(title)}
+              </h1>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="height:3px;background-color:#5eead4;font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+
+          <tr>
+            <td style="padding:28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.7;color:#e2e8f0;">
+              ${intro ? emailParagraph(escapeHtml(intro)) : ""}
+              ${bodyHtml || ""}
+            </td>
+          </tr>
+
+          <tr>
+            <td bgcolor="#0b1220" style="background-color:#0b1220;padding:20px 28px;border-top:1px solid #1e293b;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#94a3b8;">
+              <p style="margin:0 0 8px;color:#cbd5e1;font-weight:700;">
+                ${escapeHtml(footerNote || `${BRAND_NAME} · ${support}`)}
+              </p>
+              <p style="margin:0 0 8px;">
+                ${escapeHtml(footerTransactional || "Mensagem relacionada à sua conta Marquisa.")}
+              </p>
+              <p style="margin:0;">
+                <a href="${escapeHtml(appUrl)}" style="color:#7dd3fc;text-decoration:underline;">${escapeHtml(appUrl.replace(/^https?:\/\//, ""))}</a>
+                &nbsp;&middot;&nbsp; &copy; ${year} ${BRAND_NAME}
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 }
 
 function cleanFirstName(value) {
@@ -93,7 +220,7 @@ function emailCopy(locale) {
         "pt-BR": {
             hello: "Olá,",
             helloNamed: (name) => `Olá, ${name},`,
-            footerTransactional: "Mensagem transacional enviada para suporte da sua operação.",
+            footerTransactional: "Mensagem relacionada à sua conta Marquisa.",
             nextCycleFallback: "o próximo ciclo da assinatura",
             endOfCurrentCycle: "o fim do ciclo atual",
             nextMilestone: "Próximo marco comercial:",
@@ -141,6 +268,15 @@ function emailCopy(locale) {
                 `o ${BRAND_NAME} é uma ferramenta de apoio e estudo. Ele não substitui fontes oficiais, cartas, NOTAM, ROTAER/AIS/MET, documentação aplicável ou julgamento do piloto em comando.`,
             welcomeDisclaimerText:
                 `Lembrete importante: o ${BRAND_NAME} é uma ferramenta de apoio e estudo. Sempre valide informações operacionais em fontes oficiais, cartas, NOTAM, ROTAER/AIS/MET e documentação aplicável.`,
+            promoSubject: `${BRAND_NAME} — seu briefing te espera`,
+            promoTitle: "Seu briefing te espera",
+            promoLead:
+                "A Marquisa está pronta para a próxima perna: briefing, METAR/TAF, combustível e computador de voo.",
+            promoBulletBriefing: "Briefing completo origem → destino → alternativa",
+            promoBulletComputer: "Computador de voo (vento, VA, combustível, conversões)",
+            promoBulletPro: "Pro: salvar briefing e baixar PDF",
+            promoCta: "Acessar a Marquisa",
+            promoFooter: "Você recebe este e-mail porque tem conta na Marquisa.",
 
             proSubject: `${BRAND_NAME} — plano Pro ativado`,
             proTitle: "Plano Pro ativado",
@@ -243,7 +379,7 @@ function emailCopy(locale) {
         en: {
             hello: "Hello,",
             helloNamed: (name) => `Hello, ${name},`,
-            footerTransactional: "Transactional message sent to support your account.",
+            footerTransactional: "Message related to your Marquisa account.",
             nextCycleFallback: "the next billing cycle",
             endOfCurrentCycle: "the end of the current cycle",
             nextMilestone: "Next billing milestone:",
@@ -290,6 +426,15 @@ function emailCopy(locale) {
                 `${BRAND_NAME} is a support and study tool. It does not replace official sources, charts, NOTAMs, ROTAER/AIS/MET, applicable documentation, or the judgment of the pilot in command.`,
             welcomeDisclaimerText:
                 `Important reminder: ${BRAND_NAME} is a support and study tool. Always validate operational information against official sources, charts, NOTAMs, ROTAER/AIS/MET, and applicable documentation.`,
+            promoSubject: `${BRAND_NAME} — your briefing is waiting`,
+            promoTitle: "Your briefing is waiting",
+            promoLead:
+                "Marquisa is ready for the next leg: briefing, METAR/TAF, fuel planning, and the flight computer.",
+            promoBulletBriefing: "Full origin → destination → alternate briefing",
+            promoBulletComputer: "Flight computer (wind, TAS, fuel, conversions)",
+            promoBulletPro: "Pro: save briefings and download PDF",
+            promoCta: "Open Marquisa",
+            promoFooter: "You receive this email because you have a Marquisa account.",
 
             proSubject: `${BRAND_NAME} — Pro plan activated`,
             proTitle: "Pro plan activated",
@@ -390,7 +535,7 @@ function emailCopy(locale) {
         es: {
             hello: "Hola,",
             helloNamed: (name) => `Hola, ${name},`,
-            footerTransactional: "Mensaje transaccional enviado para el soporte de tu cuenta.",
+            footerTransactional: "Mensaje relacionado con tu cuenta Marquisa.",
             nextCycleFallback: "el próximo ciclo de la suscripción",
             endOfCurrentCycle: "el final del ciclo actual",
             nextMilestone: "Próximo hito comercial:",
@@ -438,6 +583,15 @@ function emailCopy(locale) {
                 `${BRAND_NAME} es una herramienta de apoyo y estudio. No sustituye fuentes oficiales, cartas, NOTAM, ROTAER/AIS/MET, documentación aplicable ni el juicio del piloto al mando.`,
             welcomeDisclaimerText:
                 `Recordatorio importante: ${BRAND_NAME} es una herramienta de apoyo y estudio. Siempre valida la información operacional en fuentes oficiales, cartas, NOTAM, ROTAER/AIS/MET y documentación aplicable.`,
+            promoSubject: `${BRAND_NAME} — tu briefing te espera`,
+            promoTitle: "Tu briefing te espera",
+            promoLead:
+                "Marquisa está lista para el próximo tramo: briefing, METAR/TAF, combustible y computador de vuelo.",
+            promoBulletBriefing: "Briefing completo origen → destino → alterno",
+            promoBulletComputer: "Computador de vuelo (viento, VA, combustible, conversiones)",
+            promoBulletPro: "Pro: guardar briefing y descargar PDF",
+            promoCta: "Abrir Marquisa",
+            promoFooter: "Recibes este email porque tienes cuenta en Marquisa.",
 
             proSubject: `${BRAND_NAME} — plan Pro activado`,
             proTitle: "Plan Pro activado",
@@ -647,7 +801,7 @@ export function createEmailService(prisma) {
     async function sendTrialCancellationEmailImpl({ email, userId = null, providerEventId = null, locale = "pt-BR", firstName = null }) {
         const copy = emailCopy(locale);
         const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
-        const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
+        const appUrl = publicBaseUrl();
         const subject = copy.trialCancelSubject;
         const text =
             `${greet}\n\n` +
@@ -661,15 +815,15 @@ export function createEmailService(prisma) {
             intro: greet,
             footerTransactional: copy.footerTransactional,
             bodyHtml:
-                `<p style="margin:0 0 16px;">${escapeHtml(copy.trialCancelIntro)}</p>` +
-                `<p style="margin:0 0 16px;">${copy.trialCancelHtmlLead}</p>` +
-                `<ul style="margin:0 0 16px;padding-left:20px;">` +
-                `<li>${escapeHtml(copy.trialCancelBullet1)}</li>` +
-                `<li>${escapeHtml(copy.trialCancelBullet2)}</li>` +
-                `<li>${escapeHtml(copy.trialCancelBullet3)}</li>` +
-                `</ul>` +
-                `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.manageSubscription)}</a></p>` +
-                `<p style="margin:0;">${escapeHtml(copy.trialCancelChargeNote)}</p>`,
+                emailParagraph(escapeHtml(copy.trialCancelIntro)) +
+                emailParagraph(copy.trialCancelHtmlLead) +
+                emailBullets([
+                    escapeHtml(copy.trialCancelBullet1),
+                    escapeHtml(copy.trialCancelBullet2),
+                    escapeHtml(copy.trialCancelBullet3),
+                ]) +
+                emailCta(`${appUrl}/assinatura`, copy.manageSubscription) +
+                emailParagraph(escapeHtml(copy.trialCancelChargeNote), { last: true }),
         });
 
         return sendEmail({
@@ -698,11 +852,11 @@ export function createEmailService(prisma) {
                 intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.passwordResetIntro)}</p>` +
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.passwordResetUseLink)}</p>` +
-                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(resetUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.passwordResetButton)}</a></p>` +
-                    `<p style="margin:0 0 8px;">${escapeHtml(copy.copyPasteLink)}</p>` +
-                    `<p style="margin:0;word-break:break-all;color:#bfdbfe;">${escapeHtml(resetUrl)}</p>`,
+                    emailParagraph(escapeHtml(copy.passwordResetIntro)) +
+                    emailParagraph(escapeHtml(copy.passwordResetUseLink)) +
+                    emailCta(resetUrl, copy.passwordResetButton) +
+                    emailLinkFallback(resetUrl, copy.copyPasteLink) +
+                    emailParagraph(escapeHtml(copy.passwordResetIgnore), { muted: true, last: true }),
             });
 
             return sendEmail({
@@ -729,11 +883,11 @@ export function createEmailService(prisma) {
                 intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.verifyIntro)}</p>` +
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.verifyClick)}</p>` +
-                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(verifyUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.verifyButton)}</a></p>` +
-                    `<p style="margin:0 0 8px;">${escapeHtml(copy.copyPasteLink)}</p>` +
-                    `<p style="margin:0;word-break:break-all;color:#bfdbfe;">${escapeHtml(verifyUrl)}</p>`,
+                    emailParagraph(escapeHtml(copy.verifyIntro)) +
+                    emailParagraph(escapeHtml(copy.verifyClick)) +
+                    emailCta(verifyUrl, copy.verifyButton, "accent") +
+                    emailLinkFallback(verifyUrl, copy.copyPasteLink) +
+                    emailParagraph(escapeHtml(copy.verifyIgnore), { muted: true, last: true }),
             });
 
             return sendEmail({
@@ -751,7 +905,7 @@ export function createEmailService(prisma) {
             const copy = emailCopy(locale);
             const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
             const subject = copy.welcomeSubject;
-            const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
+            const appUrl = publicBaseUrl();
             const text =
                 `${greet}\n\n` +
                 `${copy.welcomeLead}\n\n` +
@@ -765,19 +919,17 @@ export function createEmailService(prisma) {
                 intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.welcomeIntro)}</p>` +
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.welcomeCanUse)}</p>` +
-                    `<ul style="margin:0 0 16px;padding-left:20px;">` +
-                    `<li>${escapeHtml(copy.welcomeBulletMetar)}</li>` +
-                    `<li>${escapeHtml(copy.welcomeBulletBriefing)}</li>` +
-                    `<li>${escapeHtml(copy.welcomeBulletPlanner)}</li>` +
-                    `<li>${escapeHtml(copy.welcomeBulletPro)}</li>` +
-                    `</ul>` +
-                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.openApp)}</a></p>` +
-                    `<p style="margin:0 0 12px;padding:12px 14px;border-radius:12px;background:rgba(59,130,246,0.12);border:1px solid rgba(147,197,253,0.22);">` +
-                    `<strong>${escapeHtml(copy.welcomeImportant)}</strong> ${escapeHtml(copy.welcomeDisclaimerHtml)}` +
-                    `</p>` +
-                    `<p style="margin:0;">${escapeHtml(copy.supportNeedHelp)}</p>`,
+                    emailParagraph(escapeHtml(copy.welcomeIntro)) +
+                    emailParagraph(escapeHtml(copy.welcomeCanUse)) +
+                    emailBullets([
+                        escapeHtml(copy.welcomeBulletMetar),
+                        escapeHtml(copy.welcomeBulletBriefing),
+                        escapeHtml(copy.welcomeBulletPlanner),
+                        escapeHtml(copy.welcomeBulletPro),
+                    ]) +
+                    emailCta(appUrl, copy.openApp, "accent") +
+                    emailNote(`<strong>${escapeHtml(copy.welcomeImportant)}</strong> ${escapeHtml(copy.welcomeDisclaimerHtml)}`) +
+                    emailParagraph(escapeHtml(copy.supportNeedHelp), { muted: true, last: true }),
             });
 
             return sendEmail({ kind: "welcome", to: email, subject, text, html, userId, metadata: { appUrl } });
@@ -800,7 +952,7 @@ export function createEmailService(prisma) {
             const endLabel = currentPeriodEnd
                 ? new Date(currentPeriodEnd).toLocaleDateString(dateLocaleFor(locale))
                 : copy.nextCycleFallback;
-            const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
+            const appUrl = publicBaseUrl();
             const subject = copy.proSubject;
             const text =
                 `${greet}\n\n` +
@@ -815,18 +967,16 @@ export function createEmailService(prisma) {
                 intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.proIntro)}</p>` +
-                    `<p style="margin:0 0 16px;">${copy.proActivatedHtml}</p>` +
-                    `<ul style="margin:0 0 16px;padding-left:20px;">` +
-                    `<li>${escapeHtml(copy.proBulletSync)}</li>` +
-                    `<li>${escapeHtml(copy.proBulletReopen)}</li>` +
-                    `<li>${escapeHtml(copy.proBulletBilling)}</li>` +
-                    `</ul>` +
-                    `<p style="margin:0 0 12px;">${escapeHtml(copy.nextMilestone)} <strong>${escapeHtml(endLabel)}</strong>.</p>` +
-                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.manageSubscription)}</a></p>` +
-                    `<p style="margin:0;padding:12px 14px;border-radius:12px;background:rgba(59,130,246,0.12);border:1px solid rgba(147,197,253,0.22);">` +
-                    `${escapeHtml(copy.proPolicyNote)}` +
-                    `</p>`,
+                    emailParagraph(escapeHtml(copy.proIntro)) +
+                    emailParagraph(copy.proActivatedHtml) +
+                    emailBullets([
+                        escapeHtml(copy.proBulletSync),
+                        escapeHtml(copy.proBulletReopen),
+                        escapeHtml(copy.proBulletBilling),
+                    ]) +
+                    emailParagraph(`${escapeHtml(copy.nextMilestone)} <strong>${escapeHtml(endLabel)}</strong>.`) +
+                    emailCta(`${appUrl}/assinatura`, copy.manageSubscription) +
+                    emailNote(escapeHtml(copy.proPolicyNote)),
             });
 
             return sendEmail({
@@ -857,9 +1007,9 @@ export function createEmailService(prisma) {
                 intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.renewedIntro)}</p>` +
-                    `<p style="margin:0 0 16px;">${copy.renewedActiveHtml}</p>` +
-                    `<p style="margin:0;">${escapeHtml(copy.nextMilestone)} <strong>${escapeHtml(endLabel)}</strong>.</p>`,
+                    emailParagraph(escapeHtml(copy.renewedIntro)) +
+                    emailParagraph(copy.renewedActiveHtml) +
+                    emailParagraph(`${escapeHtml(copy.nextMilestone)} <strong>${escapeHtml(endLabel)}</strong>.`, { last: true }),
             });
 
             return sendEmail({
@@ -888,12 +1038,13 @@ export function createEmailService(prisma) {
                 intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.paymentFailedIntro)}</p>` +
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.paymentFailedBody)}</p>` +
+                    emailParagraph(escapeHtml(copy.paymentFailedIntro)) +
+                    emailParagraph(escapeHtml(copy.paymentFailedBody)) +
                     (hostedInvoiceUrl
-                        ? `<p style="margin:0 0 18px;"><a href="${escapeHtml(hostedInvoiceUrl)}" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.paymentFailedReviewButton)}</a></p>`
+                        ? emailCta(hostedInvoiceUrl, copy.paymentFailedReviewButton) +
+                          emailLinkFallback(hostedInvoiceUrl, copy.copyPasteLink)
                         : "") +
-                    `<p style="margin:0;">${escapeHtml(copy.supportHelp)}</p>`,
+                    emailParagraph(escapeHtml(copy.supportHelp), { muted: true, last: true }),
             });
 
             return sendEmail({
@@ -917,8 +1068,8 @@ export function createEmailService(prisma) {
                 intro: copy.contactConfirmIntro(name),
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.contactConfirmSubjectLabel)} <strong>${escapeHtml(subjectLabel)}</strong></p>` +
-                    `<p style="margin:0;">${escapeHtml(copy.contactConfirmReturn)}</p>`,
+                    emailParagraph(`${escapeHtml(copy.contactConfirmSubjectLabel)} <strong>${escapeHtml(subjectLabel)}</strong>`) +
+                    emailParagraph(escapeHtml(copy.contactConfirmReturn), { last: true }),
             });
 
             return sendEmail({
@@ -962,11 +1113,11 @@ export function createEmailService(prisma) {
                 title: "Novo cadastro",
                 intro: "Alguém acabou de criar uma conta no Marquisa.",
                 bodyHtml:
-                    `<p style="margin:0 0 10px;"><strong>E-mail:</strong> ${escapeHtml(email)}</p>` +
-                    `<p style="margin:0 0 10px;"><strong>Idioma:</strong> ${escapeHtml(preferredLocale)}</p>` +
-                    `<p style="margin:0 0 10px;"><strong>Data (Brasília):</strong> ${escapeHtml(when)}</p>` +
-                    `<p style="margin:0 0 10px;"><strong>Status:</strong> ${escapeHtml(statusLabel)}</p>` +
-                    `<p style="margin:0;"><strong>User ID:</strong> ${escapeHtml(userId || "—")}</p>`,
+                    emailParagraph(`<strong>E-mail:</strong> ${escapeHtml(email)}`) +
+                    emailParagraph(`<strong>Idioma:</strong> ${escapeHtml(preferredLocale)}`) +
+                    emailParagraph(`<strong>Data (Brasília):</strong> ${escapeHtml(when)}`) +
+                    emailParagraph(`<strong>Status:</strong> ${escapeHtml(statusLabel)}`) +
+                    emailParagraph(`<strong>User ID:</strong> ${escapeHtml(userId || "—")}`, { last: true }),
             });
 
             return sendEmail({
@@ -992,10 +1143,10 @@ export function createEmailService(prisma) {
                 title: "Novo contato recebido",
                 intro: "Uma nova mensagem foi enviada pelo formulário do site.",
                 bodyHtml:
-                    `<p style="margin:0 0 10px;"><strong>Nome:</strong> ${escapeHtml(message.name)}</p>` +
-                    `<p style="margin:0 0 10px;"><strong>E-mail:</strong> ${escapeHtml(message.email)}</p>` +
-                    `<p style="margin:0 0 10px;"><strong>Assunto:</strong> ${escapeHtml(message.subject)}</p>` +
-                    `<p style="margin:0;"><strong>Mensagem:</strong><br />${nl2br(message.message)}</p>`,
+                    emailParagraph(`<strong>Nome:</strong> ${escapeHtml(message.name)}`) +
+                    emailParagraph(`<strong>E-mail:</strong> ${escapeHtml(message.email)}`) +
+                    emailParagraph(`<strong>Assunto:</strong> ${escapeHtml(message.subject)}`) +
+                    emailParagraph(`<strong>Mensagem:</strong><br />${nl2br(message.message)}`, { last: true }),
             });
 
             return sendEmail({
@@ -1023,7 +1174,7 @@ export function createEmailService(prisma) {
             const endLabel = currentPeriodEnd
                 ? new Date(currentPeriodEnd).toLocaleDateString(dateLocaleFor(locale))
                 : copy.endOfCurrentCycle;
-            const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
+            const appUrl = publicBaseUrl();
             const subject = duringTrial ? copy.scheduledCancelTrialSubject : copy.scheduledCancelSubject;
             const title = duringTrial ? copy.trialCancelTitle : copy.scheduledCancelTitle;
             const introBody = duringTrial ? copy.scheduledCancelTrialIntro : copy.scheduledCancelIntro;
@@ -1040,23 +1191,23 @@ export function createEmailService(prisma) {
                 intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">${escapeHtml(introBody)}</p>` +
+                    emailParagraph(escapeHtml(introBody)) +
                     (duringTrial
-                        ? `<p style="margin:0 0 16px;">${copy.scheduledCancelTrialHtmlLead}</p>` +
-                          `<ul style="margin:0 0 16px;padding-left:20px;">` +
-                          `<li>${copy.scheduledCancelTrialBullet1(escapedEnd)}</li>` +
-                          `<li>${copy.scheduledCancelTrialBullet2}</li>` +
-                          `<li>${escapeHtml(copy.scheduledCancelTrialBullet3)}</li>` +
-                          `</ul>` +
-                          `<p style="margin:0;">${escapeHtml(copy.doubts)}</p>`
-                        : `<p style="margin:0 0 16px;">${copy.scheduledCancelAfterHtmlLead(escapedEnd)}</p>` +
-                          `<ul style="margin:0 0 16px;padding-left:20px;">` +
-                          `<li>${escapeHtml(copy.scheduledCancelAfterBullet1)}</li>` +
-                          `<li>${escapeHtml(copy.scheduledCancelAfterBullet2)}</li>` +
-                          `<li>${escapeHtml(copy.scheduledCancelAfterBullet3)}</li>` +
-                          `</ul>` +
-                          `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.manageSubscription)}</a></p>` +
-                          `<p style="margin:0;">${escapeHtml(copy.scheduledCancelRefund)}</p>`),
+                        ? emailParagraph(copy.scheduledCancelTrialHtmlLead) +
+                          emailBullets([
+                              copy.scheduledCancelTrialBullet1(escapedEnd),
+                              copy.scheduledCancelTrialBullet2,
+                              escapeHtml(copy.scheduledCancelTrialBullet3),
+                          ]) +
+                          emailParagraph(escapeHtml(copy.doubts), { muted: true, last: true })
+                        : emailParagraph(copy.scheduledCancelAfterHtmlLead(escapedEnd)) +
+                          emailBullets([
+                              escapeHtml(copy.scheduledCancelAfterBullet1),
+                              escapeHtml(copy.scheduledCancelAfterBullet2),
+                              escapeHtml(copy.scheduledCancelAfterBullet3),
+                          ]) +
+                          emailCta(`${appUrl}/assinatura`, copy.manageSubscription) +
+                          emailParagraph(escapeHtml(copy.scheduledCancelRefund), { muted: true, last: true })),
             });
 
             return sendEmail({
@@ -1078,7 +1229,7 @@ export function createEmailService(prisma) {
 
             const copy = emailCopy(locale);
             const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
-            const appUrl = String(process.env.APP_URL || "https://marquisa.com.br").replace(/\/$/, "");
+            const appUrl = publicBaseUrl();
             const subject = copy.endedCancelSubject;
             const text =
                 `${greet}\n\n` +
@@ -1091,15 +1242,15 @@ export function createEmailService(prisma) {
                 intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.endedCancelIntro)}</p>` +
-                    `<p style="margin:0 0 16px;">${copy.endedCancelHtmlLead}</p>` +
-                    `<ul style="margin:0 0 16px;padding-left:20px;">` +
-                    `<li>${escapeHtml(copy.endedCancelBullet1)}</li>` +
-                    `<li>${escapeHtml(copy.endedCancelBullet2)}</li>` +
-                    `<li>${escapeHtml(copy.endedCancelBullet3)}</li>` +
-                    `</ul>` +
-                    `<p style="margin:0 0 18px;"><a href="${escapeHtml(appUrl)}/assinatura" style="display:inline-block;padding:12px 18px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;">${escapeHtml(copy.manageSubscription)}</a></p>` +
-                    `<p style="margin:0;">${escapeHtml(copy.supportOnly)}</p>`,
+                    emailParagraph(escapeHtml(copy.endedCancelIntro)) +
+                    emailParagraph(copy.endedCancelHtmlLead) +
+                    emailBullets([
+                        escapeHtml(copy.endedCancelBullet1),
+                        escapeHtml(copy.endedCancelBullet2),
+                        escapeHtml(copy.endedCancelBullet3),
+                    ]) +
+                    emailCta(`${appUrl}/assinatura`, copy.manageSubscription) +
+                    emailParagraph(escapeHtml(copy.supportOnly), { muted: true, last: true }),
             });
 
             return sendEmail({
@@ -1131,12 +1282,44 @@ export function createEmailService(prisma) {
                 intro: greet,
                 footerTransactional: copy.footerTransactional,
                 bodyHtml:
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.passwordChangedIntro)}</p>` +
-                    `<p style="margin:0 0 16px;">${escapeHtml(copy.passwordChangedBody)}</p>` +
-                    `<p style="margin:0;">${escapeHtml(copy.supportOnly)}</p>`,
+                    emailParagraph(escapeHtml(copy.passwordChangedIntro)) +
+                    emailParagraph(escapeHtml(copy.passwordChangedBody)) +
+                    emailParagraph(escapeHtml(copy.supportOnly), { muted: true, last: true }),
             });
 
             return sendEmail({ kind: "password_changed", to: email, subject, text, html, userId });
+        },
+
+        async sendPromoAccessEmail({ email, userId = null, locale = "pt-BR", firstName = null }) {
+            const copy = emailCopy(locale);
+            const greet = greetingLine(copy, await resolveFirstName(userId, firstName));
+            const appUrl = publicBaseUrl();
+            const subject = copy.promoSubject;
+            const text =
+                `${greet}\n\n` +
+                `${copy.promoLead}\n\n` +
+                `- ${copy.promoBulletBriefing}\n` +
+                `- ${copy.promoBulletComputer}\n` +
+                `- ${copy.promoBulletPro}\n\n` +
+                `${copy.openLinkLabel} ${appUrl}\n\n` +
+                `${copy.promoFooter}\n` +
+                `${copy.supportLabel}\n`;
+            const html = buildEmailShell({
+                title: copy.promoTitle,
+                intro: greet,
+                footerTransactional: copy.promoFooter,
+                bodyHtml:
+                    emailParagraph(escapeHtml(copy.promoLead)) +
+                    emailBullets([
+                        escapeHtml(copy.promoBulletBriefing),
+                        escapeHtml(copy.promoBulletComputer),
+                        escapeHtml(copy.promoBulletPro),
+                    ]) +
+                    emailCta(appUrl, copy.promoCta, "accent") +
+                    emailLinkFallback(appUrl, copy.openLinkLabel),
+            });
+
+            return sendEmail({ kind: "promo_access", to: email, subject, text, html, userId, metadata: { appUrl } });
         },
     };
 }
