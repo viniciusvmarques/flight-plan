@@ -30,7 +30,7 @@ function fmtDate(iso) {
 export default function Profile() {
     const nav = useNavigate();
     const { toast, confirm } = useNotify();
-    const { user, logout } = useAuth();
+    const { user, logout, updateProfile } = useAuth();
     const { t } = useI18n();
 
     useEffect(() => {
@@ -41,8 +41,20 @@ export default function Profile() {
 
     const prefs = useMemo(() => (prefKey ? loadJSON(prefKey, {}) : {}), [prefKey]);
 
-    const [name, setName] = useState(prefs.name || user?.name || "");
+    const [firstName, setFirstName] = useState(user?.firstName || "");
+    const [lastName, setLastName] = useState(user?.lastName || "");
+    const [homeCity, setHomeCity] = useState(user?.homeCity || "");
+    const [isPilot, setIsPilot] = useState(!!user?.isPilot);
     const [track, setTrack] = useState(prefs.track || user?.track || "PP");
+    const [savingProfile, setSavingProfile] = useState(false);
+
+    useEffect(() => {
+        if (!user) return;
+        setFirstName(user.firstName || "");
+        setLastName(user.lastName || "");
+        setHomeCity(user.homeCity || "");
+        setIsPilot(!!user.isPilot);
+    }, [user]);
 
     const [favs, setFavs] = useState([]);
     const [briefings, setBriefings] = useState([]);
@@ -59,10 +71,21 @@ export default function Profile() {
         api("/api/briefings").then((r) => setBriefings(r.items || [])).catch(() => setBriefings([]));
     }, [user]);
 
-    function savePrefs() {
+    async function savePrefs() {
         if (!prefKey) return;
-        saveJSON(prefKey, { name, track });
-        toast(t("profile.prefsSaved"), { variant: "success", title: t("profile.prefsTitle") });
+        const fullName = [firstName, lastName].filter(Boolean).join(" ").trim();
+        saveJSON(prefKey, { name: fullName, track, homeCity, isPilot });
+        try {
+            setSavingProfile(true);
+            if (updateProfile) {
+                await updateProfile({ firstName, lastName, homeCity, isPilot });
+            }
+            toast(t("profile.prefsSaved"), { variant: "success", title: t("profile.prefsTitle") });
+        } catch (e) {
+            toast(e?.message || t("profile.prefsError"), { variant: "error", title: t("profile.errorTitle") });
+        } finally {
+            setSavingProfile(false);
+        }
     }
 
     async function clearBriefings() {
@@ -209,10 +232,35 @@ export default function Profile() {
                                 <div className="info-stack">
                                     <div className="plan-grid plan-grid--2">
                                         <label className="plan-field">
-                                            <span className="label">{t("profile.namePreference")}</span>
-                                            <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Seu nome" />
+                                            <span className="label">{t("profile.firstName")}</span>
+                                            <input
+                                                className="input"
+                                                value={firstName}
+                                                onChange={(e) => setFirstName(e.target.value)}
+                                                placeholder={t("profile.firstNamePlaceholder")}
+                                                autoComplete="given-name"
+                                            />
                                         </label>
-
+                                        <label className="plan-field">
+                                            <span className="label">{t("profile.lastName")}</span>
+                                            <input
+                                                className="input"
+                                                value={lastName}
+                                                onChange={(e) => setLastName(e.target.value)}
+                                                placeholder={t("profile.lastNamePlaceholder")}
+                                                autoComplete="family-name"
+                                            />
+                                        </label>
+                                        <label className="plan-field">
+                                            <span className="label">{t("profile.homeCity")}</span>
+                                            <input
+                                                className="input"
+                                                value={homeCity}
+                                                onChange={(e) => setHomeCity(e.target.value)}
+                                                placeholder={t("profile.homeCityPlaceholder")}
+                                                autoComplete="address-level2"
+                                            />
+                                        </label>
                                         <label className="plan-field">
                                             <span className="label">{t("profile.trackPreference")}</span>
                                             <select className="input" value={track} onChange={(e) => setTrack(e.target.value)}>
@@ -225,14 +273,20 @@ export default function Profile() {
                                         </label>
                                     </div>
 
+                                    <label className="auth-check" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                        <input type="checkbox" checked={isPilot} onChange={(e) => setIsPilot(e.target.checked)} />
+                                        <span>{t("profile.isPilot")}</span>
+                                    </label>
+
                                     <div className="page-chip-row">
                                         <span className="chip">{user.email}</span>
                                         <span className={`chip ${plan === "PRO" ? "ok" : ""}`}>{plan}</span>
+                                        {isPilot ? <span className="chip ok">{t("profile.pilotBadge")}</span> : null}
                                     </div>
 
                                     <div className="page-actions">
-                                        <button className="primary profile-primary-action" type="button" onClick={savePrefs}>
-                                            {t("profile.savePreferences")}
+                                        <button className="primary profile-primary-action" type="button" onClick={savePrefs} disabled={savingProfile}>
+                                            {savingProfile ? t("common.loading") : t("profile.savePreferences")}
                                         </button>
                                         <button className="secondary" type="button" onClick={() => nav("/assinatura")}>
                                             {t("profile.viewBilling")}

@@ -1,6 +1,41 @@
+import { useEffect, useMemo, useState } from "react";
 import Card from "./Card";
 import { calculatePlanner, fmtDeg, fmtMinutes } from "../utils/plannerEngine";
 import { useI18n } from "../i18n/I18nContext.jsx";
+import { suggestRunwayFromMetar } from "../utils/suggestRunwayFromMetar";
+
+function profileDisplayName(user) {
+    return [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
+}
+
+function formatBriefingDate(locale) {
+    try {
+        return new Intl.DateTimeFormat(locale || "pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        }).format(new Date());
+    } catch {
+        return new Date().toLocaleDateString();
+    }
+}
+
+function formatUtcClock() {
+    const now = new Date();
+    const hh = String(now.getUTCHours()).padStart(2, "0");
+    const mm = String(now.getUTCMinutes()).padStart(2, "0");
+    const ss = String(now.getUTCSeconds()).padStart(2, "0");
+    return `${hh}:${mm}:${ss}Z`;
+}
+
+function PenBox({ label }) {
+    return (
+        <label className="plan-field briefing-pen-field">
+            <span className="label">{label}</span>
+            <div className="briefing-pen-line" />
+        </label>
+    );
+}
 
 function Field({ label, children, hint }) {
     return (
@@ -341,13 +376,15 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
     );
 }
 
-export default function FlightPlanStack({ base, plan, onPlanChange }) {
+export default function FlightPlanStack({ base, plan, onPlanChange, user = null }) {
     const p = plan || {};
-    const { t } = useI18n();
+    const { t, locale } = useI18n();
     const originIcao = base?.origin?.icao || "A";
     const destIcao = base?.dest?.icao || "";
+    const altnIcao = base?.alternate?.icao || "";
     const navLegsDraft = resolveEditableNavLegs(p, destIcao);
     const workingPlan = { ...p, routeMode: "checkpoints", navLegs: navLegsDraft };
+    const [utcNow, setUtcNow] = useState(() => formatUtcClock());
 
     const calc = calculatePlanner(workingPlan, {
         originAirport: base?.origin?.airport || null,
@@ -358,8 +395,62 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
         alternateStation: base?.alternate || null,
         originIcao,
         destIcao,
-        alternateIcao: base?.alternate?.icao || "",
+        alternateIcao: altnIcao,
     });
+
+    const profileName = useMemo(() => profileDisplayName(user), [user]);
+    const pilotNameValue = p.pilotName != null ? p.pilotName : profileName;
+    const briefingDate = useMemo(() => formatBriefingDate(locale), [locale]);
+    const routeDistanceLabel = calc.routeDistNm > 0 ? calc.routeDistNm.toFixed(0) : "";
+
+    useEffect(() => {
+        const id = window.setInterval(() => setUtcNow(formatUtcClock()), 1000);
+        return () => window.clearInterval(id);
+    }, []);
+
+    useEffect(() => {
+        if (!onPlanChange) return;
+        const patches = {};
+        const originAirport = base?.origin?.airport;
+        const destAirport = base?.dest?.airport;
+
+        if (originAirport) {
+            if ((p.depAltFt == null || p.depAltFt === "") && originAirport.elevationFt != null) {
+                patches.depAltFt = String(originAirport.elevationFt);
+            }
+            if (p.depRwy == null || p.depRwy === "") {
+                const sug = suggestRunwayFromMetar(originAirport.runways || [], base?.origin?.metar);
+                if (sug?.suggested?.ident) patches.depRwy = sug.suggested.ident;
+            }
+        }
+
+        if (destAirport) {
+            if ((p.arrAltFt == null || p.arrAltFt === "") && destAirport.elevationFt != null) {
+                patches.arrAltFt = String(destAirport.elevationFt);
+            }
+            if (p.arrRwy == null || p.arrRwy === "") {
+                const sug = suggestRunwayFromMetar(destAirport.runways || [], base?.dest?.metar);
+                if (sug?.suggested?.ident) patches.arrRwy = sug.suggested.ident;
+            }
+        }
+
+        if (altnIcao && (p.altnIcao == null || p.altnIcao === "")) {
+            patches.altnIcao = altnIcao;
+        }
+
+        if (!Object.keys(patches).length) return;
+        onPlanChange({ ...p, routeMode: "checkpoints", navLegs: navLegsDraft, ...patches });
+        // Autofill only when route/METAR context changes and fields are still empty.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        base?.origin?.icao,
+        base?.dest?.icao,
+        base?.alternate?.icao,
+        base?.origin?.metar,
+        base?.dest?.metar,
+        base?.origin?.airport?.elevationFt,
+        base?.dest?.airport?.elevationFt,
+    ]);
 
     function setField(key, value) {
         const next = { ...p, routeMode: "checkpoints", navLegs: navLegsDraft, [key]: value };
@@ -374,66 +465,172 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
         onPlanChange?.(next);
     }
 
+    function setAtcFreq(key, value) {
+        const atc = { ...(p.atcFreqs || {}), [key]: value };
+        setField("atcFreqs", atc);
+    }
+
     function setNavLegs(nextLegs) {
         onPlanChange?.({ ...p, navLegs: nextLegs, routeMode: "checkpoints" });
     }
 
+    const atc = p.atcFreqs || {};
+
     return (
         <Card title={t("planner.title")}>
             <div className="plan-stack plan-stack--anac">
-                <section className="plan-panel plan-panel--dark">
-                    <SectionHead step="1" title={t("planner.mission")}>
-                        {t("planner.missionCopy")}
+                <section className="plan-panel plan-panel--dark briefing-sheet">
+                    <SectionHead step="1" title={t("planner.briefing")}>
+                        {t("planner.briefingCopy")}
                     </SectionHead>
 
-                    <div className="plan-chip-row">
+                    <p className="briefing-disclaimer">{t("planner.briefingDisclaimer")}</p>
+
+                    <div className="briefing-lines">
+                        <div className="briefing-line briefing-line--3">
+                            <Field label={t("planner.aircraftId")}>
+                                <input
+                                    className="input"
+                                    value={p.registration ?? ""}
+                                    onChange={(e) => setField("registration", e.target.value.toUpperCase())}
+                                    placeholder="PR-ABC"
+                                />
+                            </Field>
+                            <Field label={t("planner.pilotName")} hint={!profileName ? t("planner.pilotNameHint") : null}>
+                                <input
+                                    className="input"
+                                    value={pilotNameValue}
+                                    onChange={(e) => setField("pilotName", e.target.value)}
+                                    placeholder={t("planner.pilotNamePlaceholder")}
+                                />
+                            </Field>
+                            <Field label={t("planner.briefingDate")}>
+                                <input className="input" value={briefingDate} readOnly />
+                            </Field>
+                        </div>
+
+                        <div className="briefing-line briefing-line--5">
+                            <Field label={t("common.origin")}>
+                                <input className="input" value={originIcao === "A" ? "" : originIcao} readOnly placeholder="ICAO" />
+                            </Field>
+                            <Field label={t("common.destination")}>
+                                <input className="input" value={destIcao} readOnly placeholder="ICAO" />
+                            </Field>
+                            <Field label={t("planner.speedKt")}>
+                                <input
+                                    className="input"
+                                    value={p.tasKt ?? ""}
+                                    onChange={(e) => setField("tasKt", e.target.value)}
+                                    placeholder="120"
+                                />
+                            </Field>
+                            <Field label={t("planner.flightLevel")}>
+                                <input
+                                    className="input"
+                                    value={p.cruiseLevel ?? ""}
+                                    onChange={(e) => setField("cruiseLevel", e.target.value.toUpperCase())}
+                                    placeholder="FL090"
+                                />
+                            </Field>
+                            <Field label={t("planner.distanceNm")} hint={t("planner.distanceHint")}>
+                                <input className="input" value={routeDistanceLabel} readOnly placeholder="—" />
+                            </Field>
+                        </div>
+
+                        <div className="briefing-line briefing-line--5">
+                            <Field label={t("planner.utcTime")}>
+                                <input className="input briefing-utc" value={utcNow} readOnly />
+                            </Field>
+                            <PenBox label={t("planner.startupTime")} />
+                            <PenBox label={t("planner.takeoffTime")} />
+                            <PenBox label={t("planner.landingTime")} />
+                            <PenBox label={t("planner.shutdownTime")} />
+                        </div>
+
+                        <div className="briefing-line briefing-line--6">
+                            <Field label="CLR">
+                                <input className="input" value={atc.clr ?? ""} onChange={(e) => setAtcFreq("clr", e.target.value)} placeholder="118.—" />
+                            </Field>
+                            <Field label="GND">
+                                <input className="input" value={atc.gnd ?? ""} onChange={(e) => setAtcFreq("gnd", e.target.value)} placeholder="121.—" />
+                            </Field>
+                            <Field label="TWR">
+                                <input className="input" value={atc.twr ?? ""} onChange={(e) => setAtcFreq("twr", e.target.value)} placeholder="118.—" />
+                            </Field>
+                            <Field label="APP">
+                                <input className="input" value={atc.app ?? ""} onChange={(e) => setAtcFreq("app", e.target.value)} placeholder="119.—" />
+                            </Field>
+                            <Field label="CTR">
+                                <input className="input" value={atc.ctr ?? ""} onChange={(e) => setAtcFreq("ctr", e.target.value)} placeholder="129.—" />
+                            </Field>
+                            <Field label={t("planner.atcDest")}>
+                                <input className="input" value={atc.dest ?? ""} onChange={(e) => setAtcFreq("dest", e.target.value)} placeholder="DEST" />
+                            </Field>
+                        </div>
+
+                        <div className="briefing-line briefing-line--3">
+                            <Field label={t("planner.depRwy")}>
+                                <input className="input" value={p.depRwy ?? ""} onChange={(e) => setField("depRwy", e.target.value.toUpperCase())} placeholder="09" />
+                            </Field>
+                            <Field label={t("planner.depAlt")}>
+                                <input className="input" value={p.depAltFt ?? ""} onChange={(e) => setField("depAltFt", e.target.value)} placeholder="ft" />
+                            </Field>
+                            <Field label={t("planner.depNotes")}>
+                                <input className="input" value={p.depNotes ?? ""} onChange={(e) => setField("depNotes", e.target.value)} placeholder={t("planner.notesPlaceholder")} />
+                            </Field>
+                        </div>
+
+                        <div className="briefing-line briefing-line--3">
+                            <Field label={t("planner.arrRwy")}>
+                                <input className="input" value={p.arrRwy ?? ""} onChange={(e) => setField("arrRwy", e.target.value.toUpperCase())} placeholder="27" />
+                            </Field>
+                            <Field label={t("planner.arrAlt")}>
+                                <input className="input" value={p.arrAltFt ?? ""} onChange={(e) => setField("arrAltFt", e.target.value)} placeholder="ft" />
+                            </Field>
+                            <Field label={t("planner.arrNotes")}>
+                                <input className="input" value={p.arrNotes ?? ""} onChange={(e) => setField("arrNotes", e.target.value)} placeholder={t("planner.notesPlaceholder")} />
+                            </Field>
+                        </div>
+
+                        <div className="briefing-line briefing-line--3">
+                            <Field label={t("common.alternate")}>
+                                <input
+                                    className="input"
+                                    value={p.altnIcao ?? altnIcao}
+                                    onChange={(e) => setField("altnIcao", e.target.value.toUpperCase())}
+                                    placeholder="ICAO"
+                                />
+                            </Field>
+                            <Field label={t("planner.altnRwy")}>
+                                <input className="input" value={p.altnRwy ?? ""} onChange={(e) => setField("altnRwy", e.target.value.toUpperCase())} placeholder="—" />
+                            </Field>
+                            <Field label={t("planner.altnNotes")}>
+                                <input className="input" value={p.altnNotes ?? ""} onChange={(e) => setField("altnNotes", e.target.value)} placeholder={t("planner.notesPlaceholder")} />
+                            </Field>
+                        </div>
+                    </div>
+
+                    <div className="plan-chip-row briefing-meta-row">
                         <RouteChip base={base} />
-                        {base?.alternate?.icao ? (
+                        {altnIcao ? (
                             <span className="chip warn plan-route-chip plan-route-chip--compact">
                                 <span className="plan-route-point">
                                     <strong>C</strong>
-                                    <span>{base.alternate.icao}</span>
+                                    <span>{altnIcao}</span>
                                 </span>
                             </span>
-                        ) : (
-                            <span className="chip">Sem C</span>
-                        )}
-                        <span className={`chip ${calc.flightRule === "IFR" ? "warn" : "ok"}`}>{calc.flightRule}</span>
-                        <span className="chip">{calc.cruiseLevelLabel || "Nível pendente"}</span>
-                    </div>
-
-                    <div className="plan-grid plan-grid--4">
-                        <SelectField
-                            label={t("billing.plan")}
-                            value={p.flightRule || "VFR"}
-                            onChange={(value) => setField("flightRule", value)}
-                            options={[
-                                { value: "VFR", label: "VFR" },
-                                { value: "IFR", label: "IFR" },
-                            ]}
-                            hint="Use IFR quando houver rota/procedimento por instrumentos."
-                        />
-                        <Field label="Callsign / identificação">
-                            <input className="input" value={p.callsign ?? ""} onChange={(e) => setField("callsign", e.target.value.toUpperCase())} placeholder="PP-ABC / MARQUISA 01" />
-                        </Field>
-                        <Field label="Registration">
-                            <input className="input" value={p.registration ?? ""} onChange={(e) => setField("registration", e.target.value.toUpperCase())} placeholder="PT-ABC" />
-                        </Field>
-                        <Field label="Altitude (ft)">
-                            <input className="input" value={p.cruiseAltFt ?? p.defaultCruiseAltFt ?? ""} onChange={(e) => setField("cruiseAltFt", e.target.value)} placeholder="6500" />
-                        </Field>
-                    </div>
-
-                    <div className="plan-grid plan-grid--4">
-                        <Field label="Nível / FL">
-                            <input className="input" value={p.cruiseLevel ?? ""} onChange={(e) => setField("cruiseLevel", e.target.value.toUpperCase())} placeholder="FL090 / A065" />
-                        </Field>
-                        <Field label="Payload básico (kg)">
-                            <input className="input" value={p.payloadKg ?? ""} onChange={(e) => setField("payloadKg", e.target.value)} placeholder="300" />
-                        </Field>
-                        <Field label="Regra de reserva">
-                            <input className="input" value={p.reserveRule ?? ""} onChange={(e) => setField("reserveRule", e.target.value)} placeholder="IFR 45 min" />
-                        </Field>
+                        ) : null}
+                        <label className="briefing-rule-select">
+                            <span className="label">{t("planner.flightRule")}</span>
+                            <select
+                                className="input"
+                                value={p.flightRule || "VFR"}
+                                onChange={(e) => setField("flightRule", e.target.value)}
+                            >
+                                <option value="VFR">VFR</option>
+                                <option value="IFR">IFR</option>
+                            </select>
+                        </label>
                     </div>
                 </section>
 
@@ -441,45 +638,6 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                     <SectionHead step="2" title={t("planner.navigation")}>
                         {t("planner.navigationCopyCheckpoints")}
                     </SectionHead>
-
-                    <div className="plan-grid plan-grid--4">
-                        <Field
-                            label={t("planner.defaultsLabel")}
-                            hint={
-                                calc.useNavLegs
-                                    ? `${t("planner.routeSum")}: ${calc.routeDistNm.toFixed(0)} NM`
-                                    : calc.suggestedRouteDistNm > 0
-                                      ? `Direto A-B: ${calc.suggestedRouteDistNm} NM`
-                                      : null
-                            }
-                        >
-                            <input className="input" value={calc.routeDistNm ? calc.routeDistNm.toFixed(0) : ""} readOnly placeholder="soma das pernas" />
-                        </Field>
-                        <Field label="Rumo verdadeiro (°)">
-                            <input className="input" value={p.trueCourseDeg ?? ""} onChange={(e) => setField("trueCourseDeg", e.target.value)} placeholder="092" />
-                        </Field>
-                        <Field label="Declinação (E + / W -)">
-                            <input className="input" value={p.magVariationDeg ?? ""} onChange={(e) => setField("magVariationDeg", e.target.value)} placeholder="-20" />
-                        </Field>
-                        <Field label="TAS (kt)">
-                            <input className="input" value={p.tasKt ?? ""} onChange={(e) => setField("tasKt", e.target.value)} placeholder="122" />
-                        </Field>
-                    </div>
-
-                    <div className="plan-grid plan-grid--4">
-                        <Field label="Vento de (°)">
-                            <input className="input" value={p.windDirectionDeg ?? ""} onChange={(e) => setField("windDirectionDeg", e.target.value)} placeholder="140" />
-                        </Field>
-                        <Field label="Vento (kt)">
-                            <input className="input" value={p.windSpeedKt ?? ""} onChange={(e) => setField("windSpeedKt", e.target.value)} placeholder="12" />
-                        </Field>
-                        <Field label="GS (kt)">
-                            <input className="input" value={p.groundSpeedKt ?? ""} onChange={(e) => setField("groundSpeedKt", e.target.value)} placeholder="115" />
-                        </Field>
-                        <Field label="EET (min)">
-                            <input className="input" value={p.eetMinutes ?? ""} onChange={(e) => setField("eetMinutes", e.target.value)} placeholder="auto" />
-                        </Field>
-                    </div>
 
                     <NavLegsEditor
                         legs={navLegsDraft}

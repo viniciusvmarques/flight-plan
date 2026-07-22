@@ -430,6 +430,10 @@ function buildPublicUser(user) {
   return {
     id: user.id,
     email: user.email,
+    firstName: user.firstName || "",
+    lastName: user.lastName || "",
+    homeCity: user.homeCity || "",
+    isPilot: !!user.isPilot,
     plan: user.plan,
     planStatus: user.planStatus ?? null,
     preferredLocale: user.preferredLocale || "pt-BR",
@@ -823,7 +827,7 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 // ============================
 app.post("/auth/register", async (req,res)=>{
   try{
-    const { email, password, consent, consentVersions } = req.body || {};
+    const { email, password, consent, consentVersions, firstName, lastName, homeCity, isPilot } = req.body || {};
     const preferredLocale = normalizeLocale(req.body?.locale || req.headers["accept-language"]);
     const cleanEmail = String(email || "").trim().toLowerCase();
     if(!cleanEmail || !password) return res.status(400).json({ error: "E-mail e senha são obrigatórios." });
@@ -840,6 +844,10 @@ app.post("/auth/register", async (req,res)=>{
       data: {
         email: cleanEmail,
         password: hash,
+        firstName: String(firstName || "").trim() || null,
+        lastName: String(lastName || "").trim() || null,
+        homeCity: String(homeCity || "").trim() || null,
+        isPilot: !!isPilot,
         emailVerifiedAt: null,
         emailVerificationToken: verificationToken,
         emailVerificationExpires: verificationExpires,
@@ -854,7 +862,10 @@ app.post("/auth/register", async (req,res)=>{
           },
         },
       },
-      select: { id:true, email:true, plan:true, planStatus:true, emailVerifiedAt:true, createdAt:true },
+      select: {
+        id:true, email:true, plan:true, planStatus:true, emailVerifiedAt:true, createdAt:true,
+        firstName:true, lastName:true, homeCity:true, isPilot:true,
+      },
     });
 
     await Promise.allSettled([
@@ -1183,6 +1194,10 @@ app.get("/me", requireAuth, async (req,res)=>{
     select: {
       id:true,
       email:true,
+      firstName:true,
+      lastName:true,
+      homeCity:true,
+      isPilot:true,
       plan:true,
       planStatus:true,
       preferredLocale:true,
@@ -1195,6 +1210,41 @@ app.get("/me", requireAuth, async (req,res)=>{
     },
   });
   return res.json({ user });
+});
+
+app.patch("/me/profile", requireAuth, async (req, res) => {
+  const id = req.auth?.sub;
+  if (!id) return res.status(401).json({ error: "Token inválido." });
+  try {
+    const firstName = String(req.body?.firstName ?? "").trim() || null;
+    const lastName = String(req.body?.lastName ?? "").trim() || null;
+    const homeCity = String(req.body?.homeCity ?? "").trim() || null;
+    const isPilot = !!req.body?.isPilot;
+    const user = await prisma.user.update({
+      where: { id },
+      data: { firstName, lastName, homeCity, isPilot },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        homeCity: true,
+        isPilot: true,
+        plan: true,
+        planStatus: true,
+        preferredLocale: true,
+        emailVerifiedAt: true,
+        currentPeriodEnd: true,
+        trialEndsAt: true,
+        cancelAtPeriodEnd: true,
+        canceledAt: true,
+        createdAt: true,
+      },
+    });
+    return res.json({ ok: true, user });
+  } catch (e) {
+    return res.status(500).json({ error: e?.message || "Falha ao atualizar perfil." });
+  }
 });
 
 app.patch("/me/locale", requireAuth, async (req, res) => {

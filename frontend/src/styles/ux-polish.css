@@ -2190,6 +2190,139 @@ button:focus-visible {
     background: rgba(2, 6, 23, 0.22);
 }
 
+.briefing-sheet {
+    gap: 14px;
+}
+
+.briefing-disclaimer {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    background: rgba(251, 191, 36, 0.08);
+    color: rgba(254, 243, 199, 0.95);
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+.briefing-lines {
+    display: grid;
+    gap: 10px;
+}
+
+.briefing-line {
+    display: grid;
+    gap: 10px;
+    align-items: end;
+}
+
+.briefing-line--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.briefing-line--5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.briefing-line--6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.briefing-pen-field .briefing-pen-line {
+    min-height: 38px;
+    border-radius: 10px;
+    border: 1px dashed rgba(148, 163, 184, 0.55);
+    background: rgba(15, 23, 42, 0.35);
+}
+
+.briefing-utc {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+}
+
+.briefing-meta-row {
+    align-items: end;
+}
+
+.briefing-rule-select {
+    display: grid;
+    gap: 6px;
+    min-width: 110px;
+}
+
+.briefing-rule-select .label {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(148, 163, 184, 0.9);
+}
+
+.auth-form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+@media (max-width: 980px) {
+    .briefing-line--5,
+    .briefing-line--6 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .briefing-line--3,
+    .briefing-line--5,
+    .briefing-line--6,
+    .auth-form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    .briefing-sheet {
+        break-inside: avoid;
+        border: 1px solid #111 !important;
+        background: #fff !important;
+        color: #111 !important;
+        box-shadow: none !important;
+    }
+
+    .briefing-disclaimer {
+        border-color: #111 !important;
+        background: #fff8e1 !important;
+        color: #111 !important;
+    }
+
+    .briefing-sheet .label,
+    .briefing-sheet .plan-section-copy,
+    .briefing-sheet .card-title {
+        color: #111 !important;
+    }
+
+    .briefing-sheet .input {
+        border: 1px solid #222 !important;
+        background: #fff !important;
+        color: #111 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .briefing-pen-field .briefing-pen-line {
+        border: 1px solid #222 !important;
+        background: #fff !important;
+        min-height: 28px;
+    }
+
+    .briefing-line {
+        gap: 6px;
+    }
+
+    .plan-stack--anac .plan-panel {
+        break-inside: avoid;
+    }
+}
+
 .plan-panel--accent {
     border-color: rgba(94, 234, 212, 0.28);
     background: linear-gradient(180deg, rgba(94, 234, 212, 0.1), rgba(15, 23, 42, 0.16));

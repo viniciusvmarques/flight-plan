@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
     useEffect(() => saveJSON(LS_USER, user), [user]);
     useEffect(() => saveJSON(LS_TOKEN, token), [token]);
 
-    async function register({ email, password, accepted, consentVersions, locale }) {
+    async function register({ email, password, accepted, consentVersions, locale, firstName, lastName, homeCity, isPilot }) {
         const r = await fetch(`${API}/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -47,6 +47,10 @@ export function AuthProvider({ children }) {
                 email,
                 password,
                 locale,
+                firstName,
+                lastName,
+                homeCity,
+                isPilot: !!isPilot,
                 consent: { accepted: !!accepted },
                 consentVersions: consentVersions || legalVersions,
             }),
@@ -111,6 +115,22 @@ export function AuthProvider({ children }) {
     }
 
 
+    async function updateProfile({ firstName, lastName, homeCity, isPilot }) {
+        if (!token) throw new Error("Faça login para atualizar o perfil.");
+        const r = await fetch(`${API}/me/profile`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ firstName, lastName, homeCity, isPilot: !!isPilot }),
+        });
+        const json = await r.json().catch(() => ({}));
+        if (!r.ok) throw buildApiError(json, "Falha ao atualizar perfil.");
+        if (json?.user) setUser(json.user);
+        return json;
+    }
+
     function setPlan(plan){
         setUser((u)=> (u ? { ...u, plan } : u));
     }
@@ -123,7 +143,7 @@ export function AuthProvider({ children }) {
     }
 
     const value = useMemo(
-        () => ({ user, token, register, login, loginWithOAuth, logout, refreshMe, setPlan }),
+        () => ({ user, token, register, login, loginWithOAuth, logout, refreshMe, setPlan, updateProfile }),
         [user, token]
     );
 

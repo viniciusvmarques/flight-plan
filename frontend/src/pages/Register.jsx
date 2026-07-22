@@ -16,6 +16,10 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [homeCity, setHomeCity] = useState("");
+  const [isPilot, setIsPilot] = useState(false);
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -37,7 +41,16 @@ export default function Register() {
 
     try {
       setLoading(true);
-            const response = await register({ email, password, accepted: agree, locale: getStoredLocale() });
+            const response = await register({
+                email,
+                password,
+                accepted: agree,
+                locale: getStoredLocale(),
+                firstName,
+                lastName,
+                homeCity,
+                isPilot,
+            });
             trackSignupConversion();
             nav("/verify-email", {
                 replace: true,
@@ -80,6 +93,45 @@ export default function Register() {
             />
 
             <form onSubmit={onSubmit} className="auth-form">
+              <div className="auth-form-row">
+                <label>
+                  <span>{t("auth.firstName")}</span>
+                  <input
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder={t("auth.firstNamePlaceholder")}
+                    type="text"
+                    autoComplete="given-name"
+                  />
+                </label>
+                <label>
+                  <span>{t("auth.lastName")}</span>
+                  <input
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder={t("auth.lastNamePlaceholder")}
+                    type="text"
+                    autoComplete="family-name"
+                  />
+                </label>
+              </div>
+
+              <label>
+                <span>{t("auth.homeCity")}</span>
+                <input
+                  value={homeCity}
+                  onChange={(e) => setHomeCity(e.target.value)}
+                  placeholder={t("auth.homeCityPlaceholder")}
+                  type="text"
+                  autoComplete="address-level2"
+                />
+              </label>
+
+              <label className="auth-check">
+                <input type="checkbox" checked={isPilot} onChange={(e) => setIsPilot(e.target.checked)} />
+                <span>{t("auth.isPilot")}</span>
+              </label>
+
               <label>
                 <span>{t("auth.email")}</span>
                 <input

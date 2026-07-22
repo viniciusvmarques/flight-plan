@@ -602,7 +602,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
                             <div className="dashboard-planner-shell">
-                                <FlightPlanStack base={base} plan={base.plan || plannerSeed} onPlanChange={updatePlan} />
+                                <FlightPlanStack base={base} plan={base.plan || plannerSeed} onPlanChange={updatePlan} user={user} />
                             </div>
                         </section>
                     </>
