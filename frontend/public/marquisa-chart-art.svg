@@ -1,50 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-label="Carta aeronáutica">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-label="Carta aeronautica">
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0b1a2e"/>
-      <stop offset="55%" stop-color="#12243d"/>
-      <stop offset="100%" stop-color="#0a1524"/>
+      <stop offset="0%" stop-color="#16365a"/>
+      <stop offset="50%" stop-color="#1d4a72"/>
+      <stop offset="100%" stop-color="#0f2740"/>
     </linearGradient>
     <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#1a2f4a"/>
-      <stop offset="100%" stop-color="#12233a"/>
+      <stop offset="0%" stop-color="#24507a"/>
+      <stop offset="100%" stop-color="#18385a"/>
     </linearGradient>
     <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
-      <path d="M36 0H0V36" fill="none" stroke="rgba(148,197,255,0.08)" stroke-width="1"/>
+      <path d="M36 0H0V36" fill="none" stroke="rgba(186,230,253,0.22)" stroke-width="1"/>
     </pattern>
-    <radialGradient id="glow" cx="50%" cy="40%" r="55%">
-      <stop offset="0%" stop-color="rgba(56,189,248,0.22)"/>
+    <radialGradient id="glow" cx="48%" cy="38%" r="58%">
+      <stop offset="0%" stop-color="rgba(56,189,248,0.38)"/>
       <stop offset="100%" stop-color="rgba(56,189,248,0)"/>
     </radialGradient>
   </defs>
 
   <rect width="720" height="420" fill="url(#sky)"/>
   <rect width="720" height="420" fill="url(#glow)"/>
-  <rect x="24" y="24" width="672" height="372" rx="18" fill="url(#paper)" stroke="rgba(148,163,184,0.28)" stroke-width="1.5"/>
+  <rect x="24" y="24" width="672" height="372" rx="18" fill="url(#paper)" stroke="rgba(186,230,253,0.45)" stroke-width="2"/>
   <rect x="24" y="24" width="672" height="372" rx="18" fill="url(#grid)"/>
 
-  <!-- Contours -->
-  <path d="M70 300C140 250 210 320 290 280C360 245 420 300 500 270C560 248 610 210 660 230" fill="none" stroke="rgba(125,211,252,0.28)" stroke-width="1.4"/>
-  <path d="M80 330C150 285 230 340 310 305C390 270 450 330 540 300C600 280 640 250 670 265" fill="none" stroke="rgba(125,211,252,0.18)" stroke-width="1.2"/>
-  <path d="M60 250C130 210 200 270 280 235C360 200 430 255 520 220C590 190 640 170 680 185" fill="none" stroke="rgba(94,234,212,0.16)" stroke-width="1.2"/>
+  <path d="M70 300C140 250 210 320 290 280C360 245 420 300 500 270C560 248 610 210 660 230" fill="none" stroke="rgba(125,211,252,0.55)" stroke-width="2"/>
+  <path d="M80 330C150 285 230 340 310 305C390 270 450 330 540 300C600 280 640 250 670 265" fill="none" stroke="rgba(94,234,212,0.35)" stroke-width="1.6"/>
+  <path d="M60 250C130 210 200 270 280 235C360 200 430 255 520 220C590 190 640 170 680 185" fill="none" stroke="rgba(147,197,253,0.35)" stroke-width="1.5"/>
 
-  <!-- Airway lines -->
-  <path d="M90 340 L250 160 L470 210 L640 95" fill="none" stroke="rgba(248,250,252,0.55)" stroke-width="2" stroke-dasharray="8 6"/>
-  <path d="M120 90 L290 190 L520 140 L650 300" fill="none" stroke="rgba(125,211,252,0.45)" stroke-width="1.6" stroke-dasharray="4 7"/>
+  <path d="M90 340 L250 160 L470 210 L640 95" fill="none" stroke="#f8fafc" stroke-width="2.4" stroke-dasharray="8 6"/>
+  <path d="M120 90 L290 190 L520 140 L650 300" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="4 7"/>
 
-  <!-- Runway -->
   <g transform="translate(430 250) rotate(-18)">
-    <rect x="-92" y="-10" width="184" height="20" rx="3" fill="#0b1220" stroke="rgba(248,250,252,0.7)" stroke-width="1.5"/>
-    <path d="M-70 0H70" stroke="#f8fafc" stroke-width="1.5" stroke-dasharray="10 8"/>
-    <text x="-78" y="4" fill="#94a3b8" font-family="ui-monospace,monospace" font-size="10">09</text>
-    <text x="62" y="4" fill="#94a3b8" font-family="ui-monospace,monospace" font-size="10">27</text>
+    <rect x="-92" y="-10" width="184" height="20" rx="3" fill="#0b1220" stroke="#f8fafc" stroke-width="1.8"/>
+    <path d="M-70 0H70" stroke="#f8fafc" stroke-width="1.6" stroke-dasharray="10 8"/>
+    <text x="-78" y="4" fill="#cbd5e1" font-family="ui-monospace,monospace" font-size="10">09</text>
+    <text x="62" y="4" fill="#cbd5e1" font-family="ui-monospace,monospace" font-size="10">27</text>
   </g>
 
-  <!-- VOR / compass -->
   <g transform="translate(250 160)">
-    <circle r="46" fill="rgba(11,18,32,0.55)" stroke="rgba(148,163,184,0.55)" stroke-width="1.5"/>
-    <circle r="34" fill="none" stroke="rgba(125,211,252,0.35)" stroke-width="1"/>
-    <path d="M0 -46V46M-46 0H46" stroke="rgba(248,250,252,0.55)" stroke-width="1"/>
+    <circle r="46" fill="rgba(11,18,32,0.65)" stroke="#bae6fd" stroke-width="2"/>
+    <circle r="34" fill="none" stroke="rgba(125,211,252,0.55)" stroke-width="1.4"/>
+    <path d="M0 -46V46M-46 0H46" stroke="#f8fafc" stroke-width="1.2"/>
     <path d="M0 -40L4 -8 0 -12 -4 -8Z" fill="#f8fafc"/>
     <path d="M40 0L8 4 12 0 8 -4Z" fill="#94a3b8"/>
     <path d="M0 40L-4 8 0 12 4 8Z" fill="#94a3b8"/>
@@ -53,32 +49,29 @@
     <circle r="2" fill="#5eead4"/>
   </g>
 
-  <!-- Waypoints -->
-  <g fill="#7dd3fc">
-    <circle cx="120" cy="90" r="4"/>
-    <circle cx="290" cy="190" r="4"/>
-    <circle cx="520" cy="140" r="4"/>
-    <circle cx="640" cy="95" r="4"/>
-    <circle cx="470" cy="210" r="4"/>
+  <g fill="#38bdf8">
+    <circle cx="120" cy="90" r="5"/>
+    <circle cx="290" cy="190" r="5"/>
+    <circle cx="520" cy="140" r="5"/>
+    <circle cx="640" cy="95" r="5"/>
+    <circle cx="470" cy="210" r="5"/>
   </g>
-  <g fill="rgba(226,232,240,0.88)" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" letter-spacing="0.08em">
+  <g fill="#e2e8f0" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" letter-spacing="0.08em" font-weight="700">
     <text x="132" y="86">ALPHA</text>
     <text x="300" y="186">BRAVO</text>
     <text x="532" y="136">CHARLIE</text>
     <text x="560" y="88">DEST</text>
   </g>
 
-  <!-- Chart chrome -->
-  <text x="48" y="58" fill="#93c5fd" font-family="Arial,sans-serif" font-size="11" letter-spacing="0.22em" font-weight="700">VFR NAV CHART</text>
-  <text x="48" y="78" fill="rgba(226,232,240,0.75)" font-family="Arial,sans-serif" font-size="18" font-weight="700">Marquisa</text>
-  <text x="520" y="58" fill="rgba(148,163,184,0.85)" font-family="ui-monospace,monospace" font-size="11">FL 055 · 1:500.000</text>
-  <text x="520" y="76" fill="rgba(148,163,184,0.7)" font-family="ui-monospace,monospace" font-size="11">W/V 270/12 · QNH 1013</text>
+  <text x="48" y="58" fill="#7dd3fc" font-family="Arial,sans-serif" font-size="12" letter-spacing="0.22em" font-weight="700">VFR NAV CHART</text>
+  <text x="48" y="82" fill="#f8fafc" font-family="Arial,sans-serif" font-size="22" font-weight="700">Marquisa</text>
+  <text x="500" y="58" fill="#cbd5e1" font-family="ui-monospace,monospace" font-size="12">FL 055 ? 1:500.000</text>
+  <text x="500" y="78" fill="#94a3b8" font-family="ui-monospace,monospace" font-size="12">W/V 270/12 ? QNH 1013</text>
 
-  <!-- Scale bar -->
   <g transform="translate(48 360)">
-    <rect width="120" height="8" fill="none" stroke="rgba(226,232,240,0.45)" stroke-width="1"/>
-    <rect width="30" height="8" fill="rgba(226,232,240,0.55)"/>
-    <rect x="60" width="30" height="8" fill="rgba(226,232,240,0.55)"/>
-    <text y="24" fill="rgba(148,163,184,0.9)" font-family="ui-monospace,monospace" font-size="10">0 ··· 10 NM</text>
+    <rect width="120" height="8" fill="none" stroke="rgba(226,232,240,0.7)" stroke-width="1.2"/>
+    <rect width="30" height="8" fill="#e2e8f0"/>
+    <rect x="60" width="30" height="8" fill="#e2e8f0"/>
+    <text x="0" y="24" fill="#cbd5e1" font-family="ui-monospace,monospace" font-size="11">0    5    10 NM</text>
   </g>
 </svg>
