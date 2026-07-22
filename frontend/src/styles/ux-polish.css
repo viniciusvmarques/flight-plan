@@ -2191,46 +2191,92 @@ button:focus-visible {
 }
 
 .briefing-sheet {
-    gap: 14px;
+    gap: 12px;
 }
 
 .briefing-disclaimer {
     margin: 0;
-    padding: 10px 12px;
-    border-radius: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
     border: 1px solid rgba(251, 191, 36, 0.35);
     background: rgba(251, 191, 36, 0.08);
     color: rgba(254, 243, 199, 0.95);
-    font-size: 12.5px;
-    line-height: 1.45;
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 .briefing-lines {
-    display: grid;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
 }
 
 .briefing-line {
     display: grid;
-    gap: 10px;
-    align-items: end;
+    gap: 8px;
+    width: 100%;
+    align-items: stretch;
 }
 
-.briefing-line--3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+.briefing-line--id {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.85fr) minmax(0, 0.9fr);
 }
 
-.briefing-line--5 {
+.briefing-line--route,
+.briefing-line--times {
     grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
-.briefing-line--6 {
+.briefing-line--atc {
     grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
+.briefing-line--ops {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.05fr) minmax(0, 2.4fr);
+}
+
+.briefing-sheet .briefing-cell,
+.briefing-sheet .briefing-pen-field {
+    display: grid;
+    grid-template-rows: 14px 36px;
+    gap: 4px;
+    margin: 0;
+    min-width: 0;
+    align-content: start;
+}
+
+.briefing-sheet .briefing-cell .label,
+.briefing-sheet .briefing-pen-field .label {
+    display: block;
+    margin: 0;
+    padding: 0;
+    height: 14px;
+    line-height: 14px;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.82;
+    color: #5eead4;
+}
+
+.briefing-sheet .briefing-cell .input,
+.briefing-sheet .briefing-pen-field .briefing-pen-line {
+    width: 100%;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 10px;
+    line-height: 34px;
+    border-radius: 6px !important;
+}
+
 .briefing-pen-field .briefing-pen-line {
-    min-height: 38px;
-    border-radius: 10px;
     border: 1px dashed rgba(148, 163, 184, 0.55);
     background: rgba(15, 23, 42, 0.35);
 }
@@ -2246,15 +2292,26 @@ button:focus-visible {
 
 .briefing-rule-select {
     display: grid;
-    gap: 6px;
-    min-width: 110px;
+    grid-template-rows: 14px 36px;
+    gap: 4px;
+    min-width: 108px;
 }
 
 .briefing-rule-select .label {
-    font-size: 11px;
-    letter-spacing: 0.04em;
+    margin: 0;
+    height: 14px;
+    line-height: 14px;
+    font-size: 10px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: rgba(148, 163, 184, 0.9);
+}
+
+.briefing-rule-select .input {
+    height: 36px;
+    min-height: 36px;
+    padding: 0 10px;
+    border-radius: 6px !important;
 }
 
 .auth-form-row {
@@ -2263,17 +2320,29 @@ button:focus-visible {
     gap: 12px;
 }
 
-@media (max-width: 980px) {
-    .briefing-line--5,
-    .briefing-line--6 {
+@media (max-width: 1100px) {
+    .briefing-line--atc {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .briefing-line--route,
+    .briefing-line--times {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .briefing-line--ops {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 640px) {
-    .briefing-line--3,
-    .briefing-line--5,
-    .briefing-line--6,
+    .briefing-line--id,
+    .briefing-line--route,
+    .briefing-line--times,
+    .briefing-line--atc,
+    .briefing-line--ops,
     .auth-form-row {
         grid-template-columns: 1fr;
     }
@@ -2296,11 +2365,13 @@ button:focus-visible {
 
     .briefing-sheet .label,
     .briefing-sheet .plan-section-copy,
-    .briefing-sheet .card-title {
+    .briefing-sheet .card-title,
+    .briefing-rule-select .label {
         color: #111 !important;
     }
 
-    .briefing-sheet .input {
+    .briefing-sheet .briefing-cell .input,
+    .briefing-rule-select .input {
         border: 1px solid #222 !important;
         background: #fff !important;
         color: #111 !important;
@@ -2311,11 +2382,14 @@ button:focus-visible {
     .briefing-pen-field .briefing-pen-line {
         border: 1px solid #222 !important;
         background: #fff !important;
-        min-height: 28px;
     }
 
     .briefing-line {
         gap: 6px;
+    }
+
+    .briefing-meta-row {
+        display: none !important;
     }
 
     .plan-stack--anac .plan-panel {

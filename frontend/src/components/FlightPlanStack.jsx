@@ -30,16 +30,16 @@ function formatUtcClock() {
 
 function PenBox({ label }) {
     return (
-        <label className="plan-field briefing-pen-field">
+        <label className="plan-field briefing-cell briefing-pen-field">
             <span className="label">{label}</span>
             <div className="briefing-pen-line" />
         </label>
     );
 }
 
-function Field({ label, children, hint }) {
+function Field({ label, children, hint, className = "" }) {
     return (
-        <label className="plan-field">
+        <label className={`plan-field ${className}`.trim()}>
             <span className="label">{label}</span>
             {children}
             {hint ? <span className="plan-field-hint">{hint}</span> : null}
@@ -487,8 +487,8 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                     <p className="briefing-disclaimer">{t("planner.briefingDisclaimer")}</p>
 
                     <div className="briefing-lines">
-                        <div className="briefing-line briefing-line--3">
-                            <Field label={t("planner.aircraftId")}>
+                        <div className="briefing-line briefing-line--id">
+                            <Field className="briefing-cell" label={t("planner.aircraftId")}>
                                 <input
                                     className="input"
                                     value={p.registration ?? ""}
@@ -496,7 +496,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                                     placeholder="PR-ABC"
                                 />
                             </Field>
-                            <Field label={t("planner.pilotName")} hint={!profileName ? t("planner.pilotNameHint") : null}>
+                            <Field className="briefing-cell" label={t("planner.pilotName")}>
                                 <input
                                     className="input"
                                     value={pilotNameValue}
@@ -504,19 +504,19 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                                     placeholder={t("planner.pilotNamePlaceholder")}
                                 />
                             </Field>
-                            <Field label={t("planner.briefingDate")}>
+                            <Field className="briefing-cell" label={t("planner.briefingDate")}>
                                 <input className="input" value={briefingDate} readOnly />
                             </Field>
                         </div>
 
-                        <div className="briefing-line briefing-line--5">
-                            <Field label={t("common.origin")}>
+                        <div className="briefing-line briefing-line--route">
+                            <Field className="briefing-cell" label={t("common.origin")}>
                                 <input className="input" value={originIcao === "A" ? "" : originIcao} readOnly placeholder="ICAO" />
                             </Field>
-                            <Field label={t("common.destination")}>
+                            <Field className="briefing-cell" label={t("common.destination")}>
                                 <input className="input" value={destIcao} readOnly placeholder="ICAO" />
                             </Field>
-                            <Field label={t("planner.speedKt")}>
+                            <Field className="briefing-cell" label={t("planner.speedKt")}>
                                 <input
                                     className="input"
                                     value={p.tasKt ?? ""}
@@ -524,7 +524,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                                     placeholder="120"
                                 />
                             </Field>
-                            <Field label={t("planner.flightLevel")}>
+                            <Field className="briefing-cell" label={t("planner.flightLevel")}>
                                 <input
                                     className="input"
                                     value={p.cruiseLevel ?? ""}
@@ -532,13 +532,13 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                                     placeholder="FL090"
                                 />
                             </Field>
-                            <Field label={t("planner.distanceNm")} hint={t("planner.distanceHint")}>
+                            <Field className="briefing-cell" label={t("planner.distanceNm")}>
                                 <input className="input" value={routeDistanceLabel} readOnly placeholder="—" />
                             </Field>
                         </div>
 
-                        <div className="briefing-line briefing-line--5">
-                            <Field label={t("planner.utcTime")}>
+                        <div className="briefing-line briefing-line--times">
+                            <Field className="briefing-cell" label={t("planner.utcTime")}>
                                 <input className="input briefing-utc" value={utcNow} readOnly />
                             </Field>
                             <PenBox label={t("planner.startupTime")} />
@@ -547,53 +547,53 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                             <PenBox label={t("planner.shutdownTime")} />
                         </div>
 
-                        <div className="briefing-line briefing-line--6">
-                            <Field label="CLR">
+                        <div className="briefing-line briefing-line--atc">
+                            <Field className="briefing-cell" label="CLR">
                                 <input className="input" value={atc.clr ?? ""} onChange={(e) => setAtcFreq("clr", e.target.value)} placeholder="118.—" />
                             </Field>
-                            <Field label="GND">
+                            <Field className="briefing-cell" label="GND">
                                 <input className="input" value={atc.gnd ?? ""} onChange={(e) => setAtcFreq("gnd", e.target.value)} placeholder="121.—" />
                             </Field>
-                            <Field label="TWR">
+                            <Field className="briefing-cell" label="TWR">
                                 <input className="input" value={atc.twr ?? ""} onChange={(e) => setAtcFreq("twr", e.target.value)} placeholder="118.—" />
                             </Field>
-                            <Field label="APP">
+                            <Field className="briefing-cell" label="APP">
                                 <input className="input" value={atc.app ?? ""} onChange={(e) => setAtcFreq("app", e.target.value)} placeholder="119.—" />
                             </Field>
-                            <Field label="CTR">
+                            <Field className="briefing-cell" label="CTR">
                                 <input className="input" value={atc.ctr ?? ""} onChange={(e) => setAtcFreq("ctr", e.target.value)} placeholder="129.—" />
                             </Field>
-                            <Field label={t("planner.atcDest")}>
+                            <Field className="briefing-cell" label={t("planner.atcDest")}>
                                 <input className="input" value={atc.dest ?? ""} onChange={(e) => setAtcFreq("dest", e.target.value)} placeholder="DEST" />
                             </Field>
                         </div>
 
-                        <div className="briefing-line briefing-line--3">
-                            <Field label={t("planner.depRwy")}>
+                        <div className="briefing-line briefing-line--ops">
+                            <Field className="briefing-cell" label={t("planner.depRwy")}>
                                 <input className="input" value={p.depRwy ?? ""} onChange={(e) => setField("depRwy", e.target.value.toUpperCase())} placeholder="09" />
                             </Field>
-                            <Field label={t("planner.depAlt")}>
+                            <Field className="briefing-cell" label={t("planner.depAlt")}>
                                 <input className="input" value={p.depAltFt ?? ""} onChange={(e) => setField("depAltFt", e.target.value)} placeholder="ft" />
                             </Field>
-                            <Field label={t("planner.depNotes")}>
+                            <Field className="briefing-cell" label={t("planner.depNotes")}>
                                 <input className="input" value={p.depNotes ?? ""} onChange={(e) => setField("depNotes", e.target.value)} placeholder={t("planner.notesPlaceholder")} />
                             </Field>
                         </div>
 
-                        <div className="briefing-line briefing-line--3">
-                            <Field label={t("planner.arrRwy")}>
+                        <div className="briefing-line briefing-line--ops">
+                            <Field className="briefing-cell" label={t("planner.arrRwy")}>
                                 <input className="input" value={p.arrRwy ?? ""} onChange={(e) => setField("arrRwy", e.target.value.toUpperCase())} placeholder="27" />
                             </Field>
-                            <Field label={t("planner.arrAlt")}>
+                            <Field className="briefing-cell" label={t("planner.arrAlt")}>
                                 <input className="input" value={p.arrAltFt ?? ""} onChange={(e) => setField("arrAltFt", e.target.value)} placeholder="ft" />
                             </Field>
-                            <Field label={t("planner.arrNotes")}>
+                            <Field className="briefing-cell" label={t("planner.arrNotes")}>
                                 <input className="input" value={p.arrNotes ?? ""} onChange={(e) => setField("arrNotes", e.target.value)} placeholder={t("planner.notesPlaceholder")} />
                             </Field>
                         </div>
 
-                        <div className="briefing-line briefing-line--3">
-                            <Field label={t("common.alternate")}>
+                        <div className="briefing-line briefing-line--ops">
+                            <Field className="briefing-cell" label={t("common.alternate")}>
                                 <input
                                     className="input"
                                     value={p.altnIcao ?? altnIcao}
@@ -601,10 +601,10 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                                     placeholder="ICAO"
                                 />
                             </Field>
-                            <Field label={t("planner.altnRwy")}>
+                            <Field className="briefing-cell" label={t("planner.altnRwy")}>
                                 <input className="input" value={p.altnRwy ?? ""} onChange={(e) => setField("altnRwy", e.target.value.toUpperCase())} placeholder="—" />
                             </Field>
-                            <Field label={t("planner.altnNotes")}>
+                            <Field className="briefing-cell" label={t("planner.altnNotes")}>
                                 <input className="input" value={p.altnNotes ?? ""} onChange={(e) => setField("altnNotes", e.target.value)} placeholder={t("planner.notesPlaceholder")} />
                             </Field>
                         </div>
