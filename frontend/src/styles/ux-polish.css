@@ -2483,6 +2483,108 @@ button.danger-action:hover:not(:disabled) {
     text-transform: uppercase;
 }
 
+.plan-nav-editor {
+    display: grid;
+    gap: 14px;
+    margin: 8px 0 18px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: rgba(2, 6, 23, 0.16);
+}
+
+.plan-nav-editor-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.plan-nav-editor-head .plan-section-copy {
+    margin: 4px 0 0;
+}
+
+.plan-nav-add {
+    white-space: nowrap;
+}
+
+.plan-nav-origin {
+    width: fit-content;
+}
+
+.plan-nav-legs {
+    display: grid;
+    gap: 12px;
+}
+
+.plan-nav-leg-card {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.35);
+}
+
+.plan-nav-leg-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.plan-nav-leg-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.plan-nav-leg-hint {
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+    color: rgba(226, 232, 240, 0.72);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.plan-nav-table-wrap {
+    overflow-x: auto;
+    margin: 4px 0 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.plan-nav-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.plan-nav-table th,
+.plan-nav-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    white-space: nowrap;
+}
+
+.plan-nav-table th {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(148, 163, 184, 0.9);
+    background: rgba(2, 6, 23, 0.28);
+}
+
+.plan-nav-table td:first-child,
+.plan-nav-table th:first-child {
+    white-space: normal;
+    min-width: 140px;
+}
+
 .plan-total {
     display: grid;
     gap: 8px;

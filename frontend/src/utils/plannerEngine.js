@@ -1,4 +1,4 @@
-import { haversineNm } from "./distance";
+import { haversineNm } from "./distance.js";
 
 export function hasFilledValue(value) {
     return value !== undefined && value !== null && String(value).trim() !== "";
@@ -170,7 +170,20 @@ export function buildPlannerSnapshot(base, calculated, aircraft) {
             groundSpeedKt: calculated.groundSpeedKt,
             headingDeg: calculated.headingDeg,
             cruiseLevelLabel: calculated.cruiseLevelLabel,
+            routeMode: calculated.routeMode,
+            routeLabel: calculated.flightPlanSummary?.route || "",
+            navLegCount: Array.isArray(calculated.navLegs) ? calculated.navLegs.length : 0,
+            tocNm: calculated.toc?.distanceFromOriginNm,
+            todNm: calculated.tod?.distanceFromOriginNm,
         },
+        navLegs: Array.isArray(calculated.navLegs)
+            ? calculated.navLegs.map((leg) => ({
+                  id: leg.id,
+                  name: leg.name,
+                  distanceNm: leg.distanceNm,
+                  eteMin: leg.eteMin,
+              }))
+            : [],
     };
 }
 
@@ -226,21 +239,107 @@ function calculateWindNavigation(working, tasKt, fallbackGsKt) {
     };
 }
 
-function buildCheckpoints(working, routeDistNm, groundSpeedKt) {
-    const raw = Array.isArray(working.vfrCheckpoints) ? working.vfrCheckpoints : [];
-    return raw
-        .map((item, index) => {
-            const distanceNm = clampPositive(item?.distanceNm);
-            const eteMin = groundSpeedKt > 0 ? (distanceNm / groundSpeedKt) * 60 : 0;
-            return {
-                id: item?.id || `cp-${index}`,
-                name: String(item?.name || `Ponto ${index + 1}`).trim(),
-                distanceNm,
-                eteMin,
-                cumulativeNm: Math.min(routeDistNm, distanceNm),
-            };
-        })
-        .filter((item) => item.distanceNm > 0 || item.name);
+function rawNavLegSource(working) {
+    if (Array.isArray(working.navLegs) && working.navLegs.length) return working.navLegs;
+    if (Array.isArray(working.vfrCheckpoints) && working.vfrCheckpoints.length) return working.vfrCheckpoints;
+    return [];
+}
+
+/**
+ * Log multi-trecho (Bianch): pontos após a origem; último ponto = destino.
+ * Campos vazios herdam defaults globais do plano (seção 2).
+ */
+export function buildNavLegs(working, context = {}, defaults = {}) {
+    const raw = rawNavLegSource(working);
+    const originIcao = context.originIcao || "A";
+    const destIcao = context.destIcao || "B";
+    const defaultTas = clampPositive(defaults.tasKt);
+    const defaultGsFallback = hasFilledValue(defaults.groundSpeedKt) ? clampPositive(defaults.groundSpeedKt) : null;
+    const magVariationDeg = toNumber(defaults.magVariationDeg ?? working.magVariationDeg, 0);
+
+    let cumulativeNm = 0;
+    let cumulativeEteMin = 0;
+    const legs = [];
+
+    raw.forEach((item, index) => {
+        const isLast = index === raw.length - 1;
+        const name = String(item?.name || (isLast ? destIcao : `WP ${index + 1}`)).trim() || (isLast ? destIcao : `WP ${index + 1}`);
+        const distanceNm = clampPositive(item?.distanceNm);
+        const fromLabel = index === 0 ? originIcao : String(raw[index - 1]?.name || `WP ${index}`).trim() || `WP ${index}`;
+        const legWorking = {
+            trueCourseDeg: hasFilledValue(item?.trueCourseDeg) ? item.trueCourseDeg : defaults.trueCourseDeg,
+            magVariationDeg,
+            windDirectionDeg: hasFilledValue(item?.windDirectionDeg) ? item.windDirectionDeg : defaults.windDirectionDeg,
+            windSpeedKt: hasFilledValue(item?.windSpeedKt) ? item.windSpeedKt : defaults.windSpeedKt,
+            windCompKt: defaults.windCompKt,
+        };
+        const tasKt = hasFilledValue(item?.tasKt) ? clampPositive(item.tasKt) : defaultTas;
+        const hasGsOverride = hasFilledValue(item?.groundSpeedKt);
+        const fallbackGs = hasGsOverride ? clampPositive(item.groundSpeedKt) : defaultGsFallback;
+        const nav = calculateWindNavigation(legWorking, tasKt, fallbackGs);
+        // GS manual na perna tem prioridade sobre o vento estimado (override explícito).
+        const gsKt = hasGsOverride ? clampPositive(item.groundSpeedKt) : nav.groundSpeedKt;
+        const eteMin = gsKt > 0 ? (distanceNm / gsKt) * 60 : 0;
+        cumulativeNm += distanceNm;
+        cumulativeEteMin += eteMin;
+
+        legs.push({
+            id: item?.id || `leg-${index}`,
+            index,
+            name,
+            fromLabel,
+            toLabel: name,
+            label: `${fromLabel} → ${name}`,
+            distanceNm,
+            trueCourseDeg: nav.trueCourseDeg,
+            magCourseDeg: nav.magCourseDeg,
+            headingDeg: nav.headingDeg,
+            magHeadingDeg: nav.magHeadingDeg,
+            windCorrectionDeg: nav.windCorrectionDeg,
+            headwindKt: nav.headwindKt,
+            crosswindKt: nav.crosswindKt,
+            windDirectionDeg: nav.windDirectionDeg,
+            windSpeedKt: nav.windSpeedKt,
+            tasKt,
+            gsKt,
+            eteMin,
+            cumulativeNm,
+            cumulativeEteMin,
+            isDestination: isLast,
+        });
+    });
+
+    const totalDistanceNm = legs.reduce((sum, leg) => sum + leg.distanceNm, 0);
+    const totalEteMin = legs.reduce((sum, leg) => sum + leg.eteMin, 0);
+    const weightedGs =
+        totalDistanceNm > 0
+            ? legs.reduce((sum, leg) => sum + leg.gsKt * leg.distanceNm, 0) / totalDistanceNm
+            : defaults.groundSpeedKt || defaultTas || 0;
+    // Média harmônica: GS efetiva que reproduz o ETE total (correto com vento misto por perna).
+    const harmonicGsKt = totalEteMin > 0 && totalDistanceNm > 0 ? totalDistanceNm / (totalEteMin / 60) : weightedGs;
+
+    const routeLabel = [originIcao, ...legs.map((leg) => leg.name)].filter(Boolean).join(" → ");
+
+    return {
+        legs,
+        totalDistanceNm,
+        totalEteMin,
+        weightedGsKt: weightedGs,
+        harmonicGsKt,
+        routeLabel,
+        hasValidLegs: legs.some((leg) => leg.distanceNm > 0),
+    };
+}
+
+/** Compat: checkpoints legados viram resumo simples. */
+function buildCheckpointsFromNav(navLog) {
+    return (navLog?.legs || []).map((leg) => ({
+        id: leg.id,
+        name: leg.name,
+        distanceNm: leg.distanceNm,
+        eteMin: leg.eteMin,
+        cumulativeNm: leg.cumulativeNm,
+    }));
 }
 
 function buildOperationalChecklist({ working, flightRule, hasDest, hasAlternate, hasMetar, hasTaf, fuelMarginL, cruiseLevelLabel }) {
@@ -304,13 +403,35 @@ export function calculatePlanner(plan, context = {}) {
     const suggestedRouteDistNm = distanceBetweenAirports(context.originAirport, context.destAirport);
     const suggestedAlternateDistNm = distanceBetweenAirports(context.destAirport || context.originAirport, context.alternateAirport);
 
-    const routeDistNm = clampPositive(hasFilledValue(working.routeDistNm) ? working.routeDistNm : suggestedRouteDistNm);
     const tasKt = clampPositive(working.tasKt);
     const fallbackGsKt = hasFilledValue(working.groundSpeedKt) ? clampPositive(working.groundSpeedKt) : null;
     const nav = calculateWindNavigation(working, tasKt, fallbackGsKt);
     const windCompKt = -nav.headwindKt;
-    const gsKt = nav.groundSpeedKt;
-    const groundSpeedKt = nav.groundSpeedKt;
+
+    const navLog = buildNavLegs(
+        working,
+        context,
+        {
+            tasKt,
+            groundSpeedKt: fallbackGsKt ?? nav.groundSpeedKt,
+            trueCourseDeg: working.trueCourseDeg,
+            magVariationDeg: working.magVariationDeg,
+            windDirectionDeg: working.windDirectionDeg,
+            windSpeedKt: working.windSpeedKt,
+            windCompKt: working.windCompKt,
+        }
+    );
+    const useNavLegs = routeMode === "checkpoints" && navLog.hasValidLegs;
+
+    const routeDistNm = useNavLegs
+        ? navLog.totalDistanceNm
+        : clampPositive(hasFilledValue(working.routeDistNm) ? working.routeDistNm : suggestedRouteDistNm);
+
+    // Com multi-trecho, usar GS harmônica para tempos/combustível (bate com soma dos ETEs).
+    const groundSpeedKt = useNavLegs && navLog.harmonicGsKt > 0
+        ? navLog.harmonicGsKt
+        : nav.groundSpeedKt;
+    const gsKt = groundSpeedKt;
     const cruiseAltFt = clampPositive(working.cruiseAltFt || working.defaultCruiseAltFt);
     const cruiseLevel = String(working.cruiseLevel || "").trim().toUpperCase();
     const transitionMode = String(working.transitionMode || (cruiseLevel ? "flightLevel" : "altitude"));
@@ -331,12 +452,36 @@ export function calculatePlanner(plan, context = {}) {
     const extraFuelL = clampPositive(working.extraFuelL);
 
     const cruiseMode = String(working.cruiseMode || "auto");
-    const cruiseDistNm = clampPositive(hasFilledValue(working.cruiseDistNm) ? working.cruiseDistNm : routeDistNm);
     const cruiseGsKt = clampPositive(hasFilledValue(working.cruiseGsKt) ? working.cruiseGsKt : groundSpeedKt);
+    const climbGsKt = clampPositive(hasFilledValue(working.climbGsKt) ? working.climbGsKt : cruiseGsKt || groundSpeedKt);
+    const descentGsKt = clampPositive(hasFilledValue(working.descentGsKt) ? working.descentGsKt : cruiseGsKt || groundSpeedKt);
+    const climbDistNm = climbGsKt > 0 ? (climbTimeMin / 60) * climbGsKt : 0;
+    const descentDistNm = descentGsKt > 0 ? (descentTimeMin / 60) * descentGsKt : 0;
+    const cruiseDistAutoNm = Math.max(0, routeDistNm - climbDistNm - descentDistNm);
+    const cruiseDistNm = clampPositive(
+        hasFilledValue(working.cruiseDistNm)
+            ? working.cruiseDistNm
+            : cruiseMode === "auto"
+              ? cruiseDistAutoNm
+              : routeDistNm
+    );
     const cruiseTimeMinAuto = cruiseGsKt > 0 ? (cruiseDistNm / cruiseGsKt) * 60 : 0;
     const cruiseTimeMin = cruiseMode === "auto" ? cruiseTimeMinAuto : clampPositive(working.cruiseTimeMin);
     const cruiseFuelLAuto = fuelFlowCruiseLph > 0 ? (cruiseTimeMin / 60) * fuelFlowCruiseLph : 0;
     const cruiseFuelL = cruiseMode === "auto" ? cruiseFuelLAuto : clampPositive(working.cruiseFuelL);
+
+    const toc = {
+        distanceFromOriginNm: Math.min(routeDistNm, climbDistNm),
+        eteMin: climbTimeMin,
+        label: "TOC",
+    };
+    const todDistanceFromDestNm = Math.min(routeDistNm, descentDistNm);
+    const tod = {
+        distanceFromOriginNm: Math.max(0, routeDistNm - todDistanceFromDestNm),
+        distanceFromDestNm: todDistanceFromDestNm,
+        eteMin: Math.max(0, climbTimeMin + cruiseTimeMin),
+        label: "TOD",
+    };
 
     const alternateLegDistNm = clampPositive(hasFilledValue(working.alternateLegDistNm) ? working.alternateLegDistNm : suggestedAlternateDistNm);
     const alternateGsKt = clampPositive(hasFilledValue(working.alternateGsKt) ? working.alternateGsKt : groundSpeedKt);
@@ -357,33 +502,83 @@ export function calculatePlanner(plan, context = {}) {
     const remainingAfterRequiredL = Math.max(0, fuelOnBoardL - totalFuelL);
     const enduranceHours = fuelFlowCruiseLph > 0 ? fuelOnBoardL / fuelFlowCruiseLph : 0;
     const enduranceMin = enduranceHours * 60;
-    const eetMinutes = hasFilledValue(working.eetMinutes) ? clampPositive(working.eetMinutes) : tripTimeMin;
-    const vfrCheckpoints = buildCheckpoints(working, routeDistNm, groundSpeedKt);
+    const navLogEteMin = useNavLegs ? navLog.totalEteMin : tripTimeMin;
+    // EET operacional = perfil vertical (subida+cruzeiro+descida). Com GS harmônica,
+    // tripTime ≈ navLogEteMin; não usar max() (superestimava com vento misto).
+    const eetMinutes = hasFilledValue(working.eetMinutes)
+        ? clampPositive(working.eetMinutes)
+        : useNavLegs && climbTimeMin <= 0 && descentTimeMin <= 0
+          ? navLogEteMin
+          : tripTimeMin;
+    const vfrCheckpoints = buildCheckpointsFromNav(navLog);
 
-    const legs = [
-        context.destAirport || context.destIcao
-            ? {
-                  code: "A-B",
-                  label: `${context.originIcao || "A"} → ${context.destIcao || "B"}`,
-                  distanceNm: routeDistNm,
-                  gsKt: cruiseGsKt || groundSpeedKt,
-                  timeMin: tripTimeMin,
-              }
-            : null,
-        context.alternateAirport || context.alternateIcao
-            ? {
-                  code: context.destIcao ? "B-C" : "A-C",
-                  label: `${context.destIcao || context.originIcao || "A"} → ${context.alternateIcao || "C"}`,
-                  distanceNm: alternateLegDistNm,
-                  gsKt: alternateGsKt || groundSpeedKt,
-                  timeMin: alternateTimeMinAuto,
-              }
-            : null,
-    ].filter(Boolean);
+    const routeSummaryLabel = useNavLegs
+        ? `${navLog.routeLabel}${context.alternateIcao ? ` / ALT ${context.alternateIcao}` : ""}`
+        : `${context.originIcao || "A"}${context.destIcao ? ` → ${context.destIcao}` : ""}${context.alternateIcao ? ` / ALT ${context.alternateIcao}` : ""}`;
+
+    const legs = useNavLegs
+        ? [
+              ...navLog.legs.map((leg, index) => ({
+                  code: `L${index + 1}`,
+                  label: leg.label,
+                  distanceNm: leg.distanceNm,
+                  gsKt: leg.gsKt,
+                  timeMin: leg.eteMin,
+                  trueCourseDeg: leg.trueCourseDeg,
+                  magCourseDeg: leg.magCourseDeg,
+                  headingDeg: leg.headingDeg,
+                  cumulativeNm: leg.cumulativeNm,
+                  cumulativeEteMin: leg.cumulativeEteMin,
+              })),
+              context.alternateAirport || context.alternateIcao
+                  ? {
+                        code: "ALTN",
+                        label: `${context.destIcao || context.originIcao || "B"} → ${context.alternateIcao || "C"}`,
+                        distanceNm: alternateLegDistNm,
+                        gsKt: alternateGsKt || groundSpeedKt,
+                        timeMin: alternateTimeMinAuto,
+                    }
+                  : null,
+          ].filter(Boolean)
+        : [
+              context.destAirport || context.destIcao
+                  ? {
+                        code: "A-B",
+                        label: `${context.originIcao || "A"} → ${context.destIcao || "B"}`,
+                        distanceNm: routeDistNm,
+                        gsKt: cruiseGsKt || groundSpeedKt,
+                        timeMin: tripTimeMin,
+                    }
+                  : null,
+              context.alternateAirport || context.alternateIcao
+                  ? {
+                        code: context.destIcao ? "B-C" : "A-C",
+                        label: `${context.destIcao || context.originIcao || "A"} → ${context.alternateIcao || "C"}`,
+                        distanceNm: alternateLegDistNm,
+                        gsKt: alternateGsKt || groundSpeedKt,
+                        timeMin: alternateTimeMinAuto,
+                    }
+                  : null,
+          ].filter(Boolean);
 
     const warnings = [];
-    if (!hasAnyFilled(working.trueCourseDeg, working.cruiseGsKt, working.groundSpeedKt, working.windCompKt)) {
+    if (routeMode === "checkpoints" && !navLog.hasValidLegs) {
+        warnings.push("Modo checkpoints: adicione waypoints com distância para montar o log de navegação.");
+    }
+    if (
+        useNavLegs &&
+        suggestedRouteDistNm > 0 &&
+        Math.abs(navLog.totalDistanceNm - suggestedRouteDistNm) > Math.max(5, suggestedRouteDistNm * 0.08)
+    ) {
+        warnings.push(
+            `Soma das pernas (${navLog.totalDistanceNm.toFixed(0)} NM) difere da distância direta A-B sugerida (${suggestedRouteDistNm} NM).`
+        );
+    }
+    if (!useNavLegs && !hasAnyFilled(working.trueCourseDeg, working.cruiseGsKt, working.groundSpeedKt, working.windCompKt)) {
         warnings.push("Informe rumo/vento ou GS para uma navegação estimada mais completa.");
+    }
+    if (useNavLegs && climbDistNm + descentDistNm > routeDistNm + 0.1) {
+        warnings.push("Distâncias de subida + descida excedem a rota; cruzeiro auto ficou em 0 NM.");
     }
     if (!cruiseLevelLabel) warnings.push("Informe altitude ou nível de cruzeiro para completar a ficha de navegação.");
     if (flightRule === "IFR" && !(context.alternateAirport || context.alternateIcao)) {
@@ -412,7 +607,7 @@ export function calculatePlanner(plan, context = {}) {
     const flightPlanSummary = {
         aircraftId: working.registration || working.callsign || "—",
         rule: flightRule,
-        route: `${context.originIcao || "A"}${context.destIcao ? ` → ${context.destIcao}` : ""}${context.alternateIcao ? ` / ALT ${context.alternateIcao}` : ""}`,
+        route: routeSummaryLabel,
         speed: tasKt ? `N${tasKt.toFixed(0)}` : "—",
         level: cruiseLevelLabel || "—",
         eet: fmtClock(eetMinutes),
@@ -454,8 +649,11 @@ export function calculatePlanner(plan, context = {}) {
         taxiFuelL,
         climbTimeMin,
         climbFuelL,
+        climbGsKt,
+        climbDistNm,
         cruiseMode,
         cruiseDistNm,
+        cruiseDistAutoNm,
         cruiseGsKt,
         cruiseTimeMinAuto,
         cruiseTimeMin,
@@ -463,7 +661,11 @@ export function calculatePlanner(plan, context = {}) {
         cruiseFuelL,
         descentTimeMin,
         descentFuelL,
+        descentGsKt,
+        descentDistNm,
         approachFuelL,
+        toc,
+        tod,
         alternateGsKt,
         alternateTimeMinAuto,
         alternateFuelAuto,
@@ -484,6 +686,9 @@ export function calculatePlanner(plan, context = {}) {
         enduranceHours,
         enduranceMin,
         eetMinutes,
+        navLegs: navLog.legs,
+        navLog,
+        useNavLegs,
         vfrCheckpoints,
         legs,
         warnings,

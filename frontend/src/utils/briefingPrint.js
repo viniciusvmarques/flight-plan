@@ -27,6 +27,16 @@ export function openBriefingPrintWindow(model, labels = {}) {
           </section>`
         : "";
 
+    const navLegsHtml =
+        model.useNavLegs && model.navLegs?.length
+            ? `<div class="section-title">${escapeHtml(L.navLog || "LOG MULTI-TRECHO")}</div>
+               <div class="nav-log">
+                 ${model.navLegs
+                     .map((leg) => `<div class="nav-log-line">${escapeHtml(leg.line || `${leg.label} ${leg.distanceNm}`)}</div>`)
+                     .join("")}
+               </div>`
+            : "";
+
     const html = `<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -191,6 +201,17 @@ export function openBriefingPrintWindow(model, labels = {}) {
       text-transform: uppercase;
       font-weight: 700;
     }
+    .nav-log {
+      display: grid;
+      gap: 4px;
+      margin: 0 0 14px;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .nav-log-line {
+      padding: 4px 0;
+      border-bottom: 1px dashed rgba(31, 41, 55, 0.25);
+    }
     @media print {
       body { background: #fff; }
       .toolbar { display: none !important; }
@@ -241,7 +262,12 @@ export function openBriefingPrintWindow(model, labels = {}) {
       <div>MH ${escapeHtml(model.magHdg)}</div>
       <div>CRZ ${escapeHtml(model.cruise)}</div>
       <div>WIND ${escapeHtml(model.wind)}</div>
+      <div>${escapeHtml(model.toc || "TOC —")}</div>
+      <div>${escapeHtml(model.tod || "TOD —")}</div>
+      <div>CRZ DIST ${escapeHtml(model.cruiseDist || "—")}</div>
     </div>
+
+    ${navLegsHtml}
 
     <div class="section-title">${escapeHtml(L.fuel || "COMBUSTÍVEL")}</div>
     <div class="kv">

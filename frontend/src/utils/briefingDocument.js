@@ -48,15 +48,36 @@ export function buildBriefingDocumentModel({ base, planner, locale = "pt-BR", br
     const calc = planner || {};
 
     const route =
-        dest?.icao
-            ? `${origin?.icao || "----"} → ${dest.icao}`
-            : String(origin?.icao || "----");
+        calc.useNavLegs && calc.navLog?.routeLabel
+            ? calc.navLog.routeLabel
+            : dest?.icao
+              ? `${origin?.icao || "----"} → ${dest.icao}`
+              : String(origin?.icao || "----");
 
     const stations = [
         stationBlock("A · ORIG", origin, locale),
         dest ? stationBlock("B · DEST", dest, locale) : null,
         alternate ? stationBlock("C · ALTN", alternate, locale) : null,
     ].filter(Boolean);
+
+    const navLegs = Array.isArray(calc.navLegs)
+        ? calc.navLegs.map((leg, index) => ({
+              index: index + 1,
+              label: leg.label || `${leg.fromLabel || ""} → ${leg.name || ""}`,
+              name: leg.name || "",
+              distanceNm: Number.isFinite(leg.distanceNm) ? `${fmtNum(leg.distanceNm, 0)} NM` : "—",
+              course: Number.isFinite(leg.trueCourseDeg) ? fmtDeg(leg.trueCourseDeg) : "—",
+              magCourse: Number.isFinite(leg.magCourseDeg) ? fmtDeg(leg.magCourseDeg) : "—",
+              heading: Number.isFinite(leg.headingDeg) ? fmtDeg(leg.headingDeg) : "—",
+              gs: Number.isFinite(leg.gsKt) && leg.gsKt > 0 ? `${fmtNum(leg.gsKt, 0)} KT` : "—",
+              ete: Number.isFinite(leg.eteMin) ? fmtClock(leg.eteMin) : "—",
+              line: `L${index + 1} ${leg.label || leg.name || "WP"}  ${fmtNum(leg.distanceNm, 0)}NM  TC ${
+                  Number.isFinite(leg.trueCourseDeg) ? fmtDeg(leg.trueCourseDeg) : "-"
+              }  GS ${Number.isFinite(leg.gsKt) ? fmtNum(leg.gsKt, 0) : "-"}  ETE ${
+                  Number.isFinite(leg.eteMin) ? fmtClock(leg.eteMin) : "-"
+              }`,
+          }))
+        : [];
 
     return {
         brand,
@@ -86,6 +107,18 @@ export function buildBriefingDocumentModel({ base, planner, locale = "pt-BR", br
             Number.isFinite(calc.windDirectionDeg) && Number.isFinite(calc.windSpeedKt)
                 ? `${fmtDeg(calc.windDirectionDeg)} / ${fmtNum(calc.windSpeedKt, 0)} KT`
                 : "—",
+        toc:
+            calc.toc && Number.isFinite(calc.toc.distanceFromOriginNm)
+                ? `TOC ${fmtNum(calc.toc.distanceFromOriginNm, 0)} NM / ${fmtClock(calc.toc.eteMin)}`
+                : "—",
+        tod:
+            calc.tod && Number.isFinite(calc.tod.distanceFromOriginNm)
+                ? `TOD ${fmtNum(calc.tod.distanceFromOriginNm, 0)} NM / ${fmtClock(calc.tod.eteMin)}`
+                : "—",
+        cruiseDist:
+            Number.isFinite(calc.cruiseDistNm) ? `${fmtNum(calc.cruiseDistNm, 0)} NM` : "—",
+        useNavLegs: !!calc.useNavLegs,
+        navLegs,
         warnings: Array.isArray(calc.warnings) ? calc.warnings.slice(0, 4) : [],
         stations,
         disclaimer:

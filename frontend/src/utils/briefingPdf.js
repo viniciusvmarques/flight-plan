@@ -256,6 +256,20 @@ function modelToLines(model, labels) {
         wrap: true,
     });
     lines.push({ text: `WIND ${model.wind}`, size: 9, wrap: true });
+    lines.push({
+        text: `${model.toc || "TOC -"}   ${model.tod || "TOD -"}   CRZ DIST ${model.cruiseDist || "-"}`,
+        size: 9,
+        wrap: true,
+    });
+
+    if (model.useNavLegs && model.navLegs?.length) {
+        lines.push("__GAP__");
+        lines.push({ text: L.navLog || "LOG MULTI-TRECHO", size: 10, bold: true, wrap: true });
+        for (const leg of model.navLegs) {
+            lines.push({ text: leg.line || `${leg.label} ${leg.distanceNm}`, size: 8, wrap: true });
+        }
+    }
+
     lines.push("__GAP__");
     lines.push({ text: L.fuel || "COMBUSTIVEL", size: 10, bold: true, wrap: true });
     lines.push({

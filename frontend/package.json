@@ -9,7 +9,8 @@
     "build": "node scripts/copy-bg.mjs && vite build",
     "sync:sample": "node ../backend/scripts/generate-fixed-sample-json.mjs",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:planner": "node scripts/test-planner-nav.mjs"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

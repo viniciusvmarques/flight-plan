@@ -103,6 +103,194 @@ function RouteChip({ base }) {
     );
 }
 
+function createNavLegId() {
+    return `leg-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function emptyNavLeg(name = "") {
+    return {
+        id: createNavLegId(),
+        name,
+        distanceNm: "",
+        trueCourseDeg: "",
+        windDirectionDeg: "",
+        windSpeedKt: "",
+        tasKt: "",
+        groundSpeedKt: "",
+    };
+}
+
+function migrateLegacyCheckpoints(plan, destIcao) {
+    if (!Array.isArray(plan?.vfrCheckpoints) || !plan.vfrCheckpoints.length) return null;
+    return plan.vfrCheckpoints.map((item, index) => ({
+        id: item?.id || createNavLegId(),
+        name: item?.name || (index === plan.vfrCheckpoints.length - 1 ? destIcao || "" : ""),
+        distanceNm: item?.distanceNm ?? "",
+        trueCourseDeg: item?.trueCourseDeg ?? "",
+        windDirectionDeg: item?.windDirectionDeg ?? "",
+        windSpeedKt: item?.windSpeedKt ?? "",
+        tasKt: item?.tasKt ?? "",
+        groundSpeedKt: item?.groundSpeedKt ?? "",
+    }));
+}
+
+function resolveEditableNavLegs(plan, destIcao) {
+    if (Array.isArray(plan?.navLegs) && plan.navLegs.length) return plan.navLegs;
+    return migrateLegacyCheckpoints(plan, destIcao);
+}
+
+function NavLogTable({ legs }) {
+    if (!legs?.length) return null;
+    return (
+        <div className="plan-nav-table-wrap">
+            <table className="plan-nav-table">
+                <thead>
+                    <tr>
+                        <th>Perna</th>
+                        <th>Dist</th>
+                        <th>RV</th>
+                        <th>RM</th>
+                        <th>Proa</th>
+                        <th>GS</th>
+                        <th>ETE</th>
+                        <th>Acum.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {legs.map((leg) => (
+                        <tr key={leg.id || leg.code || leg.label}>
+                            <td>{leg.label}</td>
+                            <td>{Number.isFinite(leg.distanceNm) ? `${leg.distanceNm.toFixed(0)} NM` : "—"}</td>
+                            <td>{fmtDeg(leg.trueCourseDeg)}</td>
+                            <td>{fmtDeg(leg.magCourseDeg)}</td>
+                            <td>{fmtDeg(leg.headingDeg)}</td>
+                            <td>{Number.isFinite(leg.gsKt) && leg.gsKt > 0 ? `${leg.gsKt.toFixed(0)} kt` : "—"}</td>
+                            <td>{fmtMinutes(leg.eteMin ?? leg.timeMin)}</td>
+                            <td>{fmtMinutes(leg.cumulativeEteMin ?? leg.eteMin ?? leg.timeMin)}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+function NavLegsEditor({ legs, originIcao, destIcao, onChange, t }) {
+    function updateLeg(index, key, value) {
+        const next = legs.map((leg, i) => (i === index ? { ...leg, [key]: value } : leg));
+        onChange(next);
+    }
+
+    function addWaypoint() {
+        const next = [...legs];
+        if (!next.length) {
+            onChange([emptyNavLeg(""), emptyNavLeg(destIcao || "")]);
+            return;
+        }
+        const insertAt = Math.max(0, next.length - 1);
+        next.splice(insertAt, 0, emptyNavLeg(""));
+        const last = next[next.length - 1];
+        if (destIcao && (!last.name || last.name === destIcao)) {
+            next[next.length - 1] = { ...last, name: destIcao };
+        }
+        onChange(next);
+    }
+
+    function removeLeg(index) {
+        if (legs.length <= 1) {
+            onChange([]);
+            return;
+        }
+        onChange(legs.filter((_, i) => i !== index));
+    }
+
+    function moveLeg(index, delta) {
+        const target = index + delta;
+        if (target < 0 || target >= legs.length) return;
+        const next = [...legs];
+        const [item] = next.splice(index, 1);
+        next.splice(target, 0, item);
+        onChange(next);
+    }
+
+    return (
+        <div className="plan-nav-editor">
+            <div className="plan-nav-editor-head">
+                <div>
+                    <strong>{t("planner.navLogTitle")}</strong>
+                    <p className="plan-section-copy">{t("planner.navLogCopy")}</p>
+                </div>
+                <button type="button" className="btn btn-secondary plan-nav-add" onClick={addWaypoint}>
+                    {t("planner.addWaypoint")}
+                </button>
+            </div>
+
+            <div className="plan-nav-origin chip ok">
+                {t("planner.originPoint")}: <strong>{originIcao || "A"}</strong>
+            </div>
+
+            {!legs.length ? (
+                <p className="plan-section-copy">{t("planner.navLogCopy")}</p>
+            ) : null}
+
+            <div className="plan-nav-legs">
+                {legs.map((leg, index) => {
+                    const isLast = index === legs.length - 1;
+                    return (
+                        <div key={leg.id || `leg-${index}`} className="plan-nav-leg-card">
+                            <div className="plan-nav-leg-toolbar">
+                                <span className="plan-leg-code">{isLast ? "DEST" : `WP${index + 1}`}</span>
+                                <div className="plan-nav-leg-actions">
+                                    <button type="button" className="btn btn-ghost" disabled={index === 0} onClick={() => moveLeg(index, -1)} aria-label="Subir">
+                                        ↑
+                                    </button>
+                                    <button type="button" className="btn btn-ghost" disabled={isLast} onClick={() => moveLeg(index, 1)} aria-label="Descer">
+                                        ↓
+                                    </button>
+                                    <button type="button" className="btn btn-ghost" onClick={() => removeLeg(index)} aria-label={t("planner.removeWaypoint")}>
+                                        {t("planner.removeWaypoint")}
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="plan-grid plan-grid--4">
+                                <Field label={t("planner.waypointName")}>
+                                    <input
+                                        className="input"
+                                        value={leg.name ?? ""}
+                                        onChange={(e) => updateLeg(index, "name", e.target.value)}
+                                        placeholder={isLast ? destIcao || "Destino" : "Rio / cidade / ref. visual"}
+                                    />
+                                </Field>
+                                <Field label={t("planner.legDistance")}>
+                                    <input className="input" value={leg.distanceNm ?? ""} onChange={(e) => updateLeg(index, "distanceNm", e.target.value)} placeholder="42" />
+                                </Field>
+                                <Field label={t("planner.legCourse")}>
+                                    <input className="input" value={leg.trueCourseDeg ?? ""} onChange={(e) => updateLeg(index, "trueCourseDeg", e.target.value)} placeholder={t("planner.inheritDefault")} />
+                                </Field>
+                                <Field label={t("planner.legWindDir")}>
+                                    <input className="input" value={leg.windDirectionDeg ?? ""} onChange={(e) => updateLeg(index, "windDirectionDeg", e.target.value)} placeholder={t("planner.inheritDefault")} />
+                                </Field>
+                            </div>
+                            <div className="plan-grid plan-grid--4">
+                                <Field label={t("planner.legWindSpeed")}>
+                                    <input className="input" value={leg.windSpeedKt ?? ""} onChange={(e) => updateLeg(index, "windSpeedKt", e.target.value)} placeholder={t("planner.inheritDefault")} />
+                                </Field>
+                                <Field label="TAS (kt)">
+                                    <input className="input" value={leg.tasKt ?? ""} onChange={(e) => updateLeg(index, "tasKt", e.target.value)} placeholder={t("planner.inheritDefault")} />
+                                </Field>
+                                <Field label="GS (kt)">
+                                    <input className="input" value={leg.groundSpeedKt ?? ""} onChange={(e) => updateLeg(index, "groundSpeedKt", e.target.value)} placeholder={t("planner.inheritDefault")} />
+                                </Field>
+                                <div className="plan-nav-leg-hint">{isLast ? t("planner.lastLegHint") : t("planner.waypointHint")}</div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
 export default function FlightPlanStack({ base, plan, onPlanChange }) {
     const p = plan || {};
     const { t } = useI18n();
@@ -117,6 +305,8 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
         destIcao: base?.dest?.icao || "",
         alternateIcao: base?.alternate?.icao || "",
     });
+    const isCheckpoints = String(p.routeMode || "direct") === "checkpoints";
+    const navLegsDraft = isCheckpoints ? resolveEditableNavLegs(p, base?.dest?.icao || "") || [] : [];
 
     function setField(key, value) {
         const next = { ...p, [key]: value };
@@ -128,7 +318,19 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
             next.reserveRule = "VFR 30 min";
             next.finalReserveMin = next.finalReserveMin || 30;
         }
+        if (key === "routeMode" && value === "checkpoints") {
+            const existing = resolveEditableNavLegs(next, base?.dest?.icao || "");
+            if (existing?.length) {
+                next.navLegs = existing;
+            } else if (!(Array.isArray(next.navLegs) && next.navLegs.length)) {
+                next.navLegs = [emptyNavLeg(""), emptyNavLeg(base?.dest?.icao || "")];
+            }
+        }
         onPlanChange?.(next);
+    }
+
+    function setNavLegs(nextLegs) {
+        onPlanChange?.({ ...p, navLegs: nextLegs, routeMode: "checkpoints" });
     }
 
     return (
@@ -167,13 +369,13 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                             hint="Use IFR quando houver rota/procedimento por instrumentos."
                         />
                         <SelectField
-                            label="Tipo de rota"
+                            label={t("planner.routeType")}
                             value={p.routeMode || "direct"}
                             onChange={(value) => setField("routeMode", value)}
                             options={[
-                                { value: "direct", label: "Direta A-B" },
-                                { value: "manual", label: "Manual por carta" },
-                                { value: "checkpoints", label: "Checkpoints" },
+                                { value: "direct", label: t("planner.routeDirect") },
+                                { value: "manual", label: t("planner.routeManual") },
+                                { value: "checkpoints", label: t("planner.routeCheckpoints") },
                             ]}
                         />
                         <Field label="Callsign / identificação">
@@ -202,14 +404,31 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
 
                 <section className="plan-panel">
                     <SectionHead step="2" title={t("planner.navigation")}>
-                        {t("planner.navigationCopy")}
+                        {isCheckpoints ? t("planner.navigationCopyCheckpoints") : t("planner.navigationCopy")}
                     </SectionHead>
 
                     <div className="plan-grid plan-grid--4">
-                        <Field label="Distância A-B (NM)" hint={calc.suggestedRouteDistNm > 0 ? `Sugestão: ${calc.suggestedRouteDistNm} NM` : null}>
-                            <input className="input" value={p.routeDistNm ?? ""} onChange={(e) => setField("routeDistNm", e.target.value)} placeholder="165" />
+                        <Field
+                            label={isCheckpoints ? t("planner.defaultsLabel") : "Distância A-B (NM)"}
+                            hint={
+                                isCheckpoints
+                                    ? calc.useNavLegs
+                                        ? `${t("planner.routeSum")}: ${calc.routeDistNm.toFixed(0)} NM`
+                                        : calc.suggestedRouteDistNm > 0
+                                          ? `Sugestão A-B: ${calc.suggestedRouteDistNm} NM`
+                                          : null
+                                    : calc.suggestedRouteDistNm > 0
+                                      ? `Sugestão: ${calc.suggestedRouteDistNm} NM`
+                                      : null
+                            }
+                        >
+                            {isCheckpoints ? (
+                                <input className="input" value={calc.routeDistNm ? calc.routeDistNm.toFixed(0) : ""} readOnly placeholder="soma das pernas" />
+                            ) : (
+                                <input className="input" value={p.routeDistNm ?? ""} onChange={(e) => setField("routeDistNm", e.target.value)} placeholder="165" />
+                            )}
                         </Field>
-                        <Field label="Rumo verdadeiro (°)">
+                        <Field label="Rumo verdadeiro (°)" hint={isCheckpoints ? t("planner.defaultHint") : null}>
                             <input className="input" value={p.trueCourseDeg ?? ""} onChange={(e) => setField("trueCourseDeg", e.target.value)} placeholder="092" />
                         </Field>
                         <Field label="Declinação (E + / W -)">
@@ -235,6 +454,19 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         </Field>
                     </div>
 
+                    {isCheckpoints ? (
+                        <>
+                            <NavLegsEditor
+                                legs={navLegsDraft}
+                                originIcao={base?.origin?.icao || "A"}
+                                destIcao={base?.dest?.icao || ""}
+                                onChange={setNavLegs}
+                                t={t}
+                            />
+                            <NavLogTable legs={calc.navLegs} />
+                        </>
+                    ) : null}
+
                     <div className="plan-summary-grid plan-summary-grid--4">
                         <MetricBox label="Rumo magnético" value={fmtDeg(calc.magCourseDeg)} />
                         <MetricBox label="Proa corrigida" value={fmtDeg(calc.headingDeg)} tone="ok" />
@@ -246,6 +478,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         <span className="chip">Proa/cauda: {Number.isFinite(calc.headwindKt) ? `${calc.headwindKt.toFixed(0)} kt` : "—"}</span>
                         <span className="chip">Través: {Number.isFinite(calc.crosswindKt) ? `${Math.abs(calc.crosswindKt).toFixed(0)} kt` : "—"}</span>
                         <span className="chip">Correção: {calc.windCorrectionDeg ? `${calc.windCorrectionDeg.toFixed(1)}°` : "—"}</span>
+                        {calc.useNavLegs ? <span className="chip ok">{calc.navLog?.routeLabel}</span> : null}
                     </div>
                 </section>
 
@@ -267,6 +500,13 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         <Field label="Desejado no pouso (L)">
                             <input className="input" value={p.desiredLandingFuelL ?? ""} onChange={(e) => setField("desiredLandingFuelL", e.target.value)} placeholder="34" />
                         </Field>
+                    </div>
+
+                    <div className="plan-summary-grid plan-summary-grid--4">
+                        <MetricBox label={t("planner.toc")} value={`${calc.toc.distanceFromOriginNm.toFixed(0)} NM · ${fmtMinutes(calc.toc.eteMin)}`} tone="ok" />
+                        <MetricBox label={t("planner.tod")} value={`${calc.tod.distanceFromOriginNm.toFixed(0)} NM · ${fmtMinutes(calc.tod.eteMin)}`} tone="ok" />
+                        <MetricBox label={t("planner.climbDist")} value={`${calc.climbDistNm.toFixed(0)} NM`} />
+                        <MetricBox label={t("planner.descentDist")} value={`${calc.descentDistNm.toFixed(0)} NM`} />
                     </div>
 
                     <div className="plan-phase-grid">
@@ -300,8 +540,8 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                                         { value: "manual", label: "Manual" },
                                     ]}
                                 />
-                                <Field label="Distância cruzeiro (NM)">
-                                    <input className="input" value={p.cruiseDistNm ?? ""} onChange={(e) => setField("cruiseDistNm", e.target.value)} placeholder="vazio = A-B" />
+                                <Field label="Distância cruzeiro (NM)" hint={String(p.cruiseMode ?? "auto") === "auto" ? `Auto: ${calc.cruiseDistAutoNm.toFixed(0)} NM (rota − subida − descida)` : null}>
+                                    <input className="input" value={p.cruiseDistNm ?? ""} onChange={(e) => setField("cruiseDistNm", e.target.value)} placeholder={String(calc.cruiseDistAutoNm.toFixed(0))} />
                                 </Field>
                                 {String(p.cruiseMode ?? "auto") === "manual" ? (
                                     <>
@@ -376,6 +616,18 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         {t("planner.summaryCopy")}
                     </SectionHead>
 
+                    {calc.useNavLegs ? (
+                        <div className="plan-chip-row">
+                            <span className="chip ok plan-route-chip">{calc.navLog.routeLabel}</span>
+                            <span className="chip">
+                                TOC {calc.toc.distanceFromOriginNm.toFixed(0)} NM
+                            </span>
+                            <span className="chip">
+                                TOD {calc.tod.distanceFromOriginNm.toFixed(0)} NM
+                            </span>
+                        </div>
+                    ) : null}
+
                     <div className="plan-brief-grid">
                         <SummaryLine label="Identificação" value={calc.flightPlanSummary.aircraftId} />
                         <SummaryLine label="Regra" value={calc.flightPlanSummary.rule} />
@@ -406,6 +658,8 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                         <StationContext letter="B" title="Destino" station={base?.dest} />
                         <StationContext letter="C" title="Alternativa" station={base?.alternate} />
                     </div>
+
+                    {calc.useNavLegs ? <NavLogTable legs={calc.navLegs} /> : null}
 
                     {calc.legs.length ? (
                         <div className="plan-leg-list">
