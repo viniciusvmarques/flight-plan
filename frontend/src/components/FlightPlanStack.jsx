@@ -760,7 +760,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
 
                 <section className="plan-panel plan-panel--dark">
                     <SectionHead step="3" title={t("planner.fuel")}>
-                        {t("planner.fuelCopyBianch")}
+                        {t("planner.fuelCopy")}
                     </SectionHead>
 
                     <div className="briefing-lines fuel-sheet">

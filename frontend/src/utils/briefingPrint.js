@@ -29,12 +29,12 @@ export function openBriefingPrintWindow(model, labels = {}) {
 
     const navLegsHtml =
         model.useNavLegs && model.navLegs?.length
-            ? `<div class="section-title">${escapeHtml(L.navLog || "PERNAS / WAYPOINTS")}</div>
+            ? `<div class="section-title">${escapeHtml(L.navLog || "PERNAS DA ROTA")}</div>
                <table class="nav-table">
                  <thead>
                    <tr>
-                     <th>#</th><th>Perna</th><th>NM</th><th>TC</th><th>MH</th><th>HDG</th>
-                     <th>VI</th><th>TAS</th><th>GS</th><th>ETE</th><th>FUEL</th>
+                     <th>#</th><th>Perna</th><th>NM</th><th>RV</th><th>RM</th><th>Proa</th>
+                     <th>VI</th><th>TAS</th><th>GS</th><th>ETE</th><th>Comb.</th>
                    </tr>
                  </thead>
                  <tbody>
@@ -63,25 +63,25 @@ export function openBriefingPrintWindow(model, labels = {}) {
     const atc = h.atc || {};
     const fuel = model.fuelBreakdown || {};
     const headerHtml = `
-      <div class="section-title">${escapeHtml(L.header || "CABEÇALHO")}</div>
+      <div class="section-title">${escapeHtml(L.header || "IDENTIFICAÇÃO")}</div>
       <div class="brief-grid brief-grid-3">
-        <div><span>ACFT</span><strong>${escapeHtml(h.aircraft || model.aircraft || "—")}</strong></div>
-        <div><span>PILOTO</span><strong>${escapeHtml(h.pilot || "—")}</strong></div>
-        <div><span>DATA</span><strong>${escapeHtml(h.date || "—")}</strong></div>
+        <div><span>Aeronave</span><strong>${escapeHtml(h.aircraft || model.aircraft || "—")}</strong></div>
+        <div><span>Piloto</span><strong>${escapeHtml(h.pilot || "—")}</strong></div>
+        <div><span>Data</span><strong>${escapeHtml(h.date || "—")}</strong></div>
       </div>
       <div class="brief-grid brief-grid-5">
-        <div><span>ORIG</span><strong>${escapeHtml(h.origin || model.originIcao || "—")}</strong></div>
-        <div><span>DEST</span><strong>${escapeHtml(h.dest || model.destIcao || "—")}</strong></div>
-        <div><span>VEL</span><strong>${escapeHtml(h.speed || model.tas || "—")}</strong></div>
-        <div><span>FL</span><strong>${escapeHtml(h.level || model.cruise || "—")}</strong></div>
-        <div><span>DIST</span><strong>${escapeHtml(h.distance || model.distNm || "—")}</strong></div>
+        <div><span>Origem</span><strong>${escapeHtml(h.origin || model.originIcao || "—")}</strong></div>
+        <div><span>Destino</span><strong>${escapeHtml(h.dest || model.destIcao || "—")}</strong></div>
+        <div><span>Velocidade</span><strong>${escapeHtml(h.speed || model.tas || "—")}</strong></div>
+        <div><span>Nível</span><strong>${escapeHtml(h.level || model.cruise || "—")}</strong></div>
+        <div><span>Distância</span><strong>${escapeHtml(h.distance || model.distNm || "—")}</strong></div>
       </div>
       <div class="brief-grid brief-grid-5">
         <div><span>UTC</span><strong>${escapeHtml(h.utc || "—")}</strong></div>
-        <div><span>ACION</span><strong class="pen">${escapeHtml(h.startup || "________")}</strong></div>
-        <div><span>DECOL</span><strong class="pen">${escapeHtml(h.takeoff || "________")}</strong></div>
-        <div><span>POUSO</span><strong class="pen">${escapeHtml(h.landing || "________")}</strong></div>
-        <div><span>CORTE</span><strong class="pen">${escapeHtml(h.shutdown || "________")}</strong></div>
+        <div><span>Acionamento</span><strong class="pen">${escapeHtml(h.startup || "________")}</strong></div>
+        <div><span>Decolagem</span><strong class="pen">${escapeHtml(h.takeoff || "________")}</strong></div>
+        <div><span>Pouso</span><strong class="pen">${escapeHtml(h.landing || "________")}</strong></div>
+        <div><span>Corte</span><strong class="pen">${escapeHtml(h.shutdown || "________")}</strong></div>
       </div>
       <div class="brief-grid brief-grid-6">
         <div><span>CLR</span><strong>${escapeHtml(atc.clr || "____")}</strong></div>
@@ -92,44 +92,44 @@ export function openBriefingPrintWindow(model, labels = {}) {
         <div><span>DEST</span><strong>${escapeHtml(atc.dest || "____")}</strong></div>
       </div>
       <div class="brief-grid brief-grid-3">
-        <div><span>DEP RWY</span><strong>${escapeHtml(h.depRwy || "—")}</strong></div>
-        <div><span>DEP ALT</span><strong>${escapeHtml(h.depAlt || "—")}</strong></div>
-        <div><span>DEP NOTES</span><strong>${escapeHtml(h.depNotes || "—")}</strong></div>
+        <div><span>DEP pista</span><strong>${escapeHtml(h.depRwy || "—")}</strong></div>
+        <div><span>DEP elev</span><strong>${escapeHtml(h.depAlt || "—")}</strong></div>
+        <div><span>DEP notes</span><strong>${escapeHtml(h.depNotes || "—")}</strong></div>
       </div>
       <div class="brief-grid brief-grid-3">
-        <div><span>ARR RWY</span><strong>${escapeHtml(h.arrRwy || "—")}</strong></div>
-        <div><span>ARR ALT</span><strong>${escapeHtml(h.arrAlt || "—")}</strong></div>
-        <div><span>ARR NOTES</span><strong>${escapeHtml(h.arrNotes || "—")}</strong></div>
+        <div><span>ARR pista</span><strong>${escapeHtml(h.arrRwy || "—")}</strong></div>
+        <div><span>ARR elev</span><strong>${escapeHtml(h.arrAlt || "—")}</strong></div>
+        <div><span>ARR notes</span><strong>${escapeHtml(h.arrNotes || "—")}</strong></div>
       </div>
       <div class="brief-grid brief-grid-4">
-        <div><span>ALTN</span><strong>${escapeHtml(h.altn || model.altnIcao || "—")}</strong></div>
-        <div><span>ALTN RWY</span><strong>${escapeHtml(h.altnRwy || "—")}</strong></div>
-        <div><span>ALTN ALT</span><strong>${escapeHtml(h.altnAlt || "—")}</strong></div>
-        <div><span>NOTES</span><strong>${escapeHtml(h.altnNotes || "—")}</strong></div>
+        <div><span>Alternativa</span><strong>${escapeHtml(h.altn || model.altnIcao || "—")}</strong></div>
+        <div><span>ALTN pista</span><strong>${escapeHtml(h.altnRwy || "—")}</strong></div>
+        <div><span>ALTN elev</span><strong>${escapeHtml(h.altnAlt || "—")}</strong></div>
+        <div><span>Notes</span><strong>${escapeHtml(h.altnNotes || "—")}</strong></div>
       </div>`;
 
     const fuelHtml = `
-      <div class="section-title">${escapeHtml(L.fuel || "COMBUSTÍVEL (BIANCH)")}</div>
+      <div class="section-title">${escapeHtml(L.fuel || "COMBUSTÍVEL")}</div>
       <div class="brief-grid brief-grid-4">
-        <div><span>TAXI</span><strong>${escapeHtml(fuel.taxi || "—")}</strong></div>
-        <div><span>SUBIDA</span><strong>${escapeHtml(fuel.climb || "—")}</strong></div>
-        <div><span>PERNAS/CRZ</span><strong>${escapeHtml(
+        <div><span>Táxi</span><strong>${escapeHtml(fuel.taxi || "—")}</strong></div>
+        <div><span>Subida</span><strong>${escapeHtml(fuel.climb || "—")}</strong></div>
+        <div><span>Pernas / cruzeiro</span><strong>${escapeHtml(
             fuel.legsTotal && fuel.legsTotal !== "—" ? fuel.legsTotal : fuel.cruise || "—"
         )}</strong></div>
-        <div><span>DESCIDA</span><strong>${escapeHtml(fuel.descent || "—")}</strong></div>
+        <div><span>Descida</span><strong>${escapeHtml(fuel.descent || "—")}</strong></div>
       </div>
       <div class="brief-grid brief-grid-5">
-        <div><span>APP</span><strong>${escapeHtml(fuel.approach || "—")}</strong></div>
-        <div><span>TRIP</span><strong>${escapeHtml(fuel.trip || "—")}</strong></div>
-        <div><span>ALTN</span><strong>${escapeHtml(fuel.alternate || "—")}</strong></div>
-        <div><span>CONT</span><strong>${escapeHtml(fuel.contingency || "—")}</strong></div>
-        <div><span>FINAL</span><strong>${escapeHtml(fuel.finalReserve || "—")}</strong></div>
+        <div><span>Aproximação</span><strong>${escapeHtml(fuel.approach || "—")}</strong></div>
+        <div><span>Etapa</span><strong>${escapeHtml(fuel.trip || "—")}</strong></div>
+        <div><span>Alternativa</span><strong>${escapeHtml(fuel.alternate || "—")}</strong></div>
+        <div><span>Contingência</span><strong>${escapeHtml(fuel.contingency || "—")}</strong></div>
+        <div><span>Reserva final</span><strong>${escapeHtml(fuel.finalReserve || "—")}</strong></div>
       </div>
       <div class="brief-grid brief-grid-4">
-        <div><span>REQ</span><strong>${escapeHtml(model.fuelRequired)}</strong></div>
-        <div><span>FOB</span><strong>${escapeHtml(model.fuelOnBoard)}</strong></div>
-        <div><span>LDG</span><strong>${escapeHtml(fuel.landing || "—")}</strong></div>
-        <div><span>MARGIN</span><strong>${escapeHtml(model.fuelMargin)}</strong></div>
+        <div><span>Requerido</span><strong>${escapeHtml(model.fuelRequired)}</strong></div>
+        <div><span>A bordo</span><strong>${escapeHtml(model.fuelOnBoard)}</strong></div>
+        <div><span>No pouso</span><strong>${escapeHtml(fuel.landing || "—")}</strong></div>
+        <div><span>Margem</span><strong>${escapeHtml(model.fuelMargin)}</strong></div>
       </div>`;
 
     const notesHtml =
@@ -405,33 +405,26 @@ export function openBriefingPrintWindow(model, labels = {}) {
   <main class="sheet">
     <header class="mast">
       <h1>${escapeHtml(model.brand)} · BRIEFING DE VOO</h1>
-      <time>${escapeHtml(model.generatedAtUtc)} UTC</time>
+      <time>${escapeHtml(model.generatedAtUtc)} UTC · ${escapeHtml(model.flightRule)}</time>
     </header>
     <div class="route">${escapeHtml(model.route)}</div>
-    <div class="meta-grid">
-      <div>RULE ${escapeHtml(model.flightRule)}</div>
-      <div>CALLSIGN ${escapeHtml(model.callsign)}</div>
-      <div>ACFT ${escapeHtml(model.aircraft)}</div>
-      <div>ALTN ${escapeHtml(model.altnIcao || "—")}</div>
-    </div>
 
     ${headerHtml}
 
     <div class="section-title">${escapeHtml(L.nav || "NAVEGAÇÃO")}</div>
     <div class="kv">
-      <div>DIST ${escapeHtml(model.distNm)}</div>
-      <div>ALTN DIST ${escapeHtml(model.altnDistNm)}</div>
+      <div>Distância ${escapeHtml(model.distNm)}</div>
+      <div>Dist. alternativa ${escapeHtml(model.altnDistNm)}</div>
       <div>ETE ${escapeHtml(model.ete)}</div>
-      <div>ENDURANCE ${escapeHtml(model.endurance)}</div>
+      <div>Autonomia ${escapeHtml(model.endurance)}</div>
       <div>TAS ${escapeHtml(model.tas)}</div>
       <div>GS ${escapeHtml(model.gs)}</div>
-      <div>HDG ${escapeHtml(model.hdg)}</div>
+      <div>Proa ${escapeHtml(model.hdg)}</div>
       <div>MH ${escapeHtml(model.magHdg)}</div>
-      <div>CRZ ${escapeHtml(model.cruise)}</div>
-      <div>WIND ${escapeHtml(model.wind)}</div>
+      <div>Nível ${escapeHtml(model.cruise)}</div>
+      <div>Vento ${escapeHtml(model.wind)}</div>
       <div>${escapeHtml(model.toc || "TOC —")}</div>
       <div>${escapeHtml(model.tod || "TOD —")}</div>
-      <div>CRZ DIST ${escapeHtml(model.cruiseDist || "—")}</div>
     </div>
 
     ${navLegsHtml}

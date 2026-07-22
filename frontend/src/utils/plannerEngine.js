@@ -264,7 +264,7 @@ function rawNavLegSource(working) {
 }
 
 /**
- * Log multi-trecho (Bianch): pontos após a origem; último ponto = destino.
+ * Log multi-trecho: pontos após a origem; último ponto = destino.
  * Campos vazios herdam defaults globais do plano (seção 2).
  * VI (IAS) → TAS automático pela altitude; vento → GS; consumo → combustível da perna.
  */

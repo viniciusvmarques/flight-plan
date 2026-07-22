@@ -230,7 +230,7 @@ export function buildBriefingDocumentModel({ base, planner, locale = "pt-BR", br
         warnings: Array.isArray(calc.warnings) ? calc.warnings.slice(0, 4) : [],
         stations,
         disclaimer:
-            "APOIO AO PLANEJAMENTO — CONFIRIR SEMPRE NOTAM, AIS/MET, CARTAS, COMPUTADOR DE VOO E FONTES OFICIAIS. NAO SUBSTITUI DESPACHO NEM O JULGAMENTO DO PILOTO EM COMANDO.",
+            "APOIO AO PLANEJAMENTO — CONFIRMA SEMPRE NOTAM, AIS/MET, CARTAS, COMPUTADOR DE VOO E FONTES OFICIAIS. NAO SUBSTITUI DESPACHO NEM O JULGAMENTO DO PILOTO EM COMANDO.",
     };
 }
 

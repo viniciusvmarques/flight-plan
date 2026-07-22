@@ -246,126 +246,85 @@ function modelToLines(model, labels) {
     const h = model.header || {};
     const atc = h.atc || {};
     const fuel = model.fuelBreakdown || {};
+    const cruiseFuel =
+        fuel.legsTotal && fuel.legsTotal !== "—" ? fuel.legsTotal : fuel.cruise || "—";
 
-    lines.push({ text: `${model.brand}  ·  BRIEFING DE VOO`, size: 12, bold: true, wrap: true });
-    lines.push({ text: `${L.generated || "GERADO"}  ${model.generatedAtUtc}   UTC`, size: 9, bold: false, wrap: true });
-    lines.push("__RULE__");
-
-    lines.push({ text: L.header || "CABECALHO", size: 10, bold: true, wrap: true });
+    lines.push({ text: `${model.brand} — BRIEFING DE VOO`, size: 12, bold: true, wrap: true });
     lines.push({
-        text: row([
-            cell(`ACFT ${h.aircraft || model.aircraft || "-"}`, 22),
-            cell(`PILOTO ${h.pilot || "-"}`, 36),
-            cell(`DATA ${h.date || "-"}`, 18),
-        ]),
-        size: 8,
-        wrap: true,
-    });
-    lines.push({
-        text: row([
-            cell(`ORIG ${h.origin || model.originIcao || "-"}`, 14),
-            cell(`DEST ${h.dest || model.destIcao || "-"}`, 14),
-            cell(`VEL ${h.speed || model.tas || "-"}`, 14),
-            cell(`FL ${h.level || model.cruise || "-"}`, 16),
-            cell(`DIST ${h.distance || model.distNm || "-"}`, 16),
-        ]),
-        size: 8,
-        wrap: true,
-    });
-    lines.push({
-        text: row([
-            cell(`UTC ${h.utc || "-"}`, 14),
-            cell(`ACION ${h.startup || "________"}`, 14),
-            cell(`DECOL ${h.takeoff || "________"}`, 14),
-            cell(`POUSO ${h.landing || "________"}`, 14),
-            cell(`CORTE ${h.shutdown || "________"}`, 14),
-        ]),
-        size: 8,
-        wrap: true,
-    });
-    lines.push({
-        text: row([
-            cell(`CLR ${atc.clr || "____"}`, 12),
-            cell(`GND ${atc.gnd || "____"}`, 12),
-            cell(`TWR ${atc.twr || "____"}`, 12),
-            cell(`APP ${atc.app || "____"}`, 12),
-            cell(`CTR ${atc.ctr || "____"}`, 12),
-            cell(`DEST ${atc.dest || "____"}`, 12),
-        ]),
-        size: 8,
-        wrap: true,
-    });
-    lines.push({
-        text: row([
-            cell(`DEP RWY ${h.depRwy || "-"}`, 16),
-            cell(`DEP ALT ${h.depAlt || "-"}`, 18),
-            cell(`DEP NOTES ${h.depNotes || "-"}`, 40),
-        ]),
-        size: 8,
-        wrap: true,
-    });
-    lines.push({
-        text: row([
-            cell(`ARR RWY ${h.arrRwy || "-"}`, 16),
-            cell(`ARR ALT ${h.arrAlt || "-"}`, 18),
-            cell(`ARR NOTES ${h.arrNotes || "-"}`, 40),
-        ]),
-        size: 8,
-        wrap: true,
-    });
-    lines.push({
-        text: row([
-            cell(`ALTN ${h.altn || model.altnIcao || "-"}`, 16),
-            cell(`ALTN RWY ${h.altnRwy || "-"}`, 16),
-            cell(`ALTN ALT ${h.altnAlt || "-"}`, 18),
-            cell(`NOTES ${h.altnNotes || "-"}`, 24),
-        ]),
-        size: 8,
-        wrap: true,
-    });
-
-    lines.push("__RULE__");
-    lines.push({ text: `ROUTE   ${model.route}`, size: 12, bold: true, wrap: true });
-    lines.push({
-        text: `RULE ${model.flightRule}   CALLSIGN ${model.callsign}   ACFT ${model.aircraft}   ALTN ${model.altnIcao || "-"}`,
+        text: `${L.generated || "Gerado"} ${model.generatedAtUtc} UTC   |   Regra ${model.flightRule}`,
         size: 9,
         wrap: true,
     });
     lines.push("__RULE__");
+
+    lines.push({ text: L.header || "IDENTIFICACAO", size: 10, bold: true, wrap: true });
+    lines.push({
+        text: `Aeronave ${h.aircraft || model.aircraft || "—"}   Piloto ${h.pilot || "—"}   Data ${h.date || "—"}`,
+        size: 9,
+        wrap: true,
+    });
+    lines.push({
+        text: `Origem ${h.origin || model.originIcao || "—"}   Destino ${h.dest || model.destIcao || "—"}   Velocidade ${h.speed || model.tas || "—"}   Nivel ${h.level || model.cruise || "—"}   Distancia ${h.distance || model.distNm || "—"}`,
+        size: 9,
+        wrap: true,
+    });
+    lines.push({
+        text: `UTC ${h.utc || "—"}   Acionamento ${h.startup || "________"}   Decolagem ${h.takeoff || "________"}   Pouso ${h.landing || "________"}   Corte ${h.shutdown || "________"}`,
+        size: 9,
+        wrap: true,
+    });
+    lines.push({
+        text: `Frequencias  CLR ${atc.clr || "____"}  GND ${atc.gnd || "____"}  TWR ${atc.twr || "____"}  APP ${atc.app || "____"}  CTR ${atc.ctr || "____"}  DEST ${atc.dest || "____"}`,
+        size: 8,
+        wrap: true,
+    });
+    lines.push({
+        text: `DEP  pista ${h.depRwy || "—"}  elev ${h.depAlt || "—"}  notes ${h.depNotes || "—"}`,
+        size: 9,
+        wrap: true,
+    });
+    lines.push({
+        text: `ARR  pista ${h.arrRwy || "—"}  elev ${h.arrAlt || "—"}  notes ${h.arrNotes || "—"}`,
+        size: 9,
+        wrap: true,
+    });
+    lines.push({
+        text: `ALTN ${h.altn || model.altnIcao || "—"}  pista ${h.altnRwy || "—"}  elev ${h.altnAlt || "—"}  notes ${h.altnNotes || "—"}`,
+        size: 9,
+        wrap: true,
+    });
+
+    lines.push("__RULE__");
+    lines.push({ text: `ROTA  ${model.route}`, size: 11, bold: true, wrap: true });
     lines.push({ text: L.nav || "NAVEGACAO", size: 10, bold: true, wrap: true });
     lines.push({
-        text: `DIST ${model.distNm}   ALTN DIST ${model.altnDistNm}   ETE ${model.ete}   ENDURANCE ${model.endurance}`,
+        text: `Distancia ${model.distNm}   ETE ${model.ete}   Autonomia ${model.endurance}   Dist ALTN ${model.altnDistNm}`,
         size: 9,
         wrap: true,
     });
     lines.push({
-        text: `TAS ${model.tas}   GS ${model.gs}   HDG ${model.hdg}   MH ${model.magHdg}   CRZ ${model.cruise}`,
+        text: `TAS ${model.tas}   GS ${model.gs}   Proa ${model.hdg}   MH ${model.magHdg}   Nivel ${model.cruise}`,
         size: 9,
         wrap: true,
     });
-    lines.push({ text: `WIND ${model.wind}`, size: 9, wrap: true });
-    lines.push({
-        text: `${model.toc || "TOC -"}   ${model.tod || "TOD -"}   CRZ DIST ${model.cruiseDist || "-"}`,
-        size: 9,
-        wrap: true,
-    });
+    lines.push({ text: `Vento ${model.wind}   ${model.toc || ""}   ${model.tod || ""}`, size: 9, wrap: true });
 
     if (model.useNavLegs && model.navLegs?.length) {
         lines.push("__GAP__");
-        lines.push({ text: L.navLog || "PERNAS / WAYPOINTS", size: 10, bold: true, wrap: true });
+        lines.push({ text: L.navLog || "PERNAS DA ROTA", size: 10, bold: true, wrap: true });
         lines.push({
             text: row([
                 cell("#", 3),
-                cell("PERNA", 22),
+                cell("Perna", 24),
                 cell("NM", 5, "right"),
-                cell("TC", 6, "right"),
-                cell("MH", 6, "right"),
-                cell("HDG", 6, "right"),
+                cell("RV", 6, "right"),
+                cell("RM", 6, "right"),
+                cell("Proa", 6, "right"),
                 cell("VI", 5, "right"),
                 cell("TAS", 5, "right"),
                 cell("GS", 5, "right"),
                 cell("ETE", 7, "right"),
-                cell("FUEL", 6, "right"),
+                cell("Comb", 6, "right"),
             ]),
             size: 7,
             bold: true,
@@ -375,7 +334,7 @@ function modelToLines(model, labels) {
             lines.push({
                 text: row([
                     cell(String(leg.index).padStart(2, "0"), 3),
-                    cell(leg.label, 22),
+                    cell(leg.label, 24),
                     cell(leg.distanceRaw || "-", 5, "right"),
                     cell(leg.courseRaw || "-", 6, "right"),
                     cell(leg.magCourseRaw || "-", 6, "right"),
@@ -393,30 +352,19 @@ function modelToLines(model, labels) {
     }
 
     lines.push("__GAP__");
-    lines.push({ text: L.fuel || "COMBUSTIVEL (BIANCH)", size: 10, bold: true, wrap: true });
+    lines.push({ text: L.fuel || "COMBUSTIVEL", size: 10, bold: true, wrap: true });
     lines.push({
-        text: row([
-            cell(`TAXI ${fuel.taxi || "-"}`, 14),
-            cell(`CLB ${fuel.climb || "-"}`, 14),
-            cell(`CRZ/PERNAS ${fuel.legsTotal && fuel.legsTotal !== "—" ? fuel.legsTotal : fuel.cruise || "-"}`, 22),
-            cell(`DES ${fuel.descent || "-"}`, 14),
-        ]),
+        text: `Taxi ${fuel.taxi || "—"}   Subida ${fuel.climb || "—"}   Pernas/cruzeiro ${cruiseFuel}   Descida ${fuel.descent || "—"}`,
+        size: 9,
+        wrap: true,
+    });
+    lines.push({
+        text: `Aproximacao ${fuel.approach || "—"}   Etapa ${fuel.trip || "—"}   Alternativa ${fuel.alternate || "—"}   Contingencia ${fuel.contingency || "—"}   Reserva final ${fuel.finalReserve || "—"}`,
         size: 8,
         wrap: true,
     });
     lines.push({
-        text: row([
-            cell(`APP ${fuel.approach || "-"}`, 14),
-            cell(`TRIP ${fuel.trip || "-"}`, 14),
-            cell(`ALTN ${fuel.alternate || "-"}`, 14),
-            cell(`CONT ${fuel.contingency || "-"}`, 14),
-            cell(`FINAL ${fuel.finalReserve || "-"}`, 14),
-        ]),
-        size: 8,
-        wrap: true,
-    });
-    lines.push({
-        text: `REQ ${model.fuelRequired}   FOB ${model.fuelOnBoard}   LDG ${fuel.landing || "-"}   MARGIN ${model.fuelMargin}   FLOW ${model.fuelFlow}`,
+        text: `Requerido ${model.fuelRequired}   A bordo ${model.fuelOnBoard}   No pouso ${fuel.landing || "—"}   Margem ${model.fuelMargin}   Consumo ${model.fuelFlow}`,
         size: 9,
         bold: true,
         wrap: true,

@@ -1,5 +1,5 @@
 /**
- * Smoke/regression tests for planner multi-leg nav (Bianch V1).
+ * Smoke/regression tests for planner multi-leg nav.
  * Run: node frontend/scripts/test-planner-nav.mjs
  */
 import { calculatePlanner, buildNavLegs, fmtClock } from "../src/utils/plannerEngine.js";
@@ -71,7 +71,7 @@ console.log("\n=== 1) Direta A-B (regressão) ===");
     assert("tripFuel sum", almost(calc.tripFuelL, 10 + calc.cruiseFuelL + 4 + 3));
 }
 
-console.log("\n=== 2) Bianch-like SBSP→waypoints→SBRF (multi) ===");
+console.log("\n=== 2) Multi-leg SBSP→waypoints→SBRF ===");
 {
     const plan = {
         routeMode: "checkpoints",
