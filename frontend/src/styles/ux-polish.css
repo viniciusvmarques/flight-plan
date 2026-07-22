@@ -3435,6 +3435,38 @@ button.danger-action:hover:not(:disabled) {
     flex-wrap: wrap;
 }
 
+.dash-pro-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dash-pro-action--locked {
+    border-color: rgba(245, 185, 66, 0.35);
+    background: rgba(245, 185, 66, 0.08);
+}
+
+.dash-pro-lock {
+    display: inline-flex;
+    color: #f5b942;
+    flex: 0 0 auto;
+}
+
+.dash-pro-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #0b1220;
+    background: linear-gradient(135deg, #f5d76e 0%, #f0b429 100%);
+    box-shadow: 0 0 0 1px rgba(240, 180, 41, 0.35);
+}
+
 .dash-rules-strip {
     display: flex;
     flex-wrap: wrap;

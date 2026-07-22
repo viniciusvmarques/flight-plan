@@ -231,12 +231,14 @@ export default function Tools() {
 
                 {activeTool === "convert" ? (
                     <WorkbenchCard
+                        className="xp-workbench--convert"
                         title={t("tools.convertTitle")}
                         lead={t("tools.convertLead")}
                         footer={<p className="fc-formula-note">{t("tools.convertFormula")}</p>}
                         inputs={
-                            <>
+                            <div className="tools-convert-panel">
                                 <SegmentedControl
+                                    layout="grid"
                                     ariaLabel={t("tools.convertTitle")}
                                     value={convKind}
                                     onChange={setConvKind}
@@ -250,10 +252,10 @@ export default function Tools() {
                                         { id: "longitude", label: t("tools.convLong") },
                                     ]}
                                 />
-                                <div className="growth-field-grid growth-field-grid--2" style={{ marginTop: "0.75rem" }}>
+                                <div className="tools-convert-value">
                                     <Field label={t("tools.convValue")} value={convValue} onChange={setConvValue} />
                                 </div>
-                            </>
+                            </div>
                         }
                         results={<ResultHighlight equal items={conversionResults} />}
                     />

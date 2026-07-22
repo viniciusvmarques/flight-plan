@@ -100,9 +100,13 @@ export function ResultHighlight({ items, primaryIndex = null, equal = false }) {
     );
 }
 
-export function SegmentedControl({ tabs, value, onChange, ariaLabel }) {
+export function SegmentedControl({ tabs, value, onChange, ariaLabel, layout = "auto" }) {
     return (
-        <div className="xp-segmented" role="tablist" aria-label={ariaLabel}>
+        <div
+            className={`xp-segmented${layout === "grid" ? " xp-segmented--grid" : ""}`}
+            role="tablist"
+            aria-label={ariaLabel}
+        >
             {tabs.map((tab) => (
                 <button
                     key={tab.id}
@@ -119,14 +123,15 @@ export function SegmentedControl({ tabs, value, onChange, ariaLabel }) {
     );
 }
 
-export function WorkbenchCard({ id, title, lead, inputs, results, footer, children }) {
+export function WorkbenchCard({ id, title, lead, inputs, results, footer, children, className = "" }) {
+    const bodyClass = results ? "xp-workbench-body" : "xp-workbench-body xp-workbench-body--solo";
     return (
-        <section className="xp-workbench" id={id}>
+        <section className={`xp-workbench${className ? ` ${className}` : ""}`} id={id}>
             <header className="xp-workbench-head">
                 <h2>{title}</h2>
                 {lead ? <p>{lead}</p> : null}
             </header>
-            <div className="xp-workbench-body">
+            <div className={bodyClass}>
                 <div className="xp-workbench-inputs">{inputs}</div>
                 {results ? <div className="xp-workbench-results">{results}</div> : null}
             </div>

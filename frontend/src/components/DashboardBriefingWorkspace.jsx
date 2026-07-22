@@ -137,6 +137,8 @@ export default function DashboardBriefingWorkspace({
         ? `${base.origin?.icao} → ${base.dest.icao}`
         : base.origin?.icao;
 
+    const isPro = String(user?.plan || "").toUpperCase() === "PRO";
+
     return (
         <section className="dash-briefing-workspace" aria-label={t("dashboard.briefingWorkspaceTitle")}>
             <div className="dash-briefing-top">
@@ -154,13 +156,51 @@ export default function DashboardBriefingWorkspace({
                         {loading ? t("dashboard.refreshing") : t("dashboard.refreshBriefing")}
                     </button>
                     {onSavePdf ? (
-                        <button type="button" className="secondary" onClick={onSavePdf}>
-                            {t("dashboard.savePdfBriefing")}
+                        <button
+                            type="button"
+                            className={`secondary dash-pro-action${isPro ? "" : " dash-pro-action--locked"}`}
+                            onClick={onSavePdf}
+                            title={isPro ? t("dashboard.savePdfBriefing") : t("dashboard.proActionHint")}
+                        >
+                            {!isPro ? (
+                                <span className="dash-pro-lock" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none">
+                                        <path
+                                            d="M7 11V8a5 5 0 0 1 10 0v3"
+                                            stroke="currentColor"
+                                            strokeWidth="1.8"
+                                            strokeLinecap="round"
+                                        />
+                                        <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                                    </svg>
+                                </span>
+                            ) : null}
+                            <span>{t("dashboard.savePdfBriefing")}</span>
+                            <span className="dash-pro-pill">Pro</span>
                         </button>
                     ) : null}
                     {user && onSave ? (
-                        <button type="button" className="secondary" onClick={onSave}>
-                            {t("dashboard.saveBriefing")}
+                        <button
+                            type="button"
+                            className={`secondary dash-pro-action${isPro ? "" : " dash-pro-action--locked"}`}
+                            onClick={onSave}
+                            title={isPro ? t("dashboard.saveBriefing") : t("dashboard.proActionHint")}
+                        >
+                            {!isPro ? (
+                                <span className="dash-pro-lock" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none">
+                                        <path
+                                            d="M7 11V8a5 5 0 0 1 10 0v3"
+                                            stroke="currentColor"
+                                            strokeWidth="1.8"
+                                            strokeLinecap="round"
+                                        />
+                                        <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                                    </svg>
+                                </span>
+                            ) : null}
+                            <span>{t("dashboard.saveBriefing")}</span>
+                            <span className="dash-pro-pill">Pro</span>
                         </button>
                     ) : null}
                 </div>

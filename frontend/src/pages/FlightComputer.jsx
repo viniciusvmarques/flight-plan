@@ -227,49 +227,54 @@ export default function FlightComputer() {
 
                     <WorkbenchCard
                         id="fc-windCases"
-                        title={t("flightComputer.windCasesTitle")}
-                        lead={t("flightComputer.windCasesCopy")}
+                        title={t("flightComputer.case2Title")}
+                        lead={t("flightComputer.case2Lead")}
                         footer={<p className="fc-formula-note">{t("flightComputer.windCasesFormula")}</p>}
                         inputs={
-                            <div className="fc-wind-cases">
-                                <div>
-                                    <h3 className="fc-case-title">{t("flightComputer.case2Title")}</h3>
-                                    <div className="growth-field-grid growth-field-grid--2">
-                                        <Field label={t("flightComputer.heading")} value={case2Heading} onChange={setCase2Heading} unit="°" />
-                                        <Field label={t("flightComputer.tas")} value={case2Tas} onChange={setCase2Tas} unit="kt" />
-                                        <Field label={t("flightComputer.windDir")} value={case2WindDir} onChange={setCase2WindDir} unit="°" />
-                                        <Field label={t("flightComputer.windSpeed")} value={case2WindSpeed} onChange={setCase2WindSpeed} unit="kt" />
-                                    </div>
-                                    <ResultHighlight
-                                        equal
-                                        items={[
-                                            { label: t("flightComputer.trueCourse"), value: `${case2.trueCourse}°` },
-                                            { label: t("flightComputer.groundSpeed"), value: `${case2.groundSpeed} kt` },
-                                            {
-                                                label: t("flightComputer.drift"),
-                                                value: `${case2.drift > 0 ? "+" : ""}${case2.drift}°`,
-                                                muted: true,
-                                            },
-                                        ]}
-                                    />
-                                </div>
-                                <div>
-                                    <h3 className="fc-case-title">{t("flightComputer.case3Title")}</h3>
-                                    <div className="growth-field-grid growth-field-grid--2">
-                                        <Field label={t("flightComputer.heading")} value={case3Heading} onChange={setCase3Heading} unit="°" />
-                                        <Field label={t("flightComputer.trueCourse")} value={case3Course} onChange={setCase3Course} unit="°" />
-                                        <Field label={t("flightComputer.tas")} value={case3Tas} onChange={setCase3Tas} unit="kt" />
-                                        <Field label={t("flightComputer.groundSpeed")} value={case3Gs} onChange={setCase3Gs} unit="kt" />
-                                    </div>
-                                    <ResultHighlight
-                                        equal
-                                        items={[
-                                            { label: t("flightComputer.windDir"), value: `${case3.windDir}°` },
-                                            { label: t("flightComputer.windSpeed"), value: `${case3.windSpeed} kt` },
-                                        ]}
-                                    />
-                                </div>
+                            <div className="growth-field-grid growth-field-grid--2">
+                                <Field label={t("flightComputer.heading")} value={case2Heading} onChange={setCase2Heading} unit="°" />
+                                <Field label={t("flightComputer.tas")} value={case2Tas} onChange={setCase2Tas} unit="kt" />
+                                <Field label={t("flightComputer.windDir")} value={case2WindDir} onChange={setCase2WindDir} unit="°" />
+                                <Field label={t("flightComputer.windSpeed")} value={case2WindSpeed} onChange={setCase2WindSpeed} unit="kt" />
                             </div>
+                        }
+                        results={
+                            <ResultHighlight
+                                equal
+                                items={[
+                                    { label: t("flightComputer.trueCourse"), value: `${case2.trueCourse}°` },
+                                    { label: t("flightComputer.groundSpeed"), value: `${case2.groundSpeed} kt` },
+                                    {
+                                        label: t("flightComputer.drift"),
+                                        value: `${case2.drift > 0 ? "+" : ""}${case2.drift}°`,
+                                        muted: true,
+                                    },
+                                ]}
+                            />
+                        }
+                    />
+
+                    <WorkbenchCard
+                        id="fc-case3"
+                        title={t("flightComputer.case3Title")}
+                        lead={t("flightComputer.case3Lead")}
+                        footer={<p className="fc-formula-note">{t("flightComputer.case3Formula")}</p>}
+                        inputs={
+                            <div className="growth-field-grid growth-field-grid--2">
+                                <Field label={t("flightComputer.heading")} value={case3Heading} onChange={setCase3Heading} unit="°" />
+                                <Field label={t("flightComputer.trueCourse")} value={case3Course} onChange={setCase3Course} unit="°" />
+                                <Field label={t("flightComputer.tas")} value={case3Tas} onChange={setCase3Tas} unit="kt" />
+                                <Field label={t("flightComputer.groundSpeed")} value={case3Gs} onChange={setCase3Gs} unit="kt" />
+                            </div>
+                        }
+                        results={
+                            <ResultHighlight
+                                equal
+                                items={[
+                                    { label: t("flightComputer.windDir"), value: `${case3.windDir}°` },
+                                    { label: t("flightComputer.windSpeed"), value: `${case3.windSpeed} kt` },
+                                ]}
+                            />
                         }
                     />
 
@@ -433,102 +438,99 @@ export default function FlightComputer() {
                         }
                     />
 
-                    <div className="growth-two-col" id="fc-performance">
-                        <WorkbenchCard
-                            title={t("flightComputer.tasTitle")}
-                            lead={t("flightComputer.tasCopy")}
-                            footer={<p className="fc-formula-note">{t("flightComputer.tasNote")}</p>}
-                            inputs={
-                                <div className="growth-field-grid growth-field-grid--2">
-                                    <Field label={t("flightComputer.ias")} value={ias} onChange={setIas} unit="kt" />
-                                    <Field label={t("flightComputer.pressureAlt")} value={pressureAlt} onChange={setPressureAlt} unit="ft" />
-                                    <Field label={t("flightComputer.oat")} value={oat} onChange={setOat} unit="°C" />
-                                </div>
-                            }
-                            results={
-                                <ResultHighlight
-                                    equal
-                                    items={[
-                                        { label: t("flightComputer.tas"), value: `${performance.tasResult.tas} kt` },
-                                        {
-                                            label: t("flightComputer.tasRule"),
-                                            value: `${performance.tasResult.tasRuleOfThumb} kt`,
-                                            muted: true,
-                                        },
-                                    ]}
-                                />
-                            }
-                        />
-                        <WorkbenchCard
-                            title={t("flightComputer.daTitle")}
-                            lead={t("flightComputer.daCopy")}
-                            footer={<p className="fc-formula-note">{t("flightComputer.daNote")}</p>}
-                            inputs={
-                                <div className="growth-field-grid growth-field-grid--2">
-                                    <Field label={t("flightComputer.pressureAlt")} value={pressureAlt} onChange={setPressureAlt} unit="ft" />
-                                    <Field label={t("flightComputer.oat")} value={oat} onChange={setOat} unit="°C" />
-                                </div>
-                            }
-                            results={
-                                <ResultHighlight
-                                    equal
-                                    items={[
-                                        { label: t("flightComputer.isaTemp"), value: `${performance.daResult.isaTempC}°C`, muted: true },
-                                        {
-                                            label: t("flightComputer.isaDev"),
-                                            value: `${performance.daResult.isaDeviationC > 0 ? "+" : ""}${performance.daResult.isaDeviationC}°C`,
-                                            muted: true,
-                                        },
-                                        {
-                                            label: t("flightComputer.densityAlt"),
-                                            value: `${performance.daResult.densityAltFt.toLocaleString()} ft`,
-                                        },
-                                    ]}
-                                />
-                            }
-                        />
-                    </div>
+                    <WorkbenchCard
+                        id="fc-performance"
+                        title={t("flightComputer.tasTitle")}
+                        lead={t("flightComputer.tasCopy")}
+                        footer={<p className="fc-formula-note">{t("flightComputer.tasNote")}</p>}
+                        inputs={
+                            <div className="growth-field-grid growth-field-grid--2">
+                                <Field label={t("flightComputer.ias")} value={ias} onChange={setIas} unit="kt" />
+                                <Field label={t("flightComputer.pressureAlt")} value={pressureAlt} onChange={setPressureAlt} unit="ft" />
+                                <Field label={t("flightComputer.oat")} value={oat} onChange={setOat} unit="°C" />
+                            </div>
+                        }
+                        results={
+                            <ResultHighlight
+                                equal
+                                items={[
+                                    { label: t("flightComputer.tas"), value: `${performance.tasResult.tas} kt` },
+                                    {
+                                        label: t("flightComputer.tasRule"),
+                                        value: `${performance.tasResult.tasRuleOfThumb} kt`,
+                                        muted: true,
+                                    },
+                                ]}
+                            />
+                        }
+                    />
+                    <WorkbenchCard
+                        title={t("flightComputer.daTitle")}
+                        lead={t("flightComputer.daCopy")}
+                        footer={<p className="fc-formula-note">{t("flightComputer.daNote")}</p>}
+                        inputs={
+                            <div className="growth-field-grid growth-field-grid--2">
+                                <Field label={t("flightComputer.pressureAlt")} value={pressureAlt} onChange={setPressureAlt} unit="ft" />
+                                <Field label={t("flightComputer.oat")} value={oat} onChange={setOat} unit="°C" />
+                            </div>
+                        }
+                        results={
+                            <ResultHighlight
+                                equal
+                                items={[
+                                    { label: t("flightComputer.isaTemp"), value: `${performance.daResult.isaTempC}°C`, muted: true },
+                                    {
+                                        label: t("flightComputer.isaDev"),
+                                        value: `${performance.daResult.isaDeviationC > 0 ? "+" : ""}${performance.daResult.isaDeviationC}°C`,
+                                        muted: true,
+                                    },
+                                    {
+                                        label: t("flightComputer.densityAlt"),
+                                        value: `${performance.daResult.densityAltFt.toLocaleString()} ft`,
+                                    },
+                                ]}
+                            />
+                        }
+                    />
 
-                    <div className="growth-two-col">
-                        <WorkbenchCard
-                            title={t("flightComputer.trueAltTitle")}
-                            lead={t("flightComputer.trueAltCopy")}
-                            footer={<p className="fc-formula-note">{t("flightComputer.trueAltNote")}</p>}
-                            inputs={
-                                <div className="growth-field-grid growth-field-grid--2">
-                                    <Field label={t("flightComputer.indicatedAlt")} value={indicatedAlt} onChange={setIndicatedAlt} unit="ft" />
-                                    <Field label={t("flightComputer.pressureAlt")} value={pressureAlt} onChange={setPressureAlt} unit="ft" />
-                                    <Field label={t("flightComputer.oat")} value={oat} onChange={setOat} unit="°C" />
-                                </div>
-                            }
-                            results={
-                                <ResultHighlight
-                                    equal
-                                    items={[{ label: t("flightComputer.trueAlt"), value: `${performance.trueAlt.trueAltFt.toLocaleString()} ft` }]}
-                                />
-                            }
-                        />
-                        <WorkbenchCard
-                            title={t("flightComputer.machTitle")}
-                            lead={t("flightComputer.machCopy")}
-                            footer={<p className="fc-formula-note">{t("flightComputer.machNote")}</p>}
-                            inputs={
-                                <div className="growth-field-grid growth-field-grid--2">
-                                    <Field label={t("flightComputer.machInput")} value={machIn} onChange={setMachIn} />
-                                    <Field label={t("flightComputer.oat")} value={oat} onChange={setOat} unit="°C" />
-                                </div>
-                            }
-                            results={
-                                <ResultHighlight
-                                    equal
-                                    items={[
-                                        { label: t("flightComputer.machFromTas"), value: String(performance.machFromTas.mach) },
-                                        { label: t("flightComputer.tasFromMach"), value: `${performance.tasFromMach.tas} kt` },
-                                    ]}
-                                />
-                            }
-                        />
-                    </div>
+                    <WorkbenchCard
+                        title={t("flightComputer.trueAltTitle")}
+                        lead={t("flightComputer.trueAltCopy")}
+                        footer={<p className="fc-formula-note">{t("flightComputer.trueAltNote")}</p>}
+                        inputs={
+                            <div className="growth-field-grid growth-field-grid--2">
+                                <Field label={t("flightComputer.indicatedAlt")} value={indicatedAlt} onChange={setIndicatedAlt} unit="ft" />
+                                <Field label={t("flightComputer.pressureAlt")} value={pressureAlt} onChange={setPressureAlt} unit="ft" />
+                                <Field label={t("flightComputer.oat")} value={oat} onChange={setOat} unit="°C" />
+                            </div>
+                        }
+                        results={
+                            <ResultHighlight
+                                equal
+                                items={[{ label: t("flightComputer.trueAlt"), value: `${performance.trueAlt.trueAltFt.toLocaleString()} ft` }]}
+                            />
+                        }
+                    />
+                    <WorkbenchCard
+                        title={t("flightComputer.machTitle")}
+                        lead={t("flightComputer.machCopy")}
+                        footer={<p className="fc-formula-note">{t("flightComputer.machNote")}</p>}
+                        inputs={
+                            <div className="growth-field-grid growth-field-grid--2">
+                                <Field label={t("flightComputer.machInput")} value={machIn} onChange={setMachIn} />
+                                <Field label={t("flightComputer.oat")} value={oat} onChange={setOat} unit="°C" />
+                            </div>
+                        }
+                        results={
+                            <ResultHighlight
+                                equal
+                                items={[
+                                    { label: t("flightComputer.machFromTas"), value: String(performance.machFromTas.mach) },
+                                    { label: t("flightComputer.tasFromMach"), value: `${performance.tasFromMach.tas} kt` },
+                                ]}
+                            />
+                        }
+                    />
 
                     <WorkbenchCard
                         title={t("flightComputer.paFromQnhTitle")}
