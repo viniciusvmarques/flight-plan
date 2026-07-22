@@ -740,10 +740,15 @@
 .exam-share-block {
     display: grid;
     gap: 12px;
-    margin: 14px 0 4px;
+    margin: 18px 0 8px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .exam-share-card {
+    display: grid;
+    gap: 8px;
+    justify-items: center;
     padding: 18px;
     border-radius: 16px;
     border: 1px solid rgba(147, 197, 253, 0.25);
@@ -758,7 +763,7 @@
 
 .exam-share-card h2,
 .exam-share-card h3 {
-    margin: 8px 0;
+    margin: 4px 0;
 }
 
 .exam-share-course {
@@ -769,21 +774,60 @@
 .exam-share-kicker {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     font-size: 0.72rem;
     letter-spacing: 0.12em;
     color: #93c5fd;
-    margin-bottom: 8px;
+    margin: 0 0 4px;
 }
 
 .exam-share-kicker .mq-mark-svg {
     color: #93c5fd;
+    flex-shrink: 0;
+}
+
+.exam-share-card > strong.exam-pass,
+.exam-share-card > strong.exam-fail,
+.exam-share-status {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .exam-share-button {
     width: 100%;
     max-width: 320px;
     justify-self: center;
+}
+
+.exam-result-hero {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.54);
+    border: 1px solid rgba(147, 197, 253, 0.18);
+}
+
+.exam-result-hero > div {
+    display: grid;
+    gap: 6px;
+}
+
+.exam-result-hero .exam-pass,
+.exam-result-hero .exam-fail {
+    display: inline-flex;
+    width: fit-content;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 @media (max-width: 900px) {
@@ -923,8 +967,33 @@
 }
 
 .exam-course-card--active {
-    border-color: rgba(147, 197, 253, 0.7);
-    background: linear-gradient(180deg, rgba(37, 99, 235, 0.28), rgba(15, 23, 42, 0.68));
+    border-color: rgba(94, 234, 212, 0.85) !important;
+    background:
+        linear-gradient(180deg, rgba(94, 234, 212, 0.18), rgba(15, 23, 42, 0.72)),
+        linear-gradient(180deg, rgba(37, 99, 235, 0.22), rgba(15, 23, 42, 0.68)) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(94, 234, 212, 0.28),
+        0 0 0 1px rgba(94, 234, 212, 0.18),
+        0 12px 30px rgba(0, 0, 0, 0.28) !important;
+}
+
+.exam-course-card--active span {
+    color: #5eead4 !important;
+}
+
+.exam-subject-tab--active {
+    border-color: rgba(94, 234, 212, 0.85) !important;
+    background: rgba(15, 118, 110, 0.55) !important;
+    color: #ecfeff !important;
+    box-shadow: inset 0 0 0 1px rgba(94, 234, 212, 0.25);
+}
+
+.exam-subject-tab--active span {
+    color: rgba(236, 254, 255, 0.9) !important;
+}
+
+.exam-subject-tab--active strong {
+    color: #ffffff !important;
 }
 
 .exam-subject-card,
@@ -1141,13 +1210,6 @@
     background: rgba(127, 29, 29, 0.24);
 }
 
-.exam-result-hero {
-    padding: 16px;
-    border-radius: 16px;
-    background: rgba(15, 23, 42, 0.54);
-    border: 1px solid rgba(147, 197, 253, 0.18);
-}
-
 .exam-window-actions {
     display: flex;
     flex-wrap: wrap;
@@ -1186,16 +1248,6 @@
     color: rgba(226, 232, 240, 0.62);
     font-size: 0.78rem;
     font-weight: 800;
-}
-
-.exam-subject-tab--active {
-    border-color: rgba(147, 197, 253, 0.78);
-    background: rgba(37, 99, 235, 0.5);
-    color: #ffffff;
-}
-
-.exam-subject-tab--active span {
-    color: rgba(255, 255, 255, 0.82);
 }
 
 .exam-question-nav {

@@ -38,9 +38,9 @@ export default function ExamShareCard({ result, courseLabel }) {
             <div className="exam-share-card">
                 <span className="exam-share-kicker">
                     <MarquisaMark size={14} />
-                    MARQUISA
+                    <span>MARQUISA</span>
                 </span>
-                <strong className={result?.passed ? "exam-pass" : "exam-fail"}>
+                <strong className={`exam-share-status ${result?.passed ? "exam-pass" : "exam-fail"}`}>
                     {result?.passed ? t("exams.approved") : t("exams.failed")}
                 </strong>
                 <h3>{t("exams.percentScore", { percent: result?.percent ?? 0 })}</h3>
