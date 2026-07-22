@@ -767,11 +767,17 @@
 }
 
 .exam-share-kicker {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-size: 0.72rem;
     letter-spacing: 0.12em;
     color: #93c5fd;
     margin-bottom: 8px;
+}
+
+.exam-share-kicker .mq-mark-svg {
+    color: #93c5fd;
 }
 
 .exam-share-button {

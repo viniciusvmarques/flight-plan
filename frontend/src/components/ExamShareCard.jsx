@@ -1,4 +1,5 @@
 import { useI18n } from "../i18n/I18nContext.jsx";
+import MarquisaMark from "./MarquisaMark";
 
 export default function ExamShareCard({ result, courseLabel }) {
     const { t } = useI18n();
@@ -35,7 +36,10 @@ export default function ExamShareCard({ result, courseLabel }) {
     return (
         <div className="exam-share-block">
             <div className="exam-share-card">
-                <span className="exam-share-kicker">MARQUISA</span>
+                <span className="exam-share-kicker">
+                    <MarquisaMark size={14} />
+                    MARQUISA
+                </span>
                 <strong className={result?.passed ? "exam-pass" : "exam-fail"}>
                     {result?.passed ? t("exams.approved") : t("exams.failed")}
                 </strong>

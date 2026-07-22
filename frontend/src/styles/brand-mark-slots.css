@@ -1,0 +1,13 @@
+/* Slots de marca — só garante o SVG sem mexer no tamanho dos containers. */
+.mq-emblem .mq-mark-svg,
+.ma-emblem .mq-mark-svg,
+.mf-mark .mq-mark-svg,
+.mc-mark .mq-mark-svg,
+.mg-mark .mq-mark-svg,
+.mh-mark .mq-mark-svg,
+.mi-mark .mq-mark-svg,
+.ck-badge .mq-mark-svg,
+.g1-brand-badge .mq-mark-svg,
+.av-utc-badge .mq-mark-svg {
+  display: block;
+}

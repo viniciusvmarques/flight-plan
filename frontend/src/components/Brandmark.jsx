@@ -1,7 +1,7 @@
 import { MarquisaWordmark } from "./MarquisaWordmark";
 
 /**
- * Marca visual principal.
+ * Marca visual principal — rosa dos ventos + MARQUISA.
  */
 export default function BrandMark({ size = 40, showText = true, compact = false }) {
     const s = Number(size) || 40;

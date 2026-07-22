@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/modelo-cockpit.css";
+import MarquisaMark from "../components/MarquisaMark";
 
 const SCREENS = [
   { id: "home", label: "Home" },
@@ -16,7 +17,9 @@ function Shell({ utc, actions, children, atis }) {
     <div className="ck-shell">
       <header className="ck-topbar">
         <div className="ck-ident">
-          <div className="ck-badge">MQ</div>
+          <div className="ck-badge">
+            <MarquisaMark size={26} />
+          </div>
           <div>
             <h1>MARQUISA</h1>
             <p>Ops · Glass cockpit</p>

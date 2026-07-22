@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { useI18n } from "../i18n/I18nContext.jsx";
+import MarquisaMark from "./MarquisaMark";
 
 function formatUtcClock(date) {
     const hh = String(date.getUTCHours()).padStart(2, "0");
@@ -36,7 +37,7 @@ export default function UtcBar({ showAtis = true }) {
                         aria-label="Marquisa"
                         onClick={() => nav("/")}
                     >
-                        MQ
+                        <MarquisaMark size={22} />
                     </button>
                     <div>
                         <div className="av-utc-brand-name">Marquisa</div>

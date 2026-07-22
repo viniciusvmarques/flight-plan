@@ -493,9 +493,10 @@
 }
 
 @media (max-width: 400px) {
+    .fp-topbar-mark .mq-mark-icon,
     .fp-topbar-mark .mq-plane-icon {
-        width: 30px;
-        height: 16px;
+        width: 24px !important;
+        height: 24px !important;
     }
 
     .fp-topbar-menu-btn {

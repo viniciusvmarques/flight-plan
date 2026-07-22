@@ -126,6 +126,12 @@ body {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
+  padding: 0;
+  cursor: pointer;
+}
+
+.av-utc-badge .mq-mark-svg {
+  display: block;
 }
 
 .av-utc-brand-name {
@@ -483,6 +489,17 @@ body {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px 14px;
+}
+
+.ck-footer-mark {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.ck-footer-mark img {
+  display: block;
+  border-radius: 4px;
 }
 
 .ck-footer-phases {

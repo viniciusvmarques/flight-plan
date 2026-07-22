@@ -15,11 +15,16 @@ function nl2br(value) {
 }
 
 function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransactional }) {
+    const appUrl = String(process.env.APP_URL || process.env.FRONTEND_URL || "https://marquisa.com.br").replace(/\/$/, "");
+    const markUrl = `${appUrl}/marquisa-email-avatar.svg`;
     return `
         <div style="background:#0b1220;padding:24px;font-family:Arial,sans-serif;color:#e5e7eb;">
             <div style="max-width:640px;margin:0 auto;background:rgba(15,23,42,0.94);border:1px solid rgba(148,163,184,0.2);border-radius:18px;overflow:hidden;">
                 <div style="padding:20px 24px;border-bottom:1px solid rgba(148,163,184,0.16);">
-                    <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#93c5fd;font-weight:700;">${BRAND_NAME}</div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <img src="${escapeHtml(markUrl)}" width="28" height="28" alt="" style="display:block;border-radius:6px;" />
+                        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#93c5fd;font-weight:700;">${BRAND_NAME}</div>
+                    </div>
                     <h1 style="margin:10px 0 0;font-size:24px;line-height:1.25;color:#f8fafc;">${escapeHtml(title)}</h1>
                 </div>
                 <div style="padding:24px;line-height:1.7;font-size:15px;color:#e2e8f0;">

@@ -109,8 +109,19 @@
 
 .me-brand {
   display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.me-brand-copy {
+  display: flex;
   align-items: baseline;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.me-brand-mark {
+  flex-shrink: 0;
 }
 
 .me-brand h1 {

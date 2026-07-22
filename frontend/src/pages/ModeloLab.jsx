@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/modelo-lab.css";
+import MarquisaMark from "../components/MarquisaMark";
 
 const SCREENS = [
   { id: "home", label: "Home visitante" },
@@ -26,7 +27,7 @@ function Shell({ utc, actions, children }) {
       <header className="mq-header">
         <div className="mq-brand">
           <div className="mq-emblem" aria-hidden="true">
-            MQ
+            <MarquisaMark size={24} />
           </div>
           <div className="mq-brand-copy">
             <span className="mq-brand-name">MARQUISA</span>

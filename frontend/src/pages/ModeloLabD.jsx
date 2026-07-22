@@ -4,6 +4,7 @@ import { fetchStationWeather } from "../services/weatherService";
 import { decodeMetarSummary } from "../utils/metarDecoder";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
 import "../styles/modelo-g1000.css";
+import MarquisaMark from "../components/MarquisaMark";
 
 const SCREENS = [
   { id: "home", label: "PFD/MFD" },
@@ -30,7 +31,9 @@ function Unit({ utc, actions, softActive, onSoft, children, dual = true }) {
     <div className="g1-unit">
       <div className="g1-bezel-top">
         <div className="g1-brand">
-          <div className="g1-brand-badge">G1000</div>
+          <div className="g1-brand-badge">
+            <MarquisaMark size={22} />
+          </div>
           <div>
             <h1>MARQUISA</h1>
             <p>Integrated flight deck · Modelo D</p>

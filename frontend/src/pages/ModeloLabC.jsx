@@ -4,6 +4,7 @@ import { fetchStationWeather } from "../services/weatherService";
 import { decodeMetarSummary } from "../utils/metarDecoder";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
 import "../styles/modelo-placa.css";
+import MarquisaMark from "../components/MarquisaMark";
 
 const SCREENS = [
   { id: "home", label: "Home" },
@@ -37,7 +38,9 @@ function Shell({ utc, actions, children }) {
     <div className="mc-shell">
       <header className="mc-top">
         <div className="mc-brand">
-          <div className="mc-mark">MQ</div>
+          <div className="mc-mark">
+            <MarquisaMark size={24} />
+          </div>
           <div>
             <h1>MARQUISA</h1>
             <p>Placa de voo · Modelo C</p>

@@ -6,6 +6,7 @@ import App from "./App";
 import "./styles/global.css";
 import "./styles/typography.css";
 import "./styles/mq-wordmark.css";
+import "./styles/brand-mark-slots.css";
 import "./styles/app-layout.css";
 import "./styles/auth-pages.css";
 import "./styles/ux-polish.css";

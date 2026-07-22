@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import AviationShell from "../components/AviationShell";
 import Card from "../components/Card";
 import GrowthCtaBar from "../components/GrowthCtaBar";
+import MarquisaMark from "../components/MarquisaMark";
 import { useI18n } from "../i18n/I18nContext.jsx";
 
 export default function ExamResultShare() {
@@ -24,7 +25,10 @@ export default function ExamResultShare() {
         <AviationShell title={t("share.pageTitle")} subtitle={t("share.pageSubtitle")}>
             <Card title={t("share.cardTitle")}>
                 <div className="exam-share-card exam-share-card--public">
-                    <span className="exam-share-kicker">MARQUISA</span>
+                    <span className="exam-share-kicker">
+                        <MarquisaMark size={14} />
+                        MARQUISA
+                    </span>
                     <strong className={result.passed ? "exam-pass" : "exam-fail"}>
                         {result.passed ? t("exams.approved") : t("exams.failed")}
                     </strong>

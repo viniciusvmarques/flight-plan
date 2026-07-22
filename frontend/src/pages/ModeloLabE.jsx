@@ -4,6 +4,7 @@ import { fetchStationWeather } from "../services/weatherService";
 import { decodeMetarSummary } from "../utils/metarDecoder";
 import { classifyFromMetar } from "../utils/classifyFlightCategory";
 import "../styles/modelo-pro.css";
+import MarquisaMark from "../components/MarquisaMark";
 
 const SCREENS = [
   { id: "home", label: "Home" },
@@ -37,8 +38,11 @@ function Shell({ utc, actions, children }) {
     <div className="me-shell">
       <header className="me-top">
         <div className="me-brand">
-          <h1>Marquisa</h1>
-          <span>Painel do aeronauta</span>
+          <MarquisaMark size={22} className="me-brand-mark" />
+          <div className="me-brand-copy">
+            <h1>Marquisa</h1>
+            <span>Painel do aeronauta</span>
+          </div>
         </div>
         <div className="me-top-right">
           <div className="me-utc">

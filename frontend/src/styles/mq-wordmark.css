@@ -36,6 +36,7 @@
     user-select: none;
     max-width: 100%;
     min-width: 0;
+    color: #e2e8f0;
 }
 
 .mq-logo--compact {
@@ -46,7 +47,9 @@
     gap: 0;
 }
 
-.mq-plane-icon {
+.mq-plane-icon,
+.mq-mark-icon,
+.mq-mark-svg {
     display: block;
     overflow: visible;
     flex-shrink: 0;
@@ -66,6 +69,7 @@
 
 .auth-brand .fp-brand {
     max-width: 100%;
+    align-items: center;
 }
 
 .auth-brand .mq-logo {
@@ -90,9 +94,10 @@
         max-width: none;
     }
 
+    .fp-topbar-mark .mq-mark-icon,
     .fp-topbar-mark .mq-plane-icon {
-        width: 34px;
-        height: 18px;
+        width: 26px;
+        height: 26px;
     }
 
     .auth-brand .fp-brand-tagline {
@@ -100,7 +105,7 @@
     }
 
     .auth-brand .mq-logo {
-        gap: 4px;
+        gap: 6px;
     }
 
     .auth-brand .mq-logotype {
@@ -108,9 +113,10 @@
         letter-spacing: 0.12em;
     }
 
+    .auth-brand .mq-mark-icon,
     .auth-brand .mq-plane-icon {
-        width: 34px;
-        height: 18px;
+        width: 26px;
+        height: 26px;
     }
 }
 
@@ -120,8 +126,9 @@
         letter-spacing: 0.1em;
     }
 
+    .auth-brand .mq-mark-icon,
     .auth-brand .mq-plane-icon {
-        width: 28px;
-        height: 15px;
+        width: 22px;
+        height: 22px;
     }
 }
