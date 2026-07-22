@@ -629,8 +629,38 @@
 .fc-formula-note {
     margin: 0;
     font-size: 0.82rem;
-    line-height: 1.5;
-    color: var(--xp-text-soft);
+    line-height: 1.45;
+    color: var(--text-muted, #5b6570);
+}
+
+.fc-wind-cases {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.fc-wind-cases > div {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.fc-case-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 650;
+}
+
+@media (min-width: 900px) {
+    .fc-wind-cases {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+}
+
+.xp-tool-nav-row {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
 .fc-formula-note code {

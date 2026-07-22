@@ -1,5 +1,5 @@
 import { haversineNm } from "./distance.js";
-import { computeTrueAirspeed } from "./flightComputer.js";
+import { computeTrueAirspeed, computeWindTriangle } from "./flightComputer.js";
 
 export function hasFilledValue(value) {
     return value !== undefined && value !== null && String(value).trim() !== "";
@@ -217,13 +217,14 @@ function calculateWindNavigation(working, tasKt, fallbackGsKt) {
         };
     }
 
-    const rel = (windDirectionDeg - trueCourseDeg) * (Math.PI / 180);
-    const headwindKt = windSpeedKt * Math.cos(rel);
-    const crosswindKt = windSpeedKt * Math.sin(rel);
-    const ratio = tasKt > 0 ? Math.max(-0.95, Math.min(0.95, crosswindKt / tasKt)) : 0;
-    const windCorrectionDeg = Math.asin(ratio) * (180 / Math.PI);
-    const headingDeg = normalizeDeg(trueCourseDeg + windCorrectionDeg);
-    const groundSpeedKt = Math.max(0, tasKt - headwindKt);
+    const triangle = computeWindTriangle({
+        trueCourse: trueCourseDeg,
+        tas: tasKt,
+        windDir: windDirectionDeg,
+        windSpeed: windSpeedKt,
+    });
+    const headingDeg = triangle.heading;
+    const groundSpeedKt = hasFilledValue(fallbackGsKt) ? clampPositive(fallbackGsKt) : triangle.groundSpeed;
 
     return {
         trueCourseDeg,
@@ -231,11 +232,11 @@ function calculateWindNavigation(working, tasKt, fallbackGsKt) {
         magCourseDeg,
         windDirectionDeg,
         windSpeedKt,
-        windCorrectionDeg,
+        windCorrectionDeg: triangle.wca,
         headingDeg,
         magHeadingDeg: normalizeDeg(headingDeg - magVariationDeg),
-        headwindKt,
-        crosswindKt,
+        headwindKt: triangle.headwindKt,
+        crosswindKt: triangle.crosswindKt,
         groundSpeedKt,
     };
 }
@@ -302,7 +303,11 @@ export function buildNavLegs(working, context = {}, defaults = {}) {
         let tasKt = hasTasOverride ? clampPositive(item.tasKt) : defaultTas;
         let tasFromIas = false;
         if (!hasTasOverride && iasKt > 0) {
-            tasKt = computeTrueAirspeed({ ias: iasKt, pressureAltFt }).tas;
+            tasKt = computeTrueAirspeed({
+                ias: iasKt,
+                pressureAltFt,
+                oatC: hasFilledValue(defaults.oatC) ? defaults.oatC : hasFilledValue(working.oatC) ? working.oatC : undefined,
+            }).tas;
             tasFromIas = true;
         }
 
