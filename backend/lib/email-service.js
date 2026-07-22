@@ -1,5 +1,11 @@
 import nodemailer from "nodemailer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { BRAND_NAME, SITE_PROFILE } from "./site-config.js";
+
+const __emailDir = path.dirname(fileURLToPath(import.meta.url));
+const EMAIL_LOGO_PATH = path.join(__emailDir, "..", "assets", "email-logo.png");
 
 function escapeHtml(value) {
     return String(value || "")
@@ -21,8 +27,8 @@ function publicBaseUrl() {
 }
 
 function emailCta(href, label, variant = "primary") {
-    const bg = variant === "accent" ? "#5eead4" : "#0ea5e9";
-    const color = variant === "accent" ? "#041016" : "#ffffff";
+    const bg = variant === "accent" ? "#2563eb" : "#0ea5e9";
+    const color = "#ffffff";
     return `
       <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;">
         <tr>
@@ -59,7 +65,7 @@ function emailBullets(items) {
         .map(
             (item) =>
                 `<tr>
-          <td valign="top" style="padding:0 8px 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#5eead4;">&#10003;</td>
+          <td valign="top" style="padding:0 8px 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#38bdf8;">&#10003;</td>
           <td style="padding:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#e2e8f0;">${item}</td>
         </tr>`
         )
@@ -87,10 +93,13 @@ function emailParagraph(text, { muted = false, last = false } = {}) {
 /**
  * Shell de e-mail em tabelas (Gmail/Outlook).
  * Sem flex/gap/overflow — evita conteúdo cortado.
- * Marca 100% HTML (sem SVG/PNG obrigatório) — arte externa falha em muitos clientes.
+ * Logo: PNG do símbolo da marca (bússola/VOR).
  */
 function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransactional }) {
     const appUrl = publicBaseUrl();
+    const logoSrc = fs.existsSync(EMAIL_LOGO_PATH)
+        ? "cid:marquisa-logo"
+        : `${appUrl}/marquisa-email-logo.png`;
     const support = SITE_PROFILE.supportEmail;
     const year = new Date().getFullYear();
 
@@ -109,16 +118,15 @@ function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransaction
         <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;background-color:#0f172a;border:1px solid #1e293b;">
 
           <tr>
-            <td bgcolor="#0d2744" style="background-color:#0d2744;padding:28px 28px 22px;">
+            <td bgcolor="#0b1a2e" style="background-color:#0b1a2e;padding:28px 28px 22px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                 <tr>
-                  <td width="48" height="48" bgcolor="#5eead4" valign="middle" align="center"
-                      style="width:48px;height:48px;background-color:#5eead4;border-radius:12px;font-family:Arial,Helvetica,sans-serif;font-size:22px;font-weight:700;color:#041016;line-height:48px;">
-                    M
+                  <td width="52" valign="middle" style="width:52px;padding:0 14px 0 0;">
+                    <img src="${escapeHtml(logoSrc)}" width="48" height="48" alt="Marquisa"
+                         style="display:block;width:48px;height:48px;border:0;border-radius:12px;" />
                   </td>
-                  <td width="14" style="width:14px;font-size:0;line-height:0;">&nbsp;</td>
                   <td valign="middle">
-                    <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;letter-spacing:0.22em;text-transform:uppercase;color:#5eead4;font-weight:700;">
+                    <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;letter-spacing:0.22em;text-transform:uppercase;color:#93c5fd;font-weight:700;">
                       ${BRAND_NAME}
                     </div>
                     <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#94a3b8;margin-top:4px;">
@@ -138,7 +146,7 @@ function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransaction
           </tr>
 
           <tr>
-            <td style="height:3px;background-color:#5eead4;font-size:0;line-height:0;">&nbsp;</td>
+            <td style="height:3px;background-color:#2563eb;font-size:0;line-height:0;">&nbsp;</td>
           </tr>
 
           <tr>
@@ -157,7 +165,7 @@ function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransaction
                 ${escapeHtml(footerTransactional || "Mensagem relacionada à sua conta Marquisa.")}
               </p>
               <p style="margin:0;">
-                <a href="${escapeHtml(appUrl)}" style="color:#7dd3fc;text-decoration:underline;">${escapeHtml(appUrl.replace(/^https?:\/\//, ""))}</a>
+                <a href="${escapeHtml(appUrl)}" style="color:#93c5fd;text-decoration:underline;">${escapeHtml(appUrl.replace(/^https?:\/\//, ""))}</a>
                 &nbsp;&middot;&nbsp; &copy; ${year} ${BRAND_NAME}
               </p>
             </td>
@@ -768,7 +776,23 @@ export function createEmailService(prisma) {
         }
 
         try {
-            await transporter.sendMail({ from, to, subject, text, html });
+            const attachments = [];
+            if (fs.existsSync(EMAIL_LOGO_PATH)) {
+                attachments.push({
+                    filename: "marquisa-email-logo.png",
+                    path: EMAIL_LOGO_PATH,
+                    cid: "marquisa-logo",
+                    contentDisposition: "inline",
+                });
+            }
+            await transporter.sendMail({
+                from,
+                to,
+                subject,
+                text,
+                html,
+                attachments: attachments.length ? attachments : undefined,
+            });
             await logEmail({
                 userId,
                 contactMessageId,
