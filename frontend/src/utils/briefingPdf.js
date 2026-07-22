@@ -1,6 +1,6 @@
 /**
  * PDF mínimo (PDF 1.4) com Courier — tipografia estilo escala / strip ATC.
- * Sem dependências externas.
+ * Sem dependências externas. Quebra linhas longas (METAR/TAF).
  */
 
 function escapePdf(text) {
@@ -9,7 +9,6 @@ function escapePdf(text) {
         .replace(/\(/g, "\\(")
         .replace(/\)/g, "\\)")
         .replace(/[^\x20-\x7E]/g, (ch) => {
-            // Remove acentos para Courier Type1 (WinAnsi limitado); mantém ASCII operacional.
             const map = {
                 Á: "A",
                 À: "A",
@@ -61,6 +60,64 @@ function escapePdf(text) {
         });
 }
 
+/** Courier é monoespaçada: largura ≈ 0.6 * fontSize. */
+function maxCharsFor(fontSize, pageWidth = 595.28, margin = 36) {
+    const usable = pageWidth - margin * 2;
+    const charW = Math.max(1, fontSize * 0.6);
+    return Math.max(24, Math.floor(usable / charW));
+}
+
+/**
+ * Quebra texto em linhas sem estourar a margem.
+ * Prefere quebrar em espaços; se um token for maior que a linha, corta o token.
+ */
+function wrapText(text, maxChars) {
+    const raw = String(text ?? "").replace(/\s+/g, " ").trim();
+    if (!raw) return [""];
+    if (raw.length <= maxChars) return [raw];
+
+    const words = raw.split(" ");
+    const lines = [];
+    let current = "";
+
+    const pushChunk = (chunk) => {
+        if (!chunk) return;
+        if (chunk.length <= maxChars) {
+            lines.push(chunk);
+            return;
+        }
+        for (let i = 0; i < chunk.length; i += maxChars) {
+            lines.push(chunk.slice(i, i + maxChars));
+        }
+    };
+
+    for (const word of words) {
+        if (!current) {
+            if (word.length <= maxChars) {
+                current = word;
+            } else {
+                pushChunk(word);
+                current = "";
+            }
+            continue;
+        }
+        const next = `${current} ${word}`;
+        if (next.length <= maxChars) {
+            current = next;
+        } else {
+            lines.push(current);
+            if (word.length <= maxChars) {
+                current = word;
+            } else {
+                pushChunk(word);
+                current = "";
+            }
+        }
+    }
+    if (current) lines.push(current);
+    return lines.length ? lines : [""];
+}
+
 function buildContentStream(lines, { pageWidth = 595.28, pageHeight = 841.89, margin = 36, fontSize = 9, leading = 11 } = {}) {
     const maxY = pageHeight - margin;
     const minY = margin + 18;
@@ -74,7 +131,7 @@ function buildContentStream(lines, { pageWidth = 595.28, pageHeight = 841.89, ma
         y = maxY;
     };
 
-    const writeLine = (text, size = fontSize, bold = false) => {
+    const writeRawLine = (text, size = fontSize, bold = false) => {
         if (y < minY) pushPage();
         const safe = escapePdf(text);
         const font = bold ? "F2" : "F1";
@@ -83,10 +140,18 @@ function buildContentStream(lines, { pageWidth = 595.28, pageHeight = 841.89, ma
         commands.push(`${margin} ${y.toFixed(2)} Td`);
         commands.push(`(${safe}) Tj`);
         commands.push("ET");
-        y -= leading;
+        y -= Math.max(leading, size + 2);
     };
 
-    const rule = () => writeLine("-".repeat(86), 8, false);
+    const writeWrapped = (text, size = fontSize, bold = false, indent = "") => {
+        const width = maxCharsFor(size, pageWidth, margin) - indent.length;
+        const parts = wrapText(text, width);
+        parts.forEach((part, index) => {
+            writeRawLine(`${index === 0 ? indent : indent}${part}`, size, bold);
+        });
+    };
+
+    const rule = () => writeRawLine("-".repeat(maxCharsFor(8, pageWidth, margin)), 8, false);
 
     for (const line of lines) {
         if (line === "__RULE__") {
@@ -98,10 +163,14 @@ function buildContentStream(lines, { pageWidth = 595.28, pageHeight = 841.89, ma
             continue;
         }
         if (typeof line === "object" && line) {
-            writeLine(line.text || "", line.size || fontSize, !!line.bold);
+            if (line.wrap) {
+                writeWrapped(line.text || "", line.size || fontSize, !!line.bold, line.indent || "");
+            } else {
+                writeWrapped(line.text || "", line.size || fontSize, !!line.bold, "");
+            }
             continue;
         }
-        writeLine(String(line ?? ""), fontSize, false);
+        writeWrapped(String(line ?? ""), fontSize, false, "");
     }
 
     if (commands.length) pushPage();
@@ -132,7 +201,6 @@ function assemblePdf(pageStreams) {
     const kids = pageIds.map((id) => `${id} 0 R`).join(" ");
     const pagesId = add(`<< /Type /Pages /Kids [ ${kids} ] /Count ${pageIds.length} >>`);
 
-    // Patch Parent references in page objects
     for (let i = 0; i < pageIds.length; i += 1) {
         const idx = pageIds[i] - 1;
         objects[idx] = objects[idx].replace("/Parent 0 0 R", `/Parent ${pagesId} 0 R`);
@@ -157,50 +225,65 @@ function assemblePdf(pageStreams) {
     return pdf;
 }
 
+function pushBulletin(lines, label, text) {
+    lines.push({ text: label, size: 9, bold: true, wrap: true });
+    lines.push({ text: text || "—", size: 8, bold: false, wrap: true, indent: "  " });
+}
+
 function modelToLines(model, labels) {
     const L = labels || {};
     const lines = [];
 
-    lines.push({ text: `${model.brand}  ·  BRIEFING OPS STRIP`, size: 12, bold: true });
-    lines.push({ text: `${L.generated || "GERADO"}  ${model.generatedAtUtc}   UTC`, size: 9, bold: false });
+    lines.push({ text: `${model.brand}  ·  BRIEFING OPS STRIP`, size: 12, bold: true, wrap: true });
+    lines.push({ text: `${L.generated || "GERADO"}  ${model.generatedAtUtc}   UTC`, size: 9, bold: false, wrap: true });
     lines.push("__RULE__");
-    lines.push({ text: `ROUTE   ${model.route}`, size: 14, bold: true });
-    lines.push(
-        `RULE ${model.flightRule}   CALLSIGN ${model.callsign}   ACFT ${model.aircraft}   ALTN ${model.altnIcao || "—"}`
-    );
+    lines.push({ text: `ROUTE   ${model.route}`, size: 14, bold: true, wrap: true });
+    lines.push({
+        text: `RULE ${model.flightRule}   CALLSIGN ${model.callsign}   ACFT ${model.aircraft}   ALTN ${model.altnIcao || "-"}`,
+        size: 9,
+        wrap: true,
+    });
     lines.push("__RULE__");
-    lines.push({ text: L.nav || "NAVEGACAO", size: 10, bold: true });
-    lines.push(
-        `DIST ${model.distNm}   ALTN DIST ${model.altnDistNm}   ETE ${model.ete}   ENDURANCE ${model.endurance}`
-    );
-    lines.push(`TAS ${model.tas}   GS ${model.gs}   HDG ${model.hdg}   MH ${model.magHdg}   CRZ ${model.cruise}`);
-    lines.push(`WIND ${model.wind}`);
+    lines.push({ text: L.nav || "NAVEGACAO", size: 10, bold: true, wrap: true });
+    lines.push({
+        text: `DIST ${model.distNm}   ALTN DIST ${model.altnDistNm}   ETE ${model.ete}   ENDURANCE ${model.endurance}`,
+        size: 9,
+        wrap: true,
+    });
+    lines.push({
+        text: `TAS ${model.tas}   GS ${model.gs}   HDG ${model.hdg}   MH ${model.magHdg}   CRZ ${model.cruise}`,
+        size: 9,
+        wrap: true,
+    });
+    lines.push({ text: `WIND ${model.wind}`, size: 9, wrap: true });
     lines.push("__GAP__");
-    lines.push({ text: L.fuel || "COMBUSTIVEL", size: 10, bold: true });
-    lines.push(
-        `REQ ${model.fuelRequired}   FOB ${model.fuelOnBoard}   MARGIN ${model.fuelMargin}   FLOW ${model.fuelFlow}`
-    );
+    lines.push({ text: L.fuel || "COMBUSTIVEL", size: 10, bold: true, wrap: true });
+    lines.push({
+        text: `REQ ${model.fuelRequired}   FOB ${model.fuelOnBoard}   MARGIN ${model.fuelMargin}   FLOW ${model.fuelFlow}`,
+        size: 9,
+        wrap: true,
+    });
     lines.push("__RULE__");
-    lines.push({ text: L.weather || "METEOROLOGIA", size: 10, bold: true });
+    lines.push({ text: L.weather || "METEOROLOGIA", size: 10, bold: true, wrap: true });
 
     for (const st of model.stations || []) {
         lines.push("__GAP__");
-        lines.push({ text: `${st.role}  ${st.icao}  [${st.category}]`, size: 10, bold: true });
-        if (st.name) lines.push(st.name);
-        for (const hint of st.hints || []) lines.push(`- ${hint}`);
-        lines.push(`METAR  ${st.metar}`);
-        lines.push(`TAF    ${st.taf}`);
+        lines.push({ text: `${st.role}  ${st.icao}  [${st.category}]`, size: 10, bold: true, wrap: true });
+        if (st.name) lines.push({ text: st.name, size: 8, wrap: true });
+        for (const hint of st.hints || []) lines.push({ text: `- ${hint}`, size: 8, wrap: true });
+        pushBulletin(lines, "METAR", st.metar);
+        pushBulletin(lines, "TAF", st.taf);
     }
 
     if (model.warnings?.length) {
         lines.push("__RULE__");
-        lines.push({ text: L.warnings || "ALERTAS", size: 10, bold: true });
-        for (const w of model.warnings) lines.push(`! ${w}`);
+        lines.push({ text: L.warnings || "ALERTAS", size: 10, bold: true, wrap: true });
+        for (const w of model.warnings) lines.push({ text: `! ${w}`, size: 8, wrap: true });
     }
 
     lines.push("__RULE__");
-    lines.push({ text: model.disclaimer, size: 7, bold: false });
-    lines.push({ text: `${model.brand} · VOE SEGURO · VOE PREPARADO`, size: 8, bold: true });
+    lines.push({ text: model.disclaimer, size: 7, bold: false, wrap: true });
+    lines.push({ text: `${model.brand} · VOE SEGURO · VOE PREPARADO`, size: 8, bold: true, wrap: true });
 
     return lines;
 }

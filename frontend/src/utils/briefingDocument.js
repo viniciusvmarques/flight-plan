@@ -16,12 +16,10 @@ function fmtNum(value, digits = 0, fallback = "—") {
     return Number(value).toFixed(digits);
 }
 
-function oneLine(text, max = 92) {
-    const s = String(text || "")
+function cleanBulletin(text) {
+    return String(text || "")
         .replace(/\s+/g, " ")
         .trim();
-    if (!s) return "—";
-    return s.length > max ? `${s.slice(0, max - 1)}…` : s;
 }
 
 function stationBlock(role, station, locale) {
@@ -34,8 +32,8 @@ function stationBlock(role, station, locale) {
         name: station.airport?.name || "",
         category,
         hints: (summary.hints || []).slice(0, 3),
-        metar: oneLine(station.metar || "METAR UNAVAILABLE", 110),
-        taf: oneLine(station.taf || "TAF UNAVAILABLE", 110),
+        metar: cleanBulletin(station.metar) || "METAR UNAVAILABLE",
+        taf: cleanBulletin(station.taf) || "TAF UNAVAILABLE",
     };
 }
 
