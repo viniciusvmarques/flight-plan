@@ -36,6 +36,7 @@ import {
   FIXED_SAMPLE_SESSION_ID,
 } from "./lib/fixed-exam-sample.js";
 import { localizeExamQuestion, localizeExamScore } from "./lib/exam-question-localizer.js";
+import { ensureUserProfileColumns } from "./lib/ensure-user-profile-columns.js";
 
 const app = express();
 const DEFAULT_FRONTEND_ORIGIN = "http://localhost:5173";
@@ -2258,6 +2259,17 @@ app.post("/api/stripe/portal", requireAuth, async (req, res) => {
 
 // ============================
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+
+async function boot() {
+  try {
+    await ensureUserProfileColumns(prisma);
+    console.log("User profile columns ensured");
+  } catch (err) {
+    console.error("Failed to ensure User profile columns:", err?.message || err);
+  }
+  app.listen(PORT, () => {
     console.log("Backend rodando na porta", PORT);
-});
+  });
+}
+
+boot();
