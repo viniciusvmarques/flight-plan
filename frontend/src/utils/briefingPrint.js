@@ -29,12 +29,114 @@ export function openBriefingPrintWindow(model, labels = {}) {
 
     const navLegsHtml =
         model.useNavLegs && model.navLegs?.length
-            ? `<div class="section-title">${escapeHtml(L.navLog || "PERNAS DA ROTA")}</div>
-               <div class="nav-log">
-                 ${model.navLegs
-                     .map((leg) => `<div class="nav-log-line">${escapeHtml(leg.line || `${leg.label} ${leg.distanceNm}`)}</div>`)
-                     .join("")}
-               </div>`
+            ? `<div class="section-title">${escapeHtml(L.navLog || "PERNAS / WAYPOINTS")}</div>
+               <table class="nav-table">
+                 <thead>
+                   <tr>
+                     <th>#</th><th>Perna</th><th>NM</th><th>TC</th><th>MH</th><th>HDG</th>
+                     <th>VI</th><th>TAS</th><th>GS</th><th>ETE</th><th>FUEL</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   ${model.navLegs
+                       .map(
+                           (leg) => `<tr>
+                     <td>${escapeHtml(String(leg.index).padStart(2, "0"))}</td>
+                     <td>${escapeHtml(leg.label)}</td>
+                     <td>${escapeHtml(leg.distanceRaw || "—")}</td>
+                     <td>${escapeHtml(leg.courseRaw || "—")}</td>
+                     <td>${escapeHtml(leg.magCourseRaw || "—")}</td>
+                     <td>${escapeHtml(leg.headingRaw || "—")}</td>
+                     <td>${escapeHtml(leg.iasRaw || "—")}</td>
+                     <td>${escapeHtml(leg.tasRaw || "—")}</td>
+                     <td>${escapeHtml(leg.gsRaw || "—")}</td>
+                     <td>${escapeHtml(leg.eteRaw || "—")}</td>
+                     <td>${escapeHtml(leg.fuelRaw || "—")}</td>
+                   </tr>`
+                       )
+                       .join("")}
+                 </tbody>
+               </table>`
+            : "";
+
+    const h = model.header || {};
+    const atc = h.atc || {};
+    const fuel = model.fuelBreakdown || {};
+    const headerHtml = `
+      <div class="section-title">${escapeHtml(L.header || "CABEÇALHO")}</div>
+      <div class="brief-grid brief-grid-3">
+        <div><span>ACFT</span><strong>${escapeHtml(h.aircraft || model.aircraft || "—")}</strong></div>
+        <div><span>PILOTO</span><strong>${escapeHtml(h.pilot || "—")}</strong></div>
+        <div><span>DATA</span><strong>${escapeHtml(h.date || "—")}</strong></div>
+      </div>
+      <div class="brief-grid brief-grid-5">
+        <div><span>ORIG</span><strong>${escapeHtml(h.origin || model.originIcao || "—")}</strong></div>
+        <div><span>DEST</span><strong>${escapeHtml(h.dest || model.destIcao || "—")}</strong></div>
+        <div><span>VEL</span><strong>${escapeHtml(h.speed || model.tas || "—")}</strong></div>
+        <div><span>FL</span><strong>${escapeHtml(h.level || model.cruise || "—")}</strong></div>
+        <div><span>DIST</span><strong>${escapeHtml(h.distance || model.distNm || "—")}</strong></div>
+      </div>
+      <div class="brief-grid brief-grid-5">
+        <div><span>UTC</span><strong>${escapeHtml(h.utc || "—")}</strong></div>
+        <div><span>ACION</span><strong class="pen">${escapeHtml(h.startup || "________")}</strong></div>
+        <div><span>DECOL</span><strong class="pen">${escapeHtml(h.takeoff || "________")}</strong></div>
+        <div><span>POUSO</span><strong class="pen">${escapeHtml(h.landing || "________")}</strong></div>
+        <div><span>CORTE</span><strong class="pen">${escapeHtml(h.shutdown || "________")}</strong></div>
+      </div>
+      <div class="brief-grid brief-grid-6">
+        <div><span>CLR</span><strong>${escapeHtml(atc.clr || "____")}</strong></div>
+        <div><span>GND</span><strong>${escapeHtml(atc.gnd || "____")}</strong></div>
+        <div><span>TWR</span><strong>${escapeHtml(atc.twr || "____")}</strong></div>
+        <div><span>APP</span><strong>${escapeHtml(atc.app || "____")}</strong></div>
+        <div><span>CTR</span><strong>${escapeHtml(atc.ctr || "____")}</strong></div>
+        <div><span>DEST</span><strong>${escapeHtml(atc.dest || "____")}</strong></div>
+      </div>
+      <div class="brief-grid brief-grid-3">
+        <div><span>DEP RWY</span><strong>${escapeHtml(h.depRwy || "—")}</strong></div>
+        <div><span>DEP ALT</span><strong>${escapeHtml(h.depAlt || "—")}</strong></div>
+        <div><span>DEP NOTES</span><strong>${escapeHtml(h.depNotes || "—")}</strong></div>
+      </div>
+      <div class="brief-grid brief-grid-3">
+        <div><span>ARR RWY</span><strong>${escapeHtml(h.arrRwy || "—")}</strong></div>
+        <div><span>ARR ALT</span><strong>${escapeHtml(h.arrAlt || "—")}</strong></div>
+        <div><span>ARR NOTES</span><strong>${escapeHtml(h.arrNotes || "—")}</strong></div>
+      </div>
+      <div class="brief-grid brief-grid-4">
+        <div><span>ALTN</span><strong>${escapeHtml(h.altn || model.altnIcao || "—")}</strong></div>
+        <div><span>ALTN RWY</span><strong>${escapeHtml(h.altnRwy || "—")}</strong></div>
+        <div><span>ALTN ALT</span><strong>${escapeHtml(h.altnAlt || "—")}</strong></div>
+        <div><span>NOTES</span><strong>${escapeHtml(h.altnNotes || "—")}</strong></div>
+      </div>`;
+
+    const fuelHtml = `
+      <div class="section-title">${escapeHtml(L.fuel || "COMBUSTÍVEL (BIANCH)")}</div>
+      <div class="brief-grid brief-grid-4">
+        <div><span>TAXI</span><strong>${escapeHtml(fuel.taxi || "—")}</strong></div>
+        <div><span>SUBIDA</span><strong>${escapeHtml(fuel.climb || "—")}</strong></div>
+        <div><span>PERNAS/CRZ</span><strong>${escapeHtml(
+            fuel.legsTotal && fuel.legsTotal !== "—" ? fuel.legsTotal : fuel.cruise || "—"
+        )}</strong></div>
+        <div><span>DESCIDA</span><strong>${escapeHtml(fuel.descent || "—")}</strong></div>
+      </div>
+      <div class="brief-grid brief-grid-5">
+        <div><span>APP</span><strong>${escapeHtml(fuel.approach || "—")}</strong></div>
+        <div><span>TRIP</span><strong>${escapeHtml(fuel.trip || "—")}</strong></div>
+        <div><span>ALTN</span><strong>${escapeHtml(fuel.alternate || "—")}</strong></div>
+        <div><span>CONT</span><strong>${escapeHtml(fuel.contingency || "—")}</strong></div>
+        <div><span>FINAL</span><strong>${escapeHtml(fuel.finalReserve || "—")}</strong></div>
+      </div>
+      <div class="brief-grid brief-grid-4">
+        <div><span>REQ</span><strong>${escapeHtml(model.fuelRequired)}</strong></div>
+        <div><span>FOB</span><strong>${escapeHtml(model.fuelOnBoard)}</strong></div>
+        <div><span>LDG</span><strong>${escapeHtml(fuel.landing || "—")}</strong></div>
+        <div><span>MARGIN</span><strong>${escapeHtml(model.fuelMargin)}</strong></div>
+      </div>`;
+
+    const notesHtml =
+        model.ifrNotes || model.vfrNotes
+            ? `<div class="section-title">${escapeHtml(L.notes || "OBSERVAÇÕES")}</div>
+               ${model.ifrNotes ? `<div class="note-line"><span>IFR</span><p>${escapeHtml(model.ifrNotes)}</p></div>` : ""}
+               ${model.vfrNotes ? `<div class="note-line"><span>VFR</span><p>${escapeHtml(model.vfrNotes)}</p></div>` : ""}`
             : "";
 
     const html = `<!doctype html>
@@ -212,6 +314,68 @@ export function openBriefingPrintWindow(model, labels = {}) {
       padding: 4px 0;
       border-bottom: 1px dashed rgba(31, 41, 55, 0.25);
     }
+    .brief-grid {
+      display: grid;
+      gap: 6px 10px;
+      margin: 0 0 8px;
+    }
+    .brief-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .brief-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .brief-grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .brief-grid-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .brief-grid > div {
+      border: 1px solid #9ca3af;
+      background: #fff;
+      padding: 6px 8px;
+      min-height: 42px;
+    }
+    .brief-grid span {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #4b5563;
+      margin-bottom: 2px;
+    }
+    .brief-grid strong {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+      word-break: break-word;
+    }
+    .brief-grid strong.pen {
+      border-bottom: 1px solid #111827;
+      min-height: 16px;
+    }
+    .nav-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      margin: 0 0 12px;
+    }
+    .nav-table th,
+    .nav-table td {
+      border: 1px solid #9ca3af;
+      padding: 4px 5px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .nav-table th {
+      background: #e5e7eb;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 9px;
+    }
+    .nav-table td:nth-child(n+3) { text-align: right; }
+    .note-line {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 8px;
+      margin: 0 0 8px;
+      font-size: 11px;
+    }
+    .note-line span { font-weight: 700; letter-spacing: 0.08em; }
+    .note-line p { margin: 0; }
     @media print {
       body { background: #fff; }
       .toolbar { display: none !important; }
@@ -224,7 +388,8 @@ export function openBriefingPrintWindow(model, labels = {}) {
       }
     }
     @media (max-width: 720px) {
-      .meta-grid, .kv { grid-template-columns: 1fr; }
+      .meta-grid, .kv,
+      .brief-grid-3, .brief-grid-4, .brief-grid-5, .brief-grid-6 { grid-template-columns: 1fr 1fr; }
       .route { font-size: 22px; }
     }
   </style>
@@ -239,7 +404,7 @@ export function openBriefingPrintWindow(model, labels = {}) {
   </div>
   <main class="sheet">
     <header class="mast">
-      <h1>${escapeHtml(model.brand)} · BRIEFING OPS</h1>
+      <h1>${escapeHtml(model.brand)} · BRIEFING DE VOO</h1>
       <time>${escapeHtml(model.generatedAtUtc)} UTC</time>
     </header>
     <div class="route">${escapeHtml(model.route)}</div>
@@ -249,6 +414,8 @@ export function openBriefingPrintWindow(model, labels = {}) {
       <div>ACFT ${escapeHtml(model.aircraft)}</div>
       <div>ALTN ${escapeHtml(model.altnIcao || "—")}</div>
     </div>
+
+    ${headerHtml}
 
     <div class="section-title">${escapeHtml(L.nav || "NAVEGAÇÃO")}</div>
     <div class="kv">
@@ -268,14 +435,8 @@ export function openBriefingPrintWindow(model, labels = {}) {
     </div>
 
     ${navLegsHtml}
-
-    <div class="section-title">${escapeHtml(L.fuel || "COMBUSTÍVEL")}</div>
-    <div class="kv">
-      <div>REQ ${escapeHtml(model.fuelRequired)}</div>
-      <div>FOB ${escapeHtml(model.fuelOnBoard)}</div>
-      <div>MARGIN ${escapeHtml(model.fuelMargin)}</div>
-      <div>FLOW ${escapeHtml(model.fuelFlow)}</div>
-    </div>
+    ${fuelHtml}
+    ${notesHtml}
 
     <div class="section-title">${escapeHtml(L.weather || "METEOROLOGIA")}</div>
     ${stationsHtml}

@@ -215,9 +215,11 @@ export default function Dashboard() {
     function exportLabels() {
         return {
             generated: t("dashboard.exportGeneratedLabel"),
+            header: t("dashboard.exportHeaderLabel"),
             nav: t("dashboard.exportNavLabel"),
             navLog: t("dashboard.exportNavLogLabel"),
             fuel: t("dashboard.exportFuelLabel"),
+            notes: t("dashboard.exportNotesLabel"),
             weather: t("dashboard.exportWeatherLabel"),
             warnings: t("dashboard.exportWarningsLabel"),
             stripTitle: t("dashboard.exportStripTitle"),

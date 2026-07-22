@@ -249,8 +249,11 @@ function NavLegsTable({ legs }) {
                         <th>RV</th>
                         <th>RM</th>
                         <th>Proa</th>
+                        <th>VI</th>
+                        <th>TAS</th>
                         <th>GS</th>
                         <th>ETE</th>
+                        <th>Comb.</th>
                         <th>Acum.</th>
                     </tr>
                 </thead>
@@ -262,8 +265,11 @@ function NavLegsTable({ legs }) {
                             <td>{fmtDeg(leg.trueCourseDeg)}</td>
                             <td>{fmtDeg(leg.magCourseDeg)}</td>
                             <td>{fmtDeg(leg.headingDeg)}</td>
+                            <td>{Number.isFinite(leg.iasKt) && leg.iasKt > 0 ? `${leg.iasKt.toFixed(0)}` : "—"}</td>
+                            <td>{Number.isFinite(leg.tasKt) && leg.tasKt > 0 ? `${leg.tasKt.toFixed(0)}` : "—"}</td>
                             <td>{Number.isFinite(leg.gsKt) && leg.gsKt > 0 ? `${leg.gsKt.toFixed(0)} kt` : "—"}</td>
                             <td>{fmtMinutes(leg.eteMin ?? leg.timeMin)}</td>
+                            <td>{Number.isFinite(leg.fuelL) && leg.fuelL > 0 ? `${leg.fuelL.toFixed(1)} L` : "—"}</td>
                             <td>{fmtMinutes(leg.cumulativeEteMin ?? leg.eteMin ?? leg.timeMin)}</td>
                         </tr>
                     ))}
@@ -752,141 +758,193 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                     </div>
                 </section>
 
-                <section className="plan-panel">
+                <section className="plan-panel plan-panel--dark">
                     <SectionHead step="3" title={t("planner.fuel")}>
-                        {t("planner.fuelCopy")}
+                        {t("planner.fuelCopyBianch")}
                     </SectionHead>
 
-                    <div className="plan-grid plan-grid--4">
-                        <Field label="Fuel flow cruzeiro (L/h)">
-                            <input className="input" value={p.fuelFlowCruiseLph ?? ""} onChange={(e) => setField("fuelFlowCruiseLph", e.target.value)} placeholder="34" />
-                        </Field>
-                        <Field label="Capacidade útil (L)">
-                            <input className="input" value={p.usableFuelL ?? ""} onChange={(e) => setField("usableFuelL", e.target.value)} placeholder="201" />
-                        </Field>
-                        <Field label="Combustível a bordo (L)">
-                            <input className="input" value={p.fuelOnBoardL ?? ""} onChange={(e) => setField("fuelOnBoardL", e.target.value)} placeholder="170" />
-                        </Field>
-                        <Field label="Desejado no pouso (L)">
-                            <input className="input" value={p.desiredLandingFuelL ?? ""} onChange={(e) => setField("desiredLandingFuelL", e.target.value)} placeholder="34" />
-                        </Field>
-                    </div>
-
-                    <div className="plan-summary-grid plan-summary-grid--4">
-                        <MetricBox label={t("planner.toc")} value={`${calc.toc.distanceFromOriginNm.toFixed(0)} NM · ${fmtMinutes(calc.toc.eteMin)}`} tone="ok" />
-                        <MetricBox label={t("planner.tod")} value={`${calc.tod.distanceFromOriginNm.toFixed(0)} NM · ${fmtMinutes(calc.tod.eteMin)}`} tone="ok" />
-                        <MetricBox label={t("planner.climbDist")} value={`${calc.climbDistNm.toFixed(0)} NM`} />
-                        <MetricBox label={t("planner.descentDist")} value={`${calc.descentDistNm.toFixed(0)} NM`} />
-                    </div>
-
-                    <div className="plan-phase-grid">
-                        <div className="plan-mini-panel">
-                            <div className="card-title">Táxi e subida</div>
-                            <div className="plan-grid plan-grid--2">
-                                <Field label="Táxi (L)">
-                                    <input className="input" value={p.taxiFuelL ?? ""} onChange={(e) => setField("taxiFuelL", e.target.value)} placeholder="8" />
-                                </Field>
-                                <Field label="Subida (min)">
-                                    <input className="input" value={p.climbTimeMin ?? ""} onChange={(e) => setField("climbTimeMin", e.target.value)} placeholder="14" />
-                                </Field>
-                                <Field label="Comb. subida (L)">
-                                    <input className="input" value={p.climbFuelL ?? ""} onChange={(e) => setField("climbFuelL", e.target.value)} placeholder="18" />
-                                </Field>
-                                <Field label="Descida (min)">
-                                    <input className="input" value={p.descentTimeMin ?? ""} onChange={(e) => setField("descentTimeMin", e.target.value)} placeholder="10" />
-                                </Field>
-                            </div>
+                    <div className="briefing-lines fuel-sheet">
+                        <div className="briefing-line briefing-line--route">
+                            <Field className="briefing-cell" label="Fuel flow (L/h)">
+                                <input className="input" value={p.fuelFlowCruiseLph ?? ""} onChange={(e) => setField("fuelFlowCruiseLph", e.target.value)} placeholder="34" />
+                            </Field>
+                            <Field className="briefing-cell" label="Capacidade útil (L)">
+                                <input className="input" value={p.usableFuelL ?? ""} onChange={(e) => setField("usableFuelL", e.target.value)} placeholder="201" />
+                            </Field>
+                            <Field className="briefing-cell" label="A bordo / FOB (L)">
+                                <input className="input" value={p.fuelOnBoardL ?? ""} onChange={(e) => setField("fuelOnBoardL", e.target.value)} placeholder="170" />
+                            </Field>
+                            <Field className="briefing-cell" label="Desejado no pouso (L)">
+                                <input className="input" value={p.desiredLandingFuelL ?? ""} onChange={(e) => setField("desiredLandingFuelL", e.target.value)} placeholder="34" />
+                            </Field>
+                            <Field className="briefing-cell" label="Extra (L)">
+                                <input className="input" value={p.extraFuelL ?? ""} onChange={(e) => setField("extraFuelL", e.target.value)} placeholder="0" />
+                            </Field>
                         </div>
 
-                        <div className="plan-mini-panel">
-                            <div className="card-title">Cruzeiro</div>
-                            <div className="plan-grid plan-grid--2">
-                                <SelectField
-                                    label="Modo"
-                                    value={p.cruiseMode ?? "auto"}
-                                    onChange={(value) => setField("cruiseMode", value)}
-                                    options={[
-                                        { value: "auto", label: "Automático" },
-                                        { value: "manual", label: "Manual" },
-                                    ]}
+                        <div className="plan-summary-grid plan-summary-grid--4">
+                            <MetricBox label={t("planner.toc")} value={`${calc.toc.distanceFromOriginNm.toFixed(0)} NM · ${fmtMinutes(calc.toc.eteMin)}`} tone="ok" />
+                            <MetricBox label={t("planner.tod")} value={`${calc.tod.distanceFromOriginNm.toFixed(0)} NM · ${fmtMinutes(calc.tod.eteMin)}`} tone="ok" />
+                            <MetricBox label={t("planner.climbDist")} value={`${calc.climbDistNm.toFixed(0)} NM`} />
+                            <MetricBox label={t("planner.descentDist")} value={`${calc.descentDistNm.toFixed(0)} NM`} />
+                        </div>
+
+                        <div className="briefing-line briefing-line--4">
+                            <Field className="briefing-cell" label="Táxi (L)">
+                                <input className="input" value={p.taxiFuelL ?? ""} onChange={(e) => setField("taxiFuelL", e.target.value)} placeholder="8" />
+                            </Field>
+                            <Field className="briefing-cell" label="Subida (min)">
+                                <input className="input" value={p.climbTimeMin ?? ""} onChange={(e) => setField("climbTimeMin", e.target.value)} placeholder="14" />
+                            </Field>
+                            <Field className="briefing-cell" label="Comb. subida (L)">
+                                <input className="input" value={p.climbFuelL ?? ""} onChange={(e) => setField("climbFuelL", e.target.value)} placeholder="18" />
+                            </Field>
+                            <Field className="briefing-cell" label="Descida (min)">
+                                <input className="input" value={p.descentTimeMin ?? ""} onChange={(e) => setField("descentTimeMin", e.target.value)} placeholder="10" />
+                            </Field>
+                        </div>
+
+                        <div className="briefing-line briefing-line--4">
+                            <Field className="briefing-cell" label="Descida (L)">
+                                <input className="input" value={p.descentFuelL ?? ""} onChange={(e) => setField("descentFuelL", e.target.value)} placeholder="5" />
+                            </Field>
+                            <Field className="briefing-cell" label="Aproximação (L)">
+                                <input className="input" value={p.approachFuelL ?? ""} onChange={(e) => setField("approachFuelL", e.target.value)} placeholder="4" />
+                            </Field>
+                            <Field className="briefing-cell" label="Contingência (%)">
+                                <input className="input" value={p.contingencyPct ?? ""} onChange={(e) => setField("contingencyPct", e.target.value)} placeholder="5" />
+                            </Field>
+                            <Field className="briefing-cell" label="Reserva final (min)">
+                                <input className="input" value={p.finalReserveMin ?? ""} onChange={(e) => setField("finalReserveMin", e.target.value)} placeholder="45" />
+                            </Field>
+                        </div>
+
+                        {calc.useNavLegs ? (
+                            <div className="plan-summary-grid plan-summary-grid--4">
+                                <MetricBox
+                                    label="Comb. pernas"
+                                    value={`${(calc.navLog?.totalFuelL || 0).toFixed(1)} L`}
+                                    tone="warn"
                                 />
-                                <Field
-                                    label="Distância cruzeiro (NM)"
-                                    hint={
-                                        calc.useNavLegs
-                                            ? `Comb. pernas: ${calc.cruiseFuelLAuto.toFixed(1)} L (VI × vento × consumo)`
-                                            : String(p.cruiseMode ?? "auto") === "auto"
-                                              ? `Auto: ${calc.cruiseDistAutoNm.toFixed(0)} NM (rota − subida − descida)`
-                                              : null
-                                    }
-                                >
-                                    <input className="input" value={p.cruiseDistNm ?? ""} onChange={(e) => setField("cruiseDistNm", e.target.value)} placeholder={String(calc.cruiseDistAutoNm.toFixed(0))} />
+                                <MetricBox label="ETE pernas" value={fmtMinutes(calc.navLog?.totalEteMin || 0)} tone="ok" />
+                                <MetricBox label="Trip" value={`${calc.tripFuelL.toFixed(1)} L`} />
+                                <MetricBox label="Reservas" value={`${calc.reservesFuelL.toFixed(1)} L`} />
+                            </div>
+                        ) : (
+                            <div className="briefing-line briefing-line--ops">
+                                <label className="plan-field briefing-cell">
+                                    <span className="label">Modo cruzeiro</span>
+                                    <select
+                                        className="input"
+                                        value={p.cruiseMode ?? "auto"}
+                                        onChange={(e) => setField("cruiseMode", e.target.value)}
+                                    >
+                                        <option value="auto">Automático</option>
+                                        <option value="manual">Manual</option>
+                                    </select>
+                                </label>
+                                <Field className="briefing-cell" label="Dist. cruzeiro (NM)">
+                                    <input
+                                        className="input"
+                                        value={p.cruiseDistNm ?? ""}
+                                        onChange={(e) => setField("cruiseDistNm", e.target.value)}
+                                        placeholder={String(calc.cruiseDistAutoNm.toFixed(0))}
+                                    />
                                 </Field>
                                 {String(p.cruiseMode ?? "auto") === "manual" ? (
                                     <>
-                                        <Field label="Tempo cruzeiro (min)">
+                                        <Field className="briefing-cell" label="Tempo cruzeiro (min)">
                                             <input className="input" value={p.cruiseTimeMin ?? ""} onChange={(e) => setField("cruiseTimeMin", e.target.value)} placeholder="48" />
                                         </Field>
-                                        <Field label="Comb. cruzeiro (L)">
+                                        <Field className="briefing-cell" label="Comb. cruzeiro (L)">
                                             <input className="input" value={p.cruiseFuelL ?? ""} onChange={(e) => setField("cruiseFuelL", e.target.value)} placeholder="28" />
                                         </Field>
                                     </>
                                 ) : (
                                     <>
-                                        <MetricBox label="Tempo" value={fmtMinutes(calc.cruiseTimeMinAuto)} />
-                                        <MetricBox label="Combustível" value={`${calc.cruiseFuelLAuto.toFixed(1)} L`} tone="warn" />
+                                        <MetricBox label="Tempo CRZ" value={fmtMinutes(calc.cruiseTimeMinAuto)} />
+                                        <MetricBox label="Comb. CRZ" value={`${calc.cruiseFuelLAuto.toFixed(1)} L`} tone="warn" />
                                     </>
                                 )}
                             </div>
-                        </div>
+                        )}
 
-                        <div className="plan-mini-panel">
-                            <div className="card-title">Reservas</div>
-                            <div className="plan-grid plan-grid--2">
-                                <Field label="Descida (L)">
-                                    <input className="input" value={p.descentFuelL ?? ""} onChange={(e) => setField("descentFuelL", e.target.value)} placeholder="5" />
-                                </Field>
-                                <Field label="Aproximação (L)">
-                                    <input className="input" value={p.approachFuelL ?? ""} onChange={(e) => setField("approachFuelL", e.target.value)} placeholder="4" />
-                                </Field>
-                                <Field label="Contingência (%)">
-                                    <input className="input" value={p.contingencyPct ?? ""} onChange={(e) => setField("contingencyPct", e.target.value)} placeholder="5" />
-                                </Field>
-                                <Field label="Reserva final (min)">
-                                    <input className="input" value={p.finalReserveMin ?? ""} onChange={(e) => setField("finalReserveMin", e.target.value)} placeholder="45" />
-                                </Field>
-                            </div>
+                        <div className="plan-summary-grid plan-summary-grid--4">
+                            <MetricBox label="Requerido" value={`${calc.requiredFuelL.toFixed(1)} L`} tone={calc.fuelMarginL >= 0 ? "warn" : "bad"} />
+                            <MetricBox label="A bordo" value={`${calc.fuelOnBoardL.toFixed(1)} L`} tone="ok" />
+                            <MetricBox
+                                label="No pouso"
+                                value={`${calc.estimatedLandingFuelL.toFixed(1)} L`}
+                                tone={calc.estimatedLandingFuelL >= calc.desiredLandingFuelL ? "ok" : "warn"}
+                            />
+                            <MetricBox label="Margem" value={`${calc.fuelMarginL.toFixed(1)} L`} tone={calc.fuelMarginL >= 0 ? "ok" : "bad"} />
                         </div>
                     </div>
                 </section>
 
-                <section className="plan-panel">
+                <section className="plan-panel plan-panel--dark">
                     <SectionHead step="4" title={t("planner.alternate")}>
                         {t("planner.alternateCopy")}
                     </SectionHead>
 
-                    <div className="plan-grid plan-grid--4">
-                        <Field label="Perna B-C (NM)" hint={calc.suggestedAlternateDistNm > 0 ? `Sugestão: ${calc.suggestedAlternateDistNm} NM` : null}>
-                            <input className="input" value={p.alternateLegDistNm ?? ""} onChange={(e) => setField("alternateLegDistNm", e.target.value)} placeholder="opcional" />
-                        </Field>
-                        <Field label="GS alternado (kt)">
-                            <input className="input" value={p.alternateGsKt ?? ""} onChange={(e) => setField("alternateGsKt", e.target.value)} placeholder="usa GS base" />
-                        </Field>
-                        <Field label="Comb. alternado (L)">
-                            <input className="input" value={p.alternateFuelL ?? ""} onChange={(e) => setField("alternateFuelL", e.target.value)} placeholder="auto se vazio" />
-                        </Field>
-                        <Field label="Extra fuel (L)">
-                            <input className="input" value={p.extraFuelL ?? ""} onChange={(e) => setField("extraFuelL", e.target.value)} placeholder="0" />
-                        </Field>
-                    </div>
+                    <div className="briefing-lines fuel-sheet">
+                        <div className="briefing-line briefing-line--4">
+                            <Field className="briefing-cell" label="ALTN">
+                                <input className="input" value={p.altnIcao ?? altnIcao} readOnly placeholder="ICAO" />
+                            </Field>
+                            <Field className="briefing-cell" label="Perna B-C (NM)">
+                                <input
+                                    className="input"
+                                    value={p.alternateLegDistNm ?? ""}
+                                    onChange={(e) => setField("alternateLegDistNm", e.target.value)}
+                                    placeholder={calc.suggestedAlternateDistNm > 0 ? String(Math.round(calc.suggestedAlternateDistNm)) : "—"}
+                                />
+                            </Field>
+                            <Field className="briefing-cell" label="GS ALTN (kt)">
+                                <input className="input" value={p.alternateGsKt ?? ""} onChange={(e) => setField("alternateGsKt", e.target.value)} placeholder="GS base" />
+                            </Field>
+                            <Field className="briefing-cell" label="Comb. ALTN (L)">
+                                <input
+                                    className="input"
+                                    value={p.alternateFuelL ?? ""}
+                                    onChange={(e) => setField("alternateFuelL", e.target.value)}
+                                    placeholder={String(Math.round(calc.alternateFuelL || 0) || "auto")}
+                                />
+                            </Field>
+                        </div>
 
-                    <div className="plan-grid plan-grid--2">
-                        <Field label="Notas IFR / procedimento">
-                            <textarea className="input plan-textarea" value={p.ifrProcedureNotes ?? ""} onChange={(e) => setField("ifrProcedureNotes", e.target.value)} placeholder="SID, rota, STAR, IAC, mínimos, RMK..." />
-                        </Field>
-                        <Field label="Observações VFR / navegação">
-                            <textarea className="input plan-textarea" value={p.notes ?? ""} onChange={(e) => setField("notes", e.target.value)} placeholder="Referências visuais, restrições, NOTAM/ROTAER..." />
-                        </Field>
+                        <div className="plan-summary-grid plan-summary-grid--4">
+                            <MetricBox
+                                label="Dist. ALTN"
+                                value={
+                                    Number.isFinite(calc.alternateLegDistNm) && calc.alternateLegDistNm > 0
+                                        ? `${calc.alternateLegDistNm.toFixed(0)} NM`
+                                        : "—"
+                                }
+                            />
+                            <MetricBox label="Comb. ALTN" value={`${(calc.alternateFuelL || 0).toFixed(1)} L`} tone="warn" />
+                            <MetricBox label="Reservas tot." value={`${calc.reservesFuelL.toFixed(1)} L`} />
+                            <MetricBox label="Após req." value={`${calc.remainingAfterRequiredL.toFixed(1)} L`} tone={calc.remainingAfterRequiredL > 0 ? "ok" : "warn"} />
+                        </div>
+
+                        <div className="briefing-line briefing-line--notes">
+                            <Field className="briefing-cell briefing-cell--tall" label="Notas IFR / procedimento">
+                                <textarea
+                                    className="input plan-textarea"
+                                    value={p.ifrProcedureNotes ?? ""}
+                                    onChange={(e) => setField("ifrProcedureNotes", e.target.value)}
+                                    placeholder="SID, STAR, IAC, mínimos..."
+                                />
+                            </Field>
+                            <Field className="briefing-cell briefing-cell--tall" label="Observações VFR / navegação">
+                                <textarea
+                                    className="input plan-textarea"
+                                    value={p.notes ?? ""}
+                                    onChange={(e) => setField("notes", e.target.value)}
+                                    placeholder="Referências, NOTAM, restrições..."
+                                />
+                            </Field>
+                        </div>
                     </div>
                 </section>
 
