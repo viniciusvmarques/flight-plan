@@ -18,7 +18,6 @@ import {
 } from "../utils/plannerEngine";
 import { buildBriefingDocumentModel, briefingFileName } from "../utils/briefingDocument";
 import { downloadBriefingPdf } from "../utils/briefingPdf";
-import { openBriefingPrintWindow } from "../utils/briefingPrint";
 
 import { useAuth } from "../auth/AuthContext";
 import AviationShell from "../components/AviationShell";
@@ -223,8 +222,6 @@ export default function Dashboard() {
             weather: t("dashboard.exportWeatherLabel"),
             warnings: t("dashboard.exportWarningsLabel"),
             stripTitle: t("dashboard.exportStripTitle"),
-            print: t("dashboard.exportPrintAction"),
-            close: t("dashboard.exportCloseAction"),
         };
     }
 
@@ -247,25 +244,6 @@ export default function Dashboard() {
                 title: t("dashboard.exportPdfOkTitle"),
             });
         } catch (e) {
-            toast(e?.message || t("dashboard.exportPdfError"), {
-                variant: "error",
-                title: t("dashboard.exportPdfErrorTitle"),
-            });
-        }
-    }
-
-    function handlePrintStrip() {
-        if (!requireProForExport()) return;
-        try {
-            openBriefingPrintWindow(buildExportModel(), exportLabels());
-        } catch (e) {
-            if (String(e?.message || e) === "POPUP_BLOCKED") {
-                toast(t("dashboard.printPopupBlocked"), {
-                    variant: "warning",
-                    title: t("dashboard.printPopupBlockedTitle"),
-                });
-                return;
-            }
             toast(e?.message || t("dashboard.exportPdfError"), {
                 variant: "error",
                 title: t("dashboard.exportPdfErrorTitle"),
@@ -586,7 +564,6 @@ export default function Dashboard() {
                                 onRefresh={refreshBriefing}
                                 onSave={saveBriefing}
                                 onSavePdf={handleSavePdf}
-                                onPrint={handlePrintStrip}
                                 onToggleFav={toggleFavorite}
                                 isFavorite={isFavorite}
                                 t={t}

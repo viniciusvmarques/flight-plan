@@ -122,7 +122,6 @@ export default function DashboardBriefingWorkspace({
     onRefresh,
     onSave,
     onSavePdf,
-    onPrint,
     onToggleFav,
     isFavorite,
     t,
@@ -157,11 +156,6 @@ export default function DashboardBriefingWorkspace({
                     {onSavePdf ? (
                         <button type="button" className="secondary" onClick={onSavePdf}>
                             {t("dashboard.savePdfBriefing")}
-                        </button>
-                    ) : null}
-                    {onPrint ? (
-                        <button type="button" className="secondary" onClick={onPrint}>
-                            {t("dashboard.printBriefing")}
                         </button>
                     ) : null}
                     {user && onSave ? (
