@@ -2505,6 +2505,12 @@ button.danger-action:hover:not(:disabled) {
     margin: 4px 0 0;
 }
 
+.plan-nav-build-tag {
+    margin-top: 6px !important;
+    color: rgba(94, 234, 212, 0.9) !important;
+    font-size: 12px !important;
+}
+
 .plan-nav-add-row {
     display: flex;
     justify-content: flex-start;

@@ -240,6 +240,7 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                 <div>
                     <strong>{t("planner.navLogTitle")}</strong>
                     <p className="plan-section-copy">{t("planner.navLogCopy")}</p>
+                    <p className="plan-section-copy plan-nav-build-tag">Inclui VI e consumo por perna</p>
                 </div>
             </div>
 
@@ -293,14 +294,26 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                                 </Field>
                             </div>
                             <div className="plan-grid plan-grid--4">
-                                <Field label={t("planner.legWindSpeed")}>
+                                <Field label="Vento (kt)">
                                     <input className="input" value={leg.windSpeedKt ?? ""} onChange={(e) => updateLeg(index, "windSpeedKt", e.target.value)} placeholder="12" />
                                 </Field>
-                                <Field label={t("planner.legIas")} hint={t("planner.legIasHint")}>
-                                    <input className="input" value={leg.iasKt ?? ""} onChange={(e) => updateLeg(index, "iasKt", e.target.value)} placeholder="105" />
+                                <Field label="VI (kt)" hint="Calcula TAS pela altitude/FL e GS com o vento.">
+                                    <input
+                                        className="input"
+                                        value={leg.iasKt ?? ""}
+                                        onChange={(e) => updateLeg(index, "iasKt", e.target.value)}
+                                        placeholder="105"
+                                        data-testid="leg-ias"
+                                    />
                                 </Field>
-                                <Field label={t("planner.legFuelFlow")} hint={t("planner.legFuelFlowHint")}>
-                                    <input className="input" value={leg.fuelFlowLph ?? ""} onChange={(e) => updateLeg(index, "fuelFlowLph", e.target.value)} placeholder="34" />
+                                <Field label="Consumo (L/h)" hint="Entra no combustível do resumo.">
+                                    <input
+                                        className="input"
+                                        value={leg.fuelFlowLph ?? ""}
+                                        onChange={(e) => updateLeg(index, "fuelFlowLph", e.target.value)}
+                                        placeholder="34"
+                                        data-testid="leg-fuel-flow"
+                                    />
                                 </Field>
                                 <div className="plan-nav-leg-hint">
                                     {index === 0
@@ -309,10 +322,10 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                                 </div>
                             </div>
                             <div className="plan-summary-grid plan-summary-grid--4">
-                                <MetricBox label="TAS" value={tasAuto} tone="ok" />
-                                <MetricBox label="GS" value={gsAuto} tone="ok" />
+                                <MetricBox label="TAS (auto)" value={tasAuto} tone="ok" />
+                                <MetricBox label="GS (auto)" value={gsAuto} tone="ok" />
                                 <MetricBox label="ETE" value={fmtMinutes(calcLeg?.eteMin)} />
-                                <MetricBox label={t("planner.legFuel")} value={fuelAuto} tone="warn" />
+                                <MetricBox label="Comb. perna" value={fuelAuto} tone="warn" />
                             </div>
                         </div>
                     );
