@@ -2483,6 +2483,21 @@ button.danger-action:hover:not(:disabled) {
     text-transform: uppercase;
 }
 
+.plan-nav-cta {
+    display: grid;
+    gap: 8px;
+    margin: 0 0 16px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px dashed rgba(94, 234, 212, 0.35);
+    background: rgba(15, 118, 110, 0.12);
+}
+
+.plan-nav-cta-btn {
+    width: fit-content;
+    max-width: 100%;
+}
+
 .plan-nav-editor {
     display: grid;
     gap: 14px;

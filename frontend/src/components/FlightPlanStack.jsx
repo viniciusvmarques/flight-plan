@@ -333,6 +333,27 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
         onPlanChange?.({ ...p, navLegs: nextLegs, routeMode: "checkpoints" });
     }
 
+    function enableMultiLegAndAdd() {
+        const destIcao = base?.dest?.icao || "";
+        const existing = resolveEditableNavLegs(p, destIcao);
+        let next;
+        if (existing?.length) {
+            next = [...existing];
+            next.splice(Math.max(0, next.length - 1), 0, emptyNavLeg(""));
+            const last = next[next.length - 1];
+            if (destIcao && !String(last.name || "").trim()) {
+                next[next.length - 1] = { ...last, name: destIcao };
+            }
+        } else {
+            const firstDist = p.routeDistNm ?? "";
+            next = [
+                emptyNavLeg(""),
+                { ...emptyNavLeg(destIcao), distanceNm: firstDist },
+            ];
+        }
+        onPlanChange?.({ ...p, routeMode: "checkpoints", navLegs: next });
+    }
+
     return (
         <Card title={t("planner.title")}>
             <div className="plan-stack plan-stack--anac">
@@ -406,6 +427,13 @@ export default function FlightPlanStack({ base, plan, onPlanChange }) {
                     <SectionHead step="2" title={t("planner.navigation")}>
                         {isCheckpoints ? t("planner.navigationCopyCheckpoints") : t("planner.navigationCopy")}
                     </SectionHead>
+
+                    <div className="plan-nav-cta">
+                        <button type="button" className="btn primary plan-nav-cta-btn" onClick={enableMultiLegAndAdd}>
+                            {t("planner.addLegCta")}
+                        </button>
+                        {!isCheckpoints ? <p className="plan-section-copy">{t("planner.addLegHint")}</p> : null}
+                    </div>
 
                     <div className="plan-grid plan-grid--4">
                         <Field
