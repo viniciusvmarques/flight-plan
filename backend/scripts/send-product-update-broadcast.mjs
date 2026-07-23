@@ -120,10 +120,11 @@ Exemplo:
             await emailService.sendProductUpdateEmail({
                 email: user.email,
                 userId: user.id,
+                locale: user.preferredLocale || "pt-BR",
                 dryRun,
             });
             ok += 1;
-            console.log(`${n} OK  ${user.email}`);
+            console.log(`${n} OK  ${user.email} (${user.preferredLocale || "pt-BR"})`);
         } catch (err) {
             fail += 1;
             console.error(`${n} FAIL ${user.email} — ${err?.message || err}`);

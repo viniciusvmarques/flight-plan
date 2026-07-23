@@ -1,0 +1,33 @@
+ASSUNTO: Tu briefing ahora acompaña mejor el momento del vuelo
+PRÉ-HEADER: Sugerencia de pista por METAR, escenas por periodo del día y herramientas rediseñadas.
+
+---
+MARQUISA — Novedades
+
+El briefing ahora acompaña mejor el momento del vuelo
+
+Seguimos puliendo Marquisa para que la preparación sea más clara, más rápida y más cercana a la realidad de la operación.
+
+En esta actualización, el briefing gana una lectura de pista más objetiva y un visual que cambia según la hora local del aeródromo.
+
+LECTURA DE PISTA
+Una sugerencia de cabecera pensada para el METAR del momento.
+El briefing destaca la cabecera con mejor componente de proa y muestra proa, través y la condición del viento — sin sustituir ATIS, ATC, NOTAM ni el criterio del piloto.
+
+Ejemplo: RWY 27 · proa +12 kt · través 0 kt · viento 270/12
+
+ATMÓSFERA DEL BRIEFING
+El visual cambia con el periodo del día: amanecer, día, atardecer, noche y madrugada.
+
+TAMBIÉN EVOLUCIONÓ
+• Computador de vuelo — cálculos con lectura más directa
+• Herramientas — viento en pista, combustible y conversiones rediseñadas
+• Marquisa Pro — guarda el briefing y lleva el PDF de la ruta
+
+Abrir Marquisa: https://marquisa.com.br
+
+—
+Marquisa · contato@marquisa.com.br
+La indicación de pista es sugerencia técnica. Confirma con ATIS, ATC, NOTAM y fuentes oficiales.
+
+¿Prefieres no recibir actualizaciones? Responde SALIR o escribe a contato@marquisa.com.br.

@@ -1351,36 +1351,45 @@ export function createEmailService(prisma) {
         },
 
         /**
-         * E-mail de atualização de produto (arte em frontend/public/emails/promo-acesso.html).
+         * E-mail de atualização de produto (promo-acesso*.html).
+         * Idioma = preferredLocale do usuário (pt-BR | en | es).
          * Sempre 1 destinatário em `to` — nunca lista em Cc/Bcc.
          */
-        async sendProductUpdateEmail({ email, userId = null, dryRun = false }) {
+        async sendProductUpdateEmail({
+            email,
+            userId = null,
+            locale = "pt-BR",
+            dryRun = false,
+        }) {
             const appUrl = publicBaseUrl();
-            const htmlPath = path.join(
-                __emailDir,
-                "..",
-                "..",
-                "frontend",
-                "public",
-                "emails",
-                "promo-acesso.html"
-            );
-            const txtPath = path.join(
-                __emailDir,
-                "..",
-                "..",
-                "frontend",
-                "public",
-                "emails",
-                "promo-acesso.txt"
-            );
+            const lang = normalizeLocale(locale);
+            const emailsDir = path.join(__emailDir, "..", "..", "frontend", "public", "emails");
 
-            if (!fs.existsSync(htmlPath)) {
-                throw new Error(`Template não encontrado: ${htmlPath}`);
+            const htmlCandidates =
+                lang === "en"
+                    ? ["promo-acesso.en.html", "promo-acesso.html"]
+                    : lang === "es"
+                      ? ["promo-acesso.es.html", "promo-acesso.html"]
+                      : ["promo-acesso.html"];
+            const txtCandidates =
+                lang === "en"
+                    ? ["promo-acesso.en.txt", "promo-acesso.txt"]
+                    : lang === "es"
+                      ? ["promo-acesso.es.txt", "promo-acesso.txt"]
+                      : ["promo-acesso.txt"];
+
+            const htmlPath = htmlCandidates
+                .map((name) => path.join(emailsDir, name))
+                .find((p) => fs.existsSync(p));
+            const txtPath = txtCandidates
+                .map((name) => path.join(emailsDir, name))
+                .find((p) => fs.existsSync(p));
+
+            if (!htmlPath) {
+                throw new Error(`Template não encontrado em ${emailsDir}`);
             }
 
             let html = fs.readFileSync(htmlPath, "utf8");
-            // Garante URLs absolutas (clientes de e-mail não resolvem caminhos relativos)
             html = html
                 .replace(/src="\.\.\/wx-scenes\//g, `src="${appUrl}/wx-scenes/`)
                 .replace(/src="email-aviation-/g, `src="${appUrl}/emails/email-aviation-`)
@@ -1388,20 +1397,17 @@ export function createEmailService(prisma) {
                 .replace(/src="\/marquisa-/g, `src="${appUrl}/marquisa-`);
 
             const subjectMatch = html.match(/ASSUNTO:\s*([^\n*<]+)/i);
-            const subject = (subjectMatch?.[1] || "Novidades da Marquisa").trim();
+            const subject = (subjectMatch?.[1] || "Marquisa").trim();
 
             let text = "";
-            if (fs.existsSync(txtPath)) {
+            if (txtPath) {
                 text = fs.readFileSync(txtPath, "utf8");
             } else {
-                text =
-                    `${subject}\n\n` +
-                    `Abra a Marquisa: ${appUrl}\n\n` +
-                    `Não quer mais receber? Responda com o assunto SAIR.\n`;
+                text = `${subject}\n\n${appUrl}\n`;
             }
 
             if (dryRun) {
-                console.log(`[dry-run] product_update → ${email} | ${subject}`);
+                console.log(`[dry-run] product_update (${lang}) → ${email} | ${subject}`);
                 await logEmail({
                     userId,
                     kind: "product_update",
@@ -1409,10 +1415,10 @@ export function createEmailService(prisma) {
                     subject,
                     status: "console",
                     provider: "dry-run",
-                    metadata: { appUrl, dryRun: true },
+                    metadata: { appUrl, dryRun: true, locale: lang, template: path.basename(htmlPath) },
                     sentAt: new Date(),
                 });
-                return { dryRun: true, email, subject };
+                return { dryRun: true, email, subject, locale: lang };
             }
 
             return sendEmail({
@@ -1422,7 +1428,7 @@ export function createEmailService(prisma) {
                 text,
                 html,
                 userId,
-                metadata: { appUrl, template: "promo-acesso.html" },
+                metadata: { appUrl, locale: lang, template: path.basename(htmlPath) },
             });
         },
     };

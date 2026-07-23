@@ -1,0 +1,33 @@
+ASSUNTO: Your briefing now stays closer to the flight
+PRÉ-HEADER: METAR runway suggestion, day-period scenes, and redesigned tools.
+
+---
+MARQUISA — What’s new
+
+The briefing now stays closer to the moment of flight
+
+We keep refining Marquisa to make preparation clearer, faster, and closer to real operations.
+
+In this update, the briefing gets a more objective runway reading and visuals that change with the aerodrome’s local time of day.
+
+RUNWAY READING
+A runway-end suggestion built for the current METAR.
+The briefing highlights the end with the best headwind component and shows headwind, crosswind, and wind condition — without replacing ATIS, ATC, NOTAMs, or pilot judgment.
+
+Example: RWY 27 · headwind +12 kt · crosswind 0 kt · wind 270/12
+
+BRIEFING ATMOSPHERE
+The look changes with the time of day: dawn, day, dusk, night, and late night.
+
+ALSO IMPROVED
+• Flight computer — clearer performance and wind readout
+• Tools — runway wind, fuel, and conversions redesigned
+• Marquisa Pro — save the briefing and take the route PDF
+
+Open Marquisa: https://marquisa.com.br
+
+—
+Marquisa · contato@marquisa.com.br
+The runway indication is a technical suggestion. Confirm with ATIS, ATC, NOTAMs, and official sources.
+
+Prefer not to receive updates? Reply UNSUBSCRIBE or write to contato@marquisa.com.br.
