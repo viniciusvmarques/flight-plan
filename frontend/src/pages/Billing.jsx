@@ -310,12 +310,16 @@ export default function Billing() {
 
                         <div className="page-grid page-grid--equal">
                             <Card title={t("billing.invoiceTitle")}>
-                                <div className="billing-active-note">
-                                    <strong>{t("billing.fiscalInfo")}</strong>
-                                    <span>{siteProfile.invoiceNotice}</span>
-                                    <span>
-                                        {t("billing.invoiceNeed", { email: siteProfile.supportEmail })}
-                                    </span>
+                                <div className="feature-list billing-info-list">
+                                    <div className="feature-item">
+                                        <strong>{t("billing.fiscalInfo")}</strong>
+                                        <span>{siteProfile.invoiceNotice}</span>
+                                    </div>
+                                    <div className="feature-item">
+                                        <span>
+                                            {t("billing.invoiceNeed", { email: siteProfile.supportEmail })}
+                                        </span>
+                                    </div>
                                 </div>
                             </Card>
 

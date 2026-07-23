@@ -1897,19 +1897,58 @@ button:focus-visible {
         rgba(2, 6, 23, 0.22);
 }
 
+.billing-layout .page-grid--equal > .card,
+.billing-layout .page-grid--equal > .fp-card,
+.billing-layout .page-grid--equal > .xp-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.billing-layout .page-grid--equal > .card > .card-body,
+.billing-layout .page-grid--equal > .card > .xp-card-body,
+.billing-layout .page-grid--equal > .fp-card > .card-body,
+.billing-layout .page-grid--equal > .fp-card > .xp-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.billing-layout .page-grid--equal .feature-list {
+    flex: 1;
+    align-content: start;
+}
+
+.billing-layout .page-grid--equal .page-caption:last-child {
+    margin-top: auto;
+    padding-top: 12px;
+}
+
 .billing-status-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     gap: 14px;
+}
+
+.billing-status-panel .page-actions {
+    margin-top: auto;
+    padding-top: 4px;
 }
 
 .billing-status-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
+    align-items: stretch;
 }
 
 .billing-status-item {
     display: grid;
     gap: 6px;
+    align-content: start;
+    height: 100%;
     padding: 14px;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1949,6 +1988,22 @@ button:focus-visible {
 .billing-active-note span {
     color: rgba(226, 232, 240, 0.76);
     line-height: 1.5;
+}
+
+.billing-info-list .feature-item {
+    display: grid;
+    gap: 8px;
+}
+
+.billing-info-list .feature-item strong {
+    color: #f8fafc;
+    font-size: 0.95rem;
+    line-height: 1.35;
+}
+
+.billing-info-list .feature-item span {
+    color: rgba(226, 232, 240, 0.78);
+    line-height: 1.55;
 }
 
 .billing-acceptance-box {
