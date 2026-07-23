@@ -300,6 +300,29 @@ console.log("\n=== 8) Declinação por perna (herança) ===");
     );
     assert("RM perna1 120", almost(calc.navLegs[0].magCourseDeg, 120), `got ${calc.navLegs[0].magCourseDeg}`);
     assert("RM perna2 220", almost(calc.navLegs[1].magCourseDeg, 220), `got ${calc.navLegs[1].magCourseDeg}`);
+
+    const calcOverride = calculatePlanner(
+        {
+            routeMode: "checkpoints",
+            tasKt: 100,
+            trueCourseDeg: 100,
+            magVariationDeg: -20,
+            groundSpeedKt: 100,
+            cruiseLevel: "A055",
+            climbTimeMin: 0,
+            descentTimeMin: 0,
+            fuelOnBoardL: 50,
+            navLegs: [
+                { name: "X", distanceNm: 10, trueCourseDeg: 90, magVariationDeg: -21 },
+                { name: "Y", distanceNm: 10, trueCourseDeg: 90, magVariationDeg: 0 },
+            ],
+        },
+        baseCtx()
+    );
+    assert("DMG perna1 RM 111", almost(calcOverride.navLegs[0].magCourseDeg, 111), `got ${calcOverride.navLegs[0].magCourseDeg}`);
+    assert("DMG perna2 RM 90", almost(calcOverride.navLegs[1].magCourseDeg, 90), `got ${calcOverride.navLegs[1].magCourseDeg}`);
+    assert("PV = heading", Number.isFinite(calcOverride.navLegs[0].headingDeg));
+    assert("PM = magHeading", Number.isFinite(calcOverride.navLegs[0].magHeadingDeg));
 }
 
 console.log("\n=== 9) buildNavLegs isolado + EET coerência ===");

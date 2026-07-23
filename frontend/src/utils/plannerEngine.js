@@ -276,7 +276,7 @@ export function buildNavLegs(working, context = {}, defaults = {}) {
     const defaultTas = clampPositive(defaults.tasKt);
     const defaultIas = clampPositive(defaults.iasKt);
     const defaultFlow = clampPositive(defaults.fuelFlowCruiseLph);
-    const magVariationDeg = toNumber(defaults.magVariationDeg ?? working.magVariationDeg, 0);
+    const defaultMagVariationDeg = toNumber(defaults.magVariationDeg ?? working.magVariationDeg, 0);
     const pressureAltFt = resolvePressureAltFt({ ...working, ...defaults });
 
     let cumulativeNm = 0;
@@ -289,6 +289,10 @@ export function buildNavLegs(working, context = {}, defaults = {}) {
         const name = String(item?.name || (isLast ? destIcao : `WP ${index + 1}`)).trim() || (isLast ? destIcao : `WP ${index + 1}`);
         const distanceNm = clampPositive(item?.distanceNm);
         const fromLabel = index === 0 ? originIcao : String(raw[index - 1]?.name || `WP ${index}`).trim() || `WP ${index}`;
+        // DMG por perna; se vazio, herda a declinação do plano.
+        const magVariationDeg = hasFilledValue(item?.magVariationDeg)
+            ? toNumber(item.magVariationDeg, 0)
+            : defaultMagVariationDeg;
         const legWorking = {
             trueCourseDeg: hasFilledValue(item?.trueCourseDeg) ? item.trueCourseDeg : defaults.trueCourseDeg,
             magVariationDeg,
@@ -331,6 +335,7 @@ export function buildNavLegs(working, context = {}, defaults = {}) {
             label: `${fromLabel} → ${name}`,
             distanceNm,
             trueCourseDeg: nav.trueCourseDeg,
+            magVariationDeg: nav.magVariationDeg,
             magCourseDeg: nav.magCourseDeg,
             headingDeg: nav.headingDeg,
             magHeadingDeg: nav.magHeadingDeg,

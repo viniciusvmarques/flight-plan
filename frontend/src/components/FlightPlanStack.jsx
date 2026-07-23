@@ -170,6 +170,7 @@ function emptyNavLeg(name = "") {
         name,
         distanceNm: "",
         trueCourseDeg: "",
+        magVariationDeg: "",
         windDirectionDeg: "",
         windSpeedKt: "",
         iasKt: "",
@@ -186,6 +187,7 @@ function migrateLegacyCheckpoints(plan, destIcao) {
         name: item?.name || (index === plan.vfrCheckpoints.length - 1 ? destIcao || "" : ""),
         distanceNm: item?.distanceNm ?? "",
         trueCourseDeg: item?.trueCourseDeg ?? "",
+        magVariationDeg: item?.magVariationDeg ?? "",
         windDirectionDeg: item?.windDirectionDeg ?? "",
         windSpeedKt: item?.windSpeedKt ?? "",
         tasKt: item?.tasKt ?? "",
@@ -216,6 +218,7 @@ function resolveEditableNavLegs(plan, destIcao) {
             name: "TOC",
             distanceNm: "",
             trueCourseDeg: "",
+            magVariationDeg: "",
             windDirectionDeg: "",
             windSpeedKt: "",
             iasKt: "",
@@ -237,24 +240,25 @@ function legToLabel(leg, t) {
     return name || t("planner.nextFix");
 }
 
-function NavLegsTable({ legs }) {
+function NavLegsTable({ legs, t }) {
     if (!legs?.length) return null;
     return (
         <div className="plan-nav-table-wrap">
             <table className="plan-nav-table">
                 <thead>
                     <tr>
-                        <th>Perna</th>
-                        <th>Dist</th>
+                        <th>{t("planner.legCol")}</th>
+                        <th>{t("planner.legDistShort")}</th>
                         <th>RV</th>
                         <th>RM</th>
-                        <th>Proa</th>
+                        <th>PV</th>
+                        <th>PM</th>
                         <th>VI</th>
                         <th>TAS</th>
                         <th>GS</th>
                         <th>ETE</th>
-                        <th>Comb.</th>
-                        <th>Acum.</th>
+                        <th>{t("planner.legFuelShort")}</th>
+                        <th>{t("planner.legAccumShort")}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -265,6 +269,7 @@ function NavLegsTable({ legs }) {
                             <td>{fmtDeg(leg.trueCourseDeg)}</td>
                             <td>{fmtDeg(leg.magCourseDeg)}</td>
                             <td>{fmtDeg(leg.headingDeg)}</td>
+                            <td>{fmtDeg(leg.magHeadingDeg)}</td>
                             <td>{Number.isFinite(leg.iasKt) && leg.iasKt > 0 ? `${leg.iasKt.toFixed(0)}` : "—"}</td>
                             <td>{Number.isFinite(leg.tasKt) && leg.tasKt > 0 ? `${leg.tasKt.toFixed(0)}` : "—"}</td>
                             <td>{Number.isFinite(leg.gsKt) && leg.gsKt > 0 ? `${leg.gsKt.toFixed(0)} kt` : "—"}</td>
@@ -319,6 +324,9 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                     const gsAuto = calcLeg?.gsKt > 0 ? `${Number(calcLeg.gsKt).toFixed(0)} kt` : "—";
                     const eteAuto = Number(calcLeg?.eteMin) > 0 ? fmtMinutes(calcLeg.eteMin) : "—";
                     const fuelAuto = Number(calcLeg?.fuelL) > 0 ? `${Number(calcLeg.fuelL).toFixed(1)} L` : "—";
+                    const pvAuto = fmtDeg(calcLeg?.headingDeg);
+                    const pmAuto = fmtDeg(calcLeg?.magHeadingDeg);
+                    const rmAuto = fmtDeg(calcLeg?.magCourseDeg);
                     return (
                         <div key={leg.id || `leg-${index}`} className="plan-nav-leg-card">
                             <div className="plan-nav-leg-toolbar">
@@ -362,6 +370,15 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                                         placeholder="092"
                                     />
                                 </Field>
+                                <Field className="nav-leg-cell" label={t("planner.legMagVariation")}>
+                                    <input
+                                        className="input"
+                                        value={leg.magVariationDeg ?? ""}
+                                        onChange={(e) => updateLeg(index, "magVariationDeg", e.target.value)}
+                                        placeholder="-21"
+                                        data-testid="leg-dmg"
+                                    />
+                                </Field>
                                 <Field className="nav-leg-cell" label={t("planner.legWindDir")}>
                                     <input
                                         className="input"
@@ -403,6 +420,9 @@ function NavLegsEditor({ legs, calcLegs, originIcao, onChange, t }) {
                                 <MetricBox label="GS" value={gsAuto} tone="ok" />
                                 <MetricBox label="ETE" value={eteAuto} />
                                 <MetricBox label={t("planner.legFuel")} value={fuelAuto} tone="warn" />
+                                <MetricBox label="PV" value={pvAuto} />
+                                <MetricBox label="PM" value={pmAuto} />
+                                <MetricBox label={t("planner.legMagCourse")} value={rmAuto} />
                             </div>
                         </div>
                     );
@@ -741,12 +761,12 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                         onChange={setNavLegs}
                         t={t}
                     />
-                    <NavLegsTable legs={calc.navLegs} />
+                    <NavLegsTable legs={calc.navLegs} t={t} />
 
                     <div className="plan-summary-grid plan-summary-grid--4">
-                        <MetricBox label="Rumo magnético" value={fmtDeg(calc.magCourseDeg)} />
-                        <MetricBox label="Proa" value={fmtDeg(calc.headingDeg)} tone="ok" />
-                        <MetricBox label="GS" value={calc.groundSpeedKt ? `${calc.groundSpeedKt.toFixed(0)} kt` : "—"} tone="ok" />
+                        <MetricBox label={t("planner.legMagCourse")} value={fmtDeg(calc.magCourseDeg)} />
+                        <MetricBox label="PV" value={fmtDeg(calc.headingDeg)} tone="ok" />
+                        <MetricBox label="PM" value={fmtDeg(calc.magHeadingDeg)} tone="ok" />
                         <MetricBox label="EET" value={fmtMinutes(calc.eetMinutes)} />
                     </div>
 
