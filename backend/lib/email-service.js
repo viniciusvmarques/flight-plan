@@ -103,7 +103,7 @@ function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransaction
     const appUrl = publicBaseUrl();
     const logoSrc = fs.existsSync(EMAIL_LOGO_PATH)
         ? "cid:marquisa-logo"
-        : `${appUrl}/marquisa-mark.png?v=20260722b`;
+        : `${appUrl}/marquisa-mark.png?v=20260722c`;
     const support = SITE_PROFILE.supportEmail;
     const year = new Date().getFullYear();
 
