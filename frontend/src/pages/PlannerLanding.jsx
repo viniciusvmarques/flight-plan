@@ -58,26 +58,37 @@ export default function PlannerLanding() {
         setIcao(clean);
         setLoading(true);
         setError("");
-        try {
-            const station = await fetchStationWeather(clean);
-            setMetar(station.metar || "");
-            setTaf(station.taf || "");
-            setAirportName(station.airport?.name || station.airport?.city || clean);
-            setAirportMeta(station.airport || null);
-            setRunways(station.airport?.runways || []);
-            if (scroll) {
-                window.setTimeout(() => scrollToResultOnMobile(resultRef.current), 80);
+        const maxAttempts = 2;
+        let lastError = null;
+        for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+            try {
+                const station = await fetchStationWeather(clean);
+                setMetar(station.metar || "");
+                setTaf(station.taf || "");
+                setAirportName(station.airport?.name || station.airport?.city || clean);
+                setAirportMeta(station.airport || null);
+                setRunways(station.airport?.runways || []);
+                if (scroll) {
+                    window.setTimeout(() => scrollToResultOnMobile(resultRef.current), 80);
+                }
+                lastError = null;
+                break;
+            } catch (e) {
+                lastError = e;
+                if (attempt < maxAttempts) {
+                    await new Promise((resolve) => window.setTimeout(resolve, 1200));
+                }
             }
-        } catch (e) {
+        }
+        if (lastError) {
             setMetar("");
             setTaf("");
             setAirportName("");
             setAirportMeta(null);
             setRunways([]);
-            setError(e?.message || t("weather.loadError"));
-        } finally {
-            setLoading(false);
+            setError(lastError?.message || t("weather.loadError"));
         }
+        setLoading(false);
     }
 
     function resetSearch() {
@@ -211,12 +222,20 @@ export default function PlannerLanding() {
 
                         <div className="ck-wx-bulletin">
                             <div className="ck-wx-bulletin-label">METAR</div>
-                            <pre>{metar || t("weather.metarUnavailable")}</pre>
+                            <pre>
+                                {loading && !metar
+                                    ? t("common.loading")
+                                    : metar || error || t("weather.metarUnavailable")}
+                            </pre>
                         </div>
 
                         <div className="ck-wx-bulletin ck-wx-bulletin--grow">
                             <div className="ck-wx-bulletin-label">TAF</div>
-                            <pre>{taf || t("weather.tafUnavailable")}</pre>
+                            <pre>
+                                {loading && !taf
+                                    ? t("common.loading")
+                                    : taf || error || t("weather.tafUnavailable")}
+                            </pre>
                         </div>
 
                         {metar ? <RunwaySuggestion runways={runways} metar={metar} /> : null}

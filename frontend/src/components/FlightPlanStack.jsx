@@ -1012,7 +1012,7 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                         <StationContext letter="C" title="Alternativa" station={base?.alternate} />
                     </div>
 
-                    {calc.useNavLegs ? <NavLegsTable legs={calc.navLegs} /> : null}
+                    {calc.useNavLegs ? <NavLegsTable legs={calc.navLegs} t={t} /> : null}
 
                     {calc.legs.length ? (
                         <div className="plan-leg-list">
