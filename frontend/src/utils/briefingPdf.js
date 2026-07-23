@@ -120,7 +120,8 @@ function wrapText(text, maxChars) {
 
 function buildContentStream(lines, { pageWidth = 595.28, pageHeight = 841.89, margin = 36, fontSize = 9, leading = 11 } = {}) {
     const maxY = pageHeight - margin;
-    const minY = margin + 18;
+    // Reserva faixa do rodapé (logo)
+    const minY = margin + 44;
     const pages = [];
     let commands = [];
     let y = maxY;
@@ -166,7 +167,6 @@ function buildContentStream(lines, { pageWidth = 595.28, pageHeight = 841.89, ma
             const size = line.size || fontSize;
             const bold = !!line.bold;
             if (line.nowrap) {
-                // Linha monoespaçada alinhada: nunca quebrar (corta se passar da margem).
                 const max = maxCharsFor(size, pageWidth, margin);
                 const text = String(line.text || "");
                 writeRawLine(text.length > max ? text.slice(0, max) : text, size, bold);
@@ -184,8 +184,41 @@ function buildContentStream(lines, { pageWidth = 595.28, pageHeight = 841.89, ma
     return pages;
 }
 
-function assemblePdf(pageStreams) {
-    const objects = [];
+function enc(str) {
+    return new TextEncoder().encode(str);
+}
+
+function concatBytes(chunks) {
+    const total = chunks.reduce((n, c) => n + c.length, 0);
+    const out = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+        out.set(chunk, offset);
+        offset += chunk.length;
+    }
+    return out;
+}
+
+function footerLogoOps(logo, pageWidth = 595.28, margin = 36) {
+    if (!logo?.bytes?.length) return "";
+    const drawW = 118;
+    const drawH = Math.max(16, (logo.height / logo.width) * drawW);
+    const x = margin;
+    const y = 16;
+    return [
+        "q",
+        `${drawW.toFixed(2)} 0 0 ${drawH.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm`,
+        "/ImLogo Do",
+        "Q",
+    ].join("\n");
+}
+
+/**
+ * Monta PDF binário (texto + JPEG opcional no rodapé de cada página).
+ */
+function assemblePdf(pageStreams, logo = null) {
+    const objects = []; // string | { header: string, binary: Uint8Array }
+
     const add = (body) => {
         objects.push(body);
         return objects.length;
@@ -194,14 +227,28 @@ function assemblePdf(pageStreams) {
     const fontRegular = add("<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>");
     const fontBold = add("<< /Type /Font /Subtype /Type1 /BaseFont /Courier-Bold >>");
 
+    let imageId = null;
+    if (logo?.bytes?.length) {
+        const header =
+            `<< /Type /XObject /Subtype /Image /Width ${logo.width} /Height ${logo.height} ` +
+            `/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${logo.bytes.length} >>\n` +
+            `stream\n`;
+        imageId = add({ header, binary: logo.bytes, tail: "\nendstream" });
+    }
+
+    const footer = footerLogoOps(logo);
     const contentIds = pageStreams.map((stream) => {
-        const body = `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
+        const full = footer ? `${stream}\n${footer}` : stream;
+        const body = `<< /Length ${full.length} >>\nstream\n${full}\nendstream`;
         return add(body);
     });
 
+    const xObjectRes = imageId ? `/XObject << /ImLogo ${imageId} 0 R >>` : "";
     const pageIds = contentIds.map((contentId) =>
         add(
-            `<< /Type /Page /Parent 0 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 ${fontRegular} 0 R /F2 ${fontBold} 0 R >> >> /Contents ${contentId} 0 R >>`
+            `<< /Type /Page /Parent 0 0 R /MediaBox [0 0 595.28 841.89] ` +
+                `/Resources << /Font << /F1 ${fontRegular} 0 R /F2 ${fontBold} 0 R >> ${xObjectRes} >> ` +
+                `/Contents ${contentId} 0 R >>`
         )
     );
 
@@ -215,21 +262,66 @@ function assemblePdf(pageStreams) {
 
     const catalogId = add(`<< /Type /Catalog /Pages ${pagesId} 0 R >>`);
 
-    let pdf = "%PDF-1.4\n";
+    const parts = [enc("%PDF-1.4\n")];
     const offsets = [0];
+    let size = parts[0].length;
+
     for (let i = 0; i < objects.length; i += 1) {
-        offsets.push(pdf.length);
-        pdf += `${i + 1} 0 obj\n${objects[i]}\nendobj\n`;
+        offsets.push(size);
+        const obj = objects[i];
+        if (typeof obj === "string") {
+            const chunk = enc(`${i + 1} 0 obj\n${obj}\nendobj\n`);
+            parts.push(chunk);
+            size += chunk.length;
+        } else {
+            const head = enc(`${i + 1} 0 obj\n${obj.header}`);
+            const tail = enc(`${obj.tail}\nendobj\n`);
+            parts.push(head, obj.binary, tail);
+            size += head.length + obj.binary.length + tail.length;
+        }
     }
-    const xrefPos = pdf.length;
-    pdf += `xref\n0 ${objects.length + 1}\n`;
-    pdf += "0000000000 65535 f \n";
+
+    const xrefPos = size;
+    let xref = `xref\n0 ${objects.length + 1}\n`;
+    xref += "0000000000 65535 f \n";
     for (let i = 1; i <= objects.length; i += 1) {
-        pdf += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
+        xref += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
     }
-    pdf += `trailer\n<< /Size ${objects.length + 1} /Root ${catalogId} 0 R >>\n`;
-    pdf += `startxref\n${xrefPos}\n%%EOF`;
-    return pdf;
+    xref += `trailer\n<< /Size ${objects.length + 1} /Root ${catalogId} 0 R >>\n`;
+    xref += `startxref\n${xrefPos}\n%%EOF`;
+    parts.push(enc(xref));
+
+    return concatBytes(parts);
+}
+
+async function loadWordmarkJpeg() {
+    const src = "/marquisa-wordmark.png?v=20260722g";
+    const img = await new Promise((resolve, reject) => {
+        const el = new Image();
+        el.decoding = "async";
+        el.onload = () => resolve(el);
+        el.onerror = () => reject(new Error("WORDMARK_LOAD_FAILED"));
+        el.src = src;
+    });
+
+    const maxW = 480;
+    const scale = maxW / Math.max(1, img.naturalWidth || img.width);
+    const width = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
+    const height = Math.max(1, Math.round((img.naturalHeight || img.height) * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("CANVAS_UNAVAILABLE");
+    // Mantém placa preta do wordmark (legível no papel branco do PDF)
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.92));
+    if (!blob) throw new Error("JPEG_ENCODE_FAILED");
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    return { bytes, width, height };
 }
 
 function pushBulletin(lines, label, text) {
@@ -500,16 +592,21 @@ function modelToLines(model, labels) {
     return lines;
 }
 
-export function buildBriefingPdfBlob(model, labels) {
+export async function buildBriefingPdfBlob(model, labels) {
     const lines = modelToLines(model, labels);
     const pageStreams = buildContentStream(lines);
-    const pdfText = assemblePdf(pageStreams);
-    const pdfBytes = new TextEncoder().encode(pdfText);
+    let logo = null;
+    try {
+        logo = await loadWordmarkJpeg();
+    } catch {
+        logo = null;
+    }
+    const pdfBytes = assemblePdf(pageStreams, logo);
     return new Blob([pdfBytes], { type: "application/pdf" });
 }
 
-export function downloadBriefingPdf(model, fileName, labels) {
-    const blob = buildBriefingPdfBlob(model, labels);
+export async function downloadBriefingPdf(model, fileName, labels) {
+    const blob = await buildBriefingPdfBlob(model, labels);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

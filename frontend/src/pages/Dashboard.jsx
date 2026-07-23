@@ -234,11 +234,11 @@ export default function Dashboard() {
         });
     }
 
-    function handleSavePdf() {
+    async function handleSavePdf() {
         if (!requireProForExport()) return;
         try {
             const model = buildExportModel();
-            downloadBriefingPdf(model, briefingFileName(model), exportLabels());
+            await downloadBriefingPdf(model, briefingFileName(model), exportLabels());
             toast(t("dashboard.exportPdfOk"), {
                 variant: "success",
                 title: t("dashboard.exportPdfOkTitle"),

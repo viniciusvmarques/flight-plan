@@ -303,6 +303,14 @@ export function openBriefingPrintWindow(model, labels = {}) {
       text-transform: uppercase;
       font-weight: 700;
     }
+    .footer-logo {
+      margin-top: 14px;
+      display: block;
+      width: 168px;
+      max-width: 42%;
+      height: auto;
+      background: #000;
+    }
     .nav-log {
       display: grid;
       gap: 4px;
@@ -437,6 +445,7 @@ export function openBriefingPrintWindow(model, labels = {}) {
 
     <p class="disclaimer">${escapeHtml(model.disclaimer)}</p>
     <div class="footer-brand">${escapeHtml(model.brand)} · VOE SEGURO · VOE PREPARADO</div>
+    <img class="footer-logo" src="/marquisa-wordmark.png?v=20260722g" alt="Marquisa" width="168" height="48" />
   </main>
 </body>
 </html>`;
