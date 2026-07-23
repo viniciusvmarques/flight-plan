@@ -2,9 +2,9 @@
  * Marca oficial Marquisa — PNG do Canva.
  * ?v= evita cache do Netlify/navegador após troca de arte.
  */
-const MARK_SRC = "/marquisa-mark.png?v=20260722c";
-const ICON_SRC = "/marquisa-icon.png?v=20260722c";
-const WORDMARK_SRC = "/marquisa-wordmark.png?v=20260722c";
+const MARK_SRC = "/marquisa-mark.png?v=20260722g";
+const ICON_SRC = "/marquisa-icon.png?v=20260722g";
+const WORDMARK_SRC = "/marquisa-wordmark.png?v=20260722g";
 
 export { MARK_SRC, ICON_SRC, WORDMARK_SRC };
 
