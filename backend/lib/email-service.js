@@ -7,9 +7,10 @@ import { BRAND_NAME, SITE_PROFILE } from "./site-config.js";
 const __emailDir = path.dirname(fileURLToPath(import.meta.url));
 /** Prefer Canva PNG in frontend/public; fall back to backend/assets. */
 const EMAIL_LOGO_PATH = [
+    path.join(__emailDir, "..", "..", "frontend", "public", "marquisa-mark-fundopreto.png"),
     path.join(__emailDir, "..", "..", "frontend", "public", "marquisa-mark.png"),
     path.join(__emailDir, "..", "assets", "email-logo.png"),
-].find((p) => fs.existsSync(p)) || path.join(__emailDir, "..", "..", "frontend", "public", "marquisa-mark.png");
+].find((p) => fs.existsSync(p)) || path.join(__emailDir, "..", "..", "frontend", "public", "marquisa-mark-fundopreto.png");
 
 function escapeHtml(value) {
     return String(value || "")
@@ -103,7 +104,7 @@ function buildEmailShell({ title, intro, bodyHtml, footerNote, footerTransaction
     const appUrl = publicBaseUrl();
     const logoSrc = fs.existsSync(EMAIL_LOGO_PATH)
         ? "cid:marquisa-logo"
-        : `${appUrl}/marquisa-mark.png?v=20260722c`;
+        : `${appUrl}/marquisa-mark-fundopreto.png?v=20260722f`;
     const support = SITE_PROFILE.supportEmail;
     const year = new Date().getFullYear();
 
