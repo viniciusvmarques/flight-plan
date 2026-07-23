@@ -683,12 +683,12 @@ export const ptBR = {
         runwaySuggestStrongDetail: "Vento forte ({{spd}} kt).",
         runwaySuggestStrongGustDetail: "Vento forte com rajada ({{spd}}G{{gust}} kt).",
         runwaySuggestHead: "Proa",
-        runwaySuggestCross: "Cruzado",
+        runwaySuggestCross: "Través",
         runwaySuggestWindSpd: "Vento",
         runwaySuggestWind:
-            "Sugestão por vento: cabeceira {{rwy}} · proa {{head}} kt · cruzado {{cross}} kt.",
+            "Sugestão por vento: cabeceira {{rwy}} · proa {{head}} kt · través {{cross}} kt.",
         runwaySuggestLight:
-            "Vento fraco ({{spd}} kt): sugestão {{rwy}} · proa {{head}} kt · cruzado {{cross}} kt. Confirme a pista preferencial do aeródromo.",
+            "Vento fraco ({{spd}} kt): sugestão {{rwy}} · proa {{head}} kt · través {{cross}} kt. Confirme a pista preferencial do aeródromo.",
         runwaySuggestCalm:
             "Vento calmo: referência {{rwy}} (maior comprimento disponível). Confirme a pista preferencial do aeródromo.",
         runwaySuggestVrb:

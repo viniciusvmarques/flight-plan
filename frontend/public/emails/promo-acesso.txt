@@ -12,9 +12,9 @@ Nesta atualização, o briefing ganhou leitura de pista mais objetiva e um visua
 
 LEITURA DE PISTA
 Uma sugestão de cabeceira pensada para o METAR do momento.
-O briefing destaca a cabeceira com melhor componente de proa e mostra proa, cruzado e a condição do vento — sem substituir ATIS, ATC, NOTAM ou o bom senso do piloto.
+O briefing destaca a cabeceira com melhor componente de proa e mostra proa, través e a condição do vento — sem substituir ATIS, ATC, NOTAM ou o bom senso do piloto.
 
-Exemplo: RWY 09 · proa +8 kt · cruzado 4 kt · vento 270/12
+Exemplo: RWY 27 · proa +12 kt · través 0 kt · vento 270/12
 
 ATMOSFERA DO BRIEFING
 O visual muda com o período do dia: amanhecer, dia, entardecer, noite e madrugada.
