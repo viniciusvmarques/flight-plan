@@ -8,7 +8,9 @@
     "start": "prisma migrate deploy && node index.js",
     "build:airports": "node src/scripts/build-airports-db.js",
     "db:migrate": "prisma migrate deploy",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "email:product-update:dry": "node scripts/send-product-update-broadcast.mjs --dry-run",
+    "email:product-update": "node scripts/send-product-update-broadcast.mjs --confirm"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

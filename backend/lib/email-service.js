@@ -1349,5 +1349,81 @@ export function createEmailService(prisma) {
 
             return sendEmail({ kind: "promo_access", to: email, subject, text, html, userId, metadata: { appUrl } });
         },
+
+        /**
+         * E-mail de atualização de produto (arte em frontend/public/emails/promo-acesso.html).
+         * Sempre 1 destinatário em `to` — nunca lista em Cc/Bcc.
+         */
+        async sendProductUpdateEmail({ email, userId = null, dryRun = false }) {
+            const appUrl = publicBaseUrl();
+            const htmlPath = path.join(
+                __emailDir,
+                "..",
+                "..",
+                "frontend",
+                "public",
+                "emails",
+                "promo-acesso.html"
+            );
+            const txtPath = path.join(
+                __emailDir,
+                "..",
+                "..",
+                "frontend",
+                "public",
+                "emails",
+                "promo-acesso.txt"
+            );
+
+            if (!fs.existsSync(htmlPath)) {
+                throw new Error(`Template não encontrado: ${htmlPath}`);
+            }
+
+            let html = fs.readFileSync(htmlPath, "utf8");
+            // Garante URLs absolutas (clientes de e-mail não resolvem caminhos relativos)
+            html = html
+                .replace(/src="\.\.\/wx-scenes\//g, `src="${appUrl}/wx-scenes/`)
+                .replace(/src="email-aviation-/g, `src="${appUrl}/emails/email-aviation-`)
+                .replace(/src="\/wx-scenes\//g, `src="${appUrl}/wx-scenes/`)
+                .replace(/src="\/marquisa-/g, `src="${appUrl}/marquisa-`);
+
+            const subjectMatch = html.match(/ASSUNTO:\s*([^\n*<]+)/i);
+            const subject = (subjectMatch?.[1] || "Novidades da Marquisa").trim();
+
+            let text = "";
+            if (fs.existsSync(txtPath)) {
+                text = fs.readFileSync(txtPath, "utf8");
+            } else {
+                text =
+                    `${subject}\n\n` +
+                    `Abra a Marquisa: ${appUrl}\n\n` +
+                    `Não quer mais receber? Responda com o assunto SAIR.\n`;
+            }
+
+            if (dryRun) {
+                console.log(`[dry-run] product_update → ${email} | ${subject}`);
+                await logEmail({
+                    userId,
+                    kind: "product_update",
+                    toEmail: email,
+                    subject,
+                    status: "console",
+                    provider: "dry-run",
+                    metadata: { appUrl, dryRun: true },
+                    sentAt: new Date(),
+                });
+                return { dryRun: true, email, subject };
+            }
+
+            return sendEmail({
+                kind: "product_update",
+                to: email,
+                subject,
+                text,
+                html,
+                userId,
+                metadata: { appUrl, template: "promo-acesso.html" },
+            });
+        },
     };
 }
