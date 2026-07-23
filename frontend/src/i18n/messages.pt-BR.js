@@ -1031,5 +1031,6 @@ export const ptBR = {
         button: "Compartilhar resultado",
         copied: "Link copiado para a área de transferência.",
         shareText: "Fiz {{percent}}% no simulado {{course}} na Marquisa.",
+        emptyState: "Este link de compartilhamento está incompleto. Abra o resultado a partir do simulado ou faça um novo.",
     },
 };

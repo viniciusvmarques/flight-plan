@@ -175,7 +175,7 @@ export default function Quiz() {
                                 <article className="exam-question-card exam-question-card--single exam-prose">
                                     <p className="exam-question-text">{current.question}</p>
                                     <div className="exam-option-list" role="radiogroup">
-                                        {current.options.map((option, optionIndex) => (
+                                        {(Array.isArray(current.options) ? current.options : []).map((option, optionIndex) => (
                                             <label
                                                 key={`${current.id}-${optionIndex}`}
                                                 className={`exam-option exam-option--selectable ${answers[current.id] === optionIndex ? "exam-option--selected" : ""}`}

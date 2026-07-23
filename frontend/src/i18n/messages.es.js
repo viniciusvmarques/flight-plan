@@ -1031,5 +1031,6 @@ export const es = {
         button: "Compartir resultado",
         copied: "Enlace copiado al portapapeles.",
         shareText: "Obtuve {{percent}}% en {{course}} en Marquisa.",
+        emptyState: "Este enlace de compartición está incompleto. Abre el resultado desde el simulado o inicia uno nuevo.",
     },
 };

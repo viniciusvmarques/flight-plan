@@ -1020,8 +1020,10 @@ export default function FlightPlanStack({ base, plan, onPlanChange, user = null 
                                 <div key={leg.code} className="plan-leg-card">
                                     <span className="plan-leg-code">{leg.code}</span>
                                     <strong>{leg.label}</strong>
-                                    <span>{leg.distanceNm.toFixed(0)} NM</span>
-                                    <span>{leg.gsKt.toFixed(0)} kt</span>
+                                    <span>
+                                        {Number.isFinite(leg.distanceNm) ? `${leg.distanceNm.toFixed(0)} NM` : "—"}
+                                    </span>
+                                    <span>{Number.isFinite(leg.gsKt) ? `${leg.gsKt.toFixed(0)} kt` : "—"}</span>
                                     <span>{fmtMinutes(leg.timeMin)}</span>
                                 </div>
                             ))}

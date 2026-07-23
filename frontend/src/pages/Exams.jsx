@@ -363,9 +363,9 @@ export default function Exams() {
                                         </div>
                                         <p>{question.question}</p>
                                         <div className="exam-option-list">
-                                            {question.options.map((option, optionIndex) => (
+                                            {(Array.isArray(question.options) ? question.options : []).map((option, optionIndex) => (
                                                 <div
-                                                    key={`${question.id}-${option}`}
+                                                    key={`${question.id}-${optionIndex}`}
                                                     className={[
                                                         "exam-option",
                                                         optionIndex === question.correctIndex ? "exam-option--correct" : "",
@@ -442,7 +442,7 @@ export default function Exams() {
                                         </div>
                                         <p className="exam-question-text">{currentQuestion.question}</p>
                                         <div className="exam-option-list" role="radiogroup" aria-label={t("exams.optionsAria")}>
-                                            {currentQuestion.options.map((option, optionIndex) => (
+                                            {(Array.isArray(currentQuestion.options) ? currentQuestion.options : []).map((option, optionIndex) => (
                                                 <label
                                                     key={`${currentQuestion.id}-${optionIndex}`}
                                                     className={[

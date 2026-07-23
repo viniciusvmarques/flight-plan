@@ -1030,5 +1030,6 @@ export const en = {
         button: "Share result",
         copied: "Link copied to clipboard.",
         shareText: "I scored {{percent}}% on {{course}} at Marquisa.",
+        emptyState: "This share link is incomplete. Open the result from a simulator attempt or start a new one.",
     },
 };

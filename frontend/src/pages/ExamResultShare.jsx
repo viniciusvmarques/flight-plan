@@ -12,11 +12,16 @@ export default function ExamResultShare() {
     const { t } = useI18n();
 
     const result = useMemo(() => {
+        const hasPayload = ["percent", "passed", "correct", "total"].some((key) => params.get(key) != null);
+        const percentRaw = Number(params.get("percent"));
+        const correctRaw = Number(params.get("correct"));
+        const totalRaw = Number(params.get("total"));
         return {
-            percent: Number(params.get("percent") || 0),
+            hasPayload,
+            percent: Number.isFinite(percentRaw) ? percentRaw : 0,
             passed: params.get("passed") === "1",
-            correctAnswers: Number(params.get("correct") || 0),
-            totalQuestions: Number(params.get("total") || 0),
+            correctAnswers: Number.isFinite(correctRaw) ? correctRaw : 0,
+            totalQuestions: Number.isFinite(totalRaw) ? totalRaw : 0,
             course: params.get("course") || "Marquisa",
         };
     }, [params]);
@@ -24,23 +29,27 @@ export default function ExamResultShare() {
     return (
         <AviationShell title={t("share.pageTitle")} subtitle={t("share.pageSubtitle")}>
             <Card title={t("share.cardTitle")}>
-                <div className="exam-share-card exam-share-card--public">
-                    <span className="exam-share-kicker">
-                        <MarquisaMark size={14} />
-                        <span>MARQUISA</span>
-                    </span>
-                    <strong className={`exam-share-status ${result.passed ? "exam-pass" : "exam-fail"}`}>
-                        {result.passed ? t("exams.approved") : t("exams.failed")}
-                    </strong>
-                    <h2>{t("exams.percentScore", { percent: result.percent })}</h2>
-                    <p className="exam-share-course">{result.course}</p>
-                    <small>
-                        {t("exams.correctCount", {
-                            correct: result.correctAnswers,
-                            total: result.totalQuestions,
-                        })}
-                    </small>
-                </div>
+                {result.hasPayload ? (
+                    <div className="exam-share-card exam-share-card--public">
+                        <span className="exam-share-kicker">
+                            <MarquisaMark size={14} />
+                            <span>MARQUISA</span>
+                        </span>
+                        <strong className={`exam-share-status ${result.passed ? "exam-pass" : "exam-fail"}`}>
+                            {result.passed ? t("exams.approved") : t("exams.failed")}
+                        </strong>
+                        <h2>{t("exams.percentScore", { percent: result.percent })}</h2>
+                        <p className="exam-share-course">{result.course}</p>
+                        <small>
+                            {t("exams.correctCount", {
+                                correct: result.correctAnswers,
+                                total: result.totalQuestions,
+                            })}
+                        </small>
+                    </div>
+                ) : (
+                    <div className="empty-note">{t("share.emptyState")}</div>
+                )}
             </Card>
             <GrowthCtaBar
                 primaryLabel={t("plannerGate.ctaRegister")}
