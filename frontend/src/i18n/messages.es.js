@@ -56,6 +56,241 @@ export const es = {
         menuClose: "Cerrar menú",
         siteName: "Marquisa",
     },
+    summaries: {
+        nav: "Resúmenes",
+        kicker: "Estudio",
+        title: "Resúmenes de navegación aérea",
+        caption:
+            "Fichas rápidas de PP VFR, PC IFR y computador de vuelo — para repasar antes del simulado o el briefing.",
+        statLabel: "fichas",
+        catsLabel: "Temas",
+        catAll: "Todos",
+        catBasics: "Fundamentos",
+        catComputer: "Computador",
+        catVfr: "VFR",
+        catRadio: "Radio-nav",
+        catIfr: "IFR",
+        catPlan: "Planificación",
+        searchLabel: "Buscar resumen",
+        searchPlaceholder: "Ej.: VOR, deriva, combustible…",
+        listLabel: "Lista de resúmenes",
+        empty: "Ningún resumen con ese filtro.",
+        tipLabel: "Consejo de examen / cabina",
+        disclaimer:
+            "Material didáctico original de Marquisa, alineado al programa clásico de navegación (cartas, rumbos, viento, ayudas y planificación). No sustituye libros, cartas oficiales, ANAC/DECEA ni el juicio del piloto.",
+        linkComputer: "Abrir computador de vuelo",
+        linkQuiz: "Entrenar muestras",
+        linkExams: "Ir a simulados",
+
+        tipLatLonTitle: "Latitud y longitud",
+        tipLatLonBody:
+            "La latitud mide la distancia angular al Ecuador (0°–90° N/S). La longitud mide la distancia a Greenwich (0°–180° E/W).\nEn cartas aeronáuticas, 1 minuto de latitud ≈ 1 NM. En longitud, el arco se acorta hacia los polos.",
+        tipLatLonTip: "En planificación, trata 1' de lat ≈ 1 NM; no hagas lo mismo a ciegas con longitud lejos del Ecuador.",
+
+        tipMeridiansTitle: "Meridianos, paralelos y dirección",
+        tipMeridiansBody:
+            "Los meridianos van de polo a polo; los paralelos son círculos de latitud constante. El rumbo verdadero se mide desde el norte geográfico, en sentido horario, 000°–360°.\nEl círculo máximo es el camino más corto; en Mercator el rumbo constante aparece como recta.",
+        tipMeridiansTip: "En vuelos visuales cortos, el rumbo constante de la carta es el del día a día.",
+
+        tipHeadingsTitle: "RV, RM y brújula",
+        tipHeadingsBody:
+            "RV usa el norte geográfico. RM el norte magnético. La brújula es lo que siente la aguja a bordo.\nCadena clásica: verdadero ± declinación = magnético; magnético ± desvío = brújula — e inverso al leer instrumentos.",
+        tipHeadingsTip: "Memoriza: Verdadero → Magnético → Brújula (y el camino inverso).",
+
+        tipVariationTitle: "Declinación magnética",
+        tipVariationBody:
+            "La declinación es el ángulo entre norte verdadero y magnético en el lugar. Este: magnético a la derecha del verdadero; Oeste: a la izquierda.\nLas isógonas de la carta la muestran. Cambia despacio — usa carta actualizada.",
+        tipVariationTip: "Ayuda típica: “East is least, West is best” al pasar de verdadero a magnético.",
+
+        tipDeviationTitle: "Desvío de brújula",
+        tipDeviationBody:
+            "El desvío es el error por los campos magnéticos de la aeronave. Varía con el rumbo y está en la cartulina de desvíos.\nNo mezcles desvío con declinación: uno es geofísico; el otro es de la instalación a bordo.",
+        tipDeviationTip: "Antes de un cálculo preciso con brújula, aplica el valor de esa proa — no inventes un promedio.",
+
+        tipUnitsTitle: "Conversiones del computador",
+        tipUnitsBody:
+            "En el computador mecánico: 1 kt ≈ 1,85 km/h ≈ 1,15 mph; 1 NM ≈ 1,85 km ≈ 1,15 SM; 1 ft ≈ 0,305 m.\nMasa/volumen: 1 kg ≈ 2,2 lb; L ↔ US/IMP gal según las escalas del instrumento.",
+        tipUnitsTip: "Entrena pares fijos (ej.: 100 kt → 185 km/h) hasta que la escala sea automática.",
+
+        tipWindTitle: "Triángulo de viento",
+        tipWindBody:
+            "Vector aire (proa + VA) + vector viento = vector suelo (rumbo + VS). La corrección de deriva es el ángulo entre proa y rumbo.\nEl viento es “de dónde viene”: desde la derecha suele pedir corrección a la derecha (y viceversa).",
+        tipWindTip: "Separa VA (aire) de VS (suelo). Mezclarlos es el error clásico de ETE y combustible.",
+
+        tipWindCasesTitle: "Tres casos clásicos de viento",
+        tipWindCasesBody:
+            "Caso 1: rumbo, VA y viento → halla corrección, proa y VS.\nCaso 2: proa, VA y viento → halla rumbo, VS y deriva.\nCaso 3: proa, rumbo, VA y VS → resuelve el vector viento.",
+        tipWindCasesTip: "En la cara del viento, arma el triángulo siempre igual: primero lo conocido, luego lee lo que falta.",
+
+        tipTimeDistTitle: "Tiempo, distancia y velocidad",
+        tipTimeDistBody:
+            "Tiempo = distancia / VS. Distancia = VS × tiempo. VS = distancia / tiempo.\nMantén unidades coherentes (NM y nudos → horas; minutos con ×60).",
+        tipTimeDistTip: "Calcula cada tramo con su VS. Sumar distancias y dividir por una VS “media inventada” tuerce el ETE.",
+
+        tipClimbTitle: "Ascenso y descenso",
+        tipClimbBody:
+            "El gradiente y la razón de ascenso/descenso ligan altura a ganar/perder con distancia y tiempo. Planifica TOC/TOD con VS y ROC/ROD.",
+        tipClimbTip: "En el briefing, anota TOC y TOD como puntos de verificación — no solo el nivel de crucero.",
+
+        tipRunwayTitle: "Viento en pista",
+        tipRunwayBody:
+            "Componente de proa ≈ V · cos(α); cruzado ≈ V · sin(α), con α = ángulo entre viento y rumbo de pista.\nProa positiva ayuda; el cruzado define límites del POH.",
+        tipRunwayTip: "Pista 09 ≈ rumbo 090°. Confirma que el METAR es viento “de dónde viene”.",
+
+        tipPilotageTitle: "Pilotaje",
+        tipPilotageBody:
+            "Navegar por referencias visuales: ríos, carreteras, ciudades, relieve y aeródromos. Elige checkpoints inequívocos y estima ETA entre ellos.",
+        tipPilotageTip: "Prefiere checkpoints únicos (confluencia, puente, lago raro) a ciudades grandes sin contraste.",
+
+        tipDrTitle: "Navegación a estima",
+        tipDrBody:
+            "Estima = rumbo + tiempo + VS a partir del viento previsto. Proyectas la posición sin depender solo de lo visual.\nActualiza en cada checkpoint: compara ETA previsto × real y corrige VS/deriva.",
+        tipDrTip: "Mantén “posición estimada” y “posición observada”. La diferencia enseña el viento real del día.",
+
+        tipChartsVfrTitle: "Cartas VFR",
+        tipChartsVfrBody:
+            "Lee escala, declinación, obstáculos, espacios aéreos, frecuencias y elevaciones. La simbología del aeródromo importa tanto como la ruta dibujada.",
+        tipChartsVfrTip: "Antes del vuelo, marca ruta, checkpoints y frecuencias — no improvises en crucero.",
+
+        tipAirspaceTitle: "Espacio aéreo (visión práctica)",
+        tipAirspaceBody:
+            "Clases y áreas (CTR, TMA, ATZ, prohibidas, restringidas, peligrosas) definen quién controla y qué necesitas (clearance, radio, transponder).",
+        tipAirspaceTip: "En la planificación, lista cada espacio que cruza la ruta y la acción requerida.",
+
+        tipDiversionTitle: "Desvío en vuelo",
+        tipDiversionBody:
+            "Con combustible, tiempo o meteorología cambiando, elige un aeródromo alcanzable, calcula nuevo rumbo/ETE y comunica la intención.",
+        tipDiversionTip: "Entrena un desvío de mesa en cada plan VFR: si cierra delante, ¿dónde estoy en 15 minutos?",
+
+        tipVorTitle: "VOR y radiales",
+        tipVorBody:
+            "Una radial es la dirección magnética que SALE de la estación. OBS selecciona la referencia; CDI muestra el desvío; TO/FROM la semiesfera.\nInterceptar con 30°–45° suele suavizar la captura. Identifica siempre la estación.",
+        tipVorTip: "TO/FROM solo no dice adónde apuntar el morro — combina OBS + CDI + tu proa.",
+
+        tipNdbTitle: "NDB y ADF",
+        tipNdbBody:
+            "El ADF indica el rumbo relativo (RB) del morro a la estación. Rumbo magnético a la estación ≈ RB + proa magnética.\nHoming curva la trayectoria con viento; el tracking corrige la deriva.",
+        tipNdbTip: "Identifica el NDB (morse) antes de confiar. Estación equivocada = navegación equivocada.",
+
+        tipDmeTitle: "DME",
+        tipDmeBody:
+            "El DME mide distancia slant range al transponder. Alto y cerca, la lectura supera la distancia horizontal.\nSe combina con VOR para fijos y arcos.",
+        tipDmeTip: "Alto sobre la estación, no esperes DME = 0 en el suelo — el slant range permanece.",
+
+        tipIlsTitle: "ILS (localizer + glide)",
+        tipIlsBody:
+            "El localizer guía en el plano horizontal del eje; el glide path en el vertical. Los marcadores confirman posición en final.\nRespeta altitudes de segmento y mínimos. La aproximación frustrada empieza en el MAP sin referencias visuales adecuadas.",
+        tipIlsTip: "Estabiliza pronto: curso, razón y configuración. Perseguir agujas al final invita a un go-around.",
+
+        tipHoldTitle: "Espera (holding)",
+        tipHoldBody:
+            "Patrón clásico: tramos de alejamiento y aproximación, virajes al lado publicado, tiempo o DME según la carta.\nEntradas: directa, paralela o teardrop según el sector de llegada.",
+        tipHoldTip: "Antes de entrar, memoriza: fijo, curso de la espera, lado de virajes y tiempo (o DME).",
+
+        tipSidTitle: "SID y STAR",
+        tipSidBody:
+            "SID lleva del aeródromo a la estructura en ruta; STAR trae de la ruta al inicio de la aproximación. Cumple restricciones de altitud/velocidad.",
+        tipSidTip: "Briefing de salida/llegada: “¿qué hago si pierdo comunicación?” — suele estar en la carta.",
+
+        tipIacTitle: "Cartas de aproximación y segmentos",
+        tipIacBody:
+            "La carta describe inicial, intermedio, final y frustrada, con mínimos y MAP. Las altitudes de segmento protegen obstáculos en ese tramo.",
+        tipIacTip: "Di en voz alta: mínimos, MAP, frustrada y frecuencia de torre/aproximación.",
+
+        tipMeaTitle: "MEA, MOCA y márgenes",
+        tipMeaBody:
+            "MEA apoya recepción de ayudas y separación de obstáculos en la vía (según criterios de la carta). MOCA cubre obstáculo, con recepción garantizada solo cerca de la estación en muchos sistemas.",
+        tipMeaTip: "Si la MEA cambia por sentido o tramo, usa el valor de tu segmento — no el más bajo de la página.",
+
+        tipFuelTitle: "Combustible en la planificación",
+        tipFuelBody:
+            "Suma taxi, ascenso, tramos de crucero (con VS y consumo), descenso, aproximación, ida a alternativa y reserva reglamentaria/operacional.",
+        tipFuelTip: "Cierra el número en litros y en tiempo de vuelo. Reserva solo en litros sin ETE equivalente confunde en vuelo.",
+
+        tipAltTitle: "Alternativa",
+        tipAltBody:
+            "La alternativa es el plan B con pista, servicios y meteorología utilizables en el ETA. Calcula combustible y tiempo hasta ella.",
+        tipAltTip: "Elige una alternativa en la que de verdad aterrizarías con el viento/techo del día.",
+
+        tipAltimetryTitle: "Altimetría QNH / QNE",
+        tipAltimetryBody:
+            "QNH: el altímetro lee la elevación en tierra (aprox.). Sobre la altitud de transición, usa QNE (1013 hPa) y niveles de vuelo.",
+        tipAltimetryTip: "El cambio QNH↔QNE es ítem de briefing de ascenso/descenso. Setting erróneo es error clásico de nivel.",
+
+        tipBriefTitle: "Orden mental del briefing de navegación",
+        tipBriefBody:
+            "1) Ruta y cartas 2) Clima/NOTAM 3) Rumbos, distancias, ETE 4) Combustible y alternativa 5) Espacio aéreo y frecuencias 6) Salida/llegada o procedimientos VFR 7) Contingencias.",
+        tipBriefTip: "Si no puedes explicar la ruta en 60 segundos, el briefing aún no está listo.",
+    },
+    jobs: {
+        nav: "Empleos",
+        title: "Empleos",
+        captionModern: "Vacantes y perfiles de candidatos en aviación.",
+        ctaProfile: "Crear mi perfil de candidato",
+        ctaPostJob: "Publicar vacante",
+        searchKeyword: "Cargo, aeronave o empresa",
+        searchKeywordPlaceholder: "Ej.: ATR, primer oficial, instructor",
+        searchLocation: "Lugar",
+        searchLocationPlaceholder: "Ciudad, base o región",
+        searchAction: "Buscar",
+        jobsTab: "Vacantes ({{count}})",
+        seekersTab: "Candidatos ({{count}})",
+        filterAll: "Todos",
+        workOnsite: "Presencial",
+        workHybrid: "Híbrido",
+        workRemote: "Remoto",
+        workMode: "Modalidad",
+        contractType: "Contrato",
+        contractIntern: "Prácticas",
+        reloadDemo: "Recargar ejemplos",
+        resultsLabel: "Resultados",
+        resultsCount: "{{count}} resultado(s)",
+        noResults: "Ningún resultado con esos filtros.",
+        selectHintTitle: "Selecciona una vacante",
+        selectHintCopy: "Haz clic en una tarjeta a la izquierda para ver la descripción completa.",
+        demoTag: "Ejemplo",
+        sectionDescription: "Sobre la vacante",
+        sectionRequirements: "Requisitos",
+        sectionApply: "Postular",
+        sectionExperience: "Experiencia",
+        sectionContact: "Contacto",
+        applyCta: "Postular",
+        applyHint: "¿Aún no tienes cuenta?",
+        contactEmail: "Correo",
+        contactPhone: "Teléfono / WhatsApp",
+        contactOther: "Otro contacto",
+        back: "Volver a la búsqueda",
+        remove: "Eliminar",
+        profileBasic: "Perfil aeronáutico",
+        seekerFormTitle: "Crear mi perfil de candidato",
+        seekerFormLead: "Licencias, horas y experiencia para que los reclutadores te encuentren.",
+        hiringFormTitle: "Publicar vacante",
+        hiringFormLead: "Cargo, empresa, lugar, requisitos y cómo contactarte los candidatos.",
+        fullName: "Nombre completo",
+        headline: "Headline",
+        headlinePlaceholder: "Ej.: CPL/IFR · buscando FO turbohélice",
+        location: "Ubicación",
+        licenses: "Licencias",
+        hours: "Horas de vuelo",
+        experience: "Experiencia",
+        photo: "Foto",
+        photoInvalid: "Envía una imagen válida.",
+        photoTooLarge: "La foto es demasiado grande (máx. 1,5 MB).",
+        companyName: "Empresa",
+        roleTitle: "Cargo",
+        jobLocation: "Lugar de la vacante",
+        aircraft: "Aeronave / flota",
+        aircraftPlaceholder: "Ej.: ATR 72, King Air 350",
+        jobDescription: "Descripción",
+        requirements: "Requisitos",
+        requirementsPlaceholder: "Licencias, horas, CMA, type rating…",
+        publishSeeker: "Publicar perfil",
+        publishJob: "Publicar vacante",
+        seekerPublished: "Perfil publicado.",
+        jobPublished: "Vacante publicada.",
+        entryRemoved: "Eliminado.",
+        demoReset: "Ejemplos recargados.",
+    },
     footer: {
         rights: "Todos los derechos reservados.",
         terms: "Términos",
@@ -198,6 +433,9 @@ export const es = {
         back: "Volver",
         loginTitle: "Entrar",
         loginCaption: "Accede a tu cuenta para usar simulados ANAC, guardar briefings y planificación de vuelo.",
+        loginCaptionPostJob: "Entra para publicar tu vacante.",
+        loginCaptionPostProfile: "Entra para publicar tu perfil de candidato.",
+        loginCaptionJobs: "Entra para continuar en Empleos.",
         loginSignupHint: "Al crear cuenta y confirmar el email, desbloqueas simulados (PP y Tripulante) y planificación guardada en la nube.",
         email: "Email",
         password: "Contraseña",

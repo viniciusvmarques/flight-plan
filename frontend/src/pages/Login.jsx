@@ -12,6 +12,7 @@ export default function Login() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
+  const { t } = useI18n();
 
   function resolveNextPath() {
     const raw = searchParams.get("next") || "";
@@ -22,7 +23,15 @@ export default function Login() {
     }
     return "/";
   }
-  const { t } = useI18n();
+
+  const nextPath = useMemo(() => resolveNextPath(), [searchParams, location.state]);
+  const loginCaption = useMemo(() => {
+    if (String(nextPath).includes("modo=contratando")) return t("auth.loginCaptionPostJob");
+    if (String(nextPath).includes("modo=procurando")) return t("auth.loginCaptionPostProfile");
+    if (String(nextPath).includes("/empregos")) return t("auth.loginCaptionJobs");
+    return t("auth.loginCaption");
+  }, [nextPath, t]);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -72,7 +81,7 @@ export default function Login() {
 
         <div className="auth-body">
           <h1>{t("auth.loginTitle")}</h1>
-          <p>{t("auth.loginCaption")}</p>
+          <p>{loginCaption}</p>
 
           {resetBanner && (
             <div className="auth-success auth-banner">
@@ -143,5 +152,9 @@ export default function Login() {
     </div>
   );
 }
+
+
+
+
 
 

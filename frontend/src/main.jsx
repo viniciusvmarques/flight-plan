@@ -10,6 +10,8 @@ import "./styles/brand-mark-slots.css";
 import "./styles/app-layout.css";
 import "./styles/auth-pages.css";
 import "./styles/ux-polish.css";
+import "./styles/jobs-board.css";
+import "./styles/resumos-nav.css";
 import "./styles/experience.css";
 import "./styles/exam-reading.css";
 import "./styles/mobile-overrides.css";

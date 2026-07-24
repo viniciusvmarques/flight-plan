@@ -56,6 +56,241 @@ export const en = {
         menuClose: "Close menu",
         siteName: "Marquisa",
     },
+    summaries: {
+        nav: "Summaries",
+        kicker: "Study",
+        title: "Air navigation summaries",
+        caption:
+            "Quick PP VFR, PC IFR and flight-computer cards — review before a mock exam or briefing.",
+        statLabel: "cards",
+        catsLabel: "Topics",
+        catAll: "All",
+        catBasics: "Basics",
+        catComputer: "Computer",
+        catVfr: "VFR",
+        catRadio: "Radio-nav",
+        catIfr: "IFR",
+        catPlan: "Planning",
+        searchLabel: "Search summary",
+        searchPlaceholder: "e.g. VOR, drift, fuel…",
+        listLabel: "Summary list",
+        empty: "No summaries match this filter.",
+        tipLabel: "Exam / cockpit tip",
+        disclaimer:
+            "Original Marquisa study notes aligned with classic navigation topics (charts, headings, wind, navaids and planning). Not a substitute for textbooks, official charts, ANAC/DECEA or PIC judgment.",
+        linkComputer: "Open flight computer",
+        linkQuiz: "Practice samples",
+        linkExams: "Go to mock exams",
+
+        tipLatLonTitle: "Latitude and longitude",
+        tipLatLonBody:
+            "Latitude is angular distance from the Equator (0°–90° N/S). Longitude is distance from Greenwich (0°–180° E/W).\nOn aeronautical charts, 1 minute of latitude ≈ 1 NM. Longitude arc length shrinks toward the poles.",
+        tipLatLonTip: "In planning, treat 1' of latitude ≈ 1 NM; don’t blindly do the same for longitude far from the Equator.",
+
+        tipMeridiansTitle: "Meridians, parallels and direction",
+        tipMeridiansBody:
+            "Meridians run pole to pole; parallels are constant-latitude circles. True course (TC) is measured clockwise from true north, 000°–360°.\nA great circle is the shortest path on the sphere; on Mercator charts a constant heading (rhumb line) appears straight.",
+        tipMeridiansTip: "For short visual flights, the constant chart heading is what you fly day to day.",
+
+        tipHeadingsTitle: "True, magnetic and compass",
+        tipHeadingsBody:
+            "True course/heading uses geographic north. Magnetic uses magnetic north. Compass is what the aircraft needle senses.\nClassic chain: True ± variation = Magnetic; Magnetic ± deviation = Compass — and reverse when reading instruments.",
+        tipHeadingsTip: "Memorize: True → Magnetic → Compass (and the reverse path).",
+
+        tipVariationTitle: "Magnetic variation",
+        tipVariationBody:
+            "Variation is the angle between true and magnetic north at a location. East: magnetic north right of true; West: left.\nIsogonic lines on charts show it. It drifts slowly — use a current chart.",
+        tipVariationTip: "Common memory aid: “East is least, West is best” when going true → magnetic.",
+
+        tipDeviationTitle: "Compass deviation",
+        tipDeviationBody:
+            "Deviation is error from the aircraft’s own magnetic fields. It changes with heading and lives on the compass card.\nDon’t mix deviation with variation: one is geophysical; the other is onboard installation.",
+        tipDeviationTip: "Before precise compass work, apply the card value for that heading — don’t invent an average.",
+
+        tipUnitsTitle: "Flight computer conversions",
+        tipUnitsBody:
+            "On the mechanical computer (calculator side), study factors: 1 kt ≈ 1.85 km/h ≈ 1.15 mph; 1 NM ≈ 1.85 km ≈ 1.15 SM; 1 ft ≈ 0.305 m.\nMass/volume: 1 kg ≈ 2.2 lb; L ↔ US/IMP gal follow the instrument scales.",
+        tipUnitsTip: "Drill fixed pairs (e.g. 100 kt → 185 km/h) until the scale feels automatic.",
+
+        tipWindTitle: "Wind triangle",
+        tipWindBody:
+            "Air vector (heading + TAS) + wind vector = ground vector (track + GS). Wind correction angle (WCA) is the angle between heading and track.\nWind is “from”: wind from the right usually needs right WCA (and vice versa), sized by speed and angle.",
+        tipWindTip: "Keep TAS (air) separate from GS (ground). Mixing them is the classic ETE/fuel mistake.",
+
+        tipWindCasesTitle: "Three classic wind cases",
+        tipWindCasesBody:
+            "Case 1: track, TAS and wind → find WCA, heading and GS.\nCase 2: heading, TAS and wind → find track, GS and drift.\nCase 3: heading, track, TAS and GS → solve the wind vector.",
+        tipWindCasesTip: "On the wind side, always build the triangle the same way: knowns first, then read the unknown.",
+
+        tipTimeDistTitle: "Time, distance and speed",
+        tipTimeDistBody:
+            "Time = distance / GS. Distance = GS × time. GS = distance / time.\nKeep units consistent (NM and knots → hours; convert minutes with ×60).",
+        tipTimeDistTip: "Compute each leg with that leg’s GS. Summing distances and dividing by a fake average GS skews ETE.",
+
+        tipClimbTitle: "Climb and descent",
+        tipClimbBody:
+            "Gradient and climb/descent rate link height to gain/lose with distance and time. Plan TOC/TOD with ground speed and ROC/ROD.\nApproximate descent distance ≈ (height to lose / gradient) with the method you trained.",
+        tipClimbTip: "In the briefing, mark TOC and TOD as checkpoints — not only cruise level.",
+
+        tipRunwayTitle: "Runway wind components",
+        tipRunwayBody:
+            "Headwind ≈ V · cos(α); crosswind ≈ V · sin(α), where α is the angle between wind direction and runway heading.\nPositive headwind helps takeoff/landing; crosswind sets POH limits.",
+        tipRunwayTip: "Runway 09 ≈ heading 090°. Confirm METAR wind is “from” before calling head/tail.",
+
+        tipPilotageTitle: "Pilotage",
+        tipPilotageBody:
+            "Navigate by visual references: rivers, roads, towns, terrain and aerodromes. Pick unambiguous checkpoints and ETA between them.\nMatch what you see to chart symbols and scale.",
+        tipPilotageTip: "Prefer unique checkpoints (confluence, bridge, oddly shaped lake) over large featureless cities.",
+
+        tipDrTitle: "Dead reckoning",
+        tipDrBody:
+            "DR = heading + time + GS estimated from forecast wind. You project position without relying only on visuals.\nUpdate at each checkpoint: compare planned vs actual ETA and correct GS/WCA.",
+        tipDrTip: "Keep “estimated position” and “observed position”. The difference teaches the day’s real wind.",
+
+        tipChartsVfrTitle: "VFR charts",
+        tipChartsVfrBody:
+            "Read scale, variation, obstacles, airspace, frequencies and elevations. Aerodrome symbology matters as much as the drawn route.\nKeep charts current: airspace and obstacles change.",
+        tipChartsVfrTip: "Before flight, mark route, checkpoints and frequencies on the chart — don’t improvise in cruise.",
+
+        tipAirspaceTitle: "Airspace (practical view)",
+        tipAirspaceBody:
+            "Classes and areas (CTR, TMA, ATZ, prohibited, restricted, danger) define who controls and what you need (clearance, radio, transponder).\nVFR in controlled airspace means knowing ceiling/visibility and local procedures.",
+        tipAirspaceTip: "In planning, list each airspace the route crosses and the action required.",
+
+        tipDiversionTitle: "In-flight diversion",
+        tipDiversionBody:
+            "When fuel, time or weather changes, pick a reachable aerodrome, compute new heading/ETE and communicate intent.\nUse clear criteria: ceiling, crosswind, usable runway and services.",
+        tipDiversionTip: "Desk-train a diversion on every VFR plan: if it closes ahead, where can I be in 15 minutes?",
+
+        tipVorTitle: "VOR and radials",
+        tipVorBody:
+            "A radial is the magnetic direction FROM the station. OBS sets the reference; CDI shows deviation; TO/FROM shows the hemisphere.\nIntercepting with 30°–45° usually smooths capture. Always identify the station.",
+        tipVorTip: "TO/FROM alone doesn’t tell you where to point the nose — combine OBS + CDI + your heading.",
+
+        tipNdbTitle: "NDB and ADF",
+        tipNdbBody:
+            "ADF shows relative bearing (RB) from the nose to the station. Magnetic bearing to station ≈ RB + magnetic heading (watch the 360° wrap).\nHoming curves the path in wind; tracking corrects drift.",
+        tipNdbTip: "Identify the NDB (Morse) before trusting it. Wrong station = wrong navigation.",
+
+        tipDmeTitle: "DME",
+        tipDmeBody:
+            "DME measures slant range to the transponder. High and close, the reading exceeds horizontal distance.\nPairs with VOR for fixes and arcs. Check frequency pairing.",
+        tipDmeTip: "High over the station, don’t expect DME = 0 on the ground — slant range remains.",
+
+        tipIlsTitle: "ILS (localizer + glide)",
+        tipIlsBody:
+            "Localizer guides laterally on the runway axis; glide path vertically. Markers (OM/MM) confirm final position.\nRespect segment altitudes and minima. Missed approach starts at the MAP without required visual references.",
+        tipIlsTip: "Stabilize early: course, rate and configuration. Chasing needles late invites a go-around.",
+
+        tipHoldTitle: "Holding",
+        tipHoldBody:
+            "Classic pattern: outbound and inbound legs, turns to the published side, timed or DME as charted.\nEntries: direct, parallel or teardrop by arrival sector. Correct wind with time/angle on the legs.",
+        tipHoldTip: "Before entry, memorize: fix, inbound course, turn side and timing (or DME).",
+
+        tipSidTitle: "SID and STAR",
+        tipSidBody:
+            "SID takes you from the aerodrome to the en-route structure; STAR brings you from en-route to the approach start. Honor altitude/speed and published transitions.\nRead notes, noise and equipment requirements (RNAV, etc.).",
+        tipSidTip: "Departure/arrival brief: “what if I lose comms?” — the procedure is usually on the chart.",
+
+        tipIacTitle: "Approach plates and segments",
+        tipIacBody:
+            "Approach charts describe initial, intermediate, final and missed segments with minima and MAP. Segment altitudes protect obstacles on that stretch.\nNon-precision approaches may use VOR, NDB, GNSS, etc., as published.",
+        tipIacTip: "Brief out loud: minima, MAP, missed approach and tower/approach frequency.",
+
+        tipMeaTitle: "MEA, MOCA and margins",
+        tipMeaBody:
+            "MEA supports navaid reception and obstacle clearance on the airway (per chart criteria). MOCA covers obstacles, with reception guaranteed only near the station in many systems.\nPlan a level at or above the applicable minimum for your segment.",
+        tipMeaTip: "If MEA differs by direction or segment, use your segment’s value — not the lowest on the page.",
+
+        tipFuelTitle: "Fuel planning",
+        tipFuelBody:
+            "Add taxi, climb, cruise legs (with GS and burn), descent, approach, divert to alternate and regulatory/operational reserve.\nBurn changes with power and altitude — use the POH table, not one guessed number.",
+        tipFuelTip: "Close the number in liters and in flight time. Reserve only in liters without equivalent ETE confuses in-flight decisions.",
+
+        tipAltTitle: "Alternate",
+        tipAltBody:
+            "An alternate is plan B with usable runway, services and weather at ETA. Compute fuel and time to it from destination (or decision point).\nIn IFR, alternate requirements follow the rule set for the flight.",
+        tipAltTip: "Pick an alternate you’d actually land with today’s wind/ceiling — not only the nearest on the map.",
+
+        tipAltimetryTitle: "Altimetry QNH / QNE",
+        tipAltimetryBody:
+            "QNH: altimeter reads field elevation on the ground (approx.). Above transition altitude, use QNE (1013 hPa) and flight levels.\nCold temperature and low pressure increase the risk of flying lower than indicated — apply corrections when required.",
+        tipAltimetryTip: "QNH↔QNE change is a climb/descent briefing item. Wrong setting is a classic level error.",
+
+        tipBriefTitle: "Navigation briefing order",
+        tipBriefBody:
+            "1) Route and charts 2) Weather/NOTAM 3) Headings, distances, ETE 4) Fuel and alternate 5) Airspace and frequencies 6) Departure/arrival or VFR procedures 7) Contingencies.\nMarquisa helps organize METAR/TAF and math — the decision stays yours.",
+        tipBriefTip: "If you can’t explain the route in 60 seconds, the briefing isn’t ready yet.",
+    },
+    jobs: {
+        nav: "Jobs",
+        title: "Jobs",
+        captionModern: "Aviation jobs and candidate profiles.",
+        ctaProfile: "Create my candidate profile",
+        ctaPostJob: "Post a job",
+        searchKeyword: "Role, aircraft or company",
+        searchKeywordPlaceholder: "e.g. ATR, first officer, instructor",
+        searchLocation: "Location",
+        searchLocationPlaceholder: "City, base or region",
+        searchAction: "Search",
+        jobsTab: "Jobs ({{count}})",
+        seekersTab: "Candidates ({{count}})",
+        filterAll: "All",
+        workOnsite: "On-site",
+        workHybrid: "Hybrid",
+        workRemote: "Remote",
+        workMode: "Work mode",
+        contractType: "Contract",
+        contractIntern: "Internship",
+        reloadDemo: "Reload examples",
+        resultsLabel: "Results",
+        resultsCount: "{{count}} result(s)",
+        noResults: "No results for these filters.",
+        selectHintTitle: "Select a job",
+        selectHintCopy: "Click a card on the left to see the full description.",
+        demoTag: "Sample",
+        sectionDescription: "About the role",
+        sectionRequirements: "Requirements",
+        sectionApply: "Apply",
+        sectionExperience: "Experience",
+        sectionContact: "Contact",
+        applyCta: "Apply",
+        applyHint: "Don't have an account?",
+        contactEmail: "Email",
+        contactPhone: "Phone / WhatsApp",
+        contactOther: "Other contact",
+        back: "Back to search",
+        remove: "Remove",
+        profileBasic: "Aviation profile",
+        seekerFormTitle: "Create my candidate profile",
+        seekerFormLead: "Licenses, hours and experience so recruiters can find you.",
+        hiringFormTitle: "Post a job",
+        hiringFormLead: "Role, company, location, requirements and how candidates reach you.",
+        fullName: "Full name",
+        headline: "Headline",
+        headlinePlaceholder: "e.g. CPL/IR · seeking turboprop FO",
+        location: "Location",
+        licenses: "Licenses",
+        hours: "Flight hours",
+        experience: "Experience",
+        photo: "Photo",
+        photoInvalid: "Please upload a valid image.",
+        photoTooLarge: "Photo is too large (max 1.5 MB).",
+        companyName: "Company",
+        roleTitle: "Role",
+        jobLocation: "Job location",
+        aircraft: "Aircraft / fleet",
+        aircraftPlaceholder: "e.g. ATR 72, King Air 350",
+        jobDescription: "Description",
+        requirements: "Requirements",
+        requirementsPlaceholder: "Licenses, hours, medical, type rating…",
+        publishSeeker: "Publish profile",
+        publishJob: "Publish job",
+        seekerPublished: "Profile published.",
+        jobPublished: "Job published.",
+        entryRemoved: "Removed.",
+        demoReset: "Examples reloaded.",
+    },
     footer: {
         rights: "All rights reserved.",
         terms: "Terms",
@@ -198,6 +433,9 @@ export const en = {
         back: "Back",
         loginTitle: "Log in",
         loginCaption: "Access your account to use ANAC practice exams, saved briefings and flight planning.",
+        loginCaptionPostJob: "Sign in to post your job.",
+        loginCaptionPostProfile: "Sign in to publish your candidate profile.",
+        loginCaptionJobs: "Sign in to continue on Jobs.",
         loginSignupHint: "When you create an account and confirm your email, you unlock simulators (PP and Cabin Crew) and cloud-saved planning.",
         email: "Email",
         password: "Password",
