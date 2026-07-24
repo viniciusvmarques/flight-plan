@@ -25,7 +25,6 @@ export default function AppHeader({ hideMobileMenu = false }) {
             { key: "computer", to: gate("/computador"), label: t("flightComputer.nav") },
             { key: "quiz", to: gate("/quiz"), label: t("quiz.nav"), accent: true },
             { key: "exams", to: simuladosTarget, label: t("exams.nav") },
-            { key: "jobs", to: "/empregos", label: t("jobs.nav"), free: true },
             { key: "summaries", to: "/resumos", label: t("summaries.nav"), free: true },
         ];
         if (user) {

@@ -3780,3 +3780,315 @@ button.danger-action:hover:not(:disabled) {
     font-size: 0.92rem;
     line-height: 1.45;
 }
+
+/* ===== Empregos (legado do protótipo antigo — styles ativos em jobs-board.css) ===== */
+/* kept intentionally empty to avoid breaking imports; remove in a cleanup pass */
+
+.jobs-hero {
+    margin-bottom: 0;
+}
+
+.jobs-prototype-note {
+    margin: 10px 0 0;
+    max-width: 62ch;
+    color: rgba(148, 163, 184, 0.88);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.jobs-gate {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.jobs-gate-card {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    text-align: left;
+    padding: 22px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background:
+        linear-gradient(165deg, rgba(94, 234, 212, 0.08), rgba(6, 11, 19, 0.72)),
+        rgba(8, 14, 24, 0.9);
+    color: rgba(226, 232, 240, 0.92);
+    cursor: pointer;
+    transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
+}
+
+.jobs-gate-card:hover {
+    border-color: rgba(94, 234, 212, 0.45);
+    transform: translateY(-1px);
+}
+
+.jobs-gate-card--hire {
+    background:
+        linear-gradient(165deg, rgba(56, 189, 248, 0.08), rgba(6, 11, 19, 0.72)),
+        rgba(8, 14, 24, 0.9);
+}
+
+.jobs-gate-kicker {
+    font-family: var(--ck-mono, ui-monospace, monospace);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(94, 234, 212, 0.9);
+}
+
+.jobs-gate-card strong {
+    font-size: 1.2rem;
+    color: #f8fafc;
+}
+
+.jobs-gate-card span:last-child {
+    line-height: 1.5;
+    color: rgba(203, 213, 225, 0.88);
+}
+
+.jobs-form {
+    display: grid;
+    gap: 16px;
+}
+
+.jobs-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.jobs-field {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.jobs-field--full {
+    grid-column: 1 / -1;
+}
+
+.jobs-field span {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(148, 163, 184, 0.92);
+}
+
+.jobs-field-hint {
+    color: rgba(148, 163, 184, 0.78);
+    line-height: 1.4;
+}
+
+.jobs-textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.5;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.jobs-photo-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(2, 6, 23, 0.35);
+}
+
+.jobs-photo-preview img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(94, 234, 212, 0.25);
+}
+
+.jobs-contact-disclaimer {
+    margin: 0 0 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(251, 191, 36, 0.28);
+    background: rgba(251, 191, 36, 0.08);
+    color: #fde68a;
+    line-height: 1.5;
+    font-size: 0.92rem;
+}
+
+.jobs-status {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+.jobs-status.ok {
+    color: #99f6e4;
+}
+
+.jobs-status.muted {
+    color: rgba(148, 163, 184, 0.85);
+}
+
+.jobs-auth-note {
+    margin: 10px 0 0;
+    max-width: 62ch;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(94, 234, 212, 0.28);
+    background: rgba(94, 234, 212, 0.08);
+    color: rgba(204, 251, 241, 0.95);
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.jobs-board-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.jobs-board-tab {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: rgba(2, 6, 23, 0.35);
+    color: rgba(226, 232, 240, 0.88);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.jobs-board-tab.is-active {
+    border-color: rgba(94, 234, 212, 0.5);
+    background: rgba(94, 234, 212, 0.14);
+    color: #ecfeff;
+}
+
+.jobs-board-list {
+    display: grid;
+    gap: 12px;
+}
+
+.jobs-board-card {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(2, 6, 23, 0.28);
+}
+
+.jobs-board-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.jobs-board-card-head strong {
+    display: block;
+    margin-top: 4px;
+    color: #f8fafc;
+    font-size: 1.05rem;
+}
+
+.jobs-board-card-head p {
+    margin: 4px 0 0;
+    color: rgba(203, 213, 225, 0.85);
+}
+
+.jobs-board-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.jobs-board-excerpt {
+    margin: 0;
+    color: rgba(203, 213, 225, 0.88);
+    line-height: 1.5;
+}
+
+.jobs-board-details {
+    display: grid;
+    gap: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.jobs-board-details > p {
+    margin: 0;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    color: rgba(226, 232, 240, 0.92);
+}
+
+.jobs-seeker-ident {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    min-width: 0;
+}
+
+.jobs-seeker-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid rgba(94, 234, 212, 0.28);
+    flex: 0 0 auto;
+}
+
+.jobs-seeker-avatar--empty {
+    background: rgba(148, 163, 184, 0.12);
+}
+
+.jobs-seeker-meta {
+    font-size: 0.88rem;
+    color: rgba(148, 163, 184, 0.95) !important;
+}
+
+.jobs-locked-contact,
+.jobs-contact-open {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(8, 14, 24, 0.55);
+}
+
+.jobs-locked-contact p {
+    margin: 0;
+    color: #fde68a;
+    line-height: 1.45;
+}
+
+.jobs-contact-open p {
+    margin: 0;
+    display: grid;
+    gap: 2px;
+}
+
+.jobs-contact-open span {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(148, 163, 184, 0.9);
+}
+
+.jobs-contact-open strong {
+    color: #f8fafc;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+@media (max-width: 900px) {
+    .jobs-gate,
+    .jobs-form-grid {
+        grid-template-columns: 1fr;
+    }
+}

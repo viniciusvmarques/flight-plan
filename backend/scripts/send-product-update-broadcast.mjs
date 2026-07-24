@@ -66,27 +66,44 @@ Exemplo:
         process.exit(1);
     }
 
-    const where = {
-        email: { not: null },
-    };
+    const where = {};
     if (only && typeof only === "string") {
         where.email = { equals: only.trim().toLowerCase(), mode: "insensitive" };
     }
     if (verifiedOnly) {
+        // DateTime opcional: evita { email: { not: null } } (inválido em String obrigatório)
         where.emailVerifiedAt = { not: null };
     }
 
-    let users = await prisma.user.findMany({
-        where,
-        select: {
-            id: true,
-            email: true,
-            firstName: true,
-            preferredLocale: true,
-            emailVerifiedAt: true,
-        },
-        orderBy: { createdAt: "asc" },
-    });
+    let users;
+    try {
+        users = await prisma.user.findMany({
+            where,
+            select: {
+                id: true,
+                email: true,
+                preferredLocale: true,
+                emailVerifiedAt: true,
+            },
+            orderBy: { createdAt: "asc" },
+        });
+    } catch (err) {
+        const msg = String(err?.message || err);
+        if (!msg.includes("Unknown field") && !msg.includes("Argument `not`")) throw err;
+        console.warn("Ajustando query Prisma (fallback)...\n");
+        const fallbackWhere = {};
+        if (only && typeof only === "string") {
+            fallbackWhere.email = { equals: only.trim().toLowerCase(), mode: "insensitive" };
+        }
+        users = await prisma.user.findMany({
+            where: fallbackWhere,
+            select: { id: true, email: true, preferredLocale: true, emailVerifiedAt: true },
+            orderBy: { createdAt: "asc" },
+        });
+        if (verifiedOnly) {
+            users = users.filter((u) => u.emailVerifiedAt != null);
+        }
+    }
 
     users = users.filter((u) => u.email && String(u.email).includes("@"));
 

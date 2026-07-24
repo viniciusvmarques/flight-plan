@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280" role="img" aria-label="Marquisa  briefing e navega��o">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d2744"/>
+      <stop offset="45%" stop-color="#143a5c"/>
+      <stop offset="100%" stop-color="#0a1c30"/>
+    </linearGradient>
+    <linearGradient id="glow" cx="0" cy="0" x1="0.2" y1="0" x2="0.9" y2="1">
+      <stop offset="0%" stop-color="rgba(94,234,212,0.28)"/>
+      <stop offset="55%" stop-color="rgba(56,189,248,0.12)"/>
+      <stop offset="100%" stop-color="rgba(56,189,248,0)"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="rgba(186,230,253,0.14)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="640" height="280" fill="url(#sky)"/>
+  <rect width="640" height="280" fill="url(#glow)"/>
+  <rect width="640" height="280" fill="url(#grid)"/>
+
+  <!-- Route -->
+  <path d="M48 210 C140 150 210 230 300 170 C390 110 470 190 590 120" fill="none" stroke="rgba(248,250,252,0.55)" stroke-width="2.4" stroke-dasharray="9 7"/>
+  <path d="M70 230 C160 175 240 245 330 195 C420 145 500 210 600 155" fill="none" stroke="rgba(94,234,212,0.28)" stroke-width="1.6"/>
+
+  <!-- Waypoints -->
+  <g fill="#38bdf8">
+    <circle cx="140" cy="168" r="5"/>
+    <circle cx="300" cy="170" r="5"/>
+    <circle cx="470" cy="158" r="5"/>
+    <circle cx="590" cy="120" r="5"/>
+  </g>
+  <g fill="#e2e8f0" font-family="ui-monospace,Menlo,monospace" font-size="11" letter-spacing="0.06em">
+    <text x="150" y="162">ORIGEM</text>
+    <text x="310" y="164">ROTA</text>
+    <text x="480" y="152">ALT</text>
+    <text x="540" y="108">DEST</text>
+  </g>
+
+  <!-- Compass -->
+  <g transform="translate(520 70)">
+    <circle r="38" fill="rgba(11,18,32,0.55)" stroke="#bae6fd" stroke-width="2"/>
+    <circle r="28" fill="none" stroke="rgba(125,211,252,0.45)" stroke-width="1.2"/>
+    <path d="M0 -38V38M-38 0H38" stroke="#f8fafc" stroke-width="1.1"/>
+    <path d="M0 -30L3.5 -7 0 -10 -3.5 -7Z" fill="#f8fafc"/>
+    <circle r="4" fill="#0b1220" stroke="#f8fafc" stroke-width="1.2"/>
+    <circle r="1.8" fill="#5eead4"/>
+  </g>
+
+  <!-- Brand / copy -->
+  <text x="36" y="48" fill="#5eead4" font-family="Arial,Helvetica,sans-serif" font-size="13" letter-spacing="0.28em" font-weight="700">MARQUISA</text>
+  <text x="36" y="92" fill="#f8fafc" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="700">Seu briefing, pronto para voar</text>
+  <text x="36" y="124" fill="rgba(226,232,240,0.82)" font-family="Arial,Helvetica,sans-serif" font-size="15">METAR � planejamento � computador � PDF</text>
+
+  <!-- CTA chip (visual only in banner) -->
+  <rect x="36" y="148" width="168" height="36" rx="8" fill="#5eead4"/>
+  <text x="120" y="171" text-anchor="middle" fill="#041016" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700">Acessar agora</text>
+</svg>

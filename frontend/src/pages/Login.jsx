@@ -24,14 +24,6 @@ export default function Login() {
     return "/";
   }
 
-  const nextPath = useMemo(() => resolveNextPath(), [searchParams, location.state]);
-  const loginCaption = useMemo(() => {
-    if (String(nextPath).includes("modo=contratando")) return t("auth.loginCaptionPostJob");
-    if (String(nextPath).includes("modo=procurando")) return t("auth.loginCaptionPostProfile");
-    if (String(nextPath).includes("/empregos")) return t("auth.loginCaptionJobs");
-    return t("auth.loginCaption");
-  }, [nextPath, t]);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -81,7 +73,7 @@ export default function Login() {
 
         <div className="auth-body">
           <h1>{t("auth.loginTitle")}</h1>
-          <p>{loginCaption}</p>
+          <p>{t("auth.loginCaption")}</p>
 
           {resetBanner && (
             <div className="auth-success auth-banner">

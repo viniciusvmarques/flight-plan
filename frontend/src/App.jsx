@@ -19,7 +19,6 @@ import Weather from "./pages/Weather";
 import Tools from "./pages/Tools";
 import FlightComputer from "./pages/FlightComputer";
 import Quiz from "./pages/Quiz";
-import Jobs from "./pages/Jobs";
 import ResumosAviacao from "./pages/ResumosAviacao";
 import SeoLanding from "./pages/SeoLanding";
 import ExamResultShare from "./pages/ExamResultShare";
@@ -82,8 +81,8 @@ export default function App() {
                 })}
 
                 <Route path="/weather" element={<Weather />} />
-                <Route path="/empregos" element={<Jobs />} />
-                <Route path="/jobs" element={<Navigate to="/empregos" replace />} />
+                <Route path="/empregos" element={<Navigate to="/" replace />} />
+                <Route path="/jobs" element={<Navigate to="/" replace />} />
                 <Route path="/resumos" element={<ResumosAviacao />} />
                 <Route path="/summaries" element={<Navigate to="/resumos" replace />} />
                 <Route

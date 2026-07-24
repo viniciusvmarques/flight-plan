@@ -1,0 +1,35 @@
+AVIATION NAVIGATION BOOK OUTLINE
+Status: extraction jobs failed (Windows sandbox could not run shell: workspace_readwrite unsupported)
+
+=== PDF TARGETS (confirmed paths from prior session) ===
+
+File: C:\Users\awavi\Downloads\357136727-Navegacao-PC-IFR-Titus-Roos.pdf
+  Role: Titus Roos — Navegação PC / IFR
+  Text extraction: NOT RUN (shell/sandbox failure)
+  Chapter / heading candidates:
+    (pending — run run_extract.py)
+
+File: C:\Users\awavi\Downloads\pdfcoffee.com_navegaao-pp-vfr-titus-roos-pdf-free.pdf
+  Role: Titus Roos — Navegação PP / VFR (pdfcoffee; often scan-only)
+  Text extraction: NOT RUN (shell/sandbox failure)
+  Chapter / heading candidates:
+    (pending — run run_extract.py)
+
+=== KEYWORD SEARCH (Bianch / Resumao / Computador) ===
+  Search under Downloads / Desktop / Documents was queued but not completed.
+  NOTE: If no Bianch PDF appears after search, prioritize Titus Roos IFR + VFR volumes.
+
+=== HOW TO COMPLETE ===
+  python -m pip install pymupdf pytesseract pillow
+  python C:\Users\awavi\Desktop\flight-plan\frontend\src\data\run_extract.py
+
+  Optional for scanned PDFs: install Tesseract for Windows + Portuguese language pack.
+  Script writes this file and subagent_result.json with page counts, native/OCR method, and headings.
+
+=== CONDENSED STUDY TOPICS (VFR + IFR) — until chapter TOC is available ===
+- Flight computer: wind triangle, TAS/GS/WCA, drift, fuel-time-distance
+- Headings: true, magnetic, compass; variation and deviation
+- VFR: chart symbols, pilotage, dead reckoning, diversions, VFR planning
+- IFR: en-route charts, SIDs/STARs, approaches, holds, alternates
+- Navaids: VOR, DME, NDB/ADF, RNAV/GPS
+- Altimetry: QNH/QFE, flight levels
